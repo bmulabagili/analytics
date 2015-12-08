@@ -1,0 +1,9 @@
+﻿CREATE TABLE [dbo].[ETLProcess]
+(
+	  ETLProcessID INT NOT NULL 
+	, Name NVARCHAR(255) NOT NULL
+	, [Description] NVARCHAR(1000) NULL
+	
+	, CONSTRAINT PK_ETLProcess__ETLProcessID
+	   PRIMARY KEY(ETLProcessID)
+)

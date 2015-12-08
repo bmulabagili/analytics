@@ -1,0 +1,9 @@
+﻿CREATE TABLE [dbo].[ETLAction]
+(
+	  ETLActionID INT NOT NULL 
+	, Name NVARCHAR(255) NOT NULL
+	, [Description] NVARCHAR(1000) NULL
+	
+	, CONSTRAINT PK_ETLAction__ETLActionID
+	   PRIMARY KEY(ETLActionID)
+)
