@@ -13,8 +13,8 @@ Post-Deployment Script Template
 
 MERGE INTO ETLProcess AS Target
 USING (VALUES
-      (1, 'FocusTenant', NULL)
-    , (2, 'FellowshipOneIndividuals', NULL)
+      (1, 'TransactionalTenant', NULL)
+    , (2, 'FellowshipOne_Attendance', NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
