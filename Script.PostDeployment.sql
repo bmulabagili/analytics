@@ -26,6 +26,7 @@ UPDATE SET
       Target.Name = Source.Name
     , Target.[Description] = Source.[Description]
 ;
+
 MERGE INTO ETLAction AS Target
 USING (VALUES
       (0, 'Do Nothing', 'An optional flag. Generally you wont load 0s to your transform table.')
@@ -43,6 +44,12 @@ UPDATE SET
       Target.Name = Source.Name
     , Target.[Description] = Source.[Description] 
 ;
+
+--enable all defined ETLPackages as active for HBC
+INSERT INTO TenantEtlProcess
+SELECT 3, ETLProcessID
+FROM ETLProcess;
+
 --base connectionstrings
 MERGE INTO dbo.ConnectionString AS Target
 USING (VALUES
