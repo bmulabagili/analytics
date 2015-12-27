@@ -10,7 +10,7 @@
   , [StartDateTime]    DATETIME NOT NULL
   , [EndDateTime]      DATETIME NULL
   , [Active]           BIT NOT NULL
-
+   --ETL Specific Columns
   , [ExecutionID]      VARCHAR(50) NOT NULL
   , [InsertedDateTime] DATETIME DEFAULT(GETUTCDATE()) NULL
   , [UpdatedDateTime]  DATETIME DEFAULT(GETUTCDATE()) NULL

@@ -197,3 +197,4 @@ UPDATE SET
 	 , Target.UpdatedDateTime   = Source.UpdatedDateTime
 	 , Target.HashValue		   = Source.HashValue
 ;
+GO
