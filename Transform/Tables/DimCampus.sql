@@ -20,8 +20,8 @@
     
     --Keys should get enforced at this point.
 
-  , CONSTRAINT [pk_DWDimCampus__CampusID] PRIMARY KEY CLUSTERED([CampusID] ASC)
-  , CONSTRAINT [FK_DWDimCampus_Tenant__TenantID] FOREIGN KEY([TenantID]) REFERENCES [dbo].[Tenant](
+  , CONSTRAINT [pk_TransformDimCampus__CampusID] PRIMARY KEY CLUSTERED([CampusID], TenantID)
+  , CONSTRAINT [FK_TransformDimCampus_Tenant__TenantID] FOREIGN KEY([TenantID]) REFERENCES [dbo].[Tenant](
                                                                                     [TenantID])
 );
 GO

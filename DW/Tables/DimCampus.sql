@@ -15,7 +15,7 @@
   , [InsertedDateTime] DATETIME DEFAULT(GETUTCDATE()) NULL
   , [UpdatedDateTime]  DATETIME DEFAULT(GETUTCDATE()) NULL
   , [Hashvalue]        NVARCHAR(64) NOT NULL
-  , CONSTRAINT [pk_DWDimCampus__CampusID] PRIMARY KEY CLUSTERED([CampusID] ASC)
+  , CONSTRAINT [pk_DWDimCampus__CampusID_TenantID] PRIMARY KEY CLUSTERED([CampusID], TenantID)
   , CONSTRAINT [FK_DWDimCampus_Tenant__TenantID] FOREIGN KEY([TenantID]) REFERENCES [dbo].[Tenant](
                                                                                     [TenantID])
 );
