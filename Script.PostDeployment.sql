@@ -97,14 +97,17 @@ VALUES (TenantID, TenantName, IsActive, ConnectionStringID, ExecutionID, Inserte
 --DimCampus -- hardcoded until we find an authoritative source
 MERGE INTO DW.DimCampus AS Target
 USING ( VALUES
-      (-1, 3, ''  , 'Unknown'          , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (1 , 3, 'AU', 'Aurora'		    , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (2 , 3, 'CC', 'Chicago Cathedral', '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (3 , 3, 'CL', 'Crystal Lake'     , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (4 , 3, 'EL', 'Elgin'            , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (5 , 3, 'NI', 'Niles'            , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (6 , 3, 'NS', 'Deerfield Rd'     , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (7 , 3, 'RM', 'Rolling Meadows'  , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+      (-1, 3, ''  , 'Unknown'             , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    , (1 , 3, 'AU', 'Aurora'		       , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    , (2 , 3, 'CC', 'Chicago Cathedral'   , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    , (3 , 3, 'CL', 'Crystal Lake'        , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    , (4 , 3, 'EL', 'Elgin'               , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    , (5 , 3, 'NI', 'Niles'               , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    , (6 , 3, 'NS', 'Deerfield Rd'        , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    , (7 , 3, 'RM', 'Rolling Meadows'     , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    , (8 , 3, 'SP', 'Elgin Campus Spanish', '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    , (9 , 3, 'WW', 'Online Church'       , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+
 ) AS Source
 (CampusID, TenantID, Code, Name, StartDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
     ON  Target.CampusID = Source.CampusID

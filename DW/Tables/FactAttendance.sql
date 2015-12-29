@@ -1,17 +1,18 @@
 ﻿CREATE TABLE [DW].[FactAttendance]
 (
-    AttendanceID     INT NOT NULL
-  , TenantID         INT NOT NULL
-  , CampusID         INT NOT NULL
-  , MinistryID       INT NOT NULL
-  , ActivityID       INT NOT NULL
-  , RosterID         INT NOT NULL
-  , AttendanceTypeID INT NOT NULL
-  , Age              INT NOT NULL
-  , MaritalStatusID  INT NOT NULL
-  , InstanceDateID   INT NOT NULL
-  , InstanceTimeID   INT NOT NULL
-  , AttendanceCount  INT NOT NULL
+    AttendanceID       INT NOT NULL
+  , TenantID           INT NOT NULL
+  , CampusID           INT NOT NULL
+  , MinistryID         INT NOT NULL
+  , ActivityID         INT NOT NULL
+  , RosterID           INT NOT NULL
+  , AttendanceTypeID   INT NOT NULL
+  , Age                INT NULL
+  , MaritalStatusID    INT NULL
+  , IndividualStatusID INT NULL
+  , InstanceDateID     INT NOT NULL
+  , InstanceTimeID     INT NOT NULL
+  , AttendanceCount    INT NOT NULL
   --ETL Specific Columns
   , [ExecutionID]      VARCHAR(50) NOT NULL
   , [InsertedDateTime] DATETIME DEFAULT(GETUTCDATE()) NULL
