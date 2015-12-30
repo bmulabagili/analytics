@@ -1,4 +1,5 @@
-﻿CREATE TABLE [Transform].[FactAttendance](
+﻿CREATE TABLE [Transform].[FactAttendance]
+(
     AttendanceID       INT NOT NULL
   , TenantID           INT NOT NULL
   , CampusID           INT NOT NULL
@@ -9,6 +10,7 @@
   , Age                INT NULL
   , MaritalStatusID    INT NULL
   , IndividualStatusID INT NULL
+  , AttendeeZipCode	   INT NULL
   , InstanceDateID     INT NOT NULL
   , InstanceTimeID     INT NOT NULL
   , AttendanceCount    INT NOT NULL

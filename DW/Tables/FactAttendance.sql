@@ -10,6 +10,7 @@
   , Age                INT NULL
   , MaritalStatusID    INT NULL
   , IndividualStatusID INT NULL
+  , AttendeeZipCode	   INT NULL
   , InstanceDateID     INT NOT NULL
   , InstanceTimeID     INT NOT NULL
   , AttendanceCount    INT NOT NULL
