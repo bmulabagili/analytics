@@ -9,7 +9,7 @@
   , RosterID           INT NOT NULL
   --, AttendanceTypeID   INT NOT NULL -- the source report is limited to participant
   , Age                INT NULL
-  , Gender		   CHAR(1) NULL
+  , Gender		   NCHAR(1) NULL
   , MaritalStatusID    INT NULL
   , IndividualStatusID INT NULL
   , AttendeeZipCode	   INT NULL

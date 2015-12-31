@@ -190,7 +190,8 @@ UPDATE SET
 --DimLifeEventType
 MERGE INTO DW.DimLifeEventType AS Target
 USING ( VALUES
-      (-1, 3, 'Unknown'  , -1, GETUTCDATE(), GETUTCDATE(), '')
+        (-1, 3, 'Unknown'  , -1, GETUTCDATE(), GETUTCDATE(), '')
+	 , (1 , 3, 'FTV'      , -1, GETUTCDATE(), GETUTCDATE(), '')
 
 ) AS Source
 (LifeEventTypeID, TenantID, Name, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
