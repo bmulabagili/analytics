@@ -47,8 +47,13 @@ UPDATE SET
 
 --enable all defined ETLPackages as active for HBC
 INSERT INTO TenantEtlProcess
-SELECT 3, ETLProcessID
-FROM ETLProcess;
+SELECT 3, src.ETLProcessID
+FROM ETLProcess src
+LEFT JOIN TenantEtlProcess dest
+    ON dest.TenantID = 3
+    AND src.ETLProcessID = dest.ETLProcessID
+WHERE
+    dest.ETLProcessID IS NULL;
 
 --base connectionstrings
 MERGE INTO dbo.ConnectionString AS Target
@@ -94,6 +99,31 @@ INSERT (TenantID, TenantName, IsActive, ConnectionStringID, ExecutionID, Inserte
 VALUES (TenantID, TenantName, IsActive, ConnectionStringID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 ;
 
+--DimActivity depends on DimCampus And DimMinistry, so it's after DimMinistry
+
+--DimAttendanceType
+MERGE INTO DW.DimAttendanceType AS Target
+USING ( VALUES
+      ( -1, 3, 'Unknown'    , ''                   , ''                                  , -1, GETUTCDATE(), GETUTCDATE(), '')
+   
+) AS Source
+(AttendanceTypeID, TenantID, Category, Job, VolStaffSchedule, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    ON Target.AttendanceTypeID = Source.AttendanceTypeID
+    AND Target.TenantID = Source.TenantID
+WHEN NOT MATCHED BY Target THEN
+    INSERT (AttendanceTypeID, TenantID, Category, Job, VolStaffSchedule, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    VALUES (AttendanceTypeID, TenantID, Category, Job, VolStaffSchedule, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+WHEN MATCHED THEN
+UPDATE SET
+        Target.Category         = Source.Category
+	 , Target.Job              = Source.Job 
+	 , Target.VolStaffSchedule = Source.VolStaffSchedule
+	 , Target.ExecutionID	   = Source.ExecutionID
+	 , Target.InsertedDateTime  = Source.InsertedDateTime
+	 , Target.UpdatedDateTime   = Source.UpdatedDateTime
+	 , Target.HashValue		   = Source.HashValue
+;
+
 --DimCampus -- hardcoded until we find an authoritative source
 MERGE INTO DW.DimCampus AS Target
 USING ( VALUES
@@ -127,24 +157,31 @@ UPDATE SET
 	 , Target.HashValue		   = Source.HashValue
 ;
 
---DimAttendanceType
-MERGE INTO DW.DimAttendanceType AS Target
+--DimDate Load at least the next five years and the previous five years
+DECLARE @FiveYearsAgo DATE, @FiveYearsFromNow DATE
+SET @FiveYearsAgo = '1/1/' + CONVERT(VARCHAR(4), YEAR(GETUTCDATE()) - 5)
+SET @FiveYearsFromNow = '12/31/' + CONVERT(VARCHAR(4), YEAR(GETUTCDATE()) + 5)
+
+EXEC DW.usp_UpsertDimDate @FiveYearsAgo, @FiveYearsFromNow
+
+--DimIndividualStatus
+
+MERGE INTO DW.DimIndividualStatus AS Target
 USING ( VALUES
-      ( -1, 3, 'Unknown'    , ''                   , ''                                  , -1, GETUTCDATE(), GETUTCDATE(), '')
-   
-) AS Source
-(AttendanceTypeID, TenantID, Category, Job, VolStaffSchedule, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
-    ON Target.AttendanceTypeID = Source.AttendanceTypeID
+    (-1, 3, 'Unknown','Unknown', -1, -1, GETUTCDATE(), GETUTCDATE(), '')
+)AS Source
+(IndividualStatusID, TenantID, [Status], SubStatus, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+   ON Target.IndividualStatusID = Source.IndividualStatusID
     AND Target.TenantID = Source.TenantID
 WHEN NOT MATCHED BY Target THEN
-    INSERT (AttendanceTypeID, TenantID, Category, Job, VolStaffSchedule, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
-    VALUES (AttendanceTypeID, TenantID, Category, Job, VolStaffSchedule, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    INSERT (IndividualStatusID, TenantID, [Status], SubStatus, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    VALUES (IndividualStatusID, TenantID, [Status], SubStatus, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 WHEN MATCHED THEN
 UPDATE SET
-        Target.Category         = Source.Category
-	 , Target.Job              = Source.Job 
-	 , Target.VolStaffSchedule = Source.VolStaffSchedule
-	 , Target.ExecutionID	   = Source.ExecutionID
+        Target.[Status]            = Source.[Status]
+      , Target.SubStatus            = Source.SubStatus
+	 , Target.CampusID            = Source.CampusID	   
+   	 , Target.ExecutionID	   = Source.ExecutionID
 	 , Target.InsertedDateTime  = Source.InsertedDateTime
 	 , Target.UpdatedDateTime   = Source.UpdatedDateTime
 	 , Target.HashValue		   = Source.HashValue
@@ -175,3 +212,69 @@ UPDATE SET
 	 , Target.UpdatedDateTime   = Source.UpdatedDateTime
 	 , Target.HashValue		   = Source.HashValue
 ;
+
+--DimMinistry
+MERGE INTO DW.DimMinistry AS Target
+USING ( VALUES
+    (-1, 3, 'Undefined', -1, -1, GETUTCDATE(), GETUTCDATE(), '')
+) AS Source
+(MinistryID, TenantID, Name, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+ ON Target.MinistryID = Source.MinistryID
+    AND Target.TenantID = Source.TenantID
+WHEN NOT MATCHED BY Target THEN
+    INSERT (MinistryID, TenantID, Name, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    VALUES (MinistryID, TenantID, Name, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+WHEN MATCHED THEN
+UPDATE SET
+      Target.Name       = Source.Name
+    , Target.CampusID   = Source.CampusID
+    , Target.ExecutionID	   = Source.ExecutionID
+    , Target.InsertedDateTime  = Source.InsertedDateTime
+    , Target.UpdatedDateTime   = Source.UpdatedDateTime
+    , Target.HashValue		   = Source.HashValue
+;
+
+--DimActivity
+MERGE INTO DW.DimActivity AS Target
+USING ( VALUES
+    (-1, 3, 'Undefined', -1, -1, -1, GETUTCDATE(), GETUTCDATE(), '')
+) AS Source
+(ActivityID, TenantID, Name, MinistryID, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+ ON Target.ActivityID = Source.ActivityID
+    AND Target.TenantID = Source.TenantID
+WHEN NOT MATCHED BY Target THEN
+    INSERT (ActivityID, TenantID, Name, MinistryID, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    VALUES (ActivityID, TenantID, Name, MinistryID, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+WHEN MATCHED THEN
+UPDATE SET
+      Target.Name       = Source.Name
+    , Target.MinistryID = Source.MinistryID
+    , Target.CampusID   = Source.CampusID
+    , Target.ExecutionID	   = Source.ExecutionID
+    , Target.InsertedDateTime  = Source.InsertedDateTime
+    , Target.UpdatedDateTime   = Source.UpdatedDateTime
+    , Target.HashValue		   = Source.HashValue
+;
+
+--DimRoster
+MERGE INTO DW.DimRoster AS Target
+USING ( VALUES
+    (-1, 3, 'Undefined', 'Undefined', 'Undefined', -1, GETUTCDATE(), GETUTCDATE(), '')
+) AS Source
+(RosterID, TenantID, RosterFolder, Roster, BreakoutGroup, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+ ON Target.RosterID = Source.RosterID
+    AND Target.TenantID = Source.TenantID
+WHEN NOT MATCHED BY Target THEN
+    INSERT (RosterID, TenantID, RosterFolder, Roster, BreakoutGroup, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    VALUES (RosterID, TenantID, RosterFolder, Roster, BreakoutGroup, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+WHEN MATCHED THEN
+UPDATE SET
+      Target.RosterFolder       = Source.RosterFolder
+    , Target.Roster = Source.Roster
+    , Target.BreakoutGroup   = Source.BreakoutGroup
+    , Target.ExecutionID	   = Source.ExecutionID
+    , Target.InsertedDateTime  = Source.InsertedDateTime
+    , Target.UpdatedDateTime   = Source.UpdatedDateTime
+    , Target.HashValue		   = Source.HashValue
+;
+

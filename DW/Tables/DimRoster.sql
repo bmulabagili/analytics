@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [DW].[DimRoster]
 (
-	 RosterID         INT NOT NULL
+    RosterID         INT NOT NULL
   , TenantID         INT NOT NULL
   , RosterFolder     NVARCHAR(255)
   , Roster           NVARCHAR(255)
