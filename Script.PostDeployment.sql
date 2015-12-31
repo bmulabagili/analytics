@@ -15,6 +15,7 @@ MERGE INTO ETLProcess AS Target
 USING (VALUES
       (1, 'TransactionalTenant', NULL)
     , (2, 'FellowshipOne_Attendance', NULL)
+    , (3, 'FellowshipOne_FTVChurchwideService', NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
@@ -186,7 +187,30 @@ UPDATE SET
 	 , Target.UpdatedDateTime   = Source.UpdatedDateTime
 	 , Target.HashValue		   = Source.HashValue
 ;
+--DimLifeEventType
+MERGE INTO DW.DimLifeEventType AS Target
+USING ( VALUES
+      (-1, 3, 'Unknown'  , -1, GETUTCDATE(), GETUTCDATE(), '')
 
+) AS Source
+(LifeEventTypeID, TenantID, Name, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    ON Target.LifeEventTypeID = Source.LifeEventTypeID
+    AND Target.TenantID = Source.TenantID
+WHEN NOT MATCHED BY Target THEN
+    INSERT (LifeEventTypeID, TenantID, Name, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    VALUES (LifeEventTypeID, TenantID, Name, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+WHEN MATCHED THEN
+UPDATE SET
+        Target.Name            = Source.Name
+   	 , Target.ExecutionID	   = Source.ExecutionID
+	 , Target.InsertedDateTime  = Source.InsertedDateTime
+	 , Target.UpdatedDateTime   = Source.UpdatedDateTime
+	 , Target.HashValue		   = Source.HashValue
+;
+
+
+
+--DimMaritalStatus
 MERGE INTO DW.DimMaritalStatus AS Target
 USING ( VALUES
       (-1, 3, 'Unknown'  , -1, GETUTCDATE(), GETUTCDATE(), '')
