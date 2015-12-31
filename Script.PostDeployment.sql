@@ -15,7 +15,8 @@ MERGE INTO ETLProcess AS Target
 USING (VALUES
       (1, 'TransactionalTenant', NULL)
     , (2, 'FellowshipOne_Attendance', NULL)
-    , (3, 'FellowshipOne_FTVChurchwideService', NULL)
+    , (3, 'FellowshipOne_FTV', NULL)
+    , (4, 'FellowshipOne_AssimilationSteps', NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
@@ -190,9 +191,12 @@ UPDATE SET
 --DimLifeEventType
 MERGE INTO DW.DimLifeEventType AS Target
 USING ( VALUES
-        (-1, 3, 'Unknown'  , -1, GETUTCDATE(), GETUTCDATE(), '')
-	 , (1 , 3, 'FTV'      , -1, GETUTCDATE(), GETUTCDATE(), '')
-
+        (-1, 3, 'Unknown'                      , -1, GETUTCDATE(), GETUTCDATE(), '')
+	 , (1 , 3, 'FTV'                          , -1, GETUTCDATE(), GETUTCDATE(), '')
+	 , (2 , 3, 'Step 1: Meet'                 , -1, GETUTCDATE(), GETUTCDATE(), '')
+      , (3 , 3, 'Step 2: Connect'              , -1, GETUTCDATE(), GETUTCDATE(), '')
+      , (4 , 3, 'Baptized'                     , -1, GETUTCDATE(), GETUTCDATE(), '')  	
+	 , (5 , 3, 'Membership Confirmation Sent' , -1, GETUTCDATE(), GETUTCDATE(), '')  	
 ) AS Source
 (LifeEventTypeID, TenantID, Name, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
     ON Target.LifeEventTypeID = Source.LifeEventTypeID
