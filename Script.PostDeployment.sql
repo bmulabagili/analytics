@@ -17,6 +17,7 @@ USING (VALUES
     , (2, 'FellowshipOne_Attendance', NULL)
     , (3, 'FellowshipOne_FTV', NULL)
     , (4, 'FellowshipOne_AssimilationSteps', NULL)
+    , (5, 'FellowshipOne_SmallGroupStatus', NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
