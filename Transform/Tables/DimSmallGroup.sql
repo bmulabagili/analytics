@@ -9,7 +9,9 @@
     , Latitude FLOAT NULL
     , Longitude FLOAT NULL
     , LocationGeography GEOGRAPHY NULL
-    
+    , StartDateTime DATETIME NOT NULL DEFAULT('1/1/1900')
+    , EndDateTime DATETIME NULL
+    , Active BIT NOT NULL DEFAULT(1)
 
     --ETL Specific Columns
     , ExecutionID        VARCHAR(50) NOT NULL

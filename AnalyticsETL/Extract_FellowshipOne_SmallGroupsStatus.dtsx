@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Extract_FellowshipOne_SmallGroupsStatus"
   DTS:PackageType="5"
-  DTS:VersionBuild="184"
-  DTS:VersionGUID="{A9622847-572F-493C-A7BB-AE944CC275D6}">
+  DTS:VersionBuild="190"
+  DTS:VersionGUID="{1E94D326-1928-4F63-8F60-33D32F30880B}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -21,9 +21,11 @@
       DTS:CreationName="ADO.NET:System.Data.OleDb.OleDbConnection, System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
       DTS:DTSID="{CD842EC3-144F-4F9D-960A-F8464B2497DB}"
       DTS:ObjectName="ExcelFile">
+      <DTS:PropertyExpression
+        DTS:Name="ServerName">@[User::XPR_ProcessingFileName]</DTS:PropertyExpression>
       <DTS:ObjectData>
         <DTS:ConnectionManager
-          DTS:ConnectionString="Data Source=e:\etlcontainer\3\input\smallgroupstatus_201512.xls;Provider=Microsoft.ACE.OLEDB.12.0;Extended Properties=Excel 12.0;" />
+          DTS:ConnectionString="Data Source=e:\etlContainer\3\Processing\SmallGroupStatus_201512.xls;Provider=Microsoft.ACE.OLEDB.12.0;Extended Properties=Excel 12.0;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -749,30 +751,41 @@
                           description="Specifies the SQL statement used by the component to extract data."
                           expressionType="Notify"
                           name="SqlCommand"
-                          UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
-       [Groups Progress Report] AS RowNumber
-     , [F2]  AS GroupType         
-     , [F3]	 AS GroupName         
-     , [F4]	 AS GroupLeaders      
-     , [F5]	 AS Geolocation       
-     , [F6]	 AS Latitude          
-     , [F7]	 AS Longitude         
-     , [F8]	 AS StreetAddress	    
-     , [F9]	 AS City		    
-     , [F10] AS Province          
-     , [F11] AS PostalCodeFull    
-     , [F12] AS PostalCode5       
-     , [F13] AS TotalGroups       
-     , [F14] AS MissingReports    
-     , [F15] AS DidNotMeets       
-     , [F16] AS ActualAttendance  
-     , [F17] AS UniqueAttenders   
-     , [F18] AS AverageAttendance 
-     , [F19] AS TotalLeaders      
-     , [F20] AS TotalMembers      
-     , [F21] AS TotalProspects    
+                          UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT [Groups Progress Report] AS RowNumber
+     , [F2] AS Campus
+     , [F3] AS GroupType
+     , [F4] AS GroupName
+     , [F5] AS GroupLeaders
+     , [F6] AS Active
+     , [F7] AS Geolocation
+     , [F8] AS Latitude
+     , [F9] AS Longitude
+     , [F10] AS StreetAddress
+     , [F11] AS City
+     , [F12] AS Province
+     , [F13] AS PostalCodeFull
+     , [F14] AS PostalCode5
+     , [F15] AS TotalGroups
+     , [F16] AS MissingReports
+     , [F17] AS DidNotMeets
+     , [F18] AS ActualAttendance
+     , [F19] AS UniqueAttenders
+     , [F20] AS TotalLeaders
+     , [F21] AS TotalMembers
+     , [F22] AS TotalProspects
+     ,
+(
+    SELECT TOP 1 LTRIM(RTRIM([Groups Progress Report])) AS ReportMonth
+    FROM ['M7060v10-Core Groups Progress ($']
+    WHERE([Groups Progress Report]  LIKE 'Month%')
+) AS ReportPeriod
 FROM ['M7060v10-Core Groups Progress ($']
-WHERE([Groups Progress Report] IS NOT NULL);</property>
+WHERE
+    [Groups Progress Report] IS NOT NULL
+    AND [Groups Progress Report] &lt;&gt; ''
+    AND [Groups Progress Report] NOT LIKE 'Period%'
+    AND [Groups Progress Report] NOT LIKE 'Month%'
+    ;</property>
                         <property
                           dataType="System.Int32"
                           description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
@@ -820,6 +833,16 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               name="RowNumber"
                               truncationRowDisposition="FailComponent" />
                             <outputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[Campus]"
+                              dataType="wstr"
+                              errorOrTruncationOperation="Conversion"
+                              errorRowDisposition="FailComponent"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[Campus]"
+                              length="255"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[Campus]"
+                              name="Campus"
+                              truncationRowDisposition="FailComponent" />
+                            <outputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[GroupType]"
                               dataType="wstr"
                               errorOrTruncationOperation="Conversion"
@@ -848,6 +871,16 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               length="255"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[GroupLeaders]"
                               name="GroupLeaders"
+                              truncationRowDisposition="FailComponent" />
+                            <outputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[Active]"
+                              dataType="wstr"
+                              errorOrTruncationOperation="Conversion"
+                              errorRowDisposition="FailComponent"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[Active]"
+                              length="255"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[Active]"
+                              name="Active"
                               truncationRowDisposition="FailComponent" />
                             <outputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[Geolocation]"
@@ -981,16 +1014,6 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               name="UniqueAttenders"
                               truncationRowDisposition="FailComponent" />
                             <outputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[AverageAttendance]"
-                              dataType="wstr"
-                              errorOrTruncationOperation="Conversion"
-                              errorRowDisposition="FailComponent"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[AverageAttendance]"
-                              length="255"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[AverageAttendance]"
-                              name="AverageAttendance"
-                              truncationRowDisposition="FailComponent" />
-                            <outputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[TotalLeaders]"
                               dataType="numeric"
                               errorOrTruncationOperation="Conversion"
@@ -1003,13 +1026,14 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               truncationRowDisposition="FailComponent" />
                             <outputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[TotalMembers]"
-                              dataType="wstr"
+                              dataType="numeric"
                               errorOrTruncationOperation="Conversion"
                               errorRowDisposition="FailComponent"
                               externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[TotalMembers]"
-                              length="255"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[TotalMembers]"
                               name="TotalMembers"
+                              precision="38"
+                              scale="19"
                               truncationRowDisposition="FailComponent" />
                             <outputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[TotalProspects]"
@@ -1021,6 +1045,16 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[TotalProspects]"
                               name="TotalProspects"
                               truncationRowDisposition="FailComponent" />
+                            <outputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[ReportPeriod]"
+                              dataType="wstr"
+                              errorOrTruncationOperation="Conversion"
+                              errorRowDisposition="FailComponent"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[ReportPeriod]"
+                              length="255"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[ReportPeriod]"
+                              name="ReportPeriod"
+                              truncationRowDisposition="FailComponent" />
                           </outputColumns>
                           <externalMetadataColumns
                             isUsed="True">
@@ -1029,6 +1063,11 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               dataType="wstr"
                               length="255"
                               name="RowNumber" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[Campus]"
+                              dataType="wstr"
+                              length="255"
+                              name="Campus" />
                             <externalMetadataColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[GroupType]"
                               dataType="wstr"
@@ -1044,6 +1083,11 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               dataType="wstr"
                               length="255"
                               name="GroupLeaders" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[Active]"
+                              dataType="wstr"
+                              length="255"
+                              name="Active" />
                             <externalMetadataColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[Geolocation]"
                               dataType="wstr"
@@ -1111,11 +1155,6 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               length="255"
                               name="UniqueAttenders" />
                             <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[AverageAttendance]"
-                              dataType="wstr"
-                              length="255"
-                              name="AverageAttendance" />
-                            <externalMetadataColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[TotalLeaders]"
                               dataType="numeric"
                               name="TotalLeaders"
@@ -1123,14 +1162,20 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               scale="19" />
                             <externalMetadataColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[TotalMembers]"
-                              dataType="wstr"
-                              length="255"
-                              name="TotalMembers" />
+                              dataType="numeric"
+                              name="TotalMembers"
+                              precision="38"
+                              scale="19" />
                             <externalMetadataColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[TotalProspects]"
                               dataType="wstr"
                               length="255"
                               name="TotalProspects" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].ExternalColumns[ReportPeriod]"
+                              dataType="wstr"
+                              length="255"
+                              name="ReportPeriod" />
                           </externalMetadataColumns>
                         </output>
                         <output
@@ -1144,6 +1189,12 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               length="255"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[RowNumber]"
                               name="RowNumber" />
+                            <outputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[Campus]"
+                              dataType="wstr"
+                              length="255"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[Campus]"
+                              name="Campus" />
                             <outputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[GroupType]"
                               dataType="wstr"
@@ -1162,6 +1213,12 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               length="255"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[GroupLeaders]"
                               name="GroupLeaders" />
+                            <outputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[Active]"
+                              dataType="wstr"
+                              length="255"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[Active]"
+                              name="Active" />
                             <outputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[Geolocation]"
                               dataType="wstr"
@@ -1242,12 +1299,6 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[UniqueAttenders]"
                               name="UniqueAttenders" />
                             <outputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[AverageAttendance]"
-                              dataType="wstr"
-                              length="255"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[AverageAttendance]"
-                              name="AverageAttendance" />
-                            <outputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[TotalLeaders]"
                               dataType="numeric"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[TotalLeaders]"
@@ -1256,16 +1307,23 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               scale="19" />
                             <outputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[TotalMembers]"
-                              dataType="wstr"
-                              length="255"
+                              dataType="numeric"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[TotalMembers]"
-                              name="TotalMembers" />
+                              name="TotalMembers"
+                              precision="38"
+                              scale="19" />
                             <outputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[TotalProspects]"
                               dataType="wstr"
                               length="255"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[TotalProspects]"
                               name="TotalProspects" />
+                            <outputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[ReportPeriod]"
+                              dataType="wstr"
+                              length="255"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[ReportPeriod]"
+                              name="ReportPeriod" />
                             <outputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Error Output].Columns[ErrorCode]"
                               dataType="i4"
@@ -1362,31 +1420,19 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                           name="ADO NET Destination Input">
                           <inputColumns>
                             <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[TenantID]"
-                              cachedDataType="i4"
-                              cachedName="TenantID"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[TenantID]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Derived Column.Outputs[Derived Column Output].Columns[TenantID]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[ExecutionID]"
-                              cachedDataType="wstr"
-                              cachedLength="38"
-                              cachedName="ExecutionID"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[ExecutionID]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Derived Column.Outputs[Derived Column Output].Columns[ExecutionID]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[InsertedDateTime]"
-                              cachedDataType="dbTimeStamp"
-                              cachedName="InsertedDateTime"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[InsertedDateTime]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Derived Column.Outputs[Derived Column Output].Columns[InsertedDateTime]" />
-                            <inputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[RowNumber]"
                               cachedDataType="wstr"
                               cachedLength="255"
                               cachedName="RowNumber"
                               externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[RowNumber]"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[RowNumber]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[Campus]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Campus"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Campus]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[Campus]" />
                             <inputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[GroupType]"
                               cachedDataType="wstr"
@@ -1402,19 +1448,12 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[GroupName]"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[GroupName]" />
                             <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[GroupLeaders]"
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[Active]"
                               cachedDataType="wstr"
                               cachedLength="255"
-                              cachedName="GroupLeaders"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[GroupLeaders]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[GroupLeaders]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[Geolocation]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Geolocation"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Geolocation]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[Geolocation]" />
+                              cachedName="Active"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Active]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[Active]" />
                             <inputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[Latitude]"
                               cachedDataType="wstr"
@@ -1458,13 +1497,6 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[PostalCodeFull]"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[PostalCodeFull]" />
                             <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[PostalCode5]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="PostalCode5"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[PostalCode5]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[PostalCode5]" />
-                            <inputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[TotalGroups]"
                               cachedDataType="numeric"
                               cachedName="TotalGroups"
@@ -1501,13 +1533,6 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[UniqueAttenders]"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[UniqueAttenders]" />
                             <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[AverageAttendance]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="AverageAttendance"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[AverageAttendance]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[AverageAttendance]" />
-                            <inputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[TotalLeaders]"
                               cachedDataType="numeric"
                               cachedName="TotalLeaders"
@@ -1517,9 +1542,10 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[TotalLeaders]" />
                             <inputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[TotalMembers]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
+                              cachedDataType="numeric"
                               cachedName="TotalMembers"
+                              cachedPrecision="38"
+                              cachedScale="19"
                               externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[TotalMembers]"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[TotalMembers]" />
                             <inputColumn
@@ -1529,6 +1555,32 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               cachedName="TotalProspects"
                               externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[TotalProspects]"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[TotalProspects]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[ReportPeriod]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="ReportPeriod"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[ReportPeriod]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source.Outputs[ADO NET Source Output].Columns[ReportPeriod]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[TenantID]"
+                              cachedDataType="i4"
+                              cachedName="TenantID"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[TenantID]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Derived Column.Outputs[Derived Column Output].Columns[TenantID]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[ExecutionID]"
+                              cachedDataType="wstr"
+                              cachedLength="38"
+                              cachedName="ExecutionID"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[ExecutionID]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Derived Column.Outputs[Derived Column Output].Columns[ExecutionID]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].Columns[InsertedDateTime]"
+                              cachedDataType="dbTimeStamp"
+                              cachedName="InsertedDateTime"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[InsertedDateTime]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Derived Column.Outputs[Derived Column Output].Columns[InsertedDateTime]" />
                           </inputColumns>
                           <externalMetadataColumns
                             isUsed="True">
@@ -1537,6 +1589,11 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               dataType="wstr"
                               length="255"
                               name="RowNumber" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Campus]"
+                              dataType="wstr"
+                              length="255"
+                              name="Campus" />
                             <externalMetadataColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[GroupType]"
                               dataType="wstr"
@@ -1548,15 +1605,10 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               length="255"
                               name="GroupName" />
                             <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[GroupLeaders]"
-                              dataType="wstr"
-                              length="500"
-                              name="GroupLeaders" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Geolocation]"
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Active]"
                               dataType="wstr"
                               length="255"
-                              name="Geolocation" />
+                              name="Active" />
                             <externalMetadataColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Latitude]"
                               dataType="wstr"
@@ -1588,11 +1640,6 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               length="255"
                               name="PostalCodeFull" />
                             <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[PostalCode5]"
-                              dataType="wstr"
-                              length="255"
-                              name="PostalCode5" />
-                            <externalMetadataColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[TotalGroups]"
                               dataType="wstr"
                               length="255"
@@ -1618,11 +1665,6 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               length="255"
                               name="UniqueAttenders" />
                             <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[AverageAttendance]"
-                              dataType="wstr"
-                              length="255"
-                              name="AverageAttendance" />
-                            <externalMetadataColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[TotalLeaders]"
                               dataType="wstr"
                               length="255"
@@ -1637,6 +1679,11 @@ WHERE([Groups Progress Report] IS NOT NULL);</property>
                               dataType="wstr"
                               length="255"
                               name="TotalProspects" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[ReportPeriod]"
+                              dataType="wstr"
+                              length="255"
+                              name="ReportPeriod" />
                             <externalMetadataColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[TenantID]"
                               dataType="i4"
@@ -4944,133 +4991,6 @@ namespace st_f3ccad4ed8a249058b8eb3b0c6f52a90
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Resources.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_f3ccad4ed8a249058b8eb3b0c6f52a90.Properties.Resources.get_ResourceManager():System.Resources.Resou" +
-    "rceManager")]
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_f3ccad4ed8a249058b8eb3b0c6f52a90.Properties.Resources.get_Culture():System.Globalization.CultureIn" +
-    "fo")]
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_f3ccad4ed8a249058b8eb3b0c6f52a90.Properties.Resources.set_Culture(System.Globalization.CultureInfo" +
-    "):Void")]
-
-namespace st_f3ccad4ed8a249058b8eb3b0c6f52a90.Properties {
-    
-    
-    /// <summary>
-    ///   A strongly-typed resource class, for looking up localized strings, etc.
-    /// </summary>
-    // This class was auto-generated by the StronglyTypedResourceBuilder
-    // class via a tool like ResGen or Visual Studio.
-    // To add or remove a member, edit your .ResX file then rerun ResGen
-    // with the /str option, or rebuild your VS project.
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-    internal class Resources {
-        
-        private static global::System.Resources.ResourceManager resourceMan;
-        
-        private static global::System.Globalization.CultureInfo resourceCulture;
-        
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
-        }
-        
-        /// <summary>
-        ///   Returns the cached ResourceManager instance used by this class.
-        /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if ((resourceMan == null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("st_f3ccad4ed8a249058b8eb3b0c6f52a90.Properties.Resources", typeof(Resources).Assembly);
-                    resourceMan = temp;
-                }
-                return resourceMan;
-            }
-        }
-        
-        /// <summary>
-        ///   Overrides the current thread's CurrentUICulture property for all
-        ///   resource lookups using this strongly typed resource class.
-        /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
-            get {
-                return resourceCulture;
-            }
-            set {
-                resourceCulture = value;
-            }
-        }
-    }
-}]]></ProjectItem>
-              <ProjectItem
-                Name="Project"
-                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
-<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
-	<msb:PropertyGroup>
-		<msb:CodeName>st_f3ccad4ed8a249058b8eb3b0c6f52a90</msb:CodeName>
-		<msb:Language>msBuild</msb:Language>
-		<msb:DisplayName>st_f3ccad4ed8a249058b8eb3b0c6f52a90</msb:DisplayName>
-		<msb:ProjectId>{8B1EF14F-C296-4A56-A380-96B8E0649AE5}</msb:ProjectId>
-	</msb:PropertyGroup>
-	<msb:ItemGroup>
-		<msb:Project Include="st_f3ccad4ed8a249058b8eb3b0c6f52a90.csproj"/>
-		<msb:File Include="Properties\AssemblyInfo.cs"/>
-		<msb:File Include="Properties\Settings.settings"/>
-		<msb:File Include="Properties\Resources.resx"/>
-		<msb:File Include="Properties\Resources.Designer.cs"/>
-		<msb:File Include="Properties\Settings.Designer.cs"/>
-		<msb:File Include="ScriptMain.cs"/>
-	</msb:ItemGroup>
-</c:Project>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_f3ccad4ed8a249058b8eb3b0c6f52a90")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_f3ccad4ed8a249058b8eb3b0c6f52a90")]
-[assembly: AssemblyCopyright("Copyright @  2015")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
-              <ProjectItem
                 Name="st_f3ccad4ed8a249058b8eb3b0c6f52a90.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -5170,6 +5090,133 @@ using System.Runtime.CompilerServices;
     </VisualStudio>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
+              <ProjectItem
+                Name="Project"
+                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
+	<msb:PropertyGroup>
+		<msb:CodeName>st_f3ccad4ed8a249058b8eb3b0c6f52a90</msb:CodeName>
+		<msb:Language>msBuild</msb:Language>
+		<msb:DisplayName>st_f3ccad4ed8a249058b8eb3b0c6f52a90</msb:DisplayName>
+		<msb:ProjectId>{8B1EF14F-C296-4A56-A380-96B8E0649AE5}</msb:ProjectId>
+	</msb:PropertyGroup>
+	<msb:ItemGroup>
+		<msb:Project Include="st_f3ccad4ed8a249058b8eb3b0c6f52a90.csproj"/>
+		<msb:File Include="Properties\AssemblyInfo.cs"/>
+		<msb:File Include="Properties\Settings.settings"/>
+		<msb:File Include="Properties\Resources.resx"/>
+		<msb:File Include="Properties\Resources.Designer.cs"/>
+		<msb:File Include="Properties\Settings.Designer.cs"/>
+		<msb:File Include="ScriptMain.cs"/>
+	</msb:ItemGroup>
+</c:Project>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_f3ccad4ed8a249058b8eb3b0c6f52a90")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_f3ccad4ed8a249058b8eb3b0c6f52a90")]
+[assembly: AssemblyCopyright("Copyright @  2015")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Resources.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_f3ccad4ed8a249058b8eb3b0c6f52a90.Properties.Resources.get_ResourceManager():System.Resources.Resou" +
+    "rceManager")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_f3ccad4ed8a249058b8eb3b0c6f52a90.Properties.Resources.get_Culture():System.Globalization.CultureIn" +
+    "fo")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_f3ccad4ed8a249058b8eb3b0c6f52a90.Properties.Resources.set_Culture(System.Globalization.CultureInfo" +
+    "):Void")]
+
+namespace st_f3ccad4ed8a249058b8eb3b0c6f52a90.Properties {
+    
+    
+    /// <summary>
+    ///   A strongly-typed resource class, for looking up localized strings, etc.
+    /// </summary>
+    // This class was auto-generated by the StronglyTypedResourceBuilder
+    // class via a tool like ResGen or Visual Studio.
+    // To add or remove a member, edit your .ResX file then rerun ResGen
+    // with the /str option, or rebuild your VS project.
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    internal class Resources {
+        
+        private static global::System.Resources.ResourceManager resourceMan;
+        
+        private static global::System.Globalization.CultureInfo resourceCulture;
+        
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        internal Resources() {
+        }
+        
+        /// <summary>
+        ///   Returns the cached ResourceManager instance used by this class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if ((resourceMan == null)) {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("st_f3ccad4ed8a249058b8eb3b0c6f52a90.Properties.Resources", typeof(Resources).Assembly);
+                    resourceMan = temp;
+                }
+                return resourceMan;
+            }
+        }
+        
+        /// <summary>
+        ///   Overrides the current thread's CurrentUICulture property for all
+        ///   resource lookups using this strongly typed resource class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
+                return resourceCulture;
+            }
+            set {
+                resourceCulture = value;
+            }
+        }
+    }
+}]]></ProjectItem>
               <BinaryItem
                 Name="st_f3ccad4ed8a249058b8eb3b0c6f52a90.dll">TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1v
@@ -5476,7 +5523,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_DfLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[H4sIAAAAAAAEAO2XXW/aMBSG/4qV6zSJEwKDAVIFoatEP9QgbdI6VW5yCFYdO4udlnbaf58JHzMdbL2B3TRX8bF9/Pj4zRu5OyHy4ZOQCqUgacZPFM3hhJMcetY1SR5IBrcjUQJJZiji5J5BOgFOuNpEL4hKZpRnaEQZ3A5HKJqrkiTqbgSMiSc5o8UVh7s4J4ydlaIqZKyIqqTV747Js6jUOZ+KfvesJMVsGUADUpCEqueehZsWmueMy56VsLLmkroPOhc0KYUUU+XE31kM5SOUzjlXkJVEUcEXEZqAdIb1rnTnhUiBOTpOCaMv9aCPRErI79lz763ZasgVUSeXMmPwFrB6mrPcXMQzyuHvS28tsxlpzZQqOq4rkxnkRDr5ZmYicveJ8unc9T2v6c5JznR1L/WOVwWN6YsGxa3AbvgWOk8Pfba3n0uqACmBdP0V5XUVLTQRxRimqmcFTSe0G9h3Qgu5O0h9v3Us0vhmgOLBejg6VQp4SngC6Ms4NpBDJ/SMB9vYa+3Dx0H7WPjRPAGGYlGVCZi0oe3jPXBh41hwQ/21PUKKBoJVuXn+Dd/2vfbe0/f8oxFG8QT9Q6z4gx1gvIKN0mwNe3g855qomfy6XUZ0VamiUt9MQty2/XCBaAI6g0q7Sb+79KlO3UI6cakGgnNIlCh71o+1vXQuK8Z+WnoHqdHt2U3PWk5aNLy6f/EW+vVqZm5trlkOXMlNeBXQ3Ezn01U1nN2YPdaGuBq6lX5Rb3dfqt9drxffiuvmnxUxImNyD0yuQ/rdgHW3J6+HGrH/o4fT4RW6jCarr36XHnzstEK7GRxAD43G4mR2KCJoHVAPOvm7Gnar4UY8aWeodK2WQkD+KynYQRgcxBrC9m5rwIe1BvxuDW8XA379n8CN9vt/4vhicI37jW6ZNx93fQXr/wLP5NX+jQ0AAA==]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[H4sIAAAAAAAEAO2XXW/aMBSG/4qV6zSJHQKDAVLFR1eJ0qpB2qR1qtzkEKw6Noudlnbaf58JgYUOtt6Atqm5il/bx4+P3xzF7QlV9x+k0igGxRJxolkKJ4Km0LGuaHRPE7gZygxoNEMDQe84xBMQVOiNekF1NGMiQUPG4aY/RIOFzmikb4fAuXxUMza/FHAbppTzs0zmcxVqqnNlddsj+iRzfS6msts+y+h8thJQj85pxPRTx8J1Cy1SLlTHinhWcCnTB60LFmVSyal2wq88hOwBMudcaEgyqpkUS4VFoJx+sSvTeSFj4I7RGeXsuRj0nioF6R1/6rw2WgFZErVSpRIOrwErpjmrzQ1EwgT8fumtZTYjrZnW85brqmgGKVVOupkZydR9ZGK6cInn1d0FTbnJ7tjsuExoyJ4NKCENu0YsdB4f+mxvwuseCnvr4ehUaxAxFRGgT6PQQhM5H8FUd6zACbzKg23sNZzAQu4OfNzwj4X/MWMakJbI2EczUZigQu3XncCuYbKX1G8ei3SwiICjUOZZBNW8BjbBe+CC2rHg+uZre4AY9STP02oCa8QmXnNf+ohHjkY4CCfoD6eN39k+xiXsIE7WsIfHc66onqnP1/LRpDAXGl3mem5WJl+qeATbfuAbviqd08tNKem2V0WqVbSQiZrpnhQCIi2zjvVtXVta45zz75bBjyvdnh00rdWkZcMr+gsZF6tVY5vKmqQgtNrIpWDOnpt4JqWVsl6ZPTLVsBy6FX6ZbHdfqJ9dLxff0k3z14xUlBG9A67WknmvwLrbk9dDK9pfYga8ZQbctHGteRAz1L3dZiCHNQN5M8NeM2wX2NIRL/1Ays/1zQ//vR9O+5doPJiU/wO7/ECw0wjsun8AP9Rqy5PZ4Qi/cUA/mOD/ghvcyv3GtKo3H3d9Bev+ADFeT36NDQAA]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -5572,7 +5619,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_PkgLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -5592,7 +5639,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_TaskList">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{DD5BE7A7-58C9-460B-B185-8F6E82DAFE46}" typ="ForEachLoopContainer" p="" name="Foreach EnabledTenant" on="1"  tag1="User::TenantID"/&gt;&lt;tsk id="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" typ="ForEachLoopContainer" p="{DD5BE7A7-58C9-460B-B185-8F6E82DAFE46}" name="Foreach Matching File" on="1"  tag1="User::SourceFileName"/&gt;&lt;pc id="{C7E7EDD9-E150-45BC-AEA0-6D93002D9622}" op="2" and="True" val="0" task1="{0EC57991-46EE-499B-A919-07D7B128334A}" task2="{50261825-1084-4E6E-921D-572383AAA297}" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" refId="Package\Foreach EnabledTenant\Foreach Matching File.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{76E80AD4-C675-464C-96FF-45FB089D7061}" op="2" and="True" val="0" task1="{50261825-1084-4E6E-921D-572383AAA297}" task2="{B8E640EA-1524-49D5-9160-55550D6AC747}" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" refId="Package\Foreach EnabledTenant\Foreach Matching File.PrecedenceConstraints[Constraint 1]"/&gt;&lt;tsk id="{50261825-1084-4E6E-921D-572383AAA297}" typ="PipelineTask" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" name="DF Extract_FellowshipOne_SmallGroupsStatus" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column" pid="{50261825-1084-4E6E-921D-572383AAA297}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnrowcount" name="DEST Write to Destination" pid="{50261825-1084-4E6E-921D-572383AAA297}_17" /&gt;&lt;com id="21" dir="SRC"  typ="srcdatareader" name="Excel Source" pid="{50261825-1084-4E6E-921D-572383AAA297}_21" /&gt;&lt;com id="96" dir="TRAN"  typ="trnrowcount" name="SRC SC Extract Attendance XLS" pid="{50261825-1084-4E6E-921D-572383AAA297}_96" /&gt;&lt;com id="100" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="Write to Destination" pid="{50261825-1084-4E6E-921D-572383AAA297}_100" /&gt;&lt;dp id="159" val="0"  ann="" c1="21" c2="96"/&gt;&lt;dp id="160" val="0"  ann="" c1="2" c2="17"/&gt;&lt;dp id="161" val="0"  ann="" c1="96" c2="2"/&gt;&lt;dp id="162" val="0"  ann="" c1="17" c2="100"/&gt;&lt;/tsk&gt;&lt;tsk id="{B8E640EA-1524-49D5-9160-55550D6AC747}" typ="FileSystemTask" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" name="Move To Complete" on="1" /&gt;&lt;tsk id="{0EC57991-46EE-499B-A919-07D7B128334A}" typ="FileSystemTask" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" name="Move To Processing" on="1" /&gt;&lt;tsk id="{31B34E8B-E37A-4C0C-9FA4-78E1FC51069D}" typ="SQLTask" p="" name="Get Enabled Tenants" on="1" /&gt;&lt;tsk id="{0227A5EB-BCD3-4C59-8A60-B31EB2331FC6}" typ="SQLTask" p="" name="TRUNCATE ExtractFellowshipOne_SmallGroupStatus" on="1" /&gt;&lt;pc id="{12282919-53D3-442C-B736-5EAD61EEE0C8}" op="2" and="True" val="0" task1="{31B34E8B-E37A-4C0C-9FA4-78E1FC51069D}" task2="{DD5BE7A7-58C9-460B-B185-8F6E82DAFE46}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{97BD02B5-1F23-4C5F-9430-2A6269FellowshipOne42A1}" op="2" and="True" val="0" task1="{0227A5EB-BCD3-4C59-8A60-B31EB2331FC6}" task2="{31B34E8B-E37A-4C0C-9FA4-78E1FC51069D}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{DD5BE7A7-58C9-460B-B185-8F6E82DAFE46}" typ="ForEachLoopContainer" p="" name="Foreach EnabledTenant" on="1"  tag1="User::TenantID"/&gt;&lt;tsk id="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" typ="ForEachLoopContainer" p="{DD5BE7A7-58C9-460B-B185-8F6E82DAFE46}" name="Foreach Matching File" on="1"  tag1="User::SourceFileName"/&gt;&lt;pc id="{C7E7EDD9-E150-45BC-AEA0-6D93002D9622}" op="2" and="True" val="0" task1="{0EC57991-46EE-499B-A919-07D7B128334A}" task2="{50261825-1084-4E6E-921D-572383AAA297}" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" refId="Package\Foreach EnabledTenant\Foreach Matching File.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{76E80AD4-C675-464C-96FF-45FB089D7061}" op="2" and="True" val="0" task1="{50261825-1084-4E6E-921D-572383AAA297}" task2="{B8E640EA-1524-49D5-9160-55550D6AC747}" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" refId="Package\Foreach EnabledTenant\Foreach Matching File.PrecedenceConstraints[Constraint 1]"/&gt;&lt;tsk id="{50261825-1084-4E6E-921D-572383AAA297}" typ="PipelineTask" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" name="DF Extract_FellowshipOne_SmallGroupsStatus" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column" pid="{50261825-1084-4E6E-921D-572383AAA297}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnrowcount" name="DEST Write to Destination" pid="{50261825-1084-4E6E-921D-572383AAA297}_17" /&gt;&lt;com id="21" dir="SRC"  typ="srcdatareader" name="Excel Source" pid="{50261825-1084-4E6E-921D-572383AAA297}_21" /&gt;&lt;com id="102" dir="TRAN"  typ="trnrowcount" name="SRC SC Extract Attendance XLS" pid="{50261825-1084-4E6E-921D-572383AAA297}_102" /&gt;&lt;com id="106" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="Write to Destination" pid="{50261825-1084-4E6E-921D-572383AAA297}_106" /&gt;&lt;dp id="163" val="0"  ann="" c1="21" c2="102"/&gt;&lt;dp id="164" val="0"  ann="" c1="2" c2="17"/&gt;&lt;dp id="165" val="0"  ann="" c1="102" c2="2"/&gt;&lt;dp id="166" val="0"  ann="" c1="17" c2="106"/&gt;&lt;/tsk&gt;&lt;tsk id="{B8E640EA-1524-49D5-9160-55550D6AC747}" typ="FileSystemTask" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" name="Move To Complete" on="1" /&gt;&lt;tsk id="{0EC57991-46EE-499B-A919-07D7B128334A}" typ="FileSystemTask" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" name="Move To Processing" on="1" /&gt;&lt;tsk id="{31B34E8B-E37A-4C0C-9FA4-78E1FC51069D}" typ="SQLTask" p="" name="Get Enabled Tenants" on="1" /&gt;&lt;tsk id="{0227A5EB-BCD3-4C59-8A60-B31EB2331FC6}" typ="SQLTask" p="" name="TRUNCATE ExtractFellowshipOne_SmallGroupStatus" on="1" /&gt;&lt;pc id="{12282919-53D3-442C-B736-5EAD61EEE0C8}" op="2" and="True" val="0" task1="{31B34E8B-E37A-4C0C-9FA4-78E1FC51069D}" task2="{DD5BE7A7-58C9-460B-B185-8F6E82DAFE46}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{97BD02B5-1F23-4C5F-9430-2A6269FellowshipOne42A1}" op="2" and="True" val="0" task1="{0227A5EB-BCD3-4C59-8A60-B31EB2331FC6}" task2="{31B34E8B-E37A-4C0C-9FA4-78E1FC51069D}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -8884,13 +8931,13 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       <GraphLayout
         Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="173,42"
-          Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination"
-          TopLeft="36.5,412.5" />
-        <NodeLayout
           Size="227,42"
           Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\SRC SC Extract Attendance XLS"
           TopLeft="5.50000000000001,107.5" />
+        <NodeLayout
+          Size="173,42"
+          Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Write to Destination"
+          TopLeft="36.5,412.5" />
         <NodeLayout
           Size="139,42"
           Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\Excel Source"
@@ -8903,50 +8950,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Size="202,42"
           Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus\DEST Write to Destination"
           TopLeft="18,311.5" />
-        <EdgeLayout
-          Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus.Paths[Derived Column Output]"
-          TopLeft="119,251.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus.Paths[ADO NET Source Output]"
-          TopLeft="121.75,63">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,44.5"
-              Start="0,0"
-              End="0,37">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,37" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
         <EdgeLayout
           Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus.Paths[Row Count Output 2]"
           TopLeft="121,353.5">
@@ -8983,6 +8986,50 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                   Capacity="5">
                   <mssgle:LineSegment
                     End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus.Paths[Derived Column Output]"
+          TopLeft="119,251.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_SmallGroupsStatus.Paths[ADO NET Source Output]"
+          TopLeft="121.75,63">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,44.5"
+              Start="0,0"
+              End="0,37">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,37" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
