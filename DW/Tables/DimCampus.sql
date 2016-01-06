@@ -7,9 +7,9 @@
   , Latitude		   FLOAT NULL
   , Longitude		   FLOAT NULL
   , LocationGeographgy GEOGRAPHY NULL
-  , [StartDateTime]    DATETIME NOT NULL
-  , [EndDateTime]      DATETIME NULL
-  , [Active]           BIT NOT NULL
+  , StartDateTime    DATETIME NOT NULL
+  , EndDateTime      DATETIME NULL
+  , Active           BIT NOT NULL
    --ETL Specific Columns
   , [ExecutionID]      VARCHAR(50) NOT NULL
   , [InsertedDateTime] DATETIME DEFAULT(GETUTCDATE()) NULL

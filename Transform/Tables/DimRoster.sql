@@ -4,6 +4,9 @@
   , RosterFolder     NVARCHAR(255)
   , Roster           NVARCHAR(255)
   , BreakoutGroup    NVARCHAR(255)
+  , StartDateTime    DATETIME NOT NULL
+  , EndDateTime      DATETIME NULL
+  , Active           BIT NOT NULL
 
     --ETL Specific Columns
   , ExecutionID      VARCHAR(50) NOT NULL

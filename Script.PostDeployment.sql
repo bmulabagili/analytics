@@ -263,6 +263,22 @@ UPDATE SET
     , Target.UpdatedDateTime   = Source.UpdatedDateTime
     , Target.HashValue		   = Source.HashValue
 ;
+--handle the 'CS - Worship  & Production' for each campus insert
+INSERT INTO DW.DimMinistry
+SELECT 
+      ROW_NUMBER() OVER (ORDER BY CampusID) + 1 AS MinistryID
+    , 3 AS TenantID
+    , 'CS - Worship  & Production' AS Name
+    , CampusID
+    , -1 AS ExecutionID
+    , GETUTCDATE() AS InsertedDateTime
+    , GETUTCDATE() AS UpdatedDateTime
+    , '' AS HashValue
+FROM DW.DimCampus
+;
+
+
+
 
 --DimActivity
 MERGE INTO DW.DimActivity AS Target
