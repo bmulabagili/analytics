@@ -1,6 +1,6 @@
-﻿CREATE TABLE [DW].[DimSmallGroup]
+﻿CREATE TABLE [DW].[DimSmallGroupDetail]
 (
-      SmallGroupID INT NOT NULL
+      SmallGroupDetailID INT NOT NULL
     , TenantID INT NOT NULL
     , CampusID INT NULL
     , GroupType NVARCHAR(255) NULL
@@ -18,8 +18,8 @@
   , [InsertedDateTime] DATETIME DEFAULT(GETUTCDATE()) NULL
   , [UpdatedDateTime]  DATETIME DEFAULT(GETUTCDATE()) NULL
   , [Hashvalue]        NVARCHAR(64) NOT NULL
-  , CONSTRAINT [pk_DWDimSmallGroup__SmallGroupID_TenantID] 
-	   PRIMARY KEY CLUSTERED(SmallGroupID, TenantID)
+  , CONSTRAINT [pk_DWDimSmallGroupDetail__SmallGroupDetailID_TenantID] 
+	   PRIMARY KEY CLUSTERED(SmallGroupDetailID, TenantID)
   , CONSTRAINT [FK_DWDimSmallGroup_Tenant__TenantID] 
 	   FOREIGN KEY([TenantID]) 
 	   REFERENCES [dbo].[Tenant]( [TenantID])

@@ -1,6 +1,6 @@
-﻿CREATE TABLE [Transform].[DimSmallGroup]
+﻿CREATE TABLE [Transform].[DimSmallGroupDetail]
 (
-      SmallGroupID INT NOT NULL
+      SmallGroupDetailID INT NOT NULL
     , TenantID INT NOT NULL
     , CampusID INT NULL
     , GroupType NVARCHAR(255) NULL
@@ -22,8 +22,8 @@
     
     --Keys should get enforced at this point.
 
-  , CONSTRAINT [PK_TransformDimSmallGroup__SmallGroupID_TenantID] 
-	   PRIMARY KEY CLUSTERED(SmallGroupID, TenantID)
+  , CONSTRAINT [PK_TransformDimSmallDetailGroup__SmallGroupDetailID_TenantID] 
+	   PRIMARY KEY CLUSTERED(SmallGroupDetailID, TenantID)
   , CONSTRAINT [FK_TransformDimSmallGroup_Tenant__TenantID] 
 	   FOREIGN KEY([TenantID]) 
 	   REFERENCES [dbo].[Tenant]( [TenantID])
