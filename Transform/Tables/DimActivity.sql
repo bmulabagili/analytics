@@ -4,7 +4,9 @@
   , Name             NVARCHAR(255) NOT NULL
   , MinistryID       INT NOT NULL
   , CampusID         INT NOT NULL 
-
+  , StartDateTime    DATETIME NOT NULL
+  , EndDateTime      DATETIME NULL
+  , Active           BIT NOT NULL
     --ETL Specific Columns
   , ExecutionID      VARCHAR(50) NOT NULL
   , ETLActionID      INT NOT NULL

@@ -1,4 +1,4 @@
-﻿
+﻿SET NOCOUNT ON;
 /*
 Post-Deployment Script Template							
 --------------------------------------------------------------------------------------
@@ -246,14 +246,14 @@ UPDATE SET
 --DimMinistry
 MERGE INTO DW.DimMinistry AS Target
 USING ( VALUES
-    (-1, 3, 'Undefined', -1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    (-1, 3, 'Undefined', -1, '1/1/1900', NULL, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
 ) AS Source
-(MinistryID, TenantID, Name, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    (MinistryID, TenantID, Name, CampusID, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
  ON Target.MinistryID = Source.MinistryID
     AND Target.TenantID = Source.TenantID
 WHEN NOT MATCHED BY Target THEN
-    INSERT (MinistryID, TenantID, Name, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
-    VALUES (MinistryID, TenantID, Name, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    INSERT (MinistryID, TenantID, Name, CampusID, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    VALUES (MinistryID, TenantID, Name, CampusID, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 WHEN MATCHED THEN
 UPDATE SET
       Target.Name       = Source.Name
@@ -270,27 +270,28 @@ SELECT
     , 3 AS TenantID
     , 'CS - Worship  & Production' AS Name
     , CampusID
+    , '1/1/1900' AS StartDateTime
+    , NULL AS EndDateTime
+    , 1  AS Active
     , -1 AS ExecutionID
     , GETUTCDATE() AS InsertedDateTime
     , GETUTCDATE() AS UpdatedDateTime
     , '' AS HashValue
-FROM DW.DimCampus
+FROM DW.DimCampus 
 ;
-
-
 
 
 --DimActivity
 MERGE INTO DW.DimActivity AS Target
 USING ( VALUES
-    (-1, 3, 'Undefined', -1, -1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    (-1, 3, 'Undefined', -1, -1, '1/1/1900', NULL, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
 ) AS Source
-(ActivityID, TenantID, Name, MinistryID, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+(ActivityID, TenantID, Name, MinistryID, CampusID, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
  ON Target.ActivityID = Source.ActivityID
     AND Target.TenantID = Source.TenantID
 WHEN NOT MATCHED BY Target THEN
-    INSERT (ActivityID, TenantID, Name, MinistryID, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
-    VALUES (ActivityID, TenantID, Name, MinistryID, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    INSERT (ActivityID, TenantID, Name, MinistryID, CampusID, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    VALUES (ActivityID, TenantID, Name, MinistryID, CampusID, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 WHEN MATCHED THEN
 UPDATE SET
       Target.Name       = Source.Name
@@ -305,14 +306,14 @@ UPDATE SET
 --DimRoster
 MERGE INTO DW.DimRoster AS Target
 USING ( VALUES
-    (-1, 3, 'Undefined', 'Undefined', 'Undefined', -1, GETUTCDATE(), GETUTCDATE(), '')
+    (-1, 3, 'Undefined', 'Undefined', 'Undefined', '1/1/1900', NULL, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
 ) AS Source
-(RosterID, TenantID, RosterFolder, Roster, BreakoutGroup, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+(RosterID, TenantID, RosterFolder, Roster, BreakoutGroup, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
  ON Target.RosterID = Source.RosterID
     AND Target.TenantID = Source.TenantID
 WHEN NOT MATCHED BY Target THEN
-    INSERT (RosterID, TenantID, RosterFolder, Roster, BreakoutGroup, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
-    VALUES (RosterID, TenantID, RosterFolder, Roster, BreakoutGroup, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    INSERT (RosterID, TenantID, RosterFolder, Roster, BreakoutGroup, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    VALUES (RosterID, TenantID, RosterFolder, Roster, BreakoutGroup, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 WHEN MATCHED THEN
 UPDATE SET
       Target.RosterFolder       = Source.RosterFolder

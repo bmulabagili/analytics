@@ -1,4 +1,4 @@
-﻿CREATE TABLE [Extract].[FellowshipOne_FTVChurchwideService](
+﻿CREATE TABLE [Extract].[FellowshipOne_FTV](
     [RowNumber]         NVARCHAR(255) NULL 
   , [Assigned]          NVARCHAR(255) NULL
   , [ActivityType]      NVARCHAR(255) NULL
@@ -36,5 +36,5 @@
 );
 GO
 
-CREATE CLUSTERED INDEX [CIX_ExtractFellowshipOneFTVChurchwideService_ExecutionID] ON [Extract].[FellowshipOne_FTVChurchwideService]([ExecutionID] ASC);
+CREATE CLUSTERED INDEX [CIX_ExtractFellowshipOneFTV_ExecutionID] ON [Extract].[FellowshipOne_FTV]([ExecutionID] ASC);
 GO
