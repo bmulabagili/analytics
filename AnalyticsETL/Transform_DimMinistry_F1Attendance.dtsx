@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Transform_DimMinistry_F1Attendance"
   DTS:PackageType="5"
-  DTS:VersionBuild="107"
-  DTS:VersionGUID="{26FD612D-9200-45E9-AF4F-7FFB5DD7C3DD}">
+  DTS:VersionBuild="109"
+  DTS:VersionGUID="{C56DAC1A-6A24-4C88-996B-A33090760638}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:LogProviders>
@@ -957,13 +957,13 @@
                           containsID="true"
                           dataType="System.String"
                           description="Derived Column Expression"
-                          name="Expression">#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[StartDateTime]} &lt; [REPLACENULL](#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]},"1/1/1900") ? #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[StartDateTime]} : [REPLACENULL](#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]},"1/1/1900")</property>
+                          name="Expression">#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[StartDateTime]} &lt; #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]} || [ISNULL](#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}) ? #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[StartDateTime]} : #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}</property>
                         <property
                           containsID="true"
                           dataType="System.String"
                           description="Derived Column Friendly Expression"
                           expressionType="Notify"
-                          name="FriendlyExpression">StartDateTime &lt; REPLACENULL(DWEndDateTime,"1/1/1900") ? StartDateTime : REPLACENULL(DWEndDateTime,"1/1/1900")</property>
+                          name="FriendlyExpression">StartDateTime &lt; DWEndDateTime || ISNULL(DWEndDateTime) ? StartDateTime : DWEndDateTime</property>
                       </properties>
                     </outputColumn>
                     <outputColumn
@@ -979,13 +979,13 @@
                           containsID="true"
                           dataType="System.String"
                           description="Derived Column Expression"
-                          name="Expression">#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} &gt; [REPLACENULL](#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]},"12/31/2099") ? #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} : [REPLACENULL](#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]},"12/31/2099")</property>
+                          name="Expression">#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} &gt; #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]} &amp;&amp; [ISNULL](#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}) ==  FALSE  ? #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} : #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}</property>
                         <property
                           containsID="true"
                           dataType="System.String"
                           description="Derived Column Friendly Expression"
                           expressionType="Notify"
-                          name="FriendlyExpression">EndDateTime &gt; REPLACENULL(DWEndDateTime,"12/31/2099") ? EndDateTime : REPLACENULL(DWEndDateTime,"12/31/2099")</property>
+                          name="FriendlyExpression">EndDateTime &gt; DWEndDateTime &amp;&amp; ISNULL(DWEndDateTime) ==  FALSE  ? EndDateTime : DWEndDateTime</property>
                       </properties>
                     </outputColumn>
                     <outputColumn
@@ -1001,13 +1001,13 @@
                           containsID="true"
                           dataType="System.String"
                           description="Derived Column Expression"
-                          name="Expression">[GETUTCDATE]() &gt; [REPLACENULL](#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]},"12/31/2099") ?  FALSE  :  TRUE </property>
+                          name="Expression">[ISNULL](#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} &gt; #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]} &amp;&amp; [ISNULL](#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}) ==  FALSE  ? #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} : #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}) || [GETUTCDATE]() &lt;= (#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} &gt; #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]} &amp;&amp; [ISNULL](#{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}) ==  FALSE  ? #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} : #{Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}) ?  TRUE  :  FALSE </property>
                         <property
                           containsID="true"
                           dataType="System.String"
                           description="Derived Column Friendly Expression"
                           expressionType="Notify"
-                          name="FriendlyExpression">GETUTCDATE() &gt; REPLACENULL(DWEndDateTime,"12/31/2099") ?  FALSE  :  TRUE </property>
+                          name="FriendlyExpression">ISNULL(EndDateTime &gt; DWEndDateTime &amp;&amp; ISNULL(DWEndDateTime) ==  FALSE  ? EndDateTime : DWEndDateTime) || GETUTCDATE() &lt;= (EndDateTime &gt; DWEndDateTime &amp;&amp; ISNULL(DWEndDateTime) ==  FALSE  ? EndDateTime : DWEndDateTime) ?  TRUE  :  FALSE </property>
                       </properties>
                     </outputColumn>
                   </outputColumns>
@@ -1153,7 +1153,7 @@ where [refTable].[Code] = ? and [refTable].[TenantID] = ?</property>
                   containsID="true"
                   dataType="System.String"
                   description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
-                  name="ParameterMap">#{Package\DF Transform_DimMinistry_F1Attendance\590:invalid};#{Package\DF Transform_DimMinistry_F1Attendance\591:invalid};</property>
+                  name="ParameterMap">#{Package\DF Transform_DimMinistry_F1Attendance\2263:invalid};#{Package\DF Transform_DimMinistry_F1Attendance\2264:invalid};</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -3297,32 +3297,32 @@ GROUP BY
               name="Conditional Split Default Output"
               startId="Package\DF Transform_DimMinistry_F1Attendance\Conditional Split.Outputs[Conditional Split Default Output]" />
             <path
-              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output4]"
+              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output]"
               endId="Package\DF Transform_DimMinistry_F1Attendance\Conditional Split.Inputs[Conditional Split Input]"
               name="Derived Column Output"
               startId="Package\DF Transform_DimMinistry_F1Attendance\Add Defaults.Outputs[Derived Column Output]" />
             <path
-              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output3]"
+              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output1]"
               endId="Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Inputs[Union All Input 3]"
               name="Derived Column Output"
               startId="Package\DF Transform_DimMinistry_F1Attendance\Add Insert Defaults.Outputs[Derived Column Output]" />
             <path
-              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output5]"
+              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output2]"
               endId="Package\DF Transform_DimMinistry_F1Attendance\Union All.Inputs[Union All Input 2]"
               name="Derived Column Output"
               startId="Package\DF Transform_DimMinistry_F1Attendance\Derived Column.Outputs[Derived Column Output]" />
             <path
-              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output]"
+              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output3]"
               endId="Package\DF Transform_DimMinistry_F1Attendance\Union All 1.Inputs[Union All Input 2]"
               name="Derived Column Output"
               startId="Package\DF Transform_DimMinistry_F1Attendance\Set CampusID -1.Outputs[Derived Column Output]" />
             <path
-              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output2]"
+              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output4]"
               endId="Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Inputs[Union All Input 2]"
               name="Derived Column Output"
               startId="Package\DF Transform_DimMinistry_F1Attendance\Add Update Defaults.Outputs[Derived Column Output]" />
             <path
-              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output1]"
+              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output5]"
               endId="Package\DF Transform_DimMinistry_F1Attendance\DEST ADO NET Destination.Inputs[Row Count Input 1]"
               name="Derived Column Output"
               startId="Package\DF Transform_DimMinistry_F1Attendance\Derived Column Type2 Columns.Outputs[Derived Column Output]" />
@@ -3337,15 +3337,15 @@ GROUP BY
               name="HarvestKids"
               startId="Package\DF Transform_DimMinistry_F1Attendance\Conditional Split.Outputs[HarvestKids]" />
             <path
-              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Lookup Match Output]"
-              endId="Package\DF Transform_DimMinistry_F1Attendance\Update or Do Nothing.Inputs[Conditional Split Input]"
-              name="Lookup Match Output"
-              startId="Package\DF Transform_DimMinistry_F1Attendance\Member Exist?.Outputs[Lookup Match Output]" />
-            <path
               refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Lookup Match Output1]"
               endId="Package\DF Transform_DimMinistry_F1Attendance\Union All 1.Inputs[Union All Input 1]"
               name="Lookup Match Output"
               startId="Package\DF Transform_DimMinistry_F1Attendance\Lookup CampusID.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Lookup Match Output]"
+              endId="Package\DF Transform_DimMinistry_F1Attendance\Update or Do Nothing.Inputs[Conditional Split Input]"
+              name="Lookup Match Output"
+              startId="Package\DF Transform_DimMinistry_F1Attendance\Member Exist?.Outputs[Lookup Match Output]" />
             <path
               refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Lookup No Match Output]"
               endId="Package\DF Transform_DimMinistry_F1Attendance\TF Surrogate Key Transform.Inputs[SurrogateKeyInput]"
@@ -3382,20 +3382,20 @@ GROUP BY
               name="SurrogateKeyOutput"
               startId="Package\DF Transform_DimMinistry_F1Attendance\TF Surrogate Key Transform.Outputs[SurrogateKeyOutput]" />
             <path
-              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Union All Output 11]"
+              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Union All Output 12]"
+              endId="Package\DF Transform_DimMinistry_F1Attendance\Derived Column Type2 Columns.Inputs[Derived Column Input]"
+              name="Union All Output 1"
+              startId="Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1]" />
+            <path
+              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Union All Output 1]"
               endId="Package\DF Transform_DimMinistry_F1Attendance\Member Exist?.Inputs[Lookup Input]"
               name="Union All Output 1"
               startId="Package\DF Transform_DimMinistry_F1Attendance\Union All 1.Outputs[Union All Output 1]" />
             <path
-              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Union All Output 12]"
+              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Union All Output 11]"
               endId="Package\DF Transform_DimMinistry_F1Attendance\TF Hash Transform.Inputs[Input]"
               name="Union All Output 1"
               startId="Package\DF Transform_DimMinistry_F1Attendance\Union All.Outputs[Union All Output 1]" />
-            <path
-              refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Union All Output 1]"
-              endId="Package\DF Transform_DimMinistry_F1Attendance\Derived Column Type2 Columns.Inputs[Derived Column Input]"
-              name="Union All Output 1"
-              startId="Package\DF Transform_DimMinistry_F1Attendance\Union All 2.Outputs[Union All Output 1]" />
             <path
               refId="Package\DF Transform_DimMinistry_F1Attendance.Paths[Update]"
               endId="Package\DF Transform_DimMinistry_F1Attendance\Add Update Defaults.Inputs[Derived Column Input]"
@@ -3511,14 +3511,35 @@ GROUP BY
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_b197db85704d4aa9a6f45a8b76730433")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_b197db85704d4aa9a6f45a8b76730433")]
+[assembly: AssemblyCopyright("Copyright @  2015")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -3911,35 +3932,14 @@ namespace st_b197db85704d4aa9a6f45a8b76730433.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_b197db85704d4aa9a6f45a8b76730433")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_b197db85704d4aa9a6f45a8b76730433")]
-[assembly: AssemblyCopyright("Copyright @  2015")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -4707,14 +4707,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_13f76b87f43c4af1aef177e76c1ecf4c")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_13f76b87f43c4af1aef177e76c1ecf4c")]
+[assembly: AssemblyCopyright("Copyright @  2015")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -5289,35 +5310,14 @@ namespace st_13f76b87f43c4af1aef177e76c1ecf4c.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_13f76b87f43c4af1aef177e76c1ecf4c")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_13f76b87f43c4af1aef177e76c1ecf4c")]
-[assembly: AssemblyCopyright("Copyright @  2015")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -5607,14 +5607,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_b9d859973ca74127ae5555144a0f8e1a")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_b9d859973ca74127ae5555144a0f8e1a")]
+[assembly: AssemblyCopyright("Copyright @  2015")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -6065,35 +6086,14 @@ namespace st_b9d859973ca74127ae5555144a0f8e1a.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_b9d859973ca74127ae5555144a0f8e1a")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_b9d859973ca74127ae5555144a0f8e1a")]
-[assembly: AssemblyCopyright("Copyright @  2015")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -6321,14 +6321,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_d4861eacefa9483d89df1f420949df69")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_d4861eacefa9483d89df1f420949df69")]
+[assembly: AssemblyCopyright("Copyright @  2015")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -6721,35 +6742,14 @@ namespace st_d4861eacefa9483d89df1f420949df69.Properties {
   </ProjectExtensions>
 </Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_d4861eacefa9483d89df1f420949df69")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_d4861eacefa9483d89df1f420949df69")]
-[assembly: AssemblyCopyright("Copyright @  2015")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -7136,7 +7136,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_DfLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\DF Transform_DimMinistry_F1Attendance&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\DF Transform_DimMinistry_F1Attendance&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -7232,7 +7232,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_PkgLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[H4sIAAAAAAAEAO1d6XPaSBb/V7Rs1XxCct9HxvEWILGT2lwbe2Y+ZFIpGWSbHZAYSSTxbO3/vk9CgIQOMLE8doKrXAXq7vde9+9dfYnTN5f/8UZxZPzihdEk8J93oj+mmHTOTv9mmo47ujH8YOwZl940+Gx8nkynxijwY3fiG/MwmHthPPEiI75xY2McQNXYcK+ugJ4RLvx4Mksa3rifJkFomebZ6Vt39Lt77RljL5pc+2ZSwfTdmfe8k5UA25fubbCIX/hXwdnpP0N3frN8YAzcuTuaxLfPO6pjfJlN/eh5ZzQN0/YRFHnPXk1GYRAFV7F1/sf03As/eaH1wo+969CNoWfJk8nIiyw75Q6Fr6BnUwueT9zp5M+00o9uFHmzy+nt832ppTJmEj2bRdH11NtHsLSZteyb419PfK+ZdYHNumbnJo7nz05OotGNN3Mja7ZuOQpmJ58n/tWXE4KQOPnizqYwuK+hx9l4nk/+BEEJYl1GOsaL8RqD3+yhcRG6fnQVhLOP9mT2auJPoji8/TjEvTj2/LHrj7yOcRHMX3pXMdBgoksZ6hgnFQywJiUG//SgdBGGwbUbe8a/vFvj3PPGeYoSdwnh1RQJFiWKF+9+fj3oXTgbwXNy5wlz3sWEpISd8fWKcI6U9Tb0Rt7Ygy4OAh+ag6rH0fvN5w85clQAOcE6eWLWYAGAnZ0uVeFZ+s04j90wBho+mEYQPu/8d4Xgs9eL6fR/HcPxx7li1BW4s2yUfEFpefKJU4t3irRBf69nHsi4fpw9GATTKdADXc3ZTq71S9C5rGqBfDI2J3WkNkXbzAvP4Wt5RHJPXrrgUKLVI/icE/ak2HhVNffsYOwMXERPdomQ946eiXVX0gr8kgLBW0WQkgzBNYPLyajv/TnxwlXNtwGMBN5UTr+T9LtYf6cgLcsenNQzNDEvVWpguam+YpoMyRZbeMLQTr7ZSD4FZe35EBfToJGp7IX3BfTihQ9xcxIZ8ywofvaMkQvPIHKOEr/o+mMjhLDrjqGeB88zz2bE7uXU++HvX3o/wqi5IfQoZwMdYwjxOQmfFXqaOVDCuzJzoJiL0RXn1MRKuCZzXW5eXnJkEkSRdjF0R+cdM6e0izFbDnsuOsO3fNw+yYQ5O7XjyPkEEv4EvZl6YX3kt/LVovdvfAfiQ/jhmBC0mRDkhJztL2M6SvsIVxG8X7uvu/BfiN410P92fv7i/M08cm4gRf2YPf2YOtWcRq4JVqUKB3PL6q64ts7vwo1+38GsJuRVU6+JhP+ljAzVEAnTYVyabMj6Zo/0bFMxxOwhGhBK1W//+1Ahwn0HybJvKmc7qD5QFlrng8C9ePrUIJ6t/b3RDxb+eOJf94MvqVzdVMp33hQs/5P3NogmcTp16vm3na/JX+4Gph7Cn9DMZHYfAZicmH1H2CbigvcEEn1MyRHM9sFsCoRb8e9rAiJIFjtfvNEi9vYLi1gc4+I3FRfzGlCMH0Pu9AdM21JLwoY26dtq2ENC4cFQ2HioPuJ7DWFfIQh5LILQBxKkUPbxZXD9iwtmBBn8mzDxoH+JFFnR+SiczO83mdpbgntP4+o5b5K5XJ0H4p0ldrsZ75kR5DnV5QWg72wwkNK0h72+ybBSpra1MiXoPVgCw/0eO+YFjybJ2wdSyrRmSnOT2xRSPdxXpuJSmT17gMkA95iN7COkTwpSjZ0e1ULABIwogNSBT1Ri0xaUDgd9xfvKOUL6pCDt8R6WXDjmQCKwUkW02RdYmQ7HkHj0Han1EdInBumAIOKAp9WEg5X26ABiqdAmY4Ro2hsgSeUR0icF6YDhIdaqb3LVJybTkoILRj3TEdjmDA+Y6h2t9GlBOnQQ6yeZkUOTWCoG0tQKA6SsBw647yhHHVfCvqGVsNC700LYcX/oG1sH2+BfWmNYF7WxxFDHN7fCsK7yMJxX6wu72O7rbDd86nytYlJoQvom7amByYZ2z+wzBp96SCMlHK6dY0b0iMLnbkRtIpwhdzDMWBzIbIdCmX1Ek5S3L3lfyt5gwI+IfjPRc7X+/Is7XXiDG9e/9sb7xVF2jKPfVByt1ITtiFpVqYXYuocsWayrqvl1Ua+Sd/0iz5CwvpCmkLYAl6mIqQbUNtFwQMRQUkTso7f8drzlr27og9jHicb36CBX4G/7xOx5C26wmuNmfpGVPwDPzNs2M9zTwa441PlU1usPe9ImZg/xnskIkqamg75J+NBmAg05E72jT300c4pdcCo2HA6xTU0qhGMyCrMKhWTftB1bckL0AA+OG9CPLUQm9v5TEMX1sXHPi0H7BEpxnEo8mUhJKDrsithvNqDyyRsbg2C6mPnGxe3cI9mXKH8pC2uLdzEmq7sr5UtkqnyJbD8Rfp6Pk7sUQWjYgfE6iG+KsYxIBawVwXWcCT6U88Vw647buk3+PoXF0eYP40ZRkDoUB+f8wujZb4zXzoUBlhNP/FT/C3f4UIIBQbXsseAHsn8ZBL8v5mD9s/kiemHnuSrZZZjWsjxY8372k8s5PXDa+YOPFDHopMCydogp/pohBsgvvHCWjG6icJUDzTTralLbZYK+Qt92MucoUXeMCK9HWR/O/yc3uqlUc6J4lyZWXsNUHopzbzw2XviRF8bQ4yt3MY0LjkUUzatp4DE71LpegU+FKaXzBcr+keeuYZS7sqHbonyRdT+W7zx3bAzDYGacB4uweBlXQae79fiqQ7t5/m5gNPGVPFWtWtvC8tDeJiBnfrwKZA4sG5Hlh6r0uRevvZZh5j0JZrrLcf0o34PjIgVQ0S67pYd2MhndimGlCHUJajDZg/k1xyFOIAoJlfGtnpDsx8l668Y30fvNiL5ZxHMghLcuASfJh+A6vZZ779e4UfU1btLuNW7yRG7GtgJvAV229EpCtgCviZGl839dzitvfW9XY7JV+NeucJ874MvKmzvgRG7dASdy111sUeie0qUmTTfCaxpv7odvD96WgKVyinfeHa/E4zuxl/WcBKYkS4vJ2wvGOJkPCXr0hk8S3XfBZ5hgL6DzmTckBXcokoDe1dk7KI7wPn14y6kMpKZHdL8NdLdSGQqZMWvHM5OqxAV1cbuJCv6O4m451i7NlQrcCqKcVCLKWKuIpuS/E0SzZc3XgfHKjUc3mdFu26xFc39dxtsIvSbGzFJ5PpXOulytZedNkAUTMEkV0ZxihfeflJQa5iYorLIsm6yUChsnAjATKIxHU/PG11rtJrSZ0GyD0NChcl11t/5V4f2Q5tm4xQnyUYsQijilijMsu0QXu9dN5iMCEynBkmSyR2RBCgufWtjlvgfbL5q+sLBY/8mubMXRm4QyS+T5CGSh/KJ3lSMoNUoUo9CoXaegOCJCUqmFupNPKLQruoRy0cYj1LArGwzoYnFcGlo3+YPddNbuoARFfWfKVdWd+rYL80fkGCS1MNWSIMQJUix1DLmePna/UJ8QaGKBvO2kAZBQi+qsD/N2074l/cejP0xZWGOqhMRKJntwFmMQUEiy9gGK9CT0ZlttCoG8tWBSSFfr8shStQfIIzfWL/WBMSNpWBc01mVVUaPIseplpFvj0dS8MY/cTSgXOParSyvrqrv0rxrvx2PuXFuKq1UaKeRWuJD6sZr95kxS0dpVa4vwBONqo04KHsCMMZWEM42wFnebDhYbFs24ogy0nlWUNWg5QbKxQYOE1U1XMiYjWy9lWqruIucKqEdjfwrgIQRhvIy2ifHle9PlUM65loILsjQ+QZHij8IAiycUl5GXlnfE2tkyITD/3Zq7VVomLSfubb5CHDosCMUIUUQ1399Myw1zrxbnlWWpmZbLGs1UF0ejqXWjze6kszFguldVWlVV36VvlUh/J8uplaZIyoc5jruX3xTCxekxZelJcMFagFhvnzShsgLxUi2i2506r2bO+3jYZeWNV8UqfxaGZd8bPAzf7t12iwb2NW1X0pQGrihceVzJDlmrkfiebSVvKoQkkwTO2zjYhgnaIy8p1fqu8xJwWveSl+xBZyV9CYD6zpSr3iUvqUb6O7HE1Xnl5Yn3qsW5dB+ftWGIx6zkAQ4QpzcLtk/aHI9Atrm9IyyiENFEi3TBAK2X55NfpBKILxcH7mmdruJCyKE32QDKccrenRrn8+kkf/dfKtElWN7XtYXKBIDl1ZRRSIkgYSb3r6eUyW6VotIkbDRdmP5KTV3Rfwqup6xW5NDLg+s7DPmjuoqANbD7UqeS5q7u/FQENJUoFtf3v72kRXrVpmpLKS3iLd+LIBbVignJKNEckf3Xn0sNc+vPorIs20YqFTZts2hwfo1NmraOahqvt4vSAW4QNi2n6E7yrjF7RKEFZp0QuzVKlpoh8S90B+bP2CJEKpytQ3NFUBJ3/upl6PIlpsLCV+oLWHJyoIUtX6IqXT0UoFZ9/ZrB03T2/MDfzd16KUIOZS1AYym+L4//kwuDEMX/moyjgnNXqhXnngyIrDp9khSIdo+fEG4RhqnUMJ+ljN3hTFmpYc6x68qy5cZiqaxp9syriO23GFDZdD3/51WSrKf8UErpneTMgHo03pyjZJGCkXRbMcl0831JJjXwHKebitqSTCOSbu//1c68MnPnH7YtnalWToILUu3O0yNabbrzFYOn4M5rfpH3hz8WQfxj5jiN38FzLp8YV+5sMr01optgMR0bM3duxIGxLLsp1a74Ud59f1J990/36uWZrIQ2o5QQLq5MDZNnk125yNRXV9z0yKW+dLH2NFGFjWwpu0TKnb/du3oR1Nnp28ncmwLQg2A2D3zo0isvdsdu7H7tO6JKr4QBXmEw98J44kXrz7cQd4H22ZtPXvg5nMQejKs7i87//TKpcHqSFp6mL+004ts5CPEHeQa8klf8nF2508g7PUlLoVMbklvEf4688UXy8s/kWyVNuqb53v71g/UeOrWU+8Me5FPSycC+ufwPKGjyCqRKJmzNBO1B1QYMluuRv0y8zy/sFclci5P8gJ7UItkmyMUXozwxiFddOoJ8x1fRNOL8NPpU9YqSB+vWyVKJorP/A9aa8FCahQAA]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -7252,7 +7252,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_TaskList">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}" typ="PipelineTask" p="" name="DF Transform_DimMinistry_F1Attendance" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnderivedcolumn" name="Add Insert Defaults" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_17" /&gt;&lt;com id="29" dir="TRAN"  typ="trnderivedcolumn" name="Add Update Defaults" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_29" /&gt;&lt;com id="38" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="ADO NET Destination" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_38" /&gt;&lt;com id="73" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column Type2 Columns" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_73" /&gt;&lt;com id="91" dir="TRAN"  typ="trnrowcount" name="DEST ADO NET Destination" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_91" /&gt;&lt;com id="95" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_95" /&gt;&lt;com id="99" dir="TRAN"  typ="trnlookup" name="Lookup CampusID" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_99" /&gt;&lt;com id="127" dir="TRAN"  typ="trnlookup" name="Member Exist?" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_127" /&gt;&lt;com id="163" dir="SRC"  typ="srcdatareader" name="Read From Source" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_163" /&gt;&lt;com id="190" dir="TRAN"  typ="trnderivedcolumn" name="Set CampusID -1" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_190" /&gt;&lt;com id="199" dir="TRAN"  typ="trnrowcount" name="SRC Read From Source" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_199" /&gt;&lt;com id="203" dir="TRAN"  typ="PragmaticWorks.TaskFactory.Components.Transforms.Hash.HashTransform, PragmaticWorks.TaskFactory.Components120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Hash Transform" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_203" /&gt;&lt;com id="216" dir="TRAN"  typ="PW.TaskFactory.SurrogateKeyTransform.SurrogateKeyTransform, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Surrogate Key Transform" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_216" /&gt;&lt;com id="236" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_236" /&gt;&lt;com id="245" dir="TRAN"  typ="trnunionall" name="Union All 1" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_245" /&gt;&lt;com id="300" dir="TRAN"  typ="trnunionall" name="Union All 2" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_300" /&gt;&lt;com id="376" dir="TRAN"  typ="trnconditionalsplit" name="Update or Do Nothing" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_376" /&gt;&lt;com id="444" dir="TRAN"  typ="trnconditionalsplit" name="Conditional Split" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_444" /&gt;&lt;com id="464" dir="TRAN"  typ="trnunionall" name="Union All" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_464" /&gt;&lt;com id="494" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_494" /&gt;&lt;dp id="389" val="0"  ann="" c1="163" c2="199"/&gt;&lt;dp id="390" val="0"  ann="" c1="190" c2="245"/&gt;&lt;dp id="392" val="0"  ann="" c1="73" c2="91"/&gt;&lt;dp id="393" val="0"  ann="" c1="29" c2="300"/&gt;&lt;dp id="394" val="0"  ann="" c1="17" c2="300"/&gt;&lt;dp id="395" val="0"  ann="" c1="376" c2="95"/&gt;&lt;dp id="396" val="0"  ann="" c1="127" c2="376"/&gt;&lt;dp id="397" val="0"  ann="" c1="99" c2="245"/&gt;&lt;dp id="398" val="0"  ann="" c1="127" c2="216"/&gt;&lt;dp id="399" val="0"  ann="" c1="99" c2="190"/&gt;&lt;dp id="400" val="0"  ann="" c1="203" c2="99"/&gt;&lt;dp id="401" val="0"  ann="" c1="91" c2="38"/&gt;&lt;dp id="402" val="0"  ann="" c1="199" c2="2"/&gt;&lt;dp id="403" val="0"  ann="" c1="95" c2="236"/&gt;&lt;dp id="404" val="0"  ann="" c1="216" c2="17"/&gt;&lt;dp id="405" val="0"  ann="" c1="300" c2="73"/&gt;&lt;dp id="406" val="0"  ann="" c1="245" c2="127"/&gt;&lt;dp id="407" val="0"  ann="" c1="376" c2="29"/&gt;&lt;dp id="451" val="0"  ann="" c1="2" c2="444"/&gt;&lt;dp id="467" val="0"  ann="" c1="444" c2="464"/&gt;&lt;dp id="493" val="0"  ann="" c1="464" c2="203"/&gt;&lt;dp id="500" val="0"  ann="" c1="444" c2="494"/&gt;&lt;dp id="514" val="0"  ann="" c1="494" c2="464"/&gt;&lt;/tsk&gt;&lt;tsk id="{527ED6BB-BA20-4DFB-81AA-21B4F4C77D03}" typ="SQLTask" p="" name="Get Surrogate Key Seed" on="1" /&gt;&lt;tsk id="{1ADDE28C-1945-456F-90CA-7782138FBEE7}" typ="SQLTask" p="" name="TRUNCATE TransformDimMinistry" on="1" /&gt;&lt;pc id="{34E30C75-9862-445E-839B-071C8A8FEE6F}" op="2" and="True" val="0" task1="{1ADDE28C-1945-456F-90CA-7782138FBEE7}" task2="{527ED6BB-BA20-4DFB-81AA-21B4F4C77D03}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{6C382959-5CAE-4E87-9F19-897FD8EF2C27}" op="2" and="True" val="0" task1="{527ED6BB-BA20-4DFB-81AA-21B4F4C77D03}" task2="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}" typ="PipelineTask" p="" name="DF Transform_DimMinistry_F1Attendance" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnderivedcolumn" name="Add Insert Defaults" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_17" /&gt;&lt;com id="29" dir="TRAN"  typ="trnderivedcolumn" name="Add Update Defaults" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_29" /&gt;&lt;com id="38" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="ADO NET Destination" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_38" /&gt;&lt;com id="73" dir="TRAN"  typ="trnconditionalsplit" name="Conditional Split" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_73" /&gt;&lt;com id="85" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_85" /&gt;&lt;com id="94" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column Type2 Columns" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_94" /&gt;&lt;com id="112" dir="TRAN"  typ="trnrowcount" name="DEST ADO NET Destination" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_112" /&gt;&lt;com id="116" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_116" /&gt;&lt;com id="120" dir="TRAN"  typ="trnlookup" name="Lookup CampusID" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_120" /&gt;&lt;com id="148" dir="TRAN"  typ="trnlookup" name="Member Exist?" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_148" /&gt;&lt;com id="184" dir="SRC"  typ="srcdatareader" name="Read From Source" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_184" /&gt;&lt;com id="211" dir="TRAN"  typ="trnderivedcolumn" name="Set CampusID -1" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_211" /&gt;&lt;com id="220" dir="TRAN"  typ="trnrowcount" name="SRC Read From Source" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_220" /&gt;&lt;com id="224" dir="TRAN"  typ="PragmaticWorks.TaskFactory.Components.Transforms.Hash.HashTransform, PragmaticWorks.TaskFactory.Components120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Hash Transform" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_224" /&gt;&lt;com id="237" dir="TRAN"  typ="PW.TaskFactory.SurrogateKeyTransform.SurrogateKeyTransform, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Surrogate Key Transform" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_237" /&gt;&lt;com id="257" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_257" /&gt;&lt;com id="266" dir="TRAN"  typ="trnunionall" name="Union All" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_266" /&gt;&lt;com id="311" dir="TRAN"  typ="trnunionall" name="Union All 1" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_311" /&gt;&lt;com id="366" dir="TRAN"  typ="trnunionall" name="Union All 2" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_366" /&gt;&lt;com id="442" dir="TRAN"  typ="trnconditionalsplit" name="Update or Do Nothing" pid="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}_442" /&gt;&lt;dp id="455" val="0"  ann="" c1="184" c2="220"/&gt;&lt;dp id="456" val="0"  ann="" c1="73" c2="266"/&gt;&lt;dp id="457" val="0"  ann="" c1="2" c2="73"/&gt;&lt;dp id="458" val="0"  ann="" c1="17" c2="366"/&gt;&lt;dp id="459" val="0"  ann="" c1="85" c2="266"/&gt;&lt;dp id="460" val="0"  ann="" c1="211" c2="311"/&gt;&lt;dp id="461" val="0"  ann="" c1="29" c2="366"/&gt;&lt;dp id="462" val="0"  ann="" c1="94" c2="112"/&gt;&lt;dp id="463" val="0"  ann="" c1="442" c2="116"/&gt;&lt;dp id="464" val="0"  ann="" c1="73" c2="85"/&gt;&lt;dp id="465" val="0"  ann="" c1="148" c2="442"/&gt;&lt;dp id="466" val="0"  ann="" c1="120" c2="311"/&gt;&lt;dp id="467" val="0"  ann="" c1="148" c2="237"/&gt;&lt;dp id="468" val="0"  ann="" c1="120" c2="211"/&gt;&lt;dp id="469" val="0"  ann="" c1="224" c2="120"/&gt;&lt;dp id="470" val="0"  ann="" c1="112" c2="38"/&gt;&lt;dp id="471" val="0"  ann="" c1="220" c2="2"/&gt;&lt;dp id="472" val="0"  ann="" c1="116" c2="257"/&gt;&lt;dp id="473" val="0"  ann="" c1="237" c2="17"/&gt;&lt;dp id="474" val="0"  ann="" c1="311" c2="148"/&gt;&lt;dp id="475" val="0"  ann="" c1="266" c2="224"/&gt;&lt;dp id="476" val="0"  ann="" c1="366" c2="94"/&gt;&lt;dp id="477" val="0"  ann="" c1="442" c2="29"/&gt;&lt;/tsk&gt;&lt;tsk id="{527ED6BB-BA20-4DFB-81AA-21B4F4C77D03}" typ="SQLTask" p="" name="Get Surrogate Key Seed" on="1" /&gt;&lt;tsk id="{1ADDE28C-1945-456F-90CA-7782138FBEE7}" typ="SQLTask" p="" name="TRUNCATE TransformDimMinistry" on="1" /&gt;&lt;pc id="{34E30C75-9862-445E-839B-071C8A8FEE6F}" op="2" and="True" val="0" task1="{1ADDE28C-1945-456F-90CA-7782138FBEE7}" task2="{527ED6BB-BA20-4DFB-81AA-21B4F4C77D03}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{6C382959-5CAE-4E87-9F19-897FD8EF2C27}" op="2" and="True" val="0" task1="{527ED6BB-BA20-4DFB-81AA-21B4F4C77D03}" task2="{F5EBC49D-7972-4FD2-BD8F-A0681CF6D1F8}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -7285,14 +7285,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_cf68caca2f01486aaf76c38a34607826")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_cf68caca2f01486aaf76c38a34607826")]
+[assembly: AssemblyCopyright("Copyright @  2015")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -7910,35 +7931,14 @@ namespace st_cf68caca2f01486aaf76c38a34607826.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_cf68caca2f01486aaf76c38a34607826")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_cf68caca2f01486aaf76c38a34607826")]
-[assembly: AssemblyCopyright("Copyright @  2015")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -8470,14 +8470,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_689d115d5b164a9a8a1bf6010c4e2c8b")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_689d115d5b164a9a8a1bf6010c4e2c8b")]
+[assembly: AssemblyCopyright("Copyright @  2015")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -8921,35 +8942,14 @@ namespace st_689d115d5b164a9a8a1bf6010c4e2c8b.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_689d115d5b164a9a8a1bf6010c4e2c8b")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_689d115d5b164a9a8a1bf6010c4e2c8b")]
-[assembly: AssemblyCopyright("Copyright @  2015")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -9272,14 +9272,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_9067920d996047119bf15d12e3cfacbf")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_9067920d996047119bf15d12e3cfacbf")]
+[assembly: AssemblyCopyright("Copyright @  2015")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -9523,74 +9544,6 @@ namespace st_9067920d996047119bf15d12e3cfacbf
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Resources.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_9067920d996047119bf15d12e3cfacbf.Properties.Resources.get_ResourceManager():System.Resources.Resou" +
-    "rceManager")]
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_9067920d996047119bf15d12e3cfacbf.Properties.Resources.get_Culture():System.Globalization.CultureIn" +
-    "fo")]
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_9067920d996047119bf15d12e3cfacbf.Properties.Resources.set_Culture(System.Globalization.CultureInfo" +
-    "):Void")]
-
-namespace st_9067920d996047119bf15d12e3cfacbf.Properties {
-    
-    
-    /// <summary>
-    ///   A strongly-typed resource class, for looking up localized strings, etc.
-    /// </summary>
-    // This class was auto-generated by the StronglyTypedResourceBuilder
-    // class via a tool like ResGen or Visual Studio.
-    // To add or remove a member, edit your .ResX file then rerun ResGen
-    // with the /str option, or rebuild your VS project.
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-    internal class Resources {
-        
-        private static global::System.Resources.ResourceManager resourceMan;
-        
-        private static global::System.Globalization.CultureInfo resourceCulture;
-        
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
-        }
-        
-        /// <summary>
-        ///   Returns the cached ResourceManager instance used by this class.
-        /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if ((resourceMan == null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("st_9067920d996047119bf15d12e3cfacbf.Properties.Resources", typeof(Resources).Assembly);
-                    resourceMan = temp;
-                }
-                return resourceMan;
-            }
-        }
-        
-        /// <summary>
-        ///   Overrides the current thread's CurrentUICulture property for all
-        ///   resource lookups using this strongly typed resource class.
-        /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
-            get {
-                return resourceCulture;
-            }
-            set {
-                resourceCulture = value;
-            }
-        }
-    }
-}]]></ProjectItem>
-              <ProjectItem
                 Name="Project"
                 Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
 <c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
@@ -9639,36 +9592,6 @@ namespace st_9067920d996047119bf15d12e3cfacbf.Properties {
         }
     }
 }]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_9067920d996047119bf15d12e3cfacbf")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_9067920d996047119bf15d12e3cfacbf")]
-[assembly: AssemblyCopyright("Copyright @  2015")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="st_9067920d996047119bf15d12e3cfacbf.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -9769,6 +9692,83 @@ using System.Runtime.CompilerServices;
     </VisualStudio>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Resources.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_9067920d996047119bf15d12e3cfacbf.Properties.Resources.get_ResourceManager():System.Resources.Resou" +
+    "rceManager")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_9067920d996047119bf15d12e3cfacbf.Properties.Resources.get_Culture():System.Globalization.CultureIn" +
+    "fo")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_9067920d996047119bf15d12e3cfacbf.Properties.Resources.set_Culture(System.Globalization.CultureInfo" +
+    "):Void")]
+
+namespace st_9067920d996047119bf15d12e3cfacbf.Properties {
+    
+    
+    /// <summary>
+    ///   A strongly-typed resource class, for looking up localized strings, etc.
+    /// </summary>
+    // This class was auto-generated by the StronglyTypedResourceBuilder
+    // class via a tool like ResGen or Visual Studio.
+    // To add or remove a member, edit your .ResX file then rerun ResGen
+    // with the /str option, or rebuild your VS project.
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    internal class Resources {
+        
+        private static global::System.Resources.ResourceManager resourceMan;
+        
+        private static global::System.Globalization.CultureInfo resourceCulture;
+        
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        internal Resources() {
+        }
+        
+        /// <summary>
+        ///   Returns the cached ResourceManager instance used by this class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if ((resourceMan == null)) {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("st_9067920d996047119bf15d12e3cfacbf.Properties.Resources", typeof(Resources).Assembly);
+                    resourceMan = temp;
+                }
+                return resourceMan;
+            }
+        }
+        
+        /// <summary>
+        ///   Overrides the current thread's CurrentUICulture property for all
+        ///   resource lookups using this strongly typed resource class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
+                return resourceCulture;
+            }
+            set {
+                resourceCulture = value;
+            }
+        }
+    }
+}]]></ProjectItem>
               <BinaryItem
                 Name="st_9067920d996047119bf15d12e3cfacbf.dll">TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1v
@@ -10509,57 +10509,17 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       <GraphLayout
         Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
-          Size="230,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\Derived Column Type2 Columns"
-          TopLeft="219.5,1122.5" />
-        <NodeLayout
-          Size="182,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\Update or Do Nothing"
-          TopLeft="278.5,821.5" />
-        <NodeLayout
-          Size="212,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\TF Surrogate Key Transform"
-          TopLeft="5.50000000000011,821.5" />
-        <NodeLayout
-          Size="208,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\DEST ADO NET Destination"
-          TopLeft="240.5,1201.5" />
-        <NodeLayout
-          Size="165,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\Lookup CampusID"
-          TopLeft="287,413.5" />
-        <NodeLayout
-          Size="130,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\Union All 1"
-          TopLeft="304.5,617.5" />
-        <NodeLayout
-          Size="231,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\DEST TF Terminator Destination"
-          TopLeft="494,923.5" />
-        <NodeLayout
-          Size="202,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\TF Terminator Destination"
-          TopLeft="508.5,1025.5" />
-        <NodeLayout
-          Size="169,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\TF Hash Transform"
-          TopLeft="285,319.5" />
-        <NodeLayout
-          Size="170,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\Add Insert Defaults"
-          TopLeft="26.5000000000001,923.5" />
-        <NodeLayout
-          Size="148,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\Member Exist?"
-          TopLeft="295.5,719.5" />
-        <NodeLayout
-          Size="166,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\Read From Source"
-          TopLeft="286.5,5.5" />
+          Size="155,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\Conditional Split"
+          TopLeft="786,217" />
         <NodeLayout
           Size="188,42"
           Id="Package\DF Transform_DimMinistry_F1Attendance\SRC Read From Source"
           TopLeft="275.5,107.5" />
+        <NodeLayout
+          Size="130,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\Union All 2"
+          TopLeft="280.5,1025.5" />
         <NodeLayout
           Size="176,42"
           Id="Package\DF Transform_DimMinistry_F1Attendance\Add Update Defaults"
@@ -10569,9 +10529,57 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\DF Transform_DimMinistry_F1Attendance\Set CampusID -1"
           TopLeft="149,515.5" />
         <NodeLayout
+          Size="230,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\Derived Column Type2 Columns"
+          TopLeft="219.5,1122.5" />
+        <NodeLayout
+          Size="169,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\TF Hash Transform"
+          TopLeft="285,319.5" />
+        <NodeLayout
           Size="130,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\Union All 2"
-          TopLeft="280.5,1025.5" />
+          Id="Package\DF Transform_DimMinistry_F1Attendance\Union All 1"
+          TopLeft="304.5,617.5" />
+        <NodeLayout
+          Size="170,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\Add Insert Defaults"
+          TopLeft="26.5000000000001,923.5" />
+        <NodeLayout
+          Size="212,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\TF Surrogate Key Transform"
+          TopLeft="5.50000000000011,821.5" />
+        <NodeLayout
+          Size="182,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\Update or Do Nothing"
+          TopLeft="278.5,821.5" />
+        <NodeLayout
+          Size="154,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\Derived Column"
+          TopLeft="965,331" />
+        <NodeLayout
+          Size="208,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\DEST ADO NET Destination"
+          TopLeft="240.5,1201.5" />
+        <NodeLayout
+          Size="165,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\Lookup CampusID"
+          TopLeft="287,413.5" />
+        <NodeLayout
+          Size="166,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\Read From Source"
+          TopLeft="286.5,5.5" />
+        <NodeLayout
+          Size="121,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\Union All"
+          TopLeft="682,324" />
+        <NodeLayout
+          Size="231,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\DEST TF Terminator Destination"
+          TopLeft="494,923.5" />
+        <NodeLayout
+          Size="202,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\TF Terminator Destination"
+          TopLeft="508.5,1025.5" />
         <NodeLayout
           Size="139,42"
           Id="Package\DF Transform_DimMinistry_F1Attendance\Add Defaults"
@@ -10580,9 +10588,13 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Size="179,42"
           Id="Package\DF Transform_DimMinistry_F1Attendance\ADO NET Destination"
           TopLeft="252,1268.5" />
+        <NodeLayout
+          Size="148,42"
+          Id="Package\DF Transform_DimMinistry_F1Attendance\Member Exist?"
+          TopLeft="295.5,719.5" />
         <EdgeLayout
-          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Union All Output 11]"
-          TopLeft="369.5,659.5">
+          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Update]"
+          TopLeft="343,863.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -10599,11 +10611,13 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="-16.28029296875,20.4453125,32.5605859375,11.609375"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Union All Output 1]"
+          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Union All Output 12]"
           TopLeft="345.5,1067.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10628,6 +10642,50 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                     Point3="-10.9999999999999,31.5" />
                   <mssgle:LineSegment
                     End="-10.9999999999999,47.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Union All Output 11]"
+          TopLeft="682,342.75">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-228,0"
+              Start="0,0"
+              End="-220.5,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="-220.5,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Union All Output 1]"
+          TopLeft="369.5,659.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -10879,6 +10937,42 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
+          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[HarvestKids]"
+          TopLeft="888,259">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="154,72"
+              Start="0,0"
+              End="154,64.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,25.2413793103448" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,25.2413793103448"
+                    Point2="0,29.2413793103448"
+                    Point3="4,29.2413793103448" />
+                  <mssgle:LineSegment
+                    End="150,29.2413793103448" />
+                  <mssgle:CubicBezierSegment
+                    Point1="150,29.2413793103448"
+                    Point2="154,29.2413793103448"
+                    Point3="154,33.2413793103448" />
+                  <mssgle:LineSegment
+                    End="154,64.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="50.562421875,34.2413793103448,52.87515625,9.7490234375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
           Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Do Nothing]"
           TopLeft="398.5,863.5">
           <EdgeLayout.Curve>
@@ -10915,63 +11009,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output3]"
-          TopLeft="111.5,965.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="213.666666666667,60"
-              Start="0,0"
-              End="213.666666666667,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,31.5623100303951"
-                    Point2="0,35.5623100303951"
-                    Point3="4,35.5623100303951" />
-                  <mssgle:LineSegment
-                    End="209.666666666667,35.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="209.666666666667,35.5623100303951"
-                    Point2="213.666666666667,35.5623100303951"
-                    Point3="213.666666666667,39.5623100303951" />
-                  <mssgle:LineSegment
-                    End="213.666666666667,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output2]"
-          TopLeft="345.5,965.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output1]"
+          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output5]"
           TopLeft="334.5,1164.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -11005,7 +11043,29 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output]"
+          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output4]"
+          TopLeft="345.5,965.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output3]"
           TopLeft="228.5,557.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -11039,19 +11099,19 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[ADO NET Source Output]"
-          TopLeft="369.5,47.5">
+          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output2]"
+          TopLeft="965,348.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,60"
+              EndConnector="-162,0"
               Start="0,0"
-              End="0,52.5">
+              End="-154.5,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,52.5" />
+                    End="-154.5,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -11061,35 +11121,41 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Update]"
-          TopLeft="343,863.5">
+          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output1]"
+          TopLeft="111.5,965.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,60"
+              EndConnector="213.666666666667,60"
               Start="0,0"
-              End="0,52.5">
+              End="213.666666666667,52.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,52.5" />
+                    End="0,31.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.5623100303951"
+                    Point2="0,35.5623100303951"
+                    Point3="4,35.5623100303951" />
+                  <mssgle:LineSegment
+                    End="209.666666666667,35.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="209.666666666667,35.5623100303951"
+                    Point2="213.666666666667,35.5623100303951"
+                    Point3="213.666666666667,39.5623100303951" />
+                  <mssgle:LineSegment
+                    End="213.666666666667,52.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-16.28029296875,20.4453125,32.5605859375,11.609375"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="155,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\Conditional Split"
-          TopLeft="786,217" />
         <EdgeLayout
-          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output4]"
+          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output]"
           TopLeft="439,234.25">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -11110,10 +11176,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="121,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\Union All"
-          TopLeft="682,324" />
         <EdgeLayout
           Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Conditional Split Default Output]"
           TopLeft="839,259">
@@ -11151,81 +11213,19 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Union All Output 12]"
-          TopLeft="682,342.75">
+          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[ADO NET Source Output]"
+          TopLeft="369.5,47.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-228,0"
+              EndConnector="0,60"
               Start="0,0"
-              End="-220.5,0">
+              End="0,52.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="-220.5,0" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <NodeLayout
-          Size="154,42"
-          Id="Package\DF Transform_DimMinistry_F1Attendance\Derived Column"
-          TopLeft="965,331" />
-        <EdgeLayout
-          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[HarvestKids]"
-          TopLeft="888,259">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="154,72"
-              Start="0,0"
-              End="154,64.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,25.2413793103448" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,25.2413793103448"
-                    Point2="0,29.2413793103448"
-                    Point3="4,29.2413793103448" />
-                  <mssgle:LineSegment
-                    End="150,29.2413793103448" />
-                  <mssgle:CubicBezierSegment
-                    Point1="150,29.2413793103448"
-                    Point2="154,29.2413793103448"
-                    Point3="154,33.2413793103448" />
-                  <mssgle:LineSegment
-                    End="154,64.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="50.562421875,34.2413793103448,52.87515625,9.7490234375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimMinistry_F1Attendance.Paths[Derived Column Output5]"
-          TopLeft="965,348.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-162,0"
-              Start="0,0"
-              End="-154.5,0">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="-154.5,0" />
+                    End="0,52.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -11238,7 +11238,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Text="&quot;Harvest kids&quot; family should map to &quot;harvest kids&quot;"
           ParentId="Package\DF Transform_DimMinistry_F1Attendance"
           FontInfo="{assembly:Null}"
-          Size="293,60"
+          Size="293,40"
           Id="4332256f-9453-4fa0-9ff5-e2b9ba19e928"
           TopLeft="1177,277" />
       </GraphLayout>
@@ -11268,6 +11268,22 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </Properties>
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
+    design-time-name="Package\DF Transform_DimMinistry_F1Attendance\Read From Source">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\DF Transform_DimMinistry_F1Attendance\ADO NET Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
     design-time-name="Package\DF Transform_DimMinistry_F1Attendance\Member Exist?">
     <Properties>
       <Property>
@@ -11285,22 +11301,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <Value
           type="q4:string">0</Value>
       </Property>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\DF Transform_DimMinistry_F1Attendance\Read From Source">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\DF Transform_DimMinistry_F1Attendance\ADO NET Destination">
-    <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
       </Property>
