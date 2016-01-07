@@ -206,7 +206,7 @@ AS
        SET
            HolidayFlag = 1 --'Memorial Day'
      FROM DW.DimDate
-     WHERE DATEID IN
+     WHERE DateID IN
      (
          SELECT MAX(DateID)
          FROM DW.DimDate

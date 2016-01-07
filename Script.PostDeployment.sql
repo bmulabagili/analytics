@@ -47,17 +47,6 @@ UPDATE SET
       Target.Name = Source.Name
     , Target.[Description] = Source.[Description] 
 ;
-
---enable all defined ETLPackages as active for HBC
-INSERT INTO TenantEtlProcess
-SELECT 3, src.ETLProcessID
-FROM ETLProcess src
-LEFT JOIN TenantEtlProcess dest
-    ON dest.TenantID = 3
-    AND src.ETLProcessID = dest.ETLProcessID
-WHERE
-    dest.ETLProcessID IS NULL;
-
 --base connectionstrings
 MERGE INTO dbo.ConnectionString AS Target
 USING (VALUES
@@ -77,6 +66,23 @@ WHEN NOT MATCHED BY TARGET THEN
 INSERT (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 VALUES (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 ;
+
+--define HBC Tenant
+INSERT INTO Tenant
+( TenantID, TenantName, IsActive, ConnectionStringID, ExecutionID, InsertedDateTime, UpdatedDateTime, Hashvalue)
+VALUES(3, 'HBC',1, 1, -1, GETUTCDATE(), GETUTCDATE(), '');
+
+--enable all defined ETLPackages as active for HBC
+INSERT INTO TenantEtlProcess
+SELECT 3, src.ETLProcessID
+FROM ETLProcess src
+LEFT JOIN TenantEtlProcess dest
+    ON dest.TenantID = 3
+    AND src.ETLProcessID = dest.ETLProcessID
+WHERE
+    dest.ETLProcessID IS NULL;
+
+
 
 --base tenants (including HBC
 MERGE INTO Tenant AS Target
