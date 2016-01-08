@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Transform_DimActivity_FTV"
   DTS:PackageType="5"
-  DTS:VersionBuild="111"
-  DTS:VersionGUID="{E56D3CDF-E520-4670-8ADC-871CC84839C5}">
+  DTS:VersionBuild="113"
+  DTS:VersionGUID="{7F545628-3DA5-4722-BC98-C5500CA0D8FC}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:LogProviders>
@@ -967,13 +967,13 @@
                           containsID="true"
                           dataType="System.String"
                           description="Derived Column Expression"
-                          name="Expression">#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[StartDateTime]} &lt; [REPLACENULL](#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]},"1/1/1900") ? #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[StartDateTime]} : [REPLACENULL](#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]},"1/1/1900")</property>
+                          name="Expression">#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[StartDateTime]} &lt; #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]} || [ISNULL](#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}) ? #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[StartDateTime]} : #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}</property>
                         <property
                           containsID="true"
                           dataType="System.String"
                           description="Derived Column Friendly Expression"
                           expressionType="Notify"
-                          name="FriendlyExpression">StartDateTime &lt; REPLACENULL(DWEndDateTime,"1/1/1900") ? StartDateTime : REPLACENULL(DWEndDateTime,"1/1/1900")</property>
+                          name="FriendlyExpression">StartDateTime &lt; DWEndDateTime || ISNULL(DWEndDateTime) ? StartDateTime : DWEndDateTime</property>
                       </properties>
                     </outputColumn>
                     <outputColumn
@@ -989,13 +989,13 @@
                           containsID="true"
                           dataType="System.String"
                           description="Derived Column Expression"
-                          name="Expression">#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} &gt; [REPLACENULL](#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]},"12/31/2099") ? #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} : [REPLACENULL](#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]},"12/31/2099")</property>
+                          name="Expression">#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} &gt; #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]} &amp;&amp; [ISNULL](#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}) ==  FALSE  ? #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} : #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}</property>
                         <property
                           containsID="true"
                           dataType="System.String"
                           description="Derived Column Friendly Expression"
                           expressionType="Notify"
-                          name="FriendlyExpression">EndDateTime &gt; REPLACENULL(DWEndDateTime,"12/31/2099") ? EndDateTime : REPLACENULL(DWEndDateTime,"12/31/2099")</property>
+                          name="FriendlyExpression">EndDateTime &gt; DWEndDateTime &amp;&amp; ISNULL(DWEndDateTime) ==  FALSE  ? EndDateTime : DWEndDateTime</property>
                       </properties>
                     </outputColumn>
                     <outputColumn
@@ -1011,13 +1011,13 @@
                           containsID="true"
                           dataType="System.String"
                           description="Derived Column Expression"
-                          name="Expression">[GETUTCDATE]() &gt; [REPLACENULL](#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]},"12/31/2099") ?  FALSE  :  TRUE </property>
+                          name="Expression">[ISNULL](#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} &gt; #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]} &amp;&amp; [ISNULL](#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}) ==  FALSE  ? #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} : #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}) || [GETUTCDATE]() &lt;= (#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} &gt; #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]} &amp;&amp; [ISNULL](#{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}) ==  FALSE  ? #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[EndDateTime]} : #{Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1].Columns[DWEndDateTime]}) ?  TRUE  :  FALSE </property>
                         <property
                           containsID="true"
                           dataType="System.String"
                           description="Derived Column Friendly Expression"
                           expressionType="Notify"
-                          name="FriendlyExpression">GETUTCDATE() &gt; REPLACENULL(DWEndDateTime,"12/31/2099") ?  FALSE  :  TRUE </property>
+                          name="FriendlyExpression">ISNULL(EndDateTime &gt; DWEndDateTime &amp;&amp; ISNULL(DWEndDateTime) ==  FALSE  ? EndDateTime : DWEndDateTime) || GETUTCDATE() &lt;= (EndDateTime &gt; DWEndDateTime &amp;&amp; ISNULL(DWEndDateTime) ==  FALSE  ? EndDateTime : DWEndDateTime) ?  TRUE  :  FALSE </property>
                       </properties>
                     </outputColumn>
                   </outputColumns>
@@ -1274,7 +1274,7 @@ where [refTable].[TenantID] = ? and [refTable].[Code] = ?</property>
                   containsID="true"
                   dataType="System.String"
                   description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
-                  name="ParameterMap">#{Package\DF Transform_DimActivity_FTV\2257:invalid};#{Package\DF Transform_DimActivity_FTV\Get CampusCodes.Outputs[Derived Column Output].Columns[ActivityCampusCode]};</property>
+                  name="ParameterMap">#{Package\DF Transform_DimActivity_FTV\2281:invalid};#{Package\DF Transform_DimActivity_FTV\Get CampusCodes.Outputs[Derived Column Output].Columns[ActivityCampusCode]};</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -1448,7 +1448,7 @@ where [refTable].[TenantID] = ? and [refTable].[Code] = ?</property>
                   containsID="true"
                   dataType="System.String"
                   description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
-                  name="ParameterMap">#{Package\DF Transform_DimActivity_FTV\2257:invalid};#{Package\DF Transform_DimActivity_FTV\Get CampusCodes.Outputs[Derived Column Output].Columns[MinistryCampusCode]};</property>
+                  name="ParameterMap">#{Package\DF Transform_DimActivity_FTV\2281:invalid};#{Package\DF Transform_DimActivity_FTV\Get CampusCodes.Outputs[Derived Column Output].Columns[MinistryCampusCode]};</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -4343,24 +4343,24 @@ order by 1</property>
               startId="Package\DF Transform_DimActivity_FTV\Conditional Split.Outputs[HarvestKids]" />
             <path
               refId="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output2]"
-              endId="Package\DF Transform_DimActivity_FTV\Union All 1.Inputs[Union All Input 3]"
-              name="Lookup Match Output"
-              startId="Package\DF Transform_DimActivity_FTV\Lookup CampusID For MinsitryCampusCode.Outputs[Lookup Match Output]" />
-            <path
-              refId="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output3]"
-              endId="Package\DF Transform_DimActivity_FTV\Union All.Inputs[Union All Input 1]"
-              name="Lookup Match Output"
-              startId="Package\DF Transform_DimActivity_FTV\Lookup MinistryID.Outputs[Lookup Match Output]" />
-            <path
-              refId="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output]"
               endId="Package\DF Transform_DimActivity_FTV\Update or Do Nothing.Inputs[Conditional Split Input]"
               name="Lookup Match Output"
               startId="Package\DF Transform_DimActivity_FTV\Member Exist?.Outputs[Lookup Match Output]" />
             <path
-              refId="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output1]"
+              refId="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output3]"
               endId="Package\DF Transform_DimActivity_FTV\Union All 1.Inputs[Union All Input 1]"
               name="Lookup Match Output"
               startId="Package\DF Transform_DimActivity_FTV\Lookup CampusID For ActivityCampusCode.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output]"
+              endId="Package\DF Transform_DimActivity_FTV\Union All 1.Inputs[Union All Input 3]"
+              name="Lookup Match Output"
+              startId="Package\DF Transform_DimActivity_FTV\Lookup CampusID For MinsitryCampusCode.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output1]"
+              endId="Package\DF Transform_DimActivity_FTV\Union All.Inputs[Union All Input 1]"
+              name="Lookup Match Output"
+              startId="Package\DF Transform_DimActivity_FTV\Lookup MinistryID.Outputs[Lookup Match Output]" />
             <path
               refId="Package\DF Transform_DimActivity_FTV.Paths[Lookup No Match Output]"
               endId="Package\DF Transform_DimActivity_FTV\TF Surrogate Key Transform.Inputs[SurrogateKeyInput]"
@@ -4408,24 +4408,24 @@ order by 1</property>
               startId="Package\DF Transform_DimActivity_FTV\TF Surrogate Key Transform.Outputs[SurrogateKeyOutput]" />
             <path
               refId="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 13]"
+              endId="Package\DF Transform_DimActivity_FTV\Derived Column Type2 Columns.Inputs[Derived Column Input]"
+              name="Union All Output 1"
+              startId="Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1]" />
+            <path
+              refId="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 1]"
               endId="Package\DF Transform_DimActivity_FTV\Get CampusCodes.Inputs[Derived Column Input]"
               name="Union All Output 1"
               startId="Package\DF Transform_DimActivity_FTV\Union All 3.Outputs[Union All Output 1]" />
             <path
-              refId="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 1]"
+              refId="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 11]"
               endId="Package\DF Transform_DimActivity_FTV\Lookup MinistryID.Inputs[Lookup Input]"
               name="Union All Output 1"
               startId="Package\DF Transform_DimActivity_FTV\Union All 1.Outputs[Union All Output 1]" />
             <path
-              refId="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 11]"
+              refId="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 12]"
               endId="Package\DF Transform_DimActivity_FTV\Member Exist?.Inputs[Lookup Input]"
               name="Union All Output 1"
               startId="Package\DF Transform_DimActivity_FTV\Union All.Outputs[Union All Output 1]" />
-            <path
-              refId="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 12]"
-              endId="Package\DF Transform_DimActivity_FTV\Derived Column Type2 Columns.Inputs[Derived Column Input]"
-              name="Union All Output 1"
-              startId="Package\DF Transform_DimActivity_FTV\Union All 2.Outputs[Union All Output 1]" />
             <path
               refId="Package\DF Transform_DimActivity_FTV.Paths[Update]"
               endId="Package\DF Transform_DimActivity_FTV\Add Update Defaults.Inputs[Derived Column Input]"
@@ -8166,7 +8166,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_DfLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\DF Transform_DimActivity_FTV&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\DF Transform_DimActivity_FTV&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -8262,7 +8262,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_PkgLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -8282,7 +8282,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_TaskList">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}" typ="PipelineTask" p="" name="DF Transform_DimActivity_FTV" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnderivedcolumn" name="Add Insert Defaults" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_17" /&gt;&lt;com id="29" dir="TRAN"  typ="trnderivedcolumn" name="Add Update Defaults" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_29" /&gt;&lt;com id="38" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="ADO NET Destination" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_38" /&gt;&lt;com id="75" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column Type2 Columns" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_75" /&gt;&lt;com id="93" dir="TRAN"  typ="trnrowcount" name="DEST ADO NET Destination" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_93" /&gt;&lt;com id="97" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_97" /&gt;&lt;com id="101" dir="TRAN"  typ="trnderivedcolumn" name="Get CampusCodes" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_101" /&gt;&lt;com id="115" dir="TRAN"  typ="trnlookup" name="Lookup CampusID For ActivityCampusCode" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_115" /&gt;&lt;com id="143" dir="TRAN"  typ="trnlookup" name="Lookup CampusID For MinsitryCampusCode" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_143" /&gt;&lt;com id="171" dir="TRAN"  typ="trnlookup" name="Lookup MinistryID" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_171" /&gt;&lt;com id="199" dir="TRAN"  typ="trnlookup" name="Member Exist?" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_199" /&gt;&lt;com id="241" dir="SRC"  typ="srcdatareader" name="Read From Source" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_241" /&gt;&lt;com id="268" dir="TRAN"  typ="trnderivedcolumn" name="Set CampusID -1" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_268" /&gt;&lt;com id="277" dir="TRAN"  typ="trnderivedcolumn" name="Set MinsiryID -1" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_277" /&gt;&lt;com id="286" dir="TRAN"  typ="trnrowcount" name="SRC Read From Source" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_286" /&gt;&lt;com id="290" dir="TRAN"  typ="PragmaticWorks.TaskFactory.Components.Transforms.Hash.HashTransform, PragmaticWorks.TaskFactory.Components120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Hash Transform" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_290" /&gt;&lt;com id="303" dir="TRAN"  typ="PW.TaskFactory.SurrogateKeyTransform.SurrogateKeyTransform, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Surrogate Key Transform" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_303" /&gt;&lt;com id="323" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_323" /&gt;&lt;com id="332" dir="TRAN"  typ="trnunionall" name="Union All" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_332" /&gt;&lt;com id="392" dir="TRAN"  typ="trnunionall" name="Union All 1" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_392" /&gt;&lt;com id="468" dir="TRAN"  typ="trnunionall" name="Union All 2" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_468" /&gt;&lt;com id="545" dir="TRAN"  typ="trnconditionalsplit" name="Update or Do Nothing" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_545" /&gt;&lt;com id="584" dir="TRAN"  typ="trnconditionalsplit" name="Conditional Split" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_584" /&gt;&lt;com id="596" dir="TRAN"  typ="trnunionall" name="Union All 3" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_596" /&gt;&lt;com id="624" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_624" /&gt;&lt;dp id="558" val="0"  ann="" c1="241" c2="286"/&gt;&lt;dp id="559" val="0"  ann="" c1="277" c2="332"/&gt;&lt;dp id="561" val="0"  ann="" c1="101" c2="290"/&gt;&lt;dp id="562" val="0"  ann="" c1="75" c2="93"/&gt;&lt;dp id="563" val="0"  ann="" c1="29" c2="468"/&gt;&lt;dp id="564" val="0"  ann="" c1="17" c2="468"/&gt;&lt;dp id="565" val="0"  ann="" c1="268" c2="392"/&gt;&lt;dp id="566" val="0"  ann="" c1="545" c2="97"/&gt;&lt;dp id="567" val="0"  ann="" c1="199" c2="545"/&gt;&lt;dp id="568" val="0"  ann="" c1="115" c2="392"/&gt;&lt;dp id="569" val="0"  ann="" c1="143" c2="392"/&gt;&lt;dp id="570" val="0"  ann="" c1="171" c2="332"/&gt;&lt;dp id="571" val="0"  ann="" c1="171" c2="277"/&gt;&lt;dp id="572" val="0"  ann="" c1="115" c2="143"/&gt;&lt;dp id="573" val="0"  ann="" c1="199" c2="303"/&gt;&lt;dp id="574" val="0"  ann="" c1="143" c2="268"/&gt;&lt;dp id="575" val="0"  ann="" c1="290" c2="115"/&gt;&lt;dp id="576" val="0"  ann="" c1="93" c2="38"/&gt;&lt;dp id="577" val="0"  ann="" c1="286" c2="2"/&gt;&lt;dp id="578" val="0"  ann="" c1="97" c2="323"/&gt;&lt;dp id="579" val="0"  ann="" c1="303" c2="17"/&gt;&lt;dp id="580" val="0"  ann="" c1="392" c2="171"/&gt;&lt;dp id="581" val="0"  ann="" c1="332" c2="199"/&gt;&lt;dp id="582" val="0"  ann="" c1="468" c2="75"/&gt;&lt;dp id="583" val="0"  ann="" c1="545" c2="29"/&gt;&lt;dp id="633" val="0"  ann="" c1="584" c2="624"/&gt;&lt;dp id="634" val="0"  ann="" c1="584" c2="596"/&gt;&lt;dp id="635" val="0"  ann="" c1="2" c2="584"/&gt;&lt;dp id="636" val="0"  ann="" c1="596" c2="101"/&gt;&lt;/tsk&gt;&lt;tsk id="{0CB0938F-88C7-45F0-ABEC-EB56F9D358A3}" typ="SQLTask" p="" name="Get Surrogate Key Seed" on="1" /&gt;&lt;tsk id="{DC80E3B0-403B-454E-9382-4DE05B14F2C7}" typ="SQLTask" p="" name="TRUNCATE TransformDimActivity" on="1" /&gt;&lt;pc id="{7CCDF80C-82ED-422A-97DE-8CA14868CCE8}" op="2" and="True" val="0" task1="{DC80E3B0-403B-454E-9382-4DE05B14F2C7}" task2="{0CB0938F-88C7-45F0-ABEC-EB56F9D358A3}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{6637E94D-B1AF-40D1-B66B-C1352FD00AB6}" op="2" and="True" val="0" task1="{0CB0938F-88C7-45F0-ABEC-EB56F9D358A3}" task2="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}" typ="PipelineTask" p="" name="DF Transform_DimActivity_FTV" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnderivedcolumn" name="Add Insert Defaults" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_17" /&gt;&lt;com id="29" dir="TRAN"  typ="trnderivedcolumn" name="Add Update Defaults" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_29" /&gt;&lt;com id="38" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="ADO NET Destination" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_38" /&gt;&lt;com id="75" dir="TRAN"  typ="trnconditionalsplit" name="Conditional Split" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_75" /&gt;&lt;com id="87" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_87" /&gt;&lt;com id="96" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column Type2 Columns" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_96" /&gt;&lt;com id="114" dir="TRAN"  typ="trnrowcount" name="DEST ADO NET Destination" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_114" /&gt;&lt;com id="118" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_118" /&gt;&lt;com id="122" dir="TRAN"  typ="trnderivedcolumn" name="Get CampusCodes" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_122" /&gt;&lt;com id="136" dir="TRAN"  typ="trnlookup" name="Lookup CampusID For ActivityCampusCode" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_136" /&gt;&lt;com id="164" dir="TRAN"  typ="trnlookup" name="Lookup CampusID For MinsitryCampusCode" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_164" /&gt;&lt;com id="192" dir="TRAN"  typ="trnlookup" name="Lookup MinistryID" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_192" /&gt;&lt;com id="220" dir="TRAN"  typ="trnlookup" name="Member Exist?" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_220" /&gt;&lt;com id="262" dir="SRC"  typ="srcdatareader" name="Read From Source" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_262" /&gt;&lt;com id="289" dir="TRAN"  typ="trnderivedcolumn" name="Set CampusID -1" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_289" /&gt;&lt;com id="298" dir="TRAN"  typ="trnderivedcolumn" name="Set MinsiryID -1" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_298" /&gt;&lt;com id="307" dir="TRAN"  typ="trnrowcount" name="SRC Read From Source" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_307" /&gt;&lt;com id="311" dir="TRAN"  typ="PragmaticWorks.TaskFactory.Components.Transforms.Hash.HashTransform, PragmaticWorks.TaskFactory.Components120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Hash Transform" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_311" /&gt;&lt;com id="324" dir="TRAN"  typ="PW.TaskFactory.SurrogateKeyTransform.SurrogateKeyTransform, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Surrogate Key Transform" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_324" /&gt;&lt;com id="344" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_344" /&gt;&lt;com id="353" dir="TRAN"  typ="trnunionall" name="Union All" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_353" /&gt;&lt;com id="413" dir="TRAN"  typ="trnunionall" name="Union All 1" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_413" /&gt;&lt;com id="489" dir="TRAN"  typ="trnunionall" name="Union All 2" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_489" /&gt;&lt;com id="566" dir="TRAN"  typ="trnunionall" name="Union All 3" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_566" /&gt;&lt;com id="594" dir="TRAN"  typ="trnconditionalsplit" name="Update or Do Nothing" pid="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}_594" /&gt;&lt;dp id="607" val="0"  ann="" c1="262" c2="307"/&gt;&lt;dp id="608" val="0"  ann="" c1="75" c2="566"/&gt;&lt;dp id="609" val="0"  ann="" c1="298" c2="353"/&gt;&lt;dp id="610" val="0"  ann="" c1="122" c2="311"/&gt;&lt;dp id="611" val="0"  ann="" c1="96" c2="114"/&gt;&lt;dp id="612" val="0"  ann="" c1="29" c2="489"/&gt;&lt;dp id="613" val="0"  ann="" c1="17" c2="489"/&gt;&lt;dp id="614" val="0"  ann="" c1="289" c2="413"/&gt;&lt;dp id="615" val="0"  ann="" c1="2" c2="75"/&gt;&lt;dp id="616" val="0"  ann="" c1="594" c2="118"/&gt;&lt;dp id="617" val="0"  ann="" c1="75" c2="87"/&gt;&lt;dp id="618" val="0"  ann="" c1="220" c2="594"/&gt;&lt;dp id="619" val="0"  ann="" c1="136" c2="413"/&gt;&lt;dp id="620" val="0"  ann="" c1="164" c2="413"/&gt;&lt;dp id="621" val="0"  ann="" c1="192" c2="353"/&gt;&lt;dp id="622" val="0"  ann="" c1="220" c2="324"/&gt;&lt;dp id="623" val="0"  ann="" c1="136" c2="164"/&gt;&lt;dp id="624" val="0"  ann="" c1="192" c2="298"/&gt;&lt;dp id="625" val="0"  ann="" c1="164" c2="289"/&gt;&lt;dp id="626" val="0"  ann="" c1="311" c2="136"/&gt;&lt;dp id="627" val="0"  ann="" c1="114" c2="38"/&gt;&lt;dp id="628" val="0"  ann="" c1="307" c2="2"/&gt;&lt;dp id="629" val="0"  ann="" c1="118" c2="344"/&gt;&lt;dp id="630" val="0"  ann="" c1="324" c2="17"/&gt;&lt;dp id="631" val="0"  ann="" c1="413" c2="192"/&gt;&lt;dp id="632" val="0"  ann="" c1="353" c2="220"/&gt;&lt;dp id="633" val="0"  ann="" c1="489" c2="96"/&gt;&lt;dp id="634" val="0"  ann="" c1="566" c2="122"/&gt;&lt;dp id="635" val="0"  ann="" c1="594" c2="29"/&gt;&lt;/tsk&gt;&lt;tsk id="{0CB0938F-88C7-45F0-ABEC-EB56F9D358A3}" typ="SQLTask" p="" name="Get Surrogate Key Seed" on="1" /&gt;&lt;tsk id="{DC80E3B0-403B-454E-9382-4DE05B14F2C7}" typ="SQLTask" p="" name="TRUNCATE TransformDimActivity" on="1" /&gt;&lt;pc id="{7CCDF80C-82ED-422A-97DE-8CA14868CCE8}" op="2" and="True" val="0" task1="{DC80E3B0-403B-454E-9382-4DE05B14F2C7}" task2="{0CB0938F-88C7-45F0-ABEC-EB56F9D358A3}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{6637E94D-B1AF-40D1-B66B-C1352FD00AB6}" op="2" and="True" val="0" task1="{0CB0938F-88C7-45F0-ABEC-EB56F9D358A3}" task2="{0FEFC626-3C91-4F76-8C27-1F61ABBF8256}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -10573,74 +10573,6 @@ namespace st_9067920d996047119bf15d12e3cfacbf
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Resources.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_9067920d996047119bf15d12e3cfacbf.Properties.Resources.get_ResourceManager():System.Resources.Resou" +
-    "rceManager")]
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_9067920d996047119bf15d12e3cfacbf.Properties.Resources.get_Culture():System.Globalization.CultureIn" +
-    "fo")]
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_9067920d996047119bf15d12e3cfacbf.Properties.Resources.set_Culture(System.Globalization.CultureInfo" +
-    "):Void")]
-
-namespace st_9067920d996047119bf15d12e3cfacbf.Properties {
-    
-    
-    /// <summary>
-    ///   A strongly-typed resource class, for looking up localized strings, etc.
-    /// </summary>
-    // This class was auto-generated by the StronglyTypedResourceBuilder
-    // class via a tool like ResGen or Visual Studio.
-    // To add or remove a member, edit your .ResX file then rerun ResGen
-    // with the /str option, or rebuild your VS project.
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-    internal class Resources {
-        
-        private static global::System.Resources.ResourceManager resourceMan;
-        
-        private static global::System.Globalization.CultureInfo resourceCulture;
-        
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
-        }
-        
-        /// <summary>
-        ///   Returns the cached ResourceManager instance used by this class.
-        /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if ((resourceMan == null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("st_9067920d996047119bf15d12e3cfacbf.Properties.Resources", typeof(Resources).Assembly);
-                    resourceMan = temp;
-                }
-                return resourceMan;
-            }
-        }
-        
-        /// <summary>
-        ///   Overrides the current thread's CurrentUICulture property for all
-        ///   resource lookups using this strongly typed resource class.
-        /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
-            get {
-                return resourceCulture;
-            }
-            set {
-                resourceCulture = value;
-            }
-        }
-    }
-}]]></ProjectItem>
-              <ProjectItem
                 Name="Project"
                 Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
 <c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
@@ -10690,15 +10622,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="st_9067920d996047119bf15d12e3cfacbf.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -10799,6 +10722,83 @@ using System.Runtime.CompilerServices;
     </VisualStudio>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Resources.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_9067920d996047119bf15d12e3cfacbf.Properties.Resources.get_ResourceManager():System.Resources.Resou" +
+    "rceManager")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_9067920d996047119bf15d12e3cfacbf.Properties.Resources.get_Culture():System.Globalization.CultureIn" +
+    "fo")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_9067920d996047119bf15d12e3cfacbf.Properties.Resources.set_Culture(System.Globalization.CultureInfo" +
+    "):Void")]
+
+namespace st_9067920d996047119bf15d12e3cfacbf.Properties {
+    
+    
+    /// <summary>
+    ///   A strongly-typed resource class, for looking up localized strings, etc.
+    /// </summary>
+    // This class was auto-generated by the StronglyTypedResourceBuilder
+    // class via a tool like ResGen or Visual Studio.
+    // To add or remove a member, edit your .ResX file then rerun ResGen
+    // with the /str option, or rebuild your VS project.
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    internal class Resources {
+        
+        private static global::System.Resources.ResourceManager resourceMan;
+        
+        private static global::System.Globalization.CultureInfo resourceCulture;
+        
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        internal Resources() {
+        }
+        
+        /// <summary>
+        ///   Returns the cached ResourceManager instance used by this class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if ((resourceMan == null)) {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("st_9067920d996047119bf15d12e3cfacbf.Properties.Resources", typeof(Resources).Assembly);
+                    resourceMan = temp;
+                }
+                return resourceMan;
+            }
+        }
+        
+        /// <summary>
+        ///   Overrides the current thread's CurrentUICulture property for all
+        ///   resource lookups using this strongly typed resource class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
+                return resourceCulture;
+            }
+            set {
+                resourceCulture = value;
+            }
+        }
+    }
+}]]></ProjectItem>
               <BinaryItem
                 Name="st_9067920d996047119bf15d12e3cfacbf.dll">TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1v
@@ -11539,333 +11539,109 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       <GraphLayout
         Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
+          Size="154,42"
+          Id="Package\DF Transform_DimActivity_FTV\Derived Column"
+          TopLeft="894.5,325.5" />
+        <NodeLayout
           Size="121,42"
           Id="Package\DF Transform_DimActivity_FTV\Union All"
           TopLeft="309,1127.5" />
-        <NodeLayout
-          Size="202,42"
-          Id="Package\DF Transform_DimActivity_FTV\TF Terminator Destination"
-          TopLeft="508.5,1535.5" />
-        <NodeLayout
-          Size="230,42"
-          Id="Package\DF Transform_DimActivity_FTV\Derived Column Type2 Columns"
-          TopLeft="230.5,1637.5" />
-        <NodeLayout
-          Size="285,42"
-          Id="Package\DF Transform_DimActivity_FTV\Lookup CampusID For MinsitryCampusCode"
-          TopLeft="86.0000000000001,617.5" />
-        <NodeLayout
-          Size="169,42"
-          Id="Package\DF Transform_DimActivity_FTV\TF Hash Transform"
-          TopLeft="348,413.5" />
-        <NodeLayout
-          Size="176,42"
-          Id="Package\DF Transform_DimActivity_FTV\Add Update Defaults"
-          TopLeft="257.5,1433.5" />
-        <NodeLayout
-          Size="165,42"
-          Id="Package\DF Transform_DimActivity_FTV\Get CampusCodes"
-          TopLeft="350,311.5" />
         <NodeLayout
           Size="166,42"
           Id="Package\DF Transform_DimActivity_FTV\Read From Source"
           TopLeft="349.5,5.5" />
         <NodeLayout
-          Size="130,42"
-          Id="Package\DF Transform_DimActivity_FTV\Union All 2"
-          TopLeft="280.5,1535.5" />
+          Size="155,42"
+          Id="Package\DF Transform_DimActivity_FTV\Conditional Split"
+          TopLeft="715.5,211.5" />
         <NodeLayout
-          Size="231,42"
-          Id="Package\DF Transform_DimActivity_FTV\DEST TF Terminator Destination"
-          TopLeft="494,1433.5" />
+          Size="202,42"
+          Id="Package\DF Transform_DimActivity_FTV\TF Terminator Destination"
+          TopLeft="508.5,1535.5" />
+        <NodeLayout
+          Size="285,42"
+          Id="Package\DF Transform_DimActivity_FTV\Lookup CampusID For MinsitryCampusCode"
+          TopLeft="86.0000000000001,617.5" />
+        <NodeLayout
+          Size="182,42"
+          Id="Package\DF Transform_DimActivity_FTV\Update or Do Nothing"
+          TopLeft="278.5,1331.5" />
         <NodeLayout
           Size="130,42"
           Id="Package\DF Transform_DimActivity_FTV\Union All 1"
           TopLeft="304.5,821.5" />
         <NodeLayout
-          Size="188,42"
-          Id="Package\DF Transform_DimActivity_FTV\SRC Read From Source"
-          TopLeft="338.5,107.5" />
-        <NodeLayout
-          Size="208,42"
-          Id="Package\DF Transform_DimActivity_FTV\DEST ADO NET Destination"
-          TopLeft="241.5,1739.5" />
-        <NodeLayout
-          Size="155,42"
-          Id="Package\DF Transform_DimActivity_FTV\Set MinsiryID -1"
-          TopLeft="153,1025.5" />
-        <NodeLayout
-          Size="170,42"
-          Id="Package\DF Transform_DimActivity_FTV\Add Insert Defaults"
-          TopLeft="26.5000000000002,1433.5" />
-        <NodeLayout
-          Size="148,42"
-          Id="Package\DF Transform_DimActivity_FTV\Member Exist?"
-          TopLeft="295.5,1229.5" />
-        <NodeLayout
-          Size="159,42"
-          Id="Package\DF Transform_DimActivity_FTV\Set CampusID -1"
-          TopLeft="78.0000000000001,720.5" />
-        <NodeLayout
-          Size="212,42"
-          Id="Package\DF Transform_DimActivity_FTV\TF Surrogate Key Transform"
-          TopLeft="5.50000000000023,1331.5" />
-        <NodeLayout
-          Size="164,42"
-          Id="Package\DF Transform_DimActivity_FTV\Lookup MinistryID"
-          TopLeft="287.5,923.5" />
+          Size="176,42"
+          Id="Package\DF Transform_DimActivity_FTV\Add Update Defaults"
+          TopLeft="257.5,1433.5" />
         <NodeLayout
           Size="282,42"
           Id="Package\DF Transform_DimActivity_FTV\Lookup CampusID For ActivityCampusCode"
           TopLeft="291.5,515.5" />
         <NodeLayout
-          Size="139,42"
-          Id="Package\DF Transform_DimActivity_FTV\Add Defaults"
-          TopLeft="363,209.5" />
+          Size="212,42"
+          Id="Package\DF Transform_DimActivity_FTV\TF Surrogate Key Transform"
+          TopLeft="5.50000000000023,1331.5" />
+        <NodeLayout
+          Size="130,42"
+          Id="Package\DF Transform_DimActivity_FTV\Union All 2"
+          TopLeft="280.5,1535.5" />
+        <NodeLayout
+          Size="148,42"
+          Id="Package\DF Transform_DimActivity_FTV\Member Exist?"
+          TopLeft="295.5,1229.5" />
+        <NodeLayout
+          Size="188,42"
+          Id="Package\DF Transform_DimActivity_FTV\SRC Read From Source"
+          TopLeft="338.5,107.5" />
+        <NodeLayout
+          Size="169,42"
+          Id="Package\DF Transform_DimActivity_FTV\TF Hash Transform"
+          TopLeft="348,413.5" />
         <NodeLayout
           Size="179,42"
           Id="Package\DF Transform_DimActivity_FTV\ADO NET Destination"
           TopLeft="256,1841.5" />
         <NodeLayout
-          Size="182,42"
-          Id="Package\DF Transform_DimActivity_FTV\Update or Do Nothing"
-          TopLeft="278.5,1331.5" />
-        <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Update]"
-          TopLeft="343,1373.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-16.28029296875,20.4453125,32.5605859375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 12]"
-          TopLeft="345.5,1577.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 11]"
-          TopLeft="369.5,1169.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 1]"
-          TopLeft="369.5,863.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[SurrogateKeyOutput]"
-          TopLeft="111.5,1373.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Row Count Output 21]"
-          TopLeft="609.5,1475.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Row Count Output 2]"
-          TopLeft="432.5,149.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Row Count Output 1]"
-          TopLeft="345.5,1781.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Output]"
-          TopLeft="432.5,455.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup No Match Output3]"
-          TopLeft="182.333333333333,659.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-24.8333333333333,61"
-              Start="0,0"
-              End="-24.8333333333333,53.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,20.6043265875785" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,20.6043265875785"
-                    Point2="0,24.6043265875785"
-                    Point3="-4,24.6043265875785" />
-                  <mssgle:LineSegment
-                    End="-20.8333333333333,24.6043265875785" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-20.8333333333333,24.6043265875785"
-                    Point2="-24.8333333333333,24.6043265875785"
-                    Point3="-24.8333333333333,28.6043265875785" />
-                  <mssgle:LineSegment
-                    End="-24.8333333333333,53.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-68.2230533854166,29.6043265875785,111.6127734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
+          Size="165,42"
+          Id="Package\DF Transform_DimActivity_FTV\Get CampusCodes"
+          TopLeft="350,311.5" />
+        <NodeLayout
+          Size="121,42"
+          Id="Package\DF Transform_DimActivity_FTV\Union All 3"
+          TopLeft="611.5,318.5" />
+        <NodeLayout
+          Size="155,42"
+          Id="Package\DF Transform_DimActivity_FTV\Set MinsiryID -1"
+          TopLeft="153,1025.5" />
+        <NodeLayout
+          Size="231,42"
+          Id="Package\DF Transform_DimActivity_FTV\DEST TF Terminator Destination"
+          TopLeft="494,1433.5" />
+        <NodeLayout
+          Size="208,42"
+          Id="Package\DF Transform_DimActivity_FTV\DEST ADO NET Destination"
+          TopLeft="241.5,1739.5" />
+        <NodeLayout
+          Size="159,42"
+          Id="Package\DF Transform_DimActivity_FTV\Set CampusID -1"
+          TopLeft="78.0000000000001,720.5" />
+        <NodeLayout
+          Size="170,42"
+          Id="Package\DF Transform_DimActivity_FTV\Add Insert Defaults"
+          TopLeft="26.5000000000002,1433.5" />
+        <NodeLayout
+          Size="164,42"
+          Id="Package\DF Transform_DimActivity_FTV\Lookup MinistryID"
+          TopLeft="287.5,923.5" />
+        <NodeLayout
+          Size="230,42"
+          Id="Package\DF Transform_DimActivity_FTV\Derived Column Type2 Columns"
+          TopLeft="230.5,1637.5" />
+        <NodeLayout
+          Size="139,42"
+          Id="Package\DF Transform_DimActivity_FTV\Add Defaults"
+          TopLeft="363,209.5" />
         <EdgeLayout
           Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup No Match Output]"
           TopLeft="346.166666666667,1271.5">
@@ -11903,79 +11679,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup No Match Output1]"
-          TopLeft="386.833333333333,557.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-158.333333333333,60"
-              Start="0,0"
-              End="-158.333333333333,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,20.2031029619182" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,20.2031029619182"
-                    Point2="0,24.2031029619182"
-                    Point3="-4,24.2031029619182" />
-                  <mssgle:LineSegment
-                    End="-154.333333333333,24.2031029619182" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-154.333333333333,24.2031029619182"
-                    Point2="-158.333333333333,24.2031029619182"
-                    Point3="-158.333333333333,28.2031029619182" />
-                  <mssgle:LineSegment
-                    End="-158.333333333333,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-134.973053385417,29.2031029619182,111.6127734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup No Match Output2]"
-          TopLeft="343.5,965.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-113,60"
-              Start="0,0"
-              End="-113,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,20.3478260869565" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,20.3478260869565"
-                    Point2="0,24.3478260869565"
-                    Point3="-4,24.3478260869565" />
-                  <mssgle:LineSegment
-                    End="-109,24.3478260869565" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-109,24.3478260869565"
-                    Point2="-113,24.3478260869565"
-                    Point3="-113,28.3478260869565" />
-                  <mssgle:LineSegment
-                    End="-113,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-112.30638671875,29.3478260869565,111.6127734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output3]"
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output1]"
           TopLeft="391.916666666667,965.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -11999,7 +11703,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output2]"
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output]"
           TopLeft="274.666666666667,659.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -12035,7 +11739,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output1]"
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output3]"
           TopLeft="478.166666666667,557.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -12071,7 +11775,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output]"
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup Match Output2]"
           TopLeft="392.833333333334,1271.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -12103,6 +11807,42 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
               BoundingBox="-59.8580533854167,29.3850267379679,96.3827734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[HarvestKids]"
+          TopLeft="793,253.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="178.5,72"
+              Start="0,0"
+              End="178.5,64.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,32" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,32"
+                    Point2="0,36"
+                    Point3="4,36" />
+                  <mssgle:LineSegment
+                    End="174.5,36" />
+                  <mssgle:CubicBezierSegment
+                    Point1="174.5,36"
+                    Point2="178.5,36"
+                    Point3="178.5,40" />
+                  <mssgle:LineSegment
+                    End="178.5,64.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="62.812421875,41,52.87515625,9.7490234375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -12140,6 +11880,28 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             <mssgm:EdgeLabel
               BoundingBox="80.32201171875,29.3137254901961,50.3559765625,11.6630859375"
               RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Derived Column Output6]"
+          TopLeft="502,231.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="213.5,0"
+              Start="0,0"
+              End="206,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="206,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -12323,76 +12085,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[ADO NET Source Output]"
-          TopLeft="432.5,47.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <NodeLayout
-          Size="155,42"
-          Id="Package\DF Transform_DimActivity_FTV\Conditional Split"
-          TopLeft="715.5,211.5" />
-        <NodeLayout
-          Size="121,42"
-          Id="Package\DF Transform_DimActivity_FTV\Union All 3"
-          TopLeft="611.5,318.5" />
-        <NodeLayout
-          Size="154,42"
-          Id="Package\DF Transform_DimActivity_FTV\Derived Column"
-          TopLeft="894.5,325.5" />
-        <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[HarvestKids]"
-          TopLeft="793,253.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="178.5,72"
-              Start="0,0"
-              End="178.5,64.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,32" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,32"
-                    Point2="0,36"
-                    Point3="4,36" />
-                  <mssgle:LineSegment
-                    End="174.5,36" />
-                  <mssgle:CubicBezierSegment
-                    Point1="174.5,36"
-                    Point2="178.5,36"
-                    Point3="178.5,40" />
-                  <mssgle:LineSegment
-                    End="178.5,64.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="62.812421875,41,52.87515625,9.7490234375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
           Id="Package\DF Transform_DimActivity_FTV.Paths[Conditional Split Default Output]"
           TopLeft="768.5,253.5">
           <EdgeLayout.Curve>
@@ -12428,27 +12120,20 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <AnnotationLayout
-          Text="&quot;Harvest kids&quot; family should map to &quot;harvest kids&quot;"
-          ParentId="Package\DF Transform_DimActivity_FTV"
-          FontInfo="{assembly:Null}"
-          Size="293,40"
-          Id="bf065ca6-7009-4dbf-8a52-286cd50bedc3"
-          TopLeft="1032.5,254.5" />
         <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Derived Column Output6]"
-          TopLeft="502,231.5">
+          Id="Package\DF Transform_DimActivity_FTV.Paths[ADO NET Source Output]"
+          TopLeft="432.5,47.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="213.5,0"
+              EndConnector="0,60"
               Start="0,0"
-              End="206,0">
+              End="0,52.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="206,0" />
+                    End="0,52.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -12458,7 +12143,31 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 13]"
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Update]"
+          TopLeft="343,1373.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-16.28029296875,20.4453125,32.5605859375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 1]"
           TopLeft="611.5,336">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -12479,40 +12188,300 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 13]"
+          TopLeft="345.5,1577.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 12]"
+          TopLeft="369.5,1169.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Union All Output 11]"
+          TopLeft="369.5,863.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[SurrogateKeyOutput]"
+          TopLeft="111.5,1373.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Row Count Output 21]"
+          TopLeft="609.5,1475.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Row Count Output 2]"
+          TopLeft="432.5,149.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Row Count Output 1]"
+          TopLeft="345.5,1781.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Output]"
+          TopLeft="432.5,455.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup No Match Output3]"
+          TopLeft="182.333333333333,659.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-24.8333333333333,61"
+              Start="0,0"
+              End="-24.8333333333333,53.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.6043265875785" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,20.6043265875785"
+                    Point2="0,24.6043265875785"
+                    Point3="-4,24.6043265875785" />
+                  <mssgle:LineSegment
+                    End="-20.8333333333333,24.6043265875785" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-20.8333333333333,24.6043265875785"
+                    Point2="-24.8333333333333,24.6043265875785"
+                    Point3="-24.8333333333333,28.6043265875785" />
+                  <mssgle:LineSegment
+                    End="-24.8333333333333,53.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-68.2230533854166,29.6043265875785,111.6127734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup No Match Output2]"
+          TopLeft="343.5,965.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-113,60"
+              Start="0,0"
+              End="-113,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.3478260869565" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,20.3478260869565"
+                    Point2="0,24.3478260869565"
+                    Point3="-4,24.3478260869565" />
+                  <mssgle:LineSegment
+                    End="-109,24.3478260869565" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-109,24.3478260869565"
+                    Point2="-113,24.3478260869565"
+                    Point3="-113,28.3478260869565" />
+                  <mssgle:LineSegment
+                    End="-113,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-112.30638671875,29.3478260869565,111.6127734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_DimActivity_FTV.Paths[Lookup No Match Output1]"
+          TopLeft="386.833333333333,557.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-158.333333333333,60"
+              Start="0,0"
+              End="-158.333333333333,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.2031029619182" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,20.2031029619182"
+                    Point2="0,24.2031029619182"
+                    Point3="-4,24.2031029619182" />
+                  <mssgle:LineSegment
+                    End="-154.333333333333,24.2031029619182" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-154.333333333333,24.2031029619182"
+                    Point2="-158.333333333333,24.2031029619182"
+                    Point3="-158.333333333333,28.2031029619182" />
+                  <mssgle:LineSegment
+                    End="-158.333333333333,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-134.973053385417,29.2031029619182,111.6127734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <AnnotationLayout
+          Text="&quot;Harvest kids&quot; family should map to &quot;harvest kids&quot;"
+          ParentId="Package\DF Transform_DimActivity_FTV"
+          FontInfo="{assembly:Null}"
+          Size="293,40"
+          Id="bf065ca6-7009-4dbf-8a52-286cd50bedc3"
+          TopLeft="1032.5,254.5" />
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
-  <PipelineComponentMetadata
-    design-time-name="Package\DF Transform_DimActivity_FTV\Lookup CampusID For MinsitryCampusCode">
-    <Properties>
-      <Property>
-        <Name>OverwriteParamsSQLProp</Name>
-        <Value
-          type="q2:string">false</Value>
-      </Property>
-      <Property>
-        <Name>UsedTableName</Name>
-        <Value
-          type="q3:string">[DW].[DimCampus]</Value>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q4:string">0</Value>
-      </Property>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\DF Transform_DimActivity_FTV\Read From Source">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
   <PipelineComponentMetadata
     design-time-name="Package\DF Transform_DimActivity_FTV\Member Exist?">
     <Properties>
@@ -12577,6 +12546,37 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <Value
           type="q4:string">0</Value>
       </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\DF Transform_DimActivity_FTV\Lookup CampusID For MinsitryCampusCode">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:string">false</Value>
+      </Property>
+      <Property>
+        <Name>UsedTableName</Name>
+        <Value
+          type="q3:string">[DW].[DimCampus]</Value>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q4:string">0</Value>
+      </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\DF Transform_DimActivity_FTV\Read From Source">
+    <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
       </Property>
