@@ -332,3 +332,27 @@ UPDATE SET
     , Target.HashValue		   = Source.HashValue
 ;
 
+--DimEntity
+MERGE INTO DW.DimEntity AS Target
+USING ( VALUES
+    (-1, 3, ''    , 'Undefined'                ,  -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (1 , 3, 'HBF' , 'Harvest Bible Fellowship' ,  -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (2 , 3, 'HCA' , 'Harvest Christian Academy',  -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (3 , 3, 'HBC' , 'Harvest Bible Chapel'     ,  -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (4 , 3, 'WITW', 'Walk in the Word'         ,  -1, GETUTCDATE(), GETUTCDATE(), '')
+) AS Source
+(EntityID, TenantID, Code, Name, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+ ON Target.EntityID = Source.EntityID
+    AND Target.TenantID = Source.TenantID
+WHEN NOT MATCHED BY Target THEN
+    INSERT (EntityID, TenantID, Code, Name, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    VALUES (EntityID, TenantID, Code, Name, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+WHEN MATCHED THEN
+UPDATE SET
+      Target.Name = Source.Name
+    , Target.Code = Source.Code
+    , Target.ExecutionID	   = Source.ExecutionID
+    , Target.InsertedDateTime  = Source.InsertedDateTime
+    , Target.UpdatedDateTime   = Source.UpdatedDateTime
+    , Target.HashValue		   = Source.HashValue
+;
