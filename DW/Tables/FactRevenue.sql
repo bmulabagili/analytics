@@ -1,11 +1,12 @@
 ﻿CREATE TABLE [DW].FactRevenue
 (
-    RevenueID       INT NOT NULL
-  , TenantID           INT NOT NULL
-  , DateID          INT NOT NULL
-  , EntityID		INT NOT NULL -- for now Hardcoded to HBC, HBF, HCA, WITW in post deploy
+    RevenueID			INT NOT NULL
+  , TenantID			INT NOT NULL
+  , DateID				INT NOT NULL
+  , EntityID			INT NOT NULL -- for now Hardcoded to HBC, HBF, HCA, WITW in post deploy
   , FinancialCategoryID INT NOT NULL -- covers all the SCodes except 2
-  , Amount			MONEY NOT NULL
+  , CampusID			INT NOT NULL
+  , Amount				MONEY NOT NULL
 
   --ETL Specific Columns
   , [ExecutionID]      VARCHAR(50) NOT NULL

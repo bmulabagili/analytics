@@ -1,12 +1,13 @@
 ﻿CREATE TABLE [DW].FactBudgetExpense
 (
-    BudgetExpenseID       INT NOT NULL
-  , TenantID           INT NOT NULL
-  , BudgetYear      INT NOT NULL
-  , BudgetMonth     TINYINT NOT NULL
-  , EntityID		INT NOT NULL -- for now Hardcoded to HBC, HBF, HCA, WITW in post deploy
+    BudgetExpenseID     INT NOT NULL
+  , TenantID			INT NOT NULL
+  , BudgetYear			INT NOT NULL
+  , BudgetMonth			TINYINT NOT NULL
+  , EntityID			INT NOT NULL -- for now Hardcoded to HBC, HBF, HCA, WITW in post deploy
   , FinancialCategoryID INT NOT NULL -- covers all the SCodes except 2
-  , Amount			MONEY NOT NULL
+  , CampusID			INT NOT NULL
+  , Amount				MONEY NOT NULL
 
   --ETL Specific Columns
   , [ExecutionID]      VARCHAR(50) NOT NULL

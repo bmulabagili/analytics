@@ -18,7 +18,8 @@ USING (VALUES
     , (3, 'FellowshipOne_FTV', NULL)
     , (4, 'FellowshipOne_AssimilationSteps', NULL)
     , (5, 'FellowshipOne_SmallGroupStatus', NULL)
-	, (6, 'MIP_RevenueAndExpense', NULL)
+	, (6, 'MIP_RevenueAndExpense', NULL)	
+	, (7, 'MIP_Budget', NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
@@ -51,7 +52,15 @@ UPDATE SET
 --base connectionstrings
 MERGE INTO dbo.ConnectionString AS Target
 USING (VALUES
-	(1, N'Data Source=devharvestbible.database.windows.net;Persist Security Info=True;Initial Catalog=HarvestBible;packet size=4096', 'Harvest bible connection string.', -1, GETUTCDATE(), GETUTCDATE(), '')
+    (0, N'FlatFileSource', N'FlatFileSource', -1, GETUTCDATE(), GETUTCDATE(), '')
+  ,	(1, N'Data Source=devharvestbible.database.windows.net;Persist Security Info=True;Initial Catalog=HarvestBible;packet size=4096', 'Harvest bible connection string.', -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (2, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;Persist Security Info=True;Initial Catalog=CHC;packet size=4096;UserID=HBCMIPServices01;Password=S3rv!ce$;', 'MIP-CHC', -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (3, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;Persist Security Info=True;Initial Catalog=HBC;packet size=4096;UserID=HBCMIPServices01;Password=S3rv!ce$;', 'MIP-HBC', -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (4, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;Persist Security Info=True;Initial Catalog=HBF;packet size=4096;UserID=HBCMIPServices01;Password=S3rv!ce$;', 'MIP-HBF', -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (5, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;Persist Security Info=True;Initial Catalog=HCA;packet size=4096;UserID=HBCMIPServices01;Password=S3rv!ce$;', 'MIP-HCA', -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (6, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;Persist Security Info=True;Initial Catalog=HMP;packet size=4096;UserID=HBCMIPServices01;Password=S3rv!ce$;', 'MIP-HMP', -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (7, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;Persist Security Info=True;Initial Catalog=WITW;packet size=4096;UserID=HBCMIPServices01;Password=S3rv!ce$;', 'MIP-WITW', -1, GETUTCDATE(), GETUTCDATE(), '')
+	
 )
 AS Source (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 ON Target.ConnectionStringID = Source.ConnectionStringID
@@ -74,16 +83,28 @@ INSERT INTO Tenant
 VALUES(3, 'HBC',1, 1, -1, GETUTCDATE(), GETUTCDATE(), '');
 
 --enable all defined ETLPackages as active for HBC
-INSERT INTO TenantEtlProcess
-SELECT 3, src.ETLProcessID
-FROM ETLProcess src
-LEFT JOIN TenantEtlProcess dest
-    ON dest.TenantID = 3
-    AND src.ETLProcessID = dest.ETLProcessID
-WHERE
-    dest.ETLProcessID IS NULL;
-
-
+--MIP imports for HBC
+--short term: delete the table and rebuild
+DELETE FROM TenantETLProcess;
+INSERT INTO TenantETLProcess
+VALUES 
+    (3, 1, 1)
+  , (3, 2, 0)
+  , (3, 3, 0)
+  , (3, 4, 0)
+  , (3, 5, 0)
+  , (3, 6, 2)
+  , (3, 6, 3)
+  , (3, 6, 4)
+  , (3, 6, 5)
+  , (3, 6, 6)
+  , (3, 6, 7)
+  , (3, 7, 2)
+  , (3, 7, 3)
+  , (3, 7, 4)
+  , (3, 7, 5)
+  , (3, 7, 6)
+  , (3, 7, 7);
 
 --base tenants (including HBC
 MERGE INTO Tenant AS Target
