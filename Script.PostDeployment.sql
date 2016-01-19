@@ -78,9 +78,24 @@ VALUES (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, Updat
 ;
 
 --define HBC Tenant
-INSERT INTO Tenant
-( TenantID, TenantName, IsActive, ConnectionStringID, ExecutionID, InsertedDateTime, UpdatedDateTime, Hashvalue)
-VALUES(3, 'HBC',1, 1, -1, GETUTCDATE(), GETUTCDATE(), '');
+MERGE INTO Tenant AS Target
+ USING (VALUES
+	(3, 'HBC',1, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+) AS Source ( TenantID, TenantName, IsActive, ConnectionStringID, ExecutionID, InsertedDateTime, UpdatedDateTime, Hashvalue)
+ON Target.TenantID = Source.TenantID
+WHEN MATCHED THEN 
+UPDATE SET 
+      Target.TenantName          = Source.TenantName
+    , Target.IsActive              = Source.IsActive
+	, Target.ConnectionStringID              = Source.ConnectionStringID
+    , Target.ExecutionID	      = Source.ExecutionID
+    , Target.InsertedDateTime  = Source.InsertedDateTime
+    , Target.UpdatedDateTime   = Source.UpdatedDateTime
+    , Target.HashValue		 = Source.HashValue
+WHEN NOT MATCHED BY TARGET THEN
+INSERT  ( TenantID, TenantName, IsActive, ConnectionStringID, ExecutionID, InsertedDateTime, UpdatedDateTime, Hashvalue)
+VALUES  ( TenantID, TenantName, IsActive, ConnectionStringID, ExecutionID, InsertedDateTime, UpdatedDateTime, Hashvalue)
+;
 
 --enable all defined ETLPackages as active for HBC
 --MIP imports for HBC
@@ -292,21 +307,36 @@ UPDATE SET
     , Target.HashValue		   = Source.HashValue
 ;
 --handle the 'CS - Worship  & Production' for each campus insert
-INSERT INTO DW.DimMinistry
-SELECT 
-      ROW_NUMBER() OVER (ORDER BY CampusID) + 1 AS MinistryID
-    , 3 AS TenantID
-    , 'CS - Worship  & Production' AS Name
-    , CampusID
-    , '1/1/1900' AS StartDateTime
-    , NULL AS EndDateTime
-    , 1  AS Active
-    , -1 AS ExecutionID
-    , GETUTCDATE() AS InsertedDateTime
-    , GETUTCDATE() AS UpdatedDateTime
-    , '' AS HashValue
-FROM DW.DimCampus 
+MERGE INTO DW.DimMinistry AS Target
+USING (
+	SELECT 
+		  ROW_NUMBER() OVER (ORDER BY src.CampusID) + 1 AS MinistryID
+		, 3 AS TenantID
+		, 'CS - Worship  & Production' AS Name
+		, CampusID
+		, '1/1/1900' AS StartDateTime
+		, NULL AS EndDateTime
+		, 1  AS Active
+		, -1 AS ExecutionID
+		, GETUTCDATE() AS InsertedDateTime
+		, GETUTCDATE() AS UpdatedDateTime
+		, '' AS HashValue
+	FROM DW.DimCampus src) AS Source
+	ON source.MinistryID = Target.MinistryID
+	AND source.TenantID = Target.TenantID
+WHEN NOT MATCHED BY Target THEN
+    INSERT (MinistryID, TenantID, Name, CampusID, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+    VALUES (MinistryID, TenantID, Name, CampusID, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+WHEN MATCHED THEN
+UPDATE SET
+      Target.Name       = Source.Name
+    , Target.CampusID   = Source.CampusID
+    , Target.ExecutionID	   = Source.ExecutionID
+    , Target.InsertedDateTime  = Source.InsertedDateTime
+    , Target.UpdatedDateTime   = Source.UpdatedDateTime
+    , Target.HashValue		   = Source.HashValue
 ;
+
 
 
 --DimActivity
