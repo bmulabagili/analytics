@@ -3,7 +3,7 @@
     BudgetExpenseID			INT NOT NULL
   , TenantID				INT NOT NULL
   , BudgetYear				INT NOT NULL
-  , BudgetMonth				TINYINT NOT NULL
+  , BudgetMonth				INT NOT NULL
   , EntityID				INT NOT NULL -- for now Hardcoded to HBC, HBF, HCA, WITW in post deploy
   , FinancialCategoryID		INT NOT NULL -- covers all the SCodes except 2
   , CampusID				INT NOT NULL
