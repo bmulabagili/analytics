@@ -12,7 +12,12 @@
   , FundName					NVARCHAR(100) NULL
   , FundType					NVARCHAR(3) NULL
   , FundDesignationCode			NVARCHAR(3) NULL
-  --sCodeIDf_2 -- now in DimEntity
+  --sCodeIDf_2 -- ALSO in DimEntity
+  , EntityID					INT
+  , EntityCode					NVARCHAR(20) NOT NULL
+  , EntityName					NVARCHAR(100) NULL
+  , EntityType					NVARCHAR(3) NULL
+  , EntityDesignationCode		NVARCHAR(3) NULL
   --sCodeIDf_3 -- for HBC this is campus
   , CampusCode					NVARCHAR(20) NULL
   , CampusName					NVARCHAR(100) NULL
