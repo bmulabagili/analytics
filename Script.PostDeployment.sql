@@ -54,12 +54,13 @@ MERGE INTO dbo.ConnectionString AS Target
 USING (VALUES
     (0, N'FlatFileSource', N'FlatFileSource', -1, GETUTCDATE(), GETUTCDATE(), '')
   ,	(1, N'Data Source=devharvestbible.database.windows.net;Persist Security Info=True;Initial Catalog=HarvestBible;packet size=4096', 'Harvest bible connection string.', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (2, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;Persist Security Info=True;Initial Catalog=CHC;packet size=4096;UserID=HBCMIPServices01;Password=S3rv!ce$;', 'MIP-CHC', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (3, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;Persist Security Info=True;Initial Catalog=HBC;packet size=4096;UserID=HBCMIPServices01;Password=S3rv!ce$;', 'MIP-HBC', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (4, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;Persist Security Info=True;Initial Catalog=HBF;packet size=4096;UserID=HBCMIPServices01;Password=S3rv!ce$;', 'MIP-HBF', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (5, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;Persist Security Info=True;Initial Catalog=HCA;packet size=4096;UserID=HBCMIPServices01;Password=S3rv!ce$;', 'MIP-HCA', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (6, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;Persist Security Info=True;Initial Catalog=HMP;packet size=4096;UserID=HBCMIPServices01;Password=S3rv!ce$;', 'MIP-HMP', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (7, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;Persist Security Info=True;Initial Catalog=WITW;packet size=4096;UserID=HBCMIPServices01;Password=S3rv!ce$;', 'MIP-WITW', -1, GETUTCDATE(), GETUTCDATE(), '')
+        --Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=52projectsMIP;Password=Proj3ct$;Initial Catalog=CHC;Provider=SQLNCLI11.1;Auto Translate=False;
+  , (2, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=CHC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-CHC', -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (3, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HBC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBC', -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (4, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HBF;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBF', -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (5, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HCA;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HCA', -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (6, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HMP;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HMP', -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (7, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=WITW;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-WITW', -1, GETUTCDATE(), GETUTCDATE(), '')
 	
 )
 AS Source (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
