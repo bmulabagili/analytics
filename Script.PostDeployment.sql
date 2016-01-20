@@ -408,7 +408,6 @@ UPDATE SET
     , Target.UpdatedDateTime   = Source.UpdatedDateTime
     , Target.HashValue		   = Source.HashValue
 ;
-
 TRUNCATE TABLE GLReportGrouping
 INSERT INTO GLReportGrouping
 SELECT 4,'15126', 'Expense' UNION
@@ -458,7 +457,6 @@ SELECT 1,'46030', 'Expense' UNION
 SELECT 1,'49011', 'Expense' UNION
 SELECT 3,'49099', 'Expense' UNION
 SELECT 3,'50022', 'Expense' UNION
-SELECT 5,'50022', 'Expense' UNION
 SELECT 3,'50060', 'Expense' UNION
 SELECT 3,'50071', 'Expense' UNION
 SELECT 3,'50073', 'Expense' UNION
@@ -468,7 +466,6 @@ SELECT 3,'50140', 'Expense' UNION
 SELECT 3,'50149', 'Expense' UNION
 SELECT 3,'50161', 'Expense' UNION
 SELECT 5,'50170', 'Expense' UNION
-SELECT 6,'50170', 'Expense' UNION
 SELECT 6,'50171', 'Expense' UNION
 SELECT 3,'50182', 'Expense' UNION
 SELECT 3,'52010', 'Expense' UNION
@@ -574,56 +571,36 @@ SELECT 3, '30005', 'Revenue' UNION
 SELECT 3, '30007', 'Revenue' UNION
 SELECT 3, '30008', 'Revenue' UNION
 SELECT 1, '30010', 'Revenue' UNION
-SELECT 1, '30010', 'Revenue' UNION
-SELECT 1, '30010', 'Revenue' UNION
-SELECT 3, '30010', 'Revenue' UNION
 SELECT 1, '30012', 'Revenue' UNION
 SELECT 3, '30015', 'Revenue' UNION
 SELECT 1, '30016', 'Revenue' UNION
 SELECT 3, '30018', 'Revenue' UNION
 SELECT 2, '30022', 'Revenue' UNION
-SELECT 3, '30022', 'Revenue' UNION
 SELECT 1, '30024', 'Revenue' UNION
 SELECT 1, '30026', 'Revenue' UNION
 SELECT 1, '30030', 'Revenue' UNION
-SELECT 1, '30030', 'Revenue' UNION
 SELECT 2, '30031', 'Revenue' UNION
-SELECT 3, '30034', 'Revenue' UNION
 SELECT 3, '30034', 'Revenue' UNION
 SELECT 3, '30035', 'Revenue' UNION
 SELECT 3, '30038', 'Revenue' UNION
 SELECT 3, '30039', 'Revenue' UNION
 SELECT 3, '30040', 'Revenue' UNION
-SELECT 3, '30040', 'Revenue' UNION
 SELECT 3, '30041', 'Revenue' UNION
-SELECT 3, '30042', 'Revenue' UNION
-SELECT 3, '30042', 'Revenue' UNION
 SELECT 3, '30042', 'Revenue' UNION
 SELECT 3, '30043', 'Revenue' UNION
 SELECT 3, '30046', 'Revenue' UNION
-SELECT 3, '30046', 'Revenue' UNION
 SELECT 3, '30058', 'Revenue' UNION
-SELECT 3, '30058', 'Revenue' UNION
-SELECT 3, '30058', 'Revenue' UNION
-SELECT 3, '30060', 'Revenue' UNION
 SELECT 3, '30060', 'Revenue' UNION
 SELECT 3, '30065', 'Revenue' UNION
 SELECT 2, '30067', 'Revenue' UNION
 SELECT 3, '30075', 'Revenue' UNION
-SELECT 1, '30075', 'Revenue' UNION
 SELECT 3, '30085', 'Revenue' UNION
-SELECT 3, '30085', 'Revenue' UNION
-SELECT 3, '30090', 'Revenue' UNION
-SELECT 1, '30090', 'Revenue' UNION
 SELECT 3, '30090', 'Revenue' UNION
 SELECT 3, '30091', 'Revenue' UNION
 SELECT 3, '30093', 'Revenue' UNION
-SELECT 3, '30093', 'Revenue' UNION
 SELECT 3, '30094', 'Revenue' UNION
 SELECT 3, '30095', 'Revenue' UNION
-SELECT 1, '30095', 'Revenue' UNION
 SELECT 3, '30096', 'Revenue' UNION
-SELECT 3, '30097', 'Revenue' UNION
 SELECT 3, '30097', 'Revenue' UNION
 SELECT 3, '30098', 'Revenue' UNION
 SELECT 3, '30100', 'Revenue' UNION
@@ -694,4 +671,3 @@ SELECT 3, '37030', 'Revenue' UNION
 SELECT 3, '37030', 'Revenue' UNION
 SELECT 3, '37432', 'Revenue' UNION
 SELECT 3, '39999', 'Revenue' 
-
