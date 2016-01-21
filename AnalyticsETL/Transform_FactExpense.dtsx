@@ -12,8 +12,8 @@
   DTS:ObjectName="Transform_FactExpense"
   DTS:PackageType="5"
   DTS:ProtectionLevel="2"
-  DTS:VersionBuild="186"
-  DTS:VersionGUID="{A8B7D917-62C6-4A11-B8E7-F0535A278B53}">
+  DTS:VersionBuild="188"
+  DTS:VersionGUID="{E9DF4D3B-6D76-42D3-9DD6-357739C38BAC}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:LogProviders>
@@ -630,11 +630,11 @@
                       externalMetadataColumnId="Package\DF Transform_FactExpense\ADO NET Destination.Inputs[ADO NET Destination Input].ExternalColumns[ETLActionID]"
                       lineageId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[ETLActionID]" />
                     <inputColumn
-                      refId="Package\DF Transform_FactExpense\ADO NET Destination.Inputs[ADO NET Destination Input].Columns[CurDebit]"
+                      refId="Package\DF Transform_FactExpense\ADO NET Destination.Inputs[ADO NET Destination Input].Columns[Amount]"
                       cachedDataType="cy"
-                      cachedName="CurDebit"
+                      cachedName="Amount"
                       externalMetadataColumnId="Package\DF Transform_FactExpense\ADO NET Destination.Inputs[ADO NET Destination Input].ExternalColumns[Amount]"
-                      lineageId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[CurDebit]" />
+                      lineageId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[Amount]" />
                   </inputColumns>
                   <externalMetadataColumns
                     isUsed="True">
@@ -1007,7 +1007,7 @@ where [refTable].[TenantID] = ? and [refTable].[Code] = ?</property>
                   containsID="true"
                   dataType="System.String"
                   description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
-                  name="ParameterMap">#{Package\DF Transform_FactExpense\2470:invalid};#{Package\DF Transform_FactExpense\2471:invalid};</property>
+                  name="ParameterMap">#{Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[TenantID]};#{Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Error Output].Columns[TenantID]};</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -1750,9 +1750,7 @@ where [refTable].[TenantID] = ? and [refTable].[DateID] = ? and [refTable].[Enti
 	, LTRIM(RTRIM(sCodeIDf_8	)) AS CategoryCode
 	, LTRIM(RTRIM(sCodeIDf_9	)) AS AccountingCode9
 	, LTRIM(RTRIM(sCodeIDf_10	)) AS AccountingCode10
-	, SUM(CurDebit) AS CurDebit
-	, SUM(curSrcDebit) AS curSrcDebit
-	, SUM(curInvSrcDebit) AS curInvSrcDebit
+	, SUM(CurDebit - CurCredit) AS Amount
 FROM [Extract].[MIP_RevenueAndExpense] --27002
 WHERE AccountingType0 = 'EXP'
 GROUP BY
@@ -1956,31 +1954,13 @@ GROUP BY
                       name="AccountingCode10"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[CurDebit]"
+                      refId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[Amount]"
                       dataType="cy"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].ExternalColumns[CurDebit]"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[CurDebit]"
-                      name="CurDebit"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[curSrcDebit]"
-                      dataType="cy"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].ExternalColumns[curSrcDebit]"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[curSrcDebit]"
-                      name="curSrcDebit"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[curInvSrcDebit]"
-                      dataType="cy"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].ExternalColumns[curInvSrcDebit]"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[curInvSrcDebit]"
-                      name="curInvSrcDebit"
+                      externalMetadataColumnId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].ExternalColumns[Amount]"
+                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[Amount]"
+                      name="Amount"
                       truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns
@@ -2059,17 +2039,9 @@ GROUP BY
                       length="20"
                       name="AccountingCode10" />
                     <externalMetadataColumn
-                      refId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].ExternalColumns[CurDebit]"
+                      refId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].ExternalColumns[Amount]"
                       dataType="cy"
-                      name="CurDebit" />
-                    <externalMetadataColumn
-                      refId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].ExternalColumns[curSrcDebit]"
-                      dataType="cy"
-                      name="curSrcDebit" />
-                    <externalMetadataColumn
-                      refId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].ExternalColumns[curInvSrcDebit]"
-                      dataType="cy"
-                      name="curInvSrcDebit" />
+                      name="Amount" />
                   </externalMetadataColumns>
                 </output>
                 <output
@@ -2166,20 +2138,10 @@ GROUP BY
                       lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Error Output].Columns[AccountingCode10]"
                       name="AccountingCode10" />
                     <outputColumn
-                      refId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Error Output].Columns[CurDebit]"
+                      refId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Error Output].Columns[Amount]"
                       dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Error Output].Columns[CurDebit]"
-                      name="CurDebit" />
-                    <outputColumn
-                      refId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Error Output].Columns[curSrcDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Error Output].Columns[curSrcDebit]"
-                      name="curSrcDebit" />
-                    <outputColumn
-                      refId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Error Output].Columns[curInvSrcDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Error Output].Columns[curInvSrcDebit]"
-                      name="curInvSrcDebit" />
+                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Error Output].Columns[Amount]"
+                      name="Amount" />
                     <outputColumn
                       refId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Error Output].Columns[ErrorCode]"
                       dataType="i4"
@@ -2481,20 +2443,10 @@ GROUP BY
                   name="Input">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\DF Transform_FactExpense\TF Hash Transform.Inputs[Input].Columns[CurDebit]"
+                      refId="Package\DF Transform_FactExpense\TF Hash Transform.Inputs[Input].Columns[Amount]"
                       cachedDataType="cy"
-                      cachedName="CurDebit"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[CurDebit]" />
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\TF Hash Transform.Inputs[Input].Columns[curSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[curSrcDebit]" />
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\TF Hash Transform.Inputs[Input].Columns[curInvSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curInvSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[curInvSrcDebit]" />
+                      cachedName="Amount"
+                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[Amount]" />
                   </inputColumns>
                   <externalMetadataColumns />
                 </input>
@@ -2519,7 +2471,7 @@ GROUP BY
                         <property
                           containsID="true"
                           dataType="System.String"
-                          name="InputIDs">#{Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[CurDebit]},#{Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[curSrcDebit]},#{Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[curInvSrcDebit]}</property>
+                          name="InputIDs">#{Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[Amount]}</property>
                       </properties>
                     </outputColumn>
                   </outputColumns>
@@ -2904,45 +2856,6 @@ GROUP BY
                       </properties>
                     </inputColumn>
                     <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All.Inputs[Union All Input 1].Columns[CurDebit]"
-                      cachedDataType="cy"
-                      cachedName="CurDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[CurDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[CurDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All.Inputs[Union All Input 1].Columns[curSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[curSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[curSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All.Inputs[Union All Input 1].Columns[curInvSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curInvSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[curInvSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[curInvSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
                       refId="Package\DF Transform_FactExpense\Union All.Inputs[Union All Input 1].Columns[UpdatedDateTime]"
                       cachedDataType="dbTimeStamp"
                       cachedName="UpdatedDateTime"
@@ -3073,6 +2986,19 @@ GROUP BY
                           dataType="System.Int32"
                           description="Output column lineage ID"
                           name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[ETLActionID]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DF Transform_FactExpense\Union All.Inputs[Union All Input 1].Columns[Amount]"
+                      cachedDataType="cy"
+                      cachedName="Amount"
+                      lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[Amount]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[Amount]}</property>
                       </properties>
                     </inputColumn>
                   </inputColumns>
@@ -3292,45 +3218,6 @@ GROUP BY
                       </properties>
                     </inputColumn>
                     <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All.Inputs[Union All Input 2].Columns[CurDebit]"
-                      cachedDataType="cy"
-                      cachedName="CurDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[CurDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[CurDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All.Inputs[Union All Input 2].Columns[curSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[curSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[curSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All.Inputs[Union All Input 2].Columns[curInvSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curInvSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[curInvSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[curInvSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
                       refId="Package\DF Transform_FactExpense\Union All.Inputs[Union All Input 2].Columns[UpdatedDateTime]"
                       cachedDataType="dbTimeStamp"
                       cachedName="UpdatedDateTime"
@@ -3449,6 +3336,19 @@ GROUP BY
                           name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[ExpenseID]}</property>
                       </properties>
                     </inputColumn>
+                    <inputColumn
+                      refId="Package\DF Transform_FactExpense\Union All.Inputs[Union All Input 2].Columns[Amount]"
+                      cachedDataType="cy"
+                      cachedName="Amount"
+                      lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[Amount]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[Amount]}</property>
+                      </properties>
+                    </inputColumn>
                   </inputColumns>
                   <externalMetadataColumns />
                 </input>
@@ -3554,21 +3454,6 @@ GROUP BY
                       lineageId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[AccountingCode10]"
                       name="AccountingCode10" />
                     <outputColumn
-                      refId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[CurDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[CurDebit]"
-                      name="CurDebit" />
-                    <outputColumn
-                      refId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[curSrcDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[curSrcDebit]"
-                      name="curSrcDebit" />
-                    <outputColumn
-                      refId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[curInvSrcDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[curInvSrcDebit]"
-                      name="curInvSrcDebit" />
-                    <outputColumn
                       refId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[UpdatedDateTime]"
                       dataType="dbTimeStamp"
                       lineageId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[UpdatedDateTime]"
@@ -3621,6 +3506,11 @@ GROUP BY
                       dataType="i4"
                       lineageId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[ETLActionID]"
                       name="ETLActionID" />
+                    <outputColumn
+                      refId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[Amount]"
+                      dataType="cy"
+                      lineageId="Package\DF Transform_FactExpense\Union All.Outputs[Union All Output 1].Columns[Amount]"
+                      name="Amount" />
                   </outputColumns>
                   <externalMetadataColumns />
                 </output>
@@ -3847,45 +3737,6 @@ GROUP BY
                       </properties>
                     </inputColumn>
                     <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 1.Inputs[Union All Input 1].Columns[CurDebit]"
-                      cachedDataType="cy"
-                      cachedName="CurDebit"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[CurDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[CurDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 1.Inputs[Union All Input 1].Columns[curSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[curSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[curSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 1.Inputs[Union All Input 1].Columns[curInvSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curInvSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[curInvSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[curInvSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
                       refId="Package\DF Transform_FactExpense\Union All 1.Inputs[Union All Input 1].Columns[UpdatedDateTime]"
                       cachedDataType="dbTimeStamp"
                       cachedName="UpdatedDateTime"
@@ -3950,6 +3801,19 @@ GROUP BY
                           dataType="System.Int32"
                           description="Output column lineage ID"
                           name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[EntityID]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DF Transform_FactExpense\Union All 1.Inputs[Union All Input 1].Columns[Amount]"
+                      cachedDataType="cy"
+                      cachedName="Amount"
+                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[Amount]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[Amount]}</property>
                       </properties>
                     </inputColumn>
                   </inputColumns>
@@ -4169,45 +4033,6 @@ GROUP BY
                       </properties>
                     </inputColumn>
                     <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 1.Inputs[Union All Input 2].Columns[CurDebit]"
-                      cachedDataType="cy"
-                      cachedName="CurDebit"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[CurDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[CurDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 1.Inputs[Union All Input 2].Columns[curSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[curSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[curSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 1.Inputs[Union All Input 2].Columns[curInvSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curInvSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[curInvSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[curInvSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
                       refId="Package\DF Transform_FactExpense\Union All 1.Inputs[Union All Input 2].Columns[UpdatedDateTime]"
                       cachedDataType="dbTimeStamp"
                       cachedName="UpdatedDateTime"
@@ -4272,6 +4097,19 @@ GROUP BY
                           dataType="System.Int32"
                           description="Output column lineage ID"
                           name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[EntityID]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DF Transform_FactExpense\Union All 1.Inputs[Union All Input 2].Columns[Amount]"
+                      cachedDataType="cy"
+                      cachedName="Amount"
+                      lineageId="Package\DF Transform_FactExpense\Read From Source.Outputs[ADO NET Source Output].Columns[Amount]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[Amount]}</property>
                       </properties>
                     </inputColumn>
                   </inputColumns>
@@ -4379,21 +4217,6 @@ GROUP BY
                       lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[AccountingCode10]"
                       name="AccountingCode10" />
                     <outputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[CurDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[CurDebit]"
-                      name="CurDebit" />
-                    <outputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[curSrcDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[curSrcDebit]"
-                      name="curSrcDebit" />
-                    <outputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[curInvSrcDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[curInvSrcDebit]"
-                      name="curInvSrcDebit" />
-                    <outputColumn
                       refId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[UpdatedDateTime]"
                       dataType="dbTimeStamp"
                       lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[UpdatedDateTime]"
@@ -4420,6 +4243,11 @@ GROUP BY
                       dataType="i4"
                       lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[EntityID]"
                       name="EntityID" />
+                    <outputColumn
+                      refId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[Amount]"
+                      dataType="cy"
+                      lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[Amount]"
+                      name="Amount" />
                   </outputColumns>
                   <externalMetadataColumns />
                 </output>
@@ -4646,45 +4474,6 @@ GROUP BY
                       </properties>
                     </inputColumn>
                     <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 2.Inputs[Union All Input 1].Columns[CurDebit]"
-                      cachedDataType="cy"
-                      cachedName="CurDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[CurDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[CurDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 2.Inputs[Union All Input 1].Columns[curSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[curSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[curSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 2.Inputs[Union All Input 1].Columns[curInvSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curInvSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[curInvSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[curInvSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
                       refId="Package\DF Transform_FactExpense\Union All 2.Inputs[Union All Input 1].Columns[UpdatedDateTime]"
                       cachedDataType="dbTimeStamp"
                       cachedName="UpdatedDateTime"
@@ -4762,6 +4551,19 @@ GROUP BY
                           dataType="System.Int32"
                           description="Output column lineage ID"
                           name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[FinancialCategoryID]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DF Transform_FactExpense\Union All 2.Inputs[Union All Input 1].Columns[Amount]"
+                      cachedDataType="cy"
+                      cachedName="Amount"
+                      lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[Amount]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[Amount]}</property>
                       </properties>
                     </inputColumn>
                   </inputColumns>
@@ -4981,45 +4783,6 @@ GROUP BY
                       </properties>
                     </inputColumn>
                     <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 2.Inputs[Union All Input 2].Columns[CurDebit]"
-                      cachedDataType="cy"
-                      cachedName="CurDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[CurDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[CurDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 2.Inputs[Union All Input 2].Columns[curSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[curSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[curSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 2.Inputs[Union All Input 2].Columns[curInvSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curInvSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[curInvSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[curInvSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
                       refId="Package\DF Transform_FactExpense\Union All 2.Inputs[Union All Input 2].Columns[UpdatedDateTime]"
                       cachedDataType="dbTimeStamp"
                       cachedName="UpdatedDateTime"
@@ -5097,6 +4860,19 @@ GROUP BY
                           dataType="System.Int32"
                           description="Output column lineage ID"
                           name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[FinancialCategoryID]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DF Transform_FactExpense\Union All 2.Inputs[Union All Input 2].Columns[Amount]"
+                      cachedDataType="cy"
+                      cachedName="Amount"
+                      lineageId="Package\DF Transform_FactExpense\Union All 1.Outputs[Union All Output 1].Columns[Amount]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[Amount]}</property>
                       </properties>
                     </inputColumn>
                   </inputColumns>
@@ -5204,21 +4980,6 @@ GROUP BY
                       lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[AccountingCode10]"
                       name="AccountingCode10" />
                     <outputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[CurDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[CurDebit]"
-                      name="CurDebit" />
-                    <outputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[curSrcDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[curSrcDebit]"
-                      name="curSrcDebit" />
-                    <outputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[curInvSrcDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[curInvSrcDebit]"
-                      name="curInvSrcDebit" />
-                    <outputColumn
                       refId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[UpdatedDateTime]"
                       dataType="dbTimeStamp"
                       lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[UpdatedDateTime]"
@@ -5250,6 +5011,11 @@ GROUP BY
                       dataType="i4"
                       lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[FinancialCategoryID]"
                       name="FinancialCategoryID" />
+                    <outputColumn
+                      refId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[Amount]"
+                      dataType="cy"
+                      lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[Amount]"
+                      name="Amount" />
                   </outputColumns>
                   <externalMetadataColumns />
                 </output>
@@ -5476,45 +5242,6 @@ GROUP BY
                       </properties>
                     </inputColumn>
                     <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 3.Inputs[Union All Input 1].Columns[CurDebit]"
-                      cachedDataType="cy"
-                      cachedName="CurDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[CurDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[CurDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 3.Inputs[Union All Input 1].Columns[curSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[curSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[curSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 3.Inputs[Union All Input 1].Columns[curInvSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curInvSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[curInvSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[curInvSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
                       refId="Package\DF Transform_FactExpense\Union All 3.Inputs[Union All Input 1].Columns[UpdatedDateTime]"
                       cachedDataType="dbTimeStamp"
                       cachedName="UpdatedDateTime"
@@ -5605,6 +5332,19 @@ GROUP BY
                           dataType="System.Int32"
                           description="Output column lineage ID"
                           name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[CampusID]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DF Transform_FactExpense\Union All 3.Inputs[Union All Input 1].Columns[Amount]"
+                      cachedDataType="cy"
+                      cachedName="Amount"
+                      lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[Amount]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[Amount]}</property>
                       </properties>
                     </inputColumn>
                   </inputColumns>
@@ -5824,45 +5564,6 @@ GROUP BY
                       </properties>
                     </inputColumn>
                     <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 3.Inputs[Union All Input 2].Columns[CurDebit]"
-                      cachedDataType="cy"
-                      cachedName="CurDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[CurDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[CurDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 3.Inputs[Union All Input 2].Columns[curSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[curSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[curSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 3.Inputs[Union All Input 2].Columns[curInvSrcDebit]"
-                      cachedDataType="cy"
-                      cachedName="curInvSrcDebit"
-                      lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[curInvSrcDebit]">
-                      <properties>
-                        <property
-                          containsID="true"
-                          dataType="System.Int32"
-                          description="Output column lineage ID"
-                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[curInvSrcDebit]}</property>
-                      </properties>
-                    </inputColumn>
-                    <inputColumn
                       refId="Package\DF Transform_FactExpense\Union All 3.Inputs[Union All Input 2].Columns[UpdatedDateTime]"
                       cachedDataType="dbTimeStamp"
                       cachedName="UpdatedDateTime"
@@ -5953,6 +5654,19 @@ GROUP BY
                           dataType="System.Int32"
                           description="Output column lineage ID"
                           name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[CampusID]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\DF Transform_FactExpense\Union All 3.Inputs[Union All Input 2].Columns[Amount]"
+                      cachedDataType="cy"
+                      cachedName="Amount"
+                      lineageId="Package\DF Transform_FactExpense\Union All 2.Outputs[Union All Output 1].Columns[Amount]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[Amount]}</property>
                       </properties>
                     </inputColumn>
                   </inputColumns>
@@ -6060,21 +5774,6 @@ GROUP BY
                       lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[AccountingCode10]"
                       name="AccountingCode10" />
                     <outputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[CurDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[CurDebit]"
-                      name="CurDebit" />
-                    <outputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[curSrcDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[curSrcDebit]"
-                      name="curSrcDebit" />
-                    <outputColumn
-                      refId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[curInvSrcDebit]"
-                      dataType="cy"
-                      lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[curInvSrcDebit]"
-                      name="curInvSrcDebit" />
-                    <outputColumn
                       refId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[UpdatedDateTime]"
                       dataType="dbTimeStamp"
                       lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[UpdatedDateTime]"
@@ -6111,6 +5810,11 @@ GROUP BY
                       dataType="i4"
                       lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[CampusID]"
                       name="CampusID" />
+                    <outputColumn
+                      refId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[Amount]"
+                      dataType="cy"
+                      lineageId="Package\DF Transform_FactExpense\Union All 3.Outputs[Union All Output 1].Columns[Amount]"
+                      name="Amount" />
                   </outputColumns>
                   <externalMetadataColumns />
                 </output>
@@ -6276,24 +5980,24 @@ GROUP BY
               startId="Package\DF Transform_FactExpense\Lookup DimCampus.Outputs[Lookup Match Output]" />
             <path
               refId="Package\DF Transform_FactExpense.Paths[Lookup No Match Output3]"
-              endId="Package\DF Transform_FactExpense\Set CampusID -1.Inputs[Derived Column Input]"
+              endId="Package\DF Transform_FactExpense\SET EntityID -1.Inputs[Derived Column Input]"
               name="Lookup No Match Output"
-              startId="Package\DF Transform_FactExpense\Lookup DimCampus.Outputs[Lookup No Match Output]" />
+              startId="Package\DF Transform_FactExpense\Lookup DimEntity.Outputs[Lookup No Match Output]" />
             <path
               refId="Package\DF Transform_FactExpense.Paths[Lookup No Match Output2]"
-              endId="Package\DF Transform_FactExpense\SET FinancialCategoryID -1.Inputs[Derived Column Input]"
-              name="Lookup No Match Output"
-              startId="Package\DF Transform_FactExpense\Lookup DimFinancialCategory.Outputs[Lookup No Match Output]" />
-            <path
-              refId="Package\DF Transform_FactExpense.Paths[Lookup No Match Output]"
               endId="Package\DF Transform_FactExpense\TF Surrogate Key Transform.Inputs[SurrogateKeyInput]"
               name="Lookup No Match Output"
               startId="Package\DF Transform_FactExpense\Member Exist?.Outputs[Lookup No Match Output]" />
             <path
-              refId="Package\DF Transform_FactExpense.Paths[Lookup No Match Output1]"
-              endId="Package\DF Transform_FactExpense\SET EntityID -1.Inputs[Derived Column Input]"
+              refId="Package\DF Transform_FactExpense.Paths[Lookup No Match Output]"
+              endId="Package\DF Transform_FactExpense\Set CampusID -1.Inputs[Derived Column Input]"
               name="Lookup No Match Output"
-              startId="Package\DF Transform_FactExpense\Lookup DimEntity.Outputs[Lookup No Match Output]" />
+              startId="Package\DF Transform_FactExpense\Lookup DimCampus.Outputs[Lookup No Match Output]" />
+            <path
+              refId="Package\DF Transform_FactExpense.Paths[Lookup No Match Output1]"
+              endId="Package\DF Transform_FactExpense\SET FinancialCategoryID -1.Inputs[Derived Column Input]"
+              name="Lookup No Match Output"
+              startId="Package\DF Transform_FactExpense\Lookup DimFinancialCategory.Outputs[Lookup No Match Output]" />
             <path
               refId="Package\DF Transform_FactExpense.Paths[Output]"
               endId="Package\DF Transform_FactExpense\Lookup DimEntity.Inputs[Lookup Input]"
@@ -6454,14 +6158,35 @@ GROUP BY
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_99afc9e22de54f67a2dbf59114e1572a")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_99afc9e22de54f67a2dbf59114e1572a")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -6582,34 +6307,104 @@ GROUP BY
   </resheader>
 </root>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+                Name="st_99afc9e22de54f67a2dbf59114e1572a.csproj"
+                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{763d688b-cb6d-4eab-aaa6-2271c530fdb2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>st_99afc9e22de54f67a2dbf59114e1572a</RootNamespace>
+    <AssemblyName>st_99afc9e22de54f67a2dbf59114e1572a</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_99afc9e22de54f67a2dbf59114e1572a.Properties.Settings.get_Default():st_99afc9e22de54f67a2dbf59114e1572a.Properties.Sett" +
-    "ings")]
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
 
-namespace st_99afc9e22de54f67a2dbf59114e1572a.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>.\bin\Release\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+         <Generator>ResXFileCodeGenerator</Generator>
+         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+             <AutoGen>True</AutoGen>
+         <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+         <Generator>SettingsSingleFileGenerator</Generator>
+         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+         <AutoGen>True</AutoGen>
+         <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptMain.cs">
+         <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <!-- Include the build rules for a C# project.-->
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
+        <ProjectProperties HostName="ScriptTask"
+                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
+                           ApplicationType="usd"
+                           Language="cs"
+                           TemplatesPath=""
+                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
+                           DebugInfoCommandLine=""
+                           DebugInfoWorkingDir=""
+                           IconImageList=""/>
+        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
+        </Host>
+        <ProjectClient>
+            <HostIdentifier>SSIS_ST120</HostIdentifier>
+        </ProjectClient>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -6754,134 +6549,43 @@ namespace st_99afc9e22de54f67a2dbf59114e1572a
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_99afc9e22de54f67a2dbf59114e1572a")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_99afc9e22de54f67a2dbf59114e1572a")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_99afc9e22de54f67a2dbf59114e1572a.Properties.Settings.get_Default():st_99afc9e22de54f67a2dbf59114e1572a.Properties.Sett" +
+    "ings")]
 
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+namespace st_99afc9e22de54f67a2dbf59114e1572a.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
-                Name="st_99afc9e22de54f67a2dbf59114e1572a.csproj"
-                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{763d688b-cb6d-4eab-aaa6-2271c530fdb2}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>st_99afc9e22de54f67a2dbf59114e1572a</RootNamespace>
-    <AssemblyName>st_99afc9e22de54f67a2dbf59114e1572a</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>.\bin\Debug\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>false</DebugSymbols>
-    <Optimize>true</Optimize>
-    <OutputPath>.\bin\Release\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AppDesigner Include="Properties\" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-         <Generator>ResXFileCodeGenerator</Generator>
-         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-             <AutoGen>True</AutoGen>
-         <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-         <Generator>SettingsSingleFileGenerator</Generator>
-         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-         <AutoGen>True</AutoGen>
-         <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="ScriptMain.cs">
-         <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <!-- Include the build rules for a C# project.-->
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-
-  <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
-        <ProjectProperties HostName="ScriptTask"
-                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
-                           ApplicationType="usd"
-                           Language="cs"
-                           TemplatesPath=""
-                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
-                           DebugInfoCommandLine=""
-                           DebugInfoWorkingDir=""
-                           IconImageList=""/>
-        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
-        </Host>
-        <ProjectClient>
-            <HostIdentifier>SSIS_ST120</HostIdentifier>
-        </ProjectClient>
-      </FlavorProperties>
-    </VisualStudio>
-  </ProjectExtensions>
-</Project>]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -7644,35 +7348,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_d8ab90b645084521b2502ecbe3bac204")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_d8ab90b645084521b2502ecbe3bac204")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -7793,34 +7476,104 @@ using System.Runtime.CompilerServices;
   </resheader>
 </root>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+                Name="st_d8ab90b645084521b2502ecbe3bac204.csproj"
+                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{e13f52ed-d126-46af-ab98-87b749e4c548}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>st_d8ab90b645084521b2502ecbe3bac204</RootNamespace>
+    <AssemblyName>st_d8ab90b645084521b2502ecbe3bac204</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_d8ab90b645084521b2502ecbe3bac204.Properties.Settings.get_Default():st_d8ab90b645084521b2502ecbe3bac204.Properties.Sett" +
-    "ings")]
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
 
-namespace st_d8ab90b645084521b2502ecbe3bac204.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>.\bin\Release\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+         <Generator>ResXFileCodeGenerator</Generator>
+         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+             <AutoGen>True</AutoGen>
+         <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+         <Generator>SettingsSingleFileGenerator</Generator>
+         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+         <AutoGen>True</AutoGen>
+         <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptMain.cs">
+         <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <!-- Include the build rules for a C# project.-->
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
+        <ProjectProperties HostName="ScriptTask"
+                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
+                           ApplicationType="usd"
+                           Language="cs"
+                           TemplatesPath=""
+                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
+                           DebugInfoCommandLine=""
+                           DebugInfoWorkingDir=""
+                           IconImageList=""/>
+        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
+        </Host>
+        <ProjectClient>
+            <HostIdentifier>SSIS_ST120</HostIdentifier>
+        </ProjectClient>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -8147,113 +7900,64 @@ namespace st_d8ab90b645084521b2502ecbe3bac204
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="st_d8ab90b645084521b2502ecbe3bac204.csproj"
-                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{e13f52ed-d126-46af-ab98-87b749e4c548}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>st_d8ab90b645084521b2502ecbe3bac204</RootNamespace>
-    <AssemblyName>st_d8ab90b645084521b2502ecbe3bac204</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>.\bin\Debug\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_d8ab90b645084521b2502ecbe3bac204.Properties.Settings.get_Default():st_d8ab90b645084521b2502ecbe3bac204.Properties.Sett" +
+    "ings")]
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>false</DebugSymbols>
-    <Optimize>true</Optimize>
-    <OutputPath>.\bin\Release\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AppDesigner Include="Properties\" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-         <Generator>ResXFileCodeGenerator</Generator>
-         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-             <AutoGen>True</AutoGen>
-         <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-         <Generator>SettingsSingleFileGenerator</Generator>
-         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-         <AutoGen>True</AutoGen>
-         <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="ScriptMain.cs">
-         <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <!-- Include the build rules for a C# project.-->
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-
-  <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
-        <ProjectProperties HostName="ScriptTask"
-                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
-                           ApplicationType="usd"
-                           Language="cs"
-                           TemplatesPath=""
-                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
-                           DebugInfoCommandLine=""
-                           DebugInfoWorkingDir=""
-                           IconImageList=""/>
-        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
-        </Host>
-        <ProjectClient>
-            <HostIdentifier>SSIS_ST120</HostIdentifier>
-        </ProjectClient>
-      </FlavorProperties>
-    </VisualStudio>
-  </ProjectExtensions>
-</Project>]]></ProjectItem>
+namespace st_d8ab90b645084521b2502ecbe3bac204.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_d8ab90b645084521b2502ecbe3bac204")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_d8ab90b645084521b2502ecbe3bac204")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -8543,14 +8247,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_eb53ce6e304a493aa82d32b298408ae4")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_eb53ce6e304a493aa82d32b298408ae4")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -9000,35 +8725,14 @@ namespace st_eb53ce6e304a493aa82d32b298408ae4.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_eb53ce6e304a493aa82d32b298408ae4")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_eb53ce6e304a493aa82d32b298408ae4")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -9256,14 +8960,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_705ca908408f4ff88380ba4a34d32791")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_705ca908408f4ff88380ba4a34d32791")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -9655,35 +9380,14 @@ namespace st_705ca908408f4ff88380ba4a34d32791.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_705ca908408f4ff88380ba4a34d32791")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_705ca908408f4ff88380ba4a34d32791")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -10068,7 +9772,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_DfLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[H4sIAAAAAAAEAO1cW3OjxhL+KxTPEpo7g2M7tWt7E9fxOlsr5yk5dYqVsEwtFwVQYu+p89/PDEiIEQMGV/BKsfwkM5funq+/7p5hpNM7N/36c5xmxtxL/UU0zvzQG0du6J2Zn9zZV3fh/X75wbhL3Ci9j5PwPx/cWXb1uPSi1DPPT2/cp3iVXUf38fnpT4m7fCgeGBfu0p352dOZyYhpPIZBlJ6ZsyDJZ05Fm3fy0Z8lcRrfZ9b0j2DqJX96iXUdZd4icTM/juQTf+al1mWul2j8GM+9wBLPfTfwv+WdfnDT1Au/BE9nXWfLlVxrdBKm6SLwuiiWD7MK466ihR957aIVMWVP8yHLlieTSTp78EI3tcJy5CwOJ3/50f3jBAHAJo9uGFSVDLvrmK9SF+XOT29F1zVeU/+bWAdoOyOCTON6/jz4v7+7/MW4vbozBD6ZH+WrbBp38fLGu8/OTETZCHICLWoaE40oBFB3UXeiwUtCKSVOGgRSwC06ggzbzSJ5d5GXV9M74xkTpXUjaGOnSSJkPYy8ieOvq6Vx6YdXUSaoU5XEpW0E4kZBGHQX9Gsk7DDeBYEBKzIwIEIGg43LB2kP55h6MgaEy1V6fWmMq3IgcUYQomYxNuvhg/O58ety7maewOjeXQVZqvigLQGimDYK4z1cYvr5wvjsuXPjQxKHxjReJTOvKs2mUhposQy/xBuKZVS8AQsxqNko1gMoQa2f3fRh26oIoiMMmykMeyze1p4PgknRTMTwCwHbIk4UR2dArKENmxn1MkfHNUeHCDULsXsIkS54LT4kmdYFmUXB9g+1emOvADUVcam2lDWyAbmeHDViCBF8wXru+Ehb0H0hYKgGmIMaox+C/XLJdJUk8UIGjX95T1rPpypqgm8ENwdf2kO8hK2I7zWsqPCVEYUtvO4RGdsCFc8FNcfEHuasg6/MyrFxG2cPfrRQYmKelNsWj/Tw+Y+ipvES4+rRT7Mfq2KcPPRi3OznuE9lIyit4TIGYIRAY9RAuAeV8vKiS1lDHFKNGVfzxUZqFznWJzd7SH8rUPp31RYifVpmLLM6qXWxEhXi+WlRGJ/k/xnTzE2yiziKvJnQ88z876a4PLldBcH/TOHP80ozGDFgFoPkPyBvl58oyqVV5xbV/CL0oiwtH68fXMRBIOaT4WC7laiMvhEV+LqrMr1co0nTVNumXeHKc/FvfUUqT27cL16w1jg8KRrEE+N9vIrmwv/fx49n5hgyC3GAHOQwblPhOBYhFEMkUqpQlAHKqYNFg8ivDMhPpiguAgH/n96nOPWlvmfmu+ipMEkjvvLsxX5RxttfVtlSjEWqj+SsYrZz9JKXe0npHxVlXxFRqELKHJlK2ZH3B4worCMq9lPwCOnhQlpHlNFj1D0YQMsNhdhPFJBWAYUwPyc6VlsHhOjn+C/jQtRzWVkZ6aIuOXL0gBGtAspADii17SOiB4so1OxebH4sjA4G0XruLAItpvgI4qGAuD7pv42Nj242e1iTE6vcRCMI2BCxdgzlWzI9suu2geFFwMLI4Q5zgI0gK6AuhX3xZ++9b76XbEZ9iv0og/qBeRvK24i2DQujiKZx0qzgGOaprm1Mi5aNozeqrte4Rd91B95L5y1we3TCB4U+lGHObJgf8TmqSSNZ+DOxNbcx+d4nfXpSqmdDWL5msdkQ+XIsXwM1cBIPHnAFsRBDyKGAQ4fZqA8jdwYqjNS1lYxslKjxbsRaR7TyUTt2y0bcqmnezHvpivfvpF3AxIHCQ8Wg/efhTuGKLY63fyNChzg4GMtVwVU5TTlzp9srpE+KgM0RdhjgvFf6VAeq6VPTtk2fTRJ16dNW16NteHsmfXaiSlKFnfpibV/eyz4t3nvEdqEfsTGgGHNKoJ2n3ap5+093le3Mgqz8s0cQ20NsdsZIpHdWFaSne63bK9CdU4CYjW0RrJ1edFcHqnTXtG3p3iSxTgeEgboebcPb6N5hopLuNRBaDKr35f3s0+G9R3QXbIDYsREAguQc53SvmreHdG/e9zrYIrCy2ANtgsEIMqQ92oCUDErnYv79cR/CLejAsjS0YXkLw2HCj/bVa5SNGQFDbswU+jPW4DmafgN7ki1vTjoAYcQhERh1Tgz1gdvEwIG2rUgM9cb2OnBnQdqGt9eBz060rQN3UWgxqN6X9LJPD/j+UFvuihApEwMecarat98UV/d8Dqru+ciAVaBS3Ddt+mrd3ngVCJ2d9XhpFdhhokoV2K0v1vbtWQXq8N4jrjsWp3yz52N2vQrca67vUp0OdKZzrPsOqe7b3phX/YMPd1sIQaiP+LLhFWK8SGuIEgdAh8FeMV4dqMZ4TZsIiUTT1hICEbBbB7RoqB+60VGubLOWeSvvo+cGqL3hGpevLRGAcPsWrGrNiMpzWerYjDJUEI5hUFx+/x6k8xIhbm6ItVqF0To+U811vWGuAiFI1eO+Bjbu9BqYmvJ7MxhA25FBkoLue636wC015XdWNG05Nett7S6vrkbb6DaePj/PlrS0U1es6+r0sk2H9D/3coiWfqR+4wfR47WtwwZVOfhEKC9qIBviwqx8/8uqHNKCXOv1CjGVIQwBwAA7tHu5Ux+oxlRNWxlTmwTW9BNQqKvRNrpF3Q7zbLSvAdBsTL2r08c2LdJvjH7KCTKSXzkcUTpERVPzAD37dnu9cfahv4l9z85Tsq8jUbGuay/2aZF+Y+zT3UQfZkMBuXJZqOFAt9brTW8oINlZjRduKDrMU9JvF4BmY+pd+2wo9Ei/MfopuS9/e8rZEK9TIOlyp6bW623nPvJsGdiRfN3KSaQBoCX31br2yn1apP+55Nv8PlrxEzO6lx35Zp4cv1T3HSCdVH6PUfxXfCh+qXGy+dHH8/8DNMyXzv9RAAA=]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\DF Transform_FactExpense&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\DF Transform_FactExpense&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -10164,7 +9868,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_PkgLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -10184,7 +9888,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_TaskList">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}" typ="PipelineTask" p="" name="DF Transform_FactExpense" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnderivedcolumn" name="Add Insert Defaults" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_17" /&gt;&lt;com id="26" dir="TRAN"  typ="trnderivedcolumn" name="Add Update Defaults" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_26" /&gt;&lt;com id="35" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="ADO NET Destination" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_35" /&gt;&lt;com id="70" dir="TRAN"  typ="trnrowcount" name="DEST ADO NET Destination" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_70" /&gt;&lt;com id="74" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_74" /&gt;&lt;com id="78" dir="TRAN"  typ="trnlookup" name="Lookup DimCampus" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_78" /&gt;&lt;com id="106" dir="TRAN"  typ="trnlookup" name="Lookup DimEntity" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_106" /&gt;&lt;com id="134" dir="TRAN"  typ="trnlookup" name="Lookup DimFinancialCategory" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_134" /&gt;&lt;com id="189" dir="TRAN"  typ="trnlookup" name="Member Exist?" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_189" /&gt;&lt;com id="228" dir="SRC"  typ="srcdatareader" name="Read From Source" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_228" /&gt;&lt;com id="294" dir="TRAN"  typ="trnderivedcolumn" name="Set CampusID -1" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_294" /&gt;&lt;com id="303" dir="TRAN"  typ="trnderivedcolumn" name="SET EntityID -1" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_303" /&gt;&lt;com id="312" dir="TRAN"  typ="trnderivedcolumn" name="SET FinancialCategoryID -1" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_312" /&gt;&lt;com id="321" dir="TRAN"  typ="trnrowcount" name="SRC Read From Source" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_321" /&gt;&lt;com id="325" dir="TRAN"  typ="PragmaticWorks.TaskFactory.Components.Transforms.Hash.HashTransform, PragmaticWorks.TaskFactory.Components120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Hash Transform" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_325" /&gt;&lt;com id="339" dir="TRAN"  typ="PW.TaskFactory.SurrogateKeyTransform.SurrogateKeyTransform, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Surrogate Key Transform" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_339" /&gt;&lt;com id="359" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_359" /&gt;&lt;com id="368" dir="TRAN"  typ="trnunionall" name="Union All" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_368" /&gt;&lt;com id="511" dir="TRAN"  typ="trnunionall" name="Union All 1" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_511" /&gt;&lt;com id="631" dir="TRAN"  typ="trnunionall" name="Union All 2" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_631" /&gt;&lt;com id="756" dir="TRAN"  typ="trnunionall" name="Union All 3" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_756" /&gt;&lt;com id="886" dir="TRAN"  typ="trnconditionalsplit" name="Update or Do Nothing" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_886" /&gt;&lt;dp id="899" val="0"  ann="" c1="228" c2="321"/&gt;&lt;dp id="900" val="0"  ann="" c1="312" c2="631"/&gt;&lt;dp id="901" val="0"  ann="" c1="26" c2="368"/&gt;&lt;dp id="902" val="0"  ann="" c1="303" c2="511"/&gt;&lt;dp id="903" val="0"  ann="" c1="294" c2="756"/&gt;&lt;dp id="904" val="0"  ann="" c1="2" c2="325"/&gt;&lt;dp id="905" val="0"  ann="" c1="17" c2="368"/&gt;&lt;dp id="906" val="0"  ann="" c1="886" c2="74"/&gt;&lt;dp id="907" val="0"  ann="" c1="106" c2="511"/&gt;&lt;dp id="908" val="0"  ann="" c1="189" c2="886"/&gt;&lt;dp id="909" val="0"  ann="" c1="134" c2="631"/&gt;&lt;dp id="910" val="0"  ann="" c1="78" c2="756"/&gt;&lt;dp id="911" val="0"  ann="" c1="189" c2="339"/&gt;&lt;dp id="912" val="0"  ann="" c1="106" c2="303"/&gt;&lt;dp id="913" val="0"  ann="" c1="134" c2="312"/&gt;&lt;dp id="914" val="0"  ann="" c1="78" c2="294"/&gt;&lt;dp id="915" val="0"  ann="" c1="325" c2="106"/&gt;&lt;dp id="916" val="0"  ann="" c1="70" c2="35"/&gt;&lt;dp id="917" val="0"  ann="" c1="74" c2="359"/&gt;&lt;dp id="918" val="0"  ann="" c1="321" c2="2"/&gt;&lt;dp id="919" val="0"  ann="" c1="339" c2="17"/&gt;&lt;dp id="920" val="0"  ann="" c1="511" c2="134"/&gt;&lt;dp id="921" val="0"  ann="" c1="756" c2="189"/&gt;&lt;dp id="922" val="0"  ann="" c1="631" c2="78"/&gt;&lt;dp id="923" val="0"  ann="" c1="368" c2="70"/&gt;&lt;dp id="924" val="0"  ann="" c1="886" c2="26"/&gt;&lt;/tsk&gt;&lt;tsk id="{F2A217B1-8A6D-4F1D-80DA-CA1332F8E87A}" typ="SQLTask" p="" name="Get Surrogate Key Seed" on="1" /&gt;&lt;tsk id="{9E43012A-A6A8-428C-8B1E-5A6A45372043}" typ="SQLTask" p="" name="TRUNCATE TransformFactExpense" on="1" /&gt;&lt;pc id="{55026ADE-20F0-4980-B8A1-7FA1B0E68D89}" op="2" and="True" val="0" task1="{9E43012A-A6A8-428C-8B1E-5A6A45372043}" task2="{F2A217B1-8A6D-4F1D-80DA-CA1332F8E87A}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{C24B7599-E4AB-40F5-BA4C-2682359C43E7}" op="2" and="True" val="0" task1="{F2A217B1-8A6D-4F1D-80DA-CA1332F8E87A}" task2="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}" typ="PipelineTask" p="" name="DF Transform_FactExpense" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnderivedcolumn" name="Add Insert Defaults" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_17" /&gt;&lt;com id="26" dir="TRAN"  typ="trnderivedcolumn" name="Add Update Defaults" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_26" /&gt;&lt;com id="35" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="ADO NET Destination" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_35" /&gt;&lt;com id="70" dir="TRAN"  typ="trnrowcount" name="DEST ADO NET Destination" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_70" /&gt;&lt;com id="74" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_74" /&gt;&lt;com id="78" dir="TRAN"  typ="trnlookup" name="Lookup DimCampus" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_78" /&gt;&lt;com id="106" dir="TRAN"  typ="trnlookup" name="Lookup DimEntity" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_106" /&gt;&lt;com id="134" dir="TRAN"  typ="trnlookup" name="Lookup DimFinancialCategory" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_134" /&gt;&lt;com id="195" dir="TRAN"  typ="trnlookup" name="Member Exist?" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_195" /&gt;&lt;com id="234" dir="SRC"  typ="srcdatareader" name="Read From Source" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_234" /&gt;&lt;com id="300" dir="TRAN"  typ="trnderivedcolumn" name="Set CampusID -1" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_300" /&gt;&lt;com id="309" dir="TRAN"  typ="trnderivedcolumn" name="SET EntityID -1" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_309" /&gt;&lt;com id="318" dir="TRAN"  typ="trnderivedcolumn" name="SET FinancialCategoryID -1" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_318" /&gt;&lt;com id="327" dir="TRAN"  typ="trnrowcount" name="SRC Read From Source" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_327" /&gt;&lt;com id="331" dir="TRAN"  typ="PragmaticWorks.TaskFactory.Components.Transforms.Hash.HashTransform, PragmaticWorks.TaskFactory.Components120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Hash Transform" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_331" /&gt;&lt;com id="345" dir="TRAN"  typ="PW.TaskFactory.SurrogateKeyTransform.SurrogateKeyTransform, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Surrogate Key Transform" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_345" /&gt;&lt;com id="365" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_365" /&gt;&lt;com id="374" dir="TRAN"  typ="trnunionall" name="Union All" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_374" /&gt;&lt;com id="517" dir="TRAN"  typ="trnunionall" name="Union All 1" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_517" /&gt;&lt;com id="637" dir="TRAN"  typ="trnunionall" name="Union All 2" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_637" /&gt;&lt;com id="762" dir="TRAN"  typ="trnunionall" name="Union All 3" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_762" /&gt;&lt;com id="892" dir="TRAN"  typ="trnconditionalsplit" name="Update or Do Nothing" pid="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}_892" /&gt;&lt;dp id="905" val="0"  ann="" c1="234" c2="327"/&gt;&lt;dp id="906" val="0"  ann="" c1="318" c2="637"/&gt;&lt;dp id="907" val="0"  ann="" c1="26" c2="374"/&gt;&lt;dp id="908" val="0"  ann="" c1="309" c2="517"/&gt;&lt;dp id="909" val="0"  ann="" c1="300" c2="762"/&gt;&lt;dp id="910" val="0"  ann="" c1="2" c2="331"/&gt;&lt;dp id="911" val="0"  ann="" c1="17" c2="374"/&gt;&lt;dp id="912" val="0"  ann="" c1="892" c2="74"/&gt;&lt;dp id="913" val="0"  ann="" c1="106" c2="517"/&gt;&lt;dp id="914" val="0"  ann="" c1="195" c2="892"/&gt;&lt;dp id="915" val="0"  ann="" c1="134" c2="637"/&gt;&lt;dp id="916" val="0"  ann="" c1="78" c2="762"/&gt;&lt;dp id="917" val="0"  ann="" c1="78" c2="300"/&gt;&lt;dp id="918" val="0"  ann="" c1="134" c2="318"/&gt;&lt;dp id="919" val="0"  ann="" c1="195" c2="345"/&gt;&lt;dp id="920" val="0"  ann="" c1="106" c2="309"/&gt;&lt;dp id="921" val="0"  ann="" c1="331" c2="106"/&gt;&lt;dp id="922" val="0"  ann="" c1="70" c2="35"/&gt;&lt;dp id="923" val="0"  ann="" c1="74" c2="365"/&gt;&lt;dp id="924" val="0"  ann="" c1="327" c2="2"/&gt;&lt;dp id="925" val="0"  ann="" c1="345" c2="17"/&gt;&lt;dp id="926" val="0"  ann="" c1="517" c2="134"/&gt;&lt;dp id="927" val="0"  ann="" c1="762" c2="195"/&gt;&lt;dp id="928" val="0"  ann="" c1="637" c2="78"/&gt;&lt;dp id="929" val="0"  ann="" c1="374" c2="70"/&gt;&lt;dp id="930" val="0"  ann="" c1="892" c2="26"/&gt;&lt;/tsk&gt;&lt;tsk id="{F2A217B1-8A6D-4F1D-80DA-CA1332F8E87A}" typ="SQLTask" p="" name="Get Surrogate Key Seed" on="1" /&gt;&lt;tsk id="{9E43012A-A6A8-428C-8B1E-5A6A45372043}" typ="SQLTask" p="" name="TRUNCATE TransformFactExpense" on="1" /&gt;&lt;pc id="{55026ADE-20F0-4980-B8A1-7FA1B0E68D89}" op="2" and="True" val="0" task1="{9E43012A-A6A8-428C-8B1E-5A6A45372043}" task2="{F2A217B1-8A6D-4F1D-80DA-CA1332F8E87A}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{C24B7599-E4AB-40F5-BA4C-2682359C43E7}" op="2" and="True" val="0" task1="{F2A217B1-8A6D-4F1D-80DA-CA1332F8E87A}" task2="{BF89881B-E7DF-431C-A79D-4D4F5E05DC21}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -10217,14 +9921,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_74699b26c4fe4caf8cf871dd86c59b46")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_74699b26c4fe4caf8cf871dd86c59b46")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -10841,35 +10566,14 @@ namespace st_74699b26c4fe4caf8cf871dd86c59b46.Properties {
   </ProjectExtensions>
 </Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_74699b26c4fe4caf8cf871dd86c59b46")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_74699b26c4fe4caf8cf871dd86c59b46")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -11399,14 +11103,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_c0cc6e72ddc04ffb97b80550612f00db")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_c0cc6e72ddc04ffb97b80550612f00db")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -11849,35 +11574,14 @@ namespace st_c0cc6e72ddc04ffb97b80550612f00db.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_c0cc6e72ddc04ffb97b80550612f00db")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_c0cc6e72ddc04ffb97b80550612f00db")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -12199,14 +11903,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_508effa3cf9c40bfbfdfacd3d3a7b3d8")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_508effa3cf9c40bfbfdfacd3d3a7b3d8")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -12598,35 +12323,14 @@ namespace st_508effa3cf9c40bfbfdfacd3d3a7b3d8.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_508effa3cf9c40bfbfdfacd3d3a7b3d8")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_508effa3cf9c40bfbfdfacd3d3a7b3d8")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -13433,6 +13137,10 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       <GraphLayout
         Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
+          Size="130,42"
+          Id="Package\DF Transform_FactExpense\Union All 1"
+          TopLeft="304.5,617.5" />
+        <NodeLayout
           Size="179,42"
           Id="Package\DF Transform_FactExpense\ADO NET Destination"
           TopLeft="256,1841.5" />
@@ -13449,9 +13157,9 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\DF Transform_FactExpense\Lookup DimEntity"
           TopLeft="288.5,413.5" />
         <NodeLayout
-          Size="130,42"
-          Id="Package\DF Transform_FactExpense\Union All 1"
-          TopLeft="304.5,617.5" />
+          Size="188,42"
+          Id="Package\DF Transform_FactExpense\SRC Read From Source"
+          TopLeft="275.5,107.5" />
         <NodeLayout
           Size="159,42"
           Id="Package\DF Transform_FactExpense\Set CampusID -1"
@@ -13461,45 +13169,29 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\DF Transform_FactExpense\Add Update Defaults"
           TopLeft="257.5,1535.5" />
         <NodeLayout
-          Size="188,42"
-          Id="Package\DF Transform_FactExpense\SRC Read From Source"
-          TopLeft="275.5,107.5" />
-        <NodeLayout
-          Size="173,42"
-          Id="Package\DF Transform_FactExpense\Lookup DimCampus"
-          TopLeft="283,1025.5" />
-        <NodeLayout
-          Size="169,42"
-          Id="Package\DF Transform_FactExpense\TF Hash Transform"
-          TopLeft="285,311.5" />
+          Size="182,42"
+          Id="Package\DF Transform_FactExpense\Update or Do Nothing"
+          TopLeft="278.5,1433.5" />
         <NodeLayout
           Size="218,42"
           Id="Package\DF Transform_FactExpense\Lookup DimFinancialCategory"
           TopLeft="260.5,719.5" />
         <NodeLayout
-          Size="130,42"
-          Id="Package\DF Transform_FactExpense\Union All 3"
-          TopLeft="304.5,1229.5" />
+          Size="208,42"
+          Id="Package\DF Transform_FactExpense\SET FinancialCategoryID -1"
+          TopLeft="100.5,821.5" />
         <NodeLayout
           Size="170,42"
           Id="Package\DF Transform_FactExpense\Add Insert Defaults"
           TopLeft="26.5000000000002,1535.5" />
         <NodeLayout
-          Size="208,42"
-          Id="Package\DF Transform_FactExpense\SET FinancialCategoryID -1"
-          TopLeft="100.5,821.5" />
+          Size="130,42"
+          Id="Package\DF Transform_FactExpense\Union All 3"
+          TopLeft="304.5,1229.5" />
         <NodeLayout
           Size="121,42"
           Id="Package\DF Transform_FactExpense\Union All"
           TopLeft="285,1637.5" />
-        <NodeLayout
-          Size="130,42"
-          Id="Package\DF Transform_FactExpense\Union All 2"
-          TopLeft="304.5,923.5" />
-        <NodeLayout
-          Size="212,42"
-          Id="Package\DF Transform_FactExpense\TF Surrogate Key Transform"
-          TopLeft="5.50000000000023,1433.5" />
         <NodeLayout
           Size="152,42"
           Id="Package\DF Transform_FactExpense\SET EntityID -1"
@@ -13509,13 +13201,25 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\DF Transform_FactExpense\Read From Source"
           TopLeft="286.5,5.5" />
         <NodeLayout
-          Size="182,42"
-          Id="Package\DF Transform_FactExpense\Update or Do Nothing"
-          TopLeft="278.5,1433.5" />
-        <NodeLayout
           Size="148,42"
           Id="Package\DF Transform_FactExpense\Member Exist?"
           TopLeft="295.5,1331.5" />
+        <NodeLayout
+          Size="169,42"
+          Id="Package\DF Transform_FactExpense\TF Hash Transform"
+          TopLeft="285,311.5" />
+        <NodeLayout
+          Size="130,42"
+          Id="Package\DF Transform_FactExpense\Union All 2"
+          TopLeft="304.5,923.5" />
+        <NodeLayout
+          Size="212,42"
+          Id="Package\DF Transform_FactExpense\TF Surrogate Key Transform"
+          TopLeft="5.50000000000023,1433.5" />
+        <NodeLayout
+          Size="173,42"
+          Id="Package\DF Transform_FactExpense\Lookup DimCampus"
+          TopLeft="283,1025.5" />
         <NodeLayout
           Size="139,42"
           Id="Package\DF Transform_FactExpense\Add Defaults"
@@ -13748,78 +13452,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\DF Transform_FactExpense.Paths[Lookup No Match Output3]"
-          TopLeft="342,1067.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-113.5,60"
-              Start="0,0"
-              End="-113.5,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,20.3298969072165" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,20.3298969072165"
-                    Point2="0,24.3298969072165"
-                    Point3="-4,24.3298969072165" />
-                  <mssgle:LineSegment
-                    End="-109.5,24.3298969072165" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-109.5,24.3298969072165"
-                    Point2="-113.5,24.3298969072165"
-                    Point3="-113.5,28.3298969072165" />
-                  <mssgle:LineSegment
-                    End="-113.5,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-112.55638671875,29.3298969072165,111.6127734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactExpense.Paths[Lookup No Match Output2]"
-          TopLeft="334.5,761.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-130,60"
-              Start="0,0"
-              End="-130,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,20.2622950819672" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,20.2622950819672"
-                    Point2="0,24.2622950819672"
-                    Point3="-4,24.2622950819672" />
-                  <mssgle:LineSegment
-                    End="-126,24.2622950819672" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-126,24.2622950819672"
-                    Point2="-130,24.2622950819672"
-                    Point3="-130,28.2622950819672" />
-                  <mssgle:LineSegment
-                    End="-130,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-120.80638671875,29.2622950819672,111.6127734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactExpense.Paths[Lookup No Match Output1]"
           TopLeft="343.833333333333,455.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -13855,7 +13487,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactExpense.Paths[Lookup No Match Output]"
+          Id="Package\DF Transform_FactExpense.Paths[Lookup No Match Output2]"
           TopLeft="346.166666666667,1373.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -13887,6 +13519,78 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
               BoundingBox="-173.139720052083,29.3850267379679,111.6127734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactExpense.Paths[Lookup No Match Output1]"
+          TopLeft="334.5,761.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-130,60"
+              Start="0,0"
+              End="-130,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.2622950819672" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,20.2622950819672"
+                    Point2="0,24.2622950819672"
+                    Point3="-4,24.2622950819672" />
+                  <mssgle:LineSegment
+                    End="-126,24.2622950819672" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-126,24.2622950819672"
+                    Point2="-130,24.2622950819672"
+                    Point3="-130,28.2622950819672" />
+                  <mssgle:LineSegment
+                    End="-130,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-120.80638671875,29.2622950819672,111.6127734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactExpense.Paths[Lookup No Match Output]"
+          TopLeft="342,1067.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-113.5,60"
+              Start="0,0"
+              End="-113.5,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.3298969072165" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,20.3298969072165"
+                    Point2="0,24.3298969072165"
+                    Point3="-4,24.3298969072165" />
+                  <mssgle:LineSegment
+                    End="-109.5,24.3298969072165" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-109.5,24.3298969072165"
+                    Point2="-113.5,24.3298969072165"
+                    Point3="-113.5,28.3298969072165" />
+                  <mssgle:LineSegment
+                    End="-113.5,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-112.55638671875,29.3298969072165,111.6127734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -14295,35 +13999,12 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </Properties>
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
-    design-time-name="Package\DF Transform_FactExpense\Lookup DimCampus">
-    <Properties>
-      <Property>
-        <Name>OverwriteParamsSQLProp</Name>
-        <Value
-          type="q2:string">false</Value>
-      </Property>
-      <Property>
-        <Name>UsedTableName</Name>
-        <Value
-          type="q3:string">[DW].[DimCampus]</Value>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q4:string">0</Value>
-      </Property>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
     design-time-name="Package\DF Transform_FactExpense\Lookup DimFinancialCategory">
     <Properties>
       <Property>
         <Name>OverwriteParamsSQLProp</Name>
         <Value
-          type="q2:boolean">false</Value>
+          type="q2:string">false</Value>
       </Property>
       <Property>
         <Name>UsedTableName</Name>
@@ -14360,6 +14041,29 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <Name>UsedTableName</Name>
         <Value
           type="q3:string">[DW].[FactExpense]</Value>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q4:string">0</Value>
+      </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\DF Transform_FactExpense\Lookup DimCampus">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:string">false</Value>
+      </Property>
+      <Property>
+        <Name>UsedTableName</Name>
+        <Value
+          type="q3:string">[DW].[DimCampus]</Value>
       </Property>
       <Property>
         <Name>TableInfoObjectType</Name>
