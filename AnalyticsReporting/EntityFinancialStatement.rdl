@@ -3551,6 +3551,1405 @@ ORDER BY
         </Field>
       </Fields>
     </DataSet>
+    <DataSet Name="SubEntityMonthlyVarianceNetIncome">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@CalendarMonth">
+            <Value>=Parameters!CalendarMonth.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@CalendarYear">
+            <Value>=Parameters!CalendarYear.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>WITH ActualRevenue AS (
+	SELECT 
+		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END AS EntityCode
+		, groupid
+		, SUM(FactRevenue.Amount) AS Amount
+	FROM dw.FactRevenue
+	INNER JOIN dw.DimDate
+		ON FactRevenue.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactRevenue.EntityID = DimEntity.EntityID
+		AND FactRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactRevenue.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Revenue'
+	WHERE
+		DimDate.CalendarMonth = @CalendarMonth
+		AND DimDate.CalendarYear = @CalendarYear
+		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END &lt;&gt; 'unknown'
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END
+	UNION
+	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'VCF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'VCB' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+), BudgetedRevenue AS (
+	SELECT 
+		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END AS EntityCode
+		, groupid
+		, SUM(FactBudgetRevenue.Amount) AS Amount
+	FROM dw.FactBudgetRevenue
+	INNER JOIN dw.DimEntity
+		ON FactBudgetRevenue.EntityID = DimEntity.EntityID
+		AND FactBudgetRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactBudgetRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactBudgetRevenue.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Revenue'
+	WHERE
+		FactBudgetRevenue.BudgetMonth = @CalendarMonth
+		AND FactBudgetRevenue.BudgetYear = @CalendarYear
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END &lt;&gt; 'unknown'
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END
+	UNION
+	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'VCF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'VCB' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+), VarianceRevenue as (
+SELECT 
+		  ISNULL(ActualRevenue.EntityCode, BudgetedRevenue.EntityCode) AS EntityCode
+		, ActualRevenue.GroupID
+		, SUM(ISNULL(BudgetedRevenue.Amount, 0)) - SUM(ISNULL(ActualRevenue.Amount, 0)) AS Amount
+		
+	FROM ActualRevenue
+	FULL OUTER JOIN BudgetedRevenue
+		ON ActualRevenue.EntityCode = BudgetedRevenue.EntityCode
+		AND ActualRevenue.GroupID = BudgetedRevenue.GroupID
+	--WHERE
+		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
+	GROUP BY
+		  ISNULL(ActualRevenue.EntityCode, BudgetedRevenue.EntityCode)
+		, ActualRevenue.GroupID
+), ActualExpenses AS (
+	SELECT 
+		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END AS EntityCode
+		, groupid
+		, SUM(FactExpense.Amount) AS Amount
+	FROM dw.FactExpense
+	INNER JOIN dw.DimDate
+		ON FactExpense.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactExpense.EntityID = DimEntity.EntityID
+		AND FactExpense.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactExpense.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Expense'
+	WHERE
+		DimDate.CalendarMonth = @CalendarMonth
+		AND DimDate.CalendarYear = @CalendarYear
+		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END &lt;&gt; 'unknown'
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END
+	UNION
+	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'VCF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'VCB' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+), BudgetedExpenses AS (
+	SELECT 
+		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END AS EntityCode
+		, groupid
+		, SUM(FactBudgetExpense.Amount) AS Amount
+	FROM dw.FactBudgetExpense
+	INNER JOIN dw.DimEntity
+		ON FactBudgetExpense.EntityID = DimEntity.EntityID
+		AND FactBudgetExpense.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Expense'
+	WHERE
+		FactBudgetExpense.BudgetMonth = @CalendarMonth
+		AND FactBudgetExpense.BudgetYear = @CalendarYear
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END &lt;&gt; 'unknown'
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END
+	UNION
+	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'VCF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'VCB' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+), VarianceExpenses as (
+SELECT 
+		  ISNULL(ActualExpenses.EntityCode, BudgetedExpenses.EntityCode) AS EntityCode
+		, ActualExpenses.GroupID
+		, SUM(ISNULL(BudgetedExpenses.Amount, 0)) - SUM(ISNULL(ActualExpenses.Amount, 0)) AS Amount
+		
+	FROM ActualExpenses
+	FULL OUTER JOIN BudgetedExpenses
+		ON ActualExpenses.EntityCode = BudgetedExpenses.EntityCode
+		AND ActualExpenses.GroupID = BudgetedExpenses.GroupID
+	--WHERE
+		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
+	GROUP BY
+		  ISNULL(ActualExpenses.EntityCode, BudgetedExpenses.EntityCode)
+		, ActualExpenses.GroupID
+)
+SELECT 
+	  VarianceRevenue.EntityCode
+	, SUM(VarianceRevenue.Amount - VarianceExpenses.Amount) AS Amount
+FROM VarianceRevenue
+INNER JOIN VarianceExpenses
+	ON VarianceRevenue.EntityCode = VarianceExpenses.EntityCode
+GROUP BY
+	VarianceRevenue.EntityCode</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="EntityCode">
+          <DataField>EntityCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="EntitiesYTDActualNetIncome">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@CalendarYear">
+            <Value>=Parameters!CalendarMonth.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>;
+WITH ActualRevenue AS (
+	SELECT 
+		 DimEntity.Code AS EntityCode
+		, SUM(FactRevenue.Amount) AS Amount
+	FROM dw.FactRevenue
+	INNER JOIN dw.DimDate
+		ON FactRevenue.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactRevenue.EntityID = DimEntity.EntityID
+		AND FactRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactRevenue.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		
+	WHERE
+		DimDate.CalendarYear = @CalendarYear
+		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND glrg.Category = 'Revenue'
+	GROUP BY
+		DimEntity.Code
+	UNION SELECT 'HBF', 0
+	UNION SELECT 'HCA', 0
+	UNION SELECT 'HBC', 0
+	UNION SELECT 'WITW', 0
+), 
+	ActualExpenses AS (
+	SELECT 
+		  DimEntity.Code AS EntityCode
+		, SUM(FactExpense.Amount) AS Amount
+	FROM dw.FactExpense
+	INNER JOIN dw.DimDate
+		ON FactExpense.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactExpense.EntityID = DimEntity.EntityID
+		AND FactExpense.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactExpense.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Expense'
+	WHERE
+		 DimDate.CalendarYear = @CalendarYear
+		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+	GROUP BY
+		  DimEntity.Code
+		UNION SELECT 'HBF', 0
+	UNION SELECT 'HCA', 0
+	UNION SELECT 'HBC', 0
+	UNION SELECT 'WITW', 0
+)
+
+SELECT 
+	  ActualRevenue.EntityCode
+	, SUM(ActualRevenue.Amount - ActualExpenses.Amount) AS Amount
+FROM ActualRevenue 
+INNER JOIN  ActualExpenses
+	ON ActualRevenue.EntityCode = ActualExpenses.EntityCode
+GROUP BY
+	ActualRevenue.EntityCode
+;	</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="EntityCode">
+          <DataField>EntityCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="EntityYTDBudgetedNetIncome">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@CalendarYear">
+            <Value>=Parameters!CalendarYear.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>--Budgets
+;
+WITH BudgetRevenue AS (
+	SELECT 
+		 DimEntity.Code AS EntityCode
+		, SUM(FactBudgetRevenue.Amount) AS Amount
+	FROM dw.FactBudgetRevenue
+	INNER JOIN dw.DimEntity
+		ON FactBudgetRevenue.EntityID = DimEntity.EntityID
+		AND FactBudgetRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactBudgetRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactBudgetRevenue.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		
+	WHERE
+		FactBudgetRevenue.BudgetYear = @CalendarYear
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND glrg.Category = 'Revenue'
+	GROUP BY
+		DimEntity.Code
+	UNION SELECT 'HBF', 0
+	UNION SELECT 'HCA', 0
+	UNION SELECT 'HBC', 0
+	UNION SELECT 'WITW', 0
+), 
+	BudgetExpenses AS (
+	SELECT 
+		  DimEntity.Code AS EntityCode
+		, SUM(FactBudgetExpense.Amount) AS Amount
+	FROM dw.FactBudgetExpense
+	INNER JOIN dw.DimEntity
+		ON FactBudgetExpense.EntityID = DimEntity.EntityID
+		AND FactBudgetExpense.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Expense'
+	WHERE
+		FactBudgetExpense.BudgetYear = @CalendarYear
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+	GROUP BY
+		  DimEntity.Code
+	UNION SELECT 'HBF', 0
+	UNION SELECT 'HCA', 0
+	UNION SELECT 'HBC', 0
+	UNION SELECT 'WITW', 0
+)
+
+SELECT 
+	  BudgetRevenue.EntityCode
+	, SUM(BudgetRevenue.Amount - BudgetExpenses.Amount) AS Amount
+FROM BudgetRevenue 
+INNER JOIN  BudgetExpenses
+	ON BudgetRevenue.EntityCode = BudgetExpenses.EntityCode
+GROUP BY
+	BudgetRevenue.EntityCode
+;		</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="EntityCode">
+          <DataField>EntityCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="EntitiesYTDVarianceNetIncome">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@CalendarYear">
+            <Value>=Parameters!CalendarYear.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>--variance
+;WITH RevenueActuals AS (
+	SELECT 
+		 DimEntity.Code AS EntityCode
+		--, ISNULL(GroupID, 5) AS GroupID
+		, groupid
+		, SUM(FactRevenue.Amount) AS Amount
+	FROM dw.FactRevenue
+	INNER JOIN dw.DimDate
+		ON FactRevenue.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactRevenue.EntityID = DimEntity.EntityID
+		AND FactRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactRevenue.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Revenue'
+	WHERE
+		DimDate.CalendarYear = @CalendarYear
+		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+	UNION
+	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'HCA' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'HBC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+)
+, RevenueBudgeted AS (
+	SELECT 
+		 DimEntity.Code AS EntityCode
+		--, ISNULL(GroupID, 5) AS GroupID
+		, groupid
+		, SUM(FactBudgetRevenue.Amount) AS Amount
+	FROM dw.FactBudgetRevenue
+	INNER JOIN dw.DimEntity
+		ON FactBudgetRevenue.EntityID = DimEntity.EntityID
+		AND FactBudgetRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactBudgetRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactBudgetRevenue.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Revenue'
+	WHERE
+		FactBudgetRevenue.BudgetYear = @CalendarYear
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+	UNION
+	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'HCA' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'HBC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+), RevenueVariance AS (
+	SELECT 
+		  ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode) AS EntityCode
+		, SUM(ISNULL(RevenueBudgeted.Amount, 0)) - SUM(ISNULL(RevenueActuals.Amount, 0)) AS Amount
+		
+	FROM RevenueActuals
+	FULL OUTER JOIN RevenueBudgeted
+		ON RevenueActuals.EntityCode = RevenueBudgeted.EntityCode
+		AND RevenueActuals.GroupID = RevenueBudgeted.GroupID
+	--WHERE
+		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
+	GROUP BY
+		  ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode)
+	UNION SELECT 'HBF' , 0
+	UNION SELECT 'HCA' , 0
+	UNION SELECT 'HBC' , 0
+	UNION SELECT 'WITW', 0
+
+), ExpenseActuals AS (
+	SELECT 
+		  DimEntity.Code AS EntityCode
+		, ISNULL(GroupID, 7) AS GroupID
+		, SUM(FactExpense.Amount) AS Amount
+	FROM dw.FactExpense
+	INNER JOIN dw.DimDate
+		ON FactExpense.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactExpense.EntityID = DimEntity.EntityID
+		AND FactExpense.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactExpense.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Expense'
+	WHERE
+		DimDate.CalendarYear = @CalendarYear
+		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+	GROUP BY
+		  DimEntity.Code
+		, glrg.GroupID
+	UNION
+	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
+	UNION
+	SELECT DISTINCT 'HCA' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
+	UNION
+	SELECT DISTINCT 'HBC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
+	UNION
+	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
+), ExpenseBudgeted AS (
+	SELECT 
+		  DimEntity.Code AS EntityCode
+		, ISNULL(GroupID, 7) AS GroupID
+		, SUM(Amount) AS Amount
+	FROM dw.FactBudgetExpense
+	INNER JOIN dw.DimEntity
+		ON FactBudgetExpense.EntityID = DimEntity.EntityID
+		AND FactBudgetExpense.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Expense'
+	WHERE
+		FactBudgetExpense.BudgetYear = @CalendarYear
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+	GROUP BY
+		DimEntity.Code
+		, glrg.GroupID
+	UNION
+	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
+	UNION
+	SELECT DISTINCT 'HCA' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
+	UNION
+	SELECT DISTINCT 'HBC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
+	UNION
+	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
+), ExpenseVariance AS (
+	SELECT 
+		  ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode) AS EntityCode
+		, SUM(ISNULL(ExpenseBudgeted.Amount, 0)) - SUM(ISNULL(ExpenseActuals.Amount, 0)) AS Amount
+		
+	FROM ExpenseActuals
+	FULL OUTER JOIN ExpenseBudgeted
+		ON ExpenseActuals.EntityCode = ExpenseBudgeted.EntityCode
+		AND ExpenseActuals.GroupID = ExpenseBudgeted.GroupID
+	--WHERE
+		--ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode) IS NOT NULL
+	GROUP BY
+		  ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode)
+	UNION SELECT 'HBF' , 0
+	UNION SELECT 'HCA' , 0
+	UNION SELECT 'HBC' , 0
+	UNION SELECT 'WITW', 0
+)
+SELECT 
+	RevenueVariance.EntityCode
+	, SUM(RevenueVariance.Amount - ExpenseVariance.Amount) AS Amount
+FROM RevenueVariance
+INNER JOIN ExpenseVariance
+	ON RevenueVariance.EntityCode = ExpenseVariance.EntityCode
+GROUP BY
+	RevenueVariance.EntityCode</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="EntityCode">
+          <DataField>EntityCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="SubEntitiesYTDActualNetIncome">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@CalendarYear">
+            <Value>=Parameters!CalendarYear.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>--actuals
+;WITH ActualRevenue AS (
+	SELECT 
+		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END AS EntityCode
+		, groupid
+		, SUM(FactRevenue.Amount) AS Amount
+	FROM dw.FactRevenue
+	INNER JOIN dw.DimDate
+		ON FactRevenue.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactRevenue.EntityID = DimEntity.EntityID
+		AND FactRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactRevenue.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Revenue'
+	WHERE
+		DimDate.CalendarYear = @CalendarYear
+		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END &lt;&gt; 'unknown'
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END
+	UNION
+	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'VCF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'VCB' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+), 
+--actuals
+ ActualExpense AS (
+	SELECT 
+		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END AS EntityCode
+		, groupid
+		, SUM(FactExpense.Amount) AS Amount
+	FROM dw.FactExpense
+	INNER JOIN dw.DimDate
+		ON FactExpense.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactExpense.EntityID = DimEntity.EntityID
+		AND FactExpense.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactExpense.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Expense'
+	WHERE
+		DimDate.CalendarYear = @CalendarYear
+		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END &lt;&gt; 'unknown'
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END
+	UNION
+	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'VCF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'VCB' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+)
+	SELECT 
+		  ActualRevenue.EntityCode
+		, SUM(ActualRevenue.Amount - ActualExpense.Amount) Amount
+	FROM ActualRevenue
+	INNER JOIN ActualExpense	
+		ON ActualRevenue.EntityCode = ActualExpense.EntityCode
+	GROUP BY
+		ActualRevenue.EntityCode
+ORDER BY
+	1,2
+;	</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="EntityCode">
+          <DataField>EntityCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="SubEntitiesYTDBudgetedNetIncome">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@CalendarYear">
+            <Value>=Parameters!CalendarYear.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>WITH budgetedRevenue AS (
+	SELECT 
+		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END AS EntityCode
+		, groupid
+		, SUM(FactBudgetRevenue.Amount) AS Amount
+	FROM dw.FactBudgetRevenue
+	INNER JOIN dw.DimEntity
+		ON FactBudgetRevenue.EntityID = DimEntity.EntityID
+		AND FactBudgetRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactBudgetRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactBudgetRevenue.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Revenue'
+	WHERE
+		FactBudgetRevenue.BudgetYear = @CalendarYear
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END &lt;&gt; 'unknown'
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END
+	UNION
+	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'VCF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'VCB' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+), budgetedExpenses AS (
+	SELECT 
+		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END AS EntityCode
+		, groupid
+		, SUM(FactBudgetExpense.Amount) AS Amount
+	FROM dw.FactBudgetExpense
+	INNER JOIN dw.DimEntity
+		ON FactBudgetExpense.EntityID = DimEntity.EntityID
+		AND FactBudgetExpense.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Expense'
+	WHERE
+		FactBudgetExpense.BudgetYear = @CalendarYear
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END &lt;&gt; 'unknown'
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END
+	UNION
+	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'VCF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'VCB' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+)
+	
+
+	SELECT 
+		  budgetedRevenue.EntityCode
+		, SUM(budgetedRevenue.Amount - budgetedExpenses.Amount) Amount
+	FROM budgetedRevenue
+	INNER JOIN budgetedExpenses	
+		ON budgetedRevenue.EntityCode = budgetedExpenses.EntityCode
+	GROUP BY
+		budgetedRevenue.EntityCode
+ORDER BY
+	1,2
+;	</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="EntityCode">
+          <DataField>EntityCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="SubEntitiesYTDVarianceNetIncome">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@CalendarYear">
+            <Value>=Parameters!CalendarYear.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>WITH ActualRevenue AS (
+	SELECT 
+		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END AS EntityCode
+		, groupid
+		, SUM(FactRevenue.Amount) AS Amount
+	FROM dw.FactRevenue
+	INNER JOIN dw.DimDate
+		ON FactRevenue.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactRevenue.EntityID = DimEntity.EntityID
+		AND FactRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactRevenue.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Revenue'
+	WHERE
+		DimDate.CalendarYear = @CalendarYear
+		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END &lt;&gt; 'unknown'
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END
+	UNION
+	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'VCF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'VCB' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+), BudgetedRevenue AS (
+	SELECT 
+		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END AS EntityCode
+		, groupid
+		, SUM(FactBudgetRevenue.Amount) AS Amount
+	FROM dw.FactBudgetRevenue
+	INNER JOIN dw.DimEntity
+		ON FactBudgetRevenue.EntityID = DimEntity.EntityID
+		AND FactBudgetRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactBudgetRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactBudgetRevenue.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Revenue'
+	WHERE
+		FactBudgetRevenue.BudgetYear = @CalendarYear
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END &lt;&gt; 'unknown'
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END
+	UNION
+	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'VCF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'VCB' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+	UNION
+	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
+), VarianceRevenue as (
+SELECT 
+		  ISNULL(ActualRevenue.EntityCode, BudgetedRevenue.EntityCode) AS EntityCode
+		, ActualRevenue.GroupID
+		, SUM(ISNULL(BudgetedRevenue.Amount, 0)) - SUM(ISNULL(ActualRevenue.Amount, 0)) AS Amount
+		
+	FROM ActualRevenue
+	FULL OUTER JOIN BudgetedRevenue
+		ON ActualRevenue.EntityCode = BudgetedRevenue.EntityCode
+		AND ActualRevenue.GroupID = BudgetedRevenue.GroupID
+	--WHERE
+		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
+	GROUP BY
+		  ISNULL(ActualRevenue.EntityCode, BudgetedRevenue.EntityCode)
+		, ActualRevenue.GroupID
+), ActualExpenses AS (
+	SELECT 
+		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END AS EntityCode
+		, groupid
+		, SUM(FactExpense.Amount) AS Amount
+	FROM dw.FactExpense
+	INNER JOIN dw.DimDate
+		ON FactExpense.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactExpense.EntityID = DimEntity.EntityID
+		AND FactExpense.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactExpense.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Expense'
+	WHERE
+		DimDate.CalendarYear = @CalendarYear
+		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END &lt;&gt; 'unknown'
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END
+	UNION
+	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'VCF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'VCB' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+), BudgetedExpenses AS (
+	SELECT 
+		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END AS EntityCode
+		, groupid
+		, SUM(FactBudgetExpense.Amount) AS Amount
+	FROM dw.FactBudgetExpense
+	INNER JOIN dw.DimEntity
+		ON FactBudgetExpense.EntityID = DimEntity.EntityID
+		AND FactBudgetExpense.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+		ON DimFinancialCategory.GLCode = glrg.GLCode
+		AND glrg.Category = 'Expense'
+	WHERE
+		FactBudgetExpense.BudgetYear = @CalendarYear
+		AND (
+			DimEntity.Code IN ('HBF','HCA','WITW')
+			OR --HBC only reports fund 025
+			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+		)
+		--AND DimFinancialCategory.GLType = 'REV'
+		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END &lt;&gt; 'unknown'
+	GROUP BY
+		DimEntity.Code
+		-- ISNULL(GroupID, 5) 		
+		, GroupID
+		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
+			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
+				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
+				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
+				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
+				      ELSE 'unknown' END
+					END
+				  END
+				END
+		  END
+	UNION
+	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'VCF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'VCB' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+	UNION
+	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
+), VarianceExpenses as (
+SELECT 
+		  ISNULL(ActualExpenses.EntityCode, BudgetedExpenses.EntityCode) AS EntityCode
+		, ActualExpenses.GroupID
+		, SUM(ISNULL(BudgetedExpenses.Amount, 0)) - SUM(ISNULL(ActualExpenses.Amount, 0)) AS Amount
+		
+	FROM ActualExpenses
+	FULL OUTER JOIN BudgetedExpenses
+		ON ActualExpenses.EntityCode = BudgetedExpenses.EntityCode
+		AND ActualExpenses.GroupID = BudgetedExpenses.GroupID
+	--WHERE
+		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
+	GROUP BY
+		  ISNULL(ActualExpenses.EntityCode, BudgetedExpenses.EntityCode)
+		, ActualExpenses.GroupID
+)
+SELECT 
+	  VarianceRevenue.EntityCode
+	, SUM(VarianceRevenue.Amount - VarianceExpenses.Amount) AS Amount
+FROM VarianceRevenue
+INNER JOIN VarianceExpenses
+	ON VarianceRevenue.EntityCode = VarianceExpenses.EntityCode
+GROUP BY
+	VarianceRevenue.EntityCode</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="EntityCode">
+          <DataField>EntityCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
   </DataSets>
   <ReportSections>
     <ReportSection>
@@ -6902,7 +8301,9 @@ ORDER BY
                                   <TextRuns>
                                     <TextRun>
                                       <Value>=Sum(Fields!Amount.Value)</Value>
-                                      <Style />
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
                                     </TextRun>
                                   </TextRuns>
                                   <Style />
@@ -6911,9 +8312,20 @@ ORDER BY
                               <rd:DefaultName>Amount51</rd:DefaultName>
                               <Style>
                                 <Border>
-                                  <Color>LightGrey</Color>
                                   <Style>Solid</Style>
                                 </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
@@ -6961,7 +8373,9 @@ ORDER BY
                                 <TextRuns>
                                   <TextRun>
                                     <Value>Net Income/(Loss)</Value>
-                                    <Style />
+                                    <Style>
+                                      <FontWeight>Bold</FontWeight>
+                                    </Style>
                                   </TextRun>
                                 </TextRuns>
                                 <Style />
@@ -6970,9 +8384,20 @@ ORDER BY
                             <rd:DefaultName>Textbox23</rd:DefaultName>
                             <Style>
                               <Border>
-                                <Color>LightGrey</Color>
                                 <Style>Solid</Style>
                               </Border>
+                              <TopBorder>
+                                <Color>Black</Color>
+                              </TopBorder>
+                              <BottomBorder>
+                                <Color>Black</Color>
+                              </BottomBorder>
+                              <LeftBorder>
+                                <Color>Black</Color>
+                              </LeftBorder>
+                              <RightBorder>
+                                <Color>Black</Color>
+                              </RightBorder>
                               <PaddingLeft>2pt</PaddingLeft>
                               <PaddingRight>2pt</PaddingRight>
                               <PaddingTop>2pt</PaddingTop>
@@ -7022,7 +8447,9 @@ ORDER BY
                                   <TextRuns>
                                     <TextRun>
                                       <Value>=Sum(Fields!Amount.Value)</Value>
-                                      <Style />
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
                                     </TextRun>
                                   </TextRuns>
                                   <Style />
@@ -7031,9 +8458,20 @@ ORDER BY
                               <rd:DefaultName>Amount52</rd:DefaultName>
                               <Style>
                                 <Border>
-                                  <Color>LightGrey</Color>
                                   <Style>Solid</Style>
                                 </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
@@ -7078,6 +8516,102 @@ ORDER BY
                 <Height>0.25in</Height>
                 <Width>1in</Width>
                 <ZIndex>11</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Tablix>
+              <Tablix Name="Tablix4">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>1.16665in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Amount53">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!Amount.Value)</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Amount53</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="EntityCode29">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!EntityCode.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!EntityCode.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>SubEntityMonthlyVarianceNetIncome</DataSetName>
+                <SortExpressions>
+                  <SortExpression>
+                    <Value>=Fields!EntityCode.Value</Value>
+                  </SortExpression>
+                </SortExpressions>
+                <Top>2.72861in</Top>
+                <Left>5.13029in</Left>
+                <Height>0.25in</Height>
+                <Width>1.16665in</Width>
+                <ZIndex>12</ZIndex>
                 <Style>
                   <Border>
                     <Style>None</Style>
@@ -7578,7 +9112,7 @@ ORDER BY
                   </SortExpression>
                 </SortExpressions>
                 <Top>1.04306in</Top>
-                <Left>4.11194in</Left>
+                <Left>4.06085in</Left>
                 <Height>0.75in</Height>
                 <Width>1in</Width>
                 <ZIndex>3</ZIndex>
@@ -7592,7 +9126,7 @@ ORDER BY
                 <TablixBody>
                   <TablixColumns>
                     <TablixColumn>
-                      <Width>1.16667in</Width>
+                      <Width>1.10546in</Width>
                     </TablixColumn>
                   </TablixColumns>
                   <TablixRows>
@@ -7750,9 +9284,9 @@ ORDER BY
                   </SortExpression>
                 </SortExpressions>
                 <Top>1.04306in</Top>
-                <Left>5.19148in</Left>
+                <Left>5.13029in</Left>
                 <Height>0.75in</Height>
-                <Width>1.16667in</Width>
+                <Width>1.10546in</Width>
                 <ZIndex>4</ZIndex>
                 <Style>
                   <Border>
@@ -7952,8 +9486,8 @@ ORDER BY
                     <Value>=Fields!GroupID.Value</Value>
                   </SortExpression>
                 </SortExpressions>
-                <Top>2.15917in</Top>
-                <Left>0.11638in</Left>
+                <Top>1.90917in</Top>
+                <Left>0.13029in</Left>
                 <Height>0.5in</Height>
                 <Width>3.875in</Width>
                 <ZIndex>5</ZIndex>
@@ -8092,8 +9626,8 @@ ORDER BY
                     <Value>=Fields!GroupID.Value</Value>
                   </SortExpression>
                 </SortExpressions>
-                <Top>2.15917in</Top>
-                <Left>4.06085in</Left>
+                <Top>1.90917in</Top>
+                <Left>4.07474in</Left>
                 <Height>0.5in</Height>
                 <Width>1in</Width>
                 <ZIndex>6</ZIndex>
@@ -8107,7 +9641,7 @@ ORDER BY
                 <TablixBody>
                   <TablixColumns>
                     <TablixColumn>
-                      <Width>1.16667in</Width>
+                      <Width>1.10546in</Width>
                     </TablixColumn>
                   </TablixColumns>
                   <TablixRows>
@@ -8232,10 +9766,10 @@ ORDER BY
                     <Value>=Fields!GroupID.Value</Value>
                   </SortExpression>
                 </SortExpressions>
-                <Top>2.15917in</Top>
-                <Left>5.19148in</Left>
+                <Top>1.90917in</Top>
+                <Left>5.13029in</Left>
                 <Height>0.5in</Height>
-                <Width>1.16667in</Width>
+                <Width>1.10546in</Width>
                 <ZIndex>7</ZIndex>
                 <Style>
                   <Border>
@@ -8307,6 +9841,322 @@ ORDER BY
                   <PaddingBottom>2pt</PaddingBottom>
                 </Style>
               </Textbox>
+              <Tablix Name="Tablix7">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>1in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Amount54">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!Amount.Value)</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Amount54</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="EntityCode30">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!EntityCode.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!EntityCode.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="RowGroup1">
+                        <GroupExpressions>
+                          <GroupExpression />
+                        </GroupExpressions>
+                      </Group>
+                      <TablixHeader>
+                        <Size>2.87499in</Size>
+                        <CellContents>
+                          <Textbox Name="Textbox24">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>Net Income/(Loss)</Value>
+                                    <Style>
+                                      <FontWeight>Bold</FontWeight>
+                                    </Style>
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>Textbox24</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <TopBorder>
+                                <Color>Black</Color>
+                              </TopBorder>
+                              <BottomBorder>
+                                <Color>Black</Color>
+                              </BottomBorder>
+                              <LeftBorder>
+                                <Color>Black</Color>
+                              </LeftBorder>
+                              <RightBorder>
+                                <Color>Black</Color>
+                              </RightBorder>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>EntitiesYTDActualNetIncome</DataSetName>
+                <SortExpressions>
+                  <SortExpression>
+                    <Value>=Fields!EntityCode.Value</Value>
+                  </SortExpression>
+                </SortExpressions>
+                <Top>2.50361in</Top>
+                <Left>0.11637in</Left>
+                <Height>0.25in</Height>
+                <Width>3.87499in</Width>
+                <ZIndex>10</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Tablix>
+              <Tablix Name="Tablix12">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>1in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Amount55">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!Amount.Value)</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Amount55</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Color>LightGrey</Color>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="EntityCode31">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!EntityCode.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!EntityCode.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>EntityYTDBudgetedNetIncome</DataSetName>
+                <SortExpressions>
+                  <SortExpression>
+                    <Value>=Fields!EntityCode.Value</Value>
+                  </SortExpression>
+                </SortExpressions>
+                <Top>2.50361in</Top>
+                <Left>4.06085in</Left>
+                <Height>0.25in</Height>
+                <Width>1in</Width>
+                <ZIndex>11</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Tablix>
+              <Tablix Name="Tablix20">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>1.10193in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Amount56">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!Amount.Value)</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Amount56</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Color>LightGrey</Color>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="EntityCode32">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!EntityCode.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!EntityCode.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>EntitiesYTDVarianceNetIncome</DataSetName>
+                <SortExpressions>
+                  <SortExpression>
+                    <Value>=Fields!EntityCode.Value</Value>
+                  </SortExpression>
+                </SortExpressions>
+                <Top>2.50361in</Top>
+                <Left>5.13029in</Left>
+                <Height>0.25in</Height>
+                <Width>1.10193in</Width>
+                <ZIndex>12</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Tablix>
             </ReportItems>
             <PageBreak>
               <BreakLocation>End</BreakLocation>
@@ -8544,7 +10394,7 @@ ORDER BY
                   <TablixMembers>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>2.87499in</Size>
+                        <Size>2.88892in</Size>
                         <CellContents>
                           <Textbox Name="Textbox166">
                             <CanGrow>true</CanGrow>
@@ -8590,7 +10440,7 @@ ORDER BY
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>2.87499in</Size>
+                        <Size>2.88892in</Size>
                         <CellContents>
                           <Textbox Name="GroupName5">
                             <CanGrow>true</CanGrow>
@@ -8632,7 +10482,7 @@ ORDER BY
                 <Top>1.04306in</Top>
                 <Left>0.11637in</Left>
                 <Height>0.75in</Height>
-                <Width>3.87499in</Width>
+                <Width>3.88892in</Width>
                 <ZIndex>2</ZIndex>
                 <Style>
                   <Border>
@@ -8800,7 +10650,7 @@ ORDER BY
                   </SortExpression>
                 </SortExpressions>
                 <Top>1.04306in</Top>
-                <Left>4.12584in</Left>
+                <Left>4.07474in</Left>
                 <Height>0.75in</Height>
                 <Width>1in</Width>
                 <ZIndex>3</ZIndex>
@@ -9174,8 +11024,8 @@ ORDER BY
                     <Value>=Fields!GroupID.Value</Value>
                   </SortExpression>
                 </SortExpressions>
-                <Top>2.15917in</Top>
-                <Left>0.11638in</Left>
+                <Top>1.90917in</Top>
+                <Left>0.13031in</Left>
                 <Height>0.5in</Height>
                 <Width>3.87498in</Width>
                 <ZIndex>5</ZIndex>
@@ -9311,8 +11161,8 @@ ORDER BY
                     <Value>=Fields!GroupID.Value</Value>
                   </SortExpression>
                 </SortExpressions>
-                <Top>2.15917in</Top>
-                <Left>4.11194in</Left>
+                <Top>1.90917in</Top>
+                <Left>4.07474in</Left>
                 <Height>0.5in</Height>
                 <Width>1in</Width>
                 <ZIndex>6</ZIndex>
@@ -9450,8 +11300,8 @@ ORDER BY
                     <Value>=Fields!GroupID.Value</Value>
                   </SortExpression>
                 </SortExpressions>
-                <Top>2.15917in</Top>
-                <Left>5.18108in</Left>
+                <Top>1.90917in</Top>
+                <Left>5.19501in</Left>
                 <Height>0.5in</Height>
                 <Width>1.16665in</Width>
                 <ZIndex>7</ZIndex>
@@ -9525,12 +11375,350 @@ ORDER BY
                   <PaddingBottom>2pt</PaddingBottom>
                 </Style>
               </Textbox>
+              <Tablix Name="Tablix27">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>1.01393in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Amount57">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!Amount.Value)</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Amount57</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="EntityCode33">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!EntityCode.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!EntityCode.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="RowGroup2">
+                        <GroupExpressions>
+                          <GroupExpression />
+                        </GroupExpressions>
+                      </Group>
+                      <TablixHeader>
+                        <Size>2.86105in</Size>
+                        <CellContents>
+                          <Textbox Name="Textbox40">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>Net Income/ (Loss)</Value>
+                                    <Style>
+                                      <FontWeight>Bold</FontWeight>
+                                    </Style>
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>Textbox40</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <TopBorder>
+                                <Color>Black</Color>
+                              </TopBorder>
+                              <BottomBorder>
+                                <Color>Black</Color>
+                              </BottomBorder>
+                              <LeftBorder>
+                                <Color>Black</Color>
+                              </LeftBorder>
+                              <RightBorder>
+                                <Color>Black</Color>
+                              </RightBorder>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>SubEntitiesYTDActualNetIncome</DataSetName>
+                <SortExpressions>
+                  <SortExpression>
+                    <Value>=Fields!EntityCode.Value</Value>
+                  </SortExpression>
+                </SortExpressions>
+                <Top>2.50361in</Top>
+                <Left>0.13031in</Left>
+                <Height>0.25in</Height>
+                <Width>3.87498in</Width>
+                <ZIndex>10</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Tablix>
+              <Tablix Name="Tablix35">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>1in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Amount58">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!Amount.Value)</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Amount58</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="EntityCode34">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!EntityCode.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!EntityCode.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>SubEntitiesYTDBudgetedNetIncome</DataSetName>
+                <SortExpressions>
+                  <SortExpression>
+                    <Value>=Fields!EntityCode.Value</Value>
+                  </SortExpression>
+                </SortExpressions>
+                <Top>2.50361in</Top>
+                <Left>4.07474in</Left>
+                <Height>0.25in</Height>
+                <Width>1in</Width>
+                <ZIndex>11</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Tablix>
+              <Tablix Name="Tablix36">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>1.16667in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Amount59">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!Amount.Value)</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Amount59</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="EntityCode35">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!EntityCode.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!EntityCode.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>SubEntitiesYTDVarianceNetIncome</DataSetName>
+                <SortExpressions>
+                  <SortExpression>
+                    <Value>=Fields!EntityCode.Value</Value>
+                  </SortExpression>
+                </SortExpressions>
+                <Top>2.50361in</Top>
+                <Left>5.19148in</Left>
+                <Height>0.25in</Height>
+                <Width>1.16667in</Width>
+                <ZIndex>12</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Tablix>
             </ReportItems>
             <PageName>Sub Entities YTD</PageName>
             <KeepTogether>true</KeepTogether>
             <Top>11.86591in</Top>
             <Left>0.25in</Left>
-            <Height>3.54445in</Height>
+            <Height>3.78909in</Height>
             <Width>8.56362in</Width>
             <ZIndex>3</ZIndex>
             <Style>
