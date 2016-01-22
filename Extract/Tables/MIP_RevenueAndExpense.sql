@@ -1,7 +1,6 @@
 ﻿CREATE TABLE [Extract].MIP_RevenueAndExpense
 (
       dtmPostTo						DATE
-    , sRecordType                   CHAR(1)
 	, sEntryType					CHAR(2)
 	, sCodeIDf_0					VARCHAR(20)
 	, AccountingCode0				VARCHAR(100)			
@@ -44,14 +43,9 @@
 	, AccountingType9				CHAR(3)
 	, AccountingDesignationCode9	CHAR(3)
 	, sCodeIDf_10					VARCHAR(20)
-	, sBudgetVersion				VARCHAR(30)
 	, sCurrencyIDf					CHAR(3)
 	, CurDebit						MONEY
 	, CurCredit						MONEY
-	, curSrcDebit					MONEY
-	, curSrcCredit					MONEY
-	, curInvSrcDebit				MONEY
-	, curInvSrcCredit				MONEY
 
   , TenantID            INT NOT NULL
   --ETL Columns
