@@ -12,8 +12,8 @@
   DTS:ObjectName="Transform_FactBudgetExpense"
   DTS:PackageType="5"
   DTS:ProtectionLevel="2"
-  DTS:VersionBuild="250"
-  DTS:VersionGUID="{C1F2403C-50DB-4E32-8C3B-A19F6A663322}">
+  DTS:VersionBuild="254"
+  DTS:VersionGUID="{895316EE-2883-41E4-A66F-7CF8DE49F719}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:LogProviders>
@@ -773,12 +773,12 @@
               </inputs>
               <outputs>
                 <output
-                  refId="Package\DF Transform_FactBudgetExpense\Conditional Split.Outputs[Discard REV]"
+                  refId="Package\DF Transform_FactBudgetExpense\Conditional Split.Outputs[Discard REV or NULL GLType]"
                   description="Output 1 of the Conditional Split Transformation"
                   errorOrTruncationOperation="Computation"
                   errorRowDisposition="FailComponent"
                   exclusionGroup="1"
-                  name="Discard REV"
+                  name="Discard REV or NULL GLType"
                   synchronousInputId="Package\DF Transform_FactBudgetExpense\Conditional Split.Inputs[Conditional Split Input]"
                   truncationRowDisposition="FailComponent">
                   <properties>
@@ -786,13 +786,13 @@
                       containsID="true"
                       dataType="System.String"
                       description="Specifies the expression. This expression version uses lineage identifiers instead of column names."
-                      name="Expression">#{Package\DF Transform_FactBudgetExpense\Union All 2.Outputs[Union All Output 1].Columns[GLType]} == "REV"</property>
+                      name="Expression">[REPLACENULL](#{Package\DF Transform_FactBudgetExpense\Union All 2.Outputs[Union All Output 1].Columns[GLType]},"REV") == "REV"</property>
                     <property
                       containsID="true"
                       dataType="System.String"
                       description="Specifies the friendly version of the expression. This expression version uses column names."
                       expressionType="Notify"
-                      name="FriendlyExpression">GLType == "REV"</property>
+                      name="FriendlyExpression">REPLACENULL(GLType,"REV") == "REV"</property>
                     <property
                       dataType="System.Int32"
                       description="Specifies the position of the condition in the list of conditions that the transformation evaluates. The evaluation order is from the lowest to the highest value."
@@ -1594,7 +1594,7 @@ where [refTable].[TenantID] = ? and [refTable].[Code] = ?</property>
                   containsID="true"
                   dataType="System.String"
                   description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
-                  name="ParameterMap">#{Package\DF Transform_FactBudgetExpense\2474:invalid};#{Package\DF Transform_FactBudgetExpense\237:invalid};</property>
+                  name="ParameterMap">#{Package\DF Transform_FactBudgetExpense\2295:invalid};#{Package\DF Transform_FactBudgetExpense\2296:invalid};</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -2143,7 +2143,7 @@ where [refTable].[TenantID] = ? and [refTable].[EntityID] = ? and [refTable].[Fi
                   containsID="true"
                   dataType="System.String"
                   description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
-                  name="ParameterMap">#{Package\DF Transform_FactBudgetExpense\Union All.Outputs[Union All Output 1].Columns[TenantID]};#{Package\DF Transform_FactBudgetExpense\Union All.Outputs[Union All Output 1].Columns[EntityID]};#{Package\DF Transform_FactBudgetExpense\Union All.Outputs[Union All Output 1].Columns[FinancialCategoryID]};#{Package\DF Transform_FactBudgetExpense\Union All.Outputs[Union All Output 1].Columns[BudgetYear]};#{Package\DF Transform_FactBudgetExpense\2475:invalid};#{Package\DF Transform_FactBudgetExpense\Union All.Outputs[Union All Output 1].Columns[CampusID]};</property>
+                  name="ParameterMap">#{Package\DF Transform_FactBudgetExpense\Union All.Outputs[Union All Output 1].Columns[TenantID]};#{Package\DF Transform_FactBudgetExpense\Union All.Outputs[Union All Output 1].Columns[EntityID]};#{Package\DF Transform_FactBudgetExpense\Union All.Outputs[Union All Output 1].Columns[FinancialCategoryID]};#{Package\DF Transform_FactBudgetExpense\Union All.Outputs[Union All Output 1].Columns[BudgetYear]};#{Package\DF Transform_FactBudgetExpense\2297:invalid};#{Package\DF Transform_FactBudgetExpense\Union All.Outputs[Union All Output 1].Columns[CampusID]};</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -6324,44 +6324,44 @@ from [Extract].MIP_Budget</property>
               startId="Package\DF Transform_FactBudgetExpense\Data Conversion.Outputs[Data Conversion Output]" />
             <path
               refId="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output6]"
-              endId="Package\DF Transform_FactBudgetExpense\Union All 4.Inputs[Union All Input 2]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactBudgetExpense\Handle Annual BudgetMonth.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output4]"
-              endId="Package\DF Transform_FactBudgetExpense\Union All 2.Inputs[Union All Input 1]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactBudgetExpense\SET FinancialCategoryID -1.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output3]"
-              endId="Package\DF Transform_FactBudgetExpense\Union All 1.Inputs[Union All Input 1]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactBudgetExpense\SET EntityID -1.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output5]"
-              endId="Package\DF Transform_FactBudgetExpense\Union All.Inputs[Union All Input 1]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactBudgetExpense\SET CampusID -1.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output1]"
-              endId="Package\DF Transform_FactBudgetExpense\TF Hash Transform.Inputs[Input]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactBudgetExpense\Add Defaults.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output]"
-              endId="Package\DF Transform_FactBudgetExpense\Union All 3.Inputs[Union All Input 2]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactBudgetExpense\Add Insert Defaults.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output2]"
               endId="Package\DF Transform_FactBudgetExpense\Union All 3.Inputs[Union All Input 1]"
               name="Derived Column Output"
               startId="Package\DF Transform_FactBudgetExpense\Add Update Defaults.Outputs[Derived Column Output]" />
             <path
+              refId="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output4]"
+              endId="Package\DF Transform_FactBudgetExpense\TF Hash Transform.Inputs[Input]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactBudgetExpense\Add Defaults.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output3]"
+              endId="Package\DF Transform_FactBudgetExpense\Union All.Inputs[Union All Input 1]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactBudgetExpense\SET CampusID -1.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output5]"
+              endId="Package\DF Transform_FactBudgetExpense\Union All 3.Inputs[Union All Input 2]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactBudgetExpense\Add Insert Defaults.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output1]"
+              endId="Package\DF Transform_FactBudgetExpense\Union All 2.Inputs[Union All Input 1]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactBudgetExpense\SET FinancialCategoryID -1.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output]"
+              endId="Package\DF Transform_FactBudgetExpense\Union All 4.Inputs[Union All Input 2]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactBudgetExpense\Handle Annual BudgetMonth.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output2]"
+              endId="Package\DF Transform_FactBudgetExpense\Union All 1.Inputs[Union All Input 1]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactBudgetExpense\SET EntityID -1.Outputs[Derived Column Output]" />
+            <path
               refId="Package\DF Transform_FactBudgetExpense.Paths[Discard REV]"
               endId="Package\DF Transform_FactBudgetExpense\DEST TF Terminator BudgetRevenue.Inputs[Row Count Input 1]"
               name="Discard REV"
-              startId="Package\DF Transform_FactBudgetExpense\Conditional Split.Outputs[Discard REV]" />
+              startId="Package\DF Transform_FactBudgetExpense\Conditional Split.Outputs[Discard REV or NULL GLType]" />
             <path
               refId="Package\DF Transform_FactBudgetExpense.Paths[Do Nothing]"
               endId="Package\DF Transform_FactBudgetExpense\DEST TF Terminator Destination.Inputs[Row Count Input 1]"
@@ -6394,29 +6394,29 @@ from [Extract].MIP_Budget</property>
               startId="Package\DF Transform_FactBudgetExpense\Lookup DimEntity.Outputs[Lookup Match Output]" />
             <path
               refId="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output4]"
-              endId="Package\DF Transform_FactBudgetExpense\SET FinancialCategoryID -1.Inputs[Derived Column Input]"
+              endId="Package\DF Transform_FactBudgetExpense\Handle Annual BudgetMonth.Inputs[Derived Column Input]"
               name="Lookup No Match Output"
-              startId="Package\DF Transform_FactBudgetExpense\Lookup DimFinancialCategory.Outputs[Lookup No Match Output]" />
+              startId="Package\DF Transform_FactBudgetExpense\Lookup BudgetMonth.Outputs[Lookup No Match Output]" />
             <path
               refId="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output3]"
-              endId="Package\DF Transform_FactBudgetExpense\SET CampusID -1.Inputs[Derived Column Input]"
-              name="Lookup No Match Output"
-              startId="Package\DF Transform_FactBudgetExpense\Lookup DimCampus.Outputs[Lookup No Match Output]" />
-            <path
-              refId="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output]"
-              endId="Package\DF Transform_FactBudgetExpense\TF Surrogate Key Transform.Inputs[SurrogateKeyInput]"
-              name="Lookup No Match Output"
-              startId="Package\DF Transform_FactBudgetExpense\Member Exist?.Outputs[Lookup No Match Output]" />
-            <path
-              refId="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output1]"
               endId="Package\DF Transform_FactBudgetExpense\SET EntityID -1.Inputs[Derived Column Input]"
               name="Lookup No Match Output"
               startId="Package\DF Transform_FactBudgetExpense\Lookup DimEntity.Outputs[Lookup No Match Output]" />
             <path
-              refId="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output2]"
-              endId="Package\DF Transform_FactBudgetExpense\Handle Annual BudgetMonth.Inputs[Derived Column Input]"
+              refId="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output]"
+              endId="Package\DF Transform_FactBudgetExpense\SET FinancialCategoryID -1.Inputs[Derived Column Input]"
               name="Lookup No Match Output"
-              startId="Package\DF Transform_FactBudgetExpense\Lookup BudgetMonth.Outputs[Lookup No Match Output]" />
+              startId="Package\DF Transform_FactBudgetExpense\Lookup DimFinancialCategory.Outputs[Lookup No Match Output]" />
+            <path
+              refId="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output1]"
+              endId="Package\DF Transform_FactBudgetExpense\SET CampusID -1.Inputs[Derived Column Input]"
+              name="Lookup No Match Output"
+              startId="Package\DF Transform_FactBudgetExpense\Lookup DimCampus.Outputs[Lookup No Match Output]" />
+            <path
+              refId="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output2]"
+              endId="Package\DF Transform_FactBudgetExpense\TF Surrogate Key Transform.Inputs[SurrogateKeyInput]"
+              name="Lookup No Match Output"
+              startId="Package\DF Transform_FactBudgetExpense\Member Exist?.Outputs[Lookup No Match Output]" />
             <path
               refId="Package\DF Transform_FactBudgetExpense.Paths[Output]"
               endId="Package\DF Transform_FactBudgetExpense\Lookup DimEntity.Inputs[Lookup Input]"
@@ -6597,14 +6597,35 @@ from [Extract].MIP_Budget</property>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_2638c08f910947e889f9490912e52906")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_2638c08f910947e889f9490912e52906")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -6996,35 +7017,14 @@ namespace st_2638c08f910947e889f9490912e52906.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_2638c08f910947e889f9490912e52906")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_2638c08f910947e889f9490912e52906")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -7891,14 +7891,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_b8d814a2a48244e98e943e8a6f9f9a46")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_b8d814a2a48244e98e943e8a6f9f9a46")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -8472,35 +8493,14 @@ namespace st_b8d814a2a48244e98e943e8a6f9f9a46.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_b8d814a2a48244e98e943e8a6f9f9a46")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_b8d814a2a48244e98e943e8a6f9f9a46")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -8790,14 +8790,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_907915bdb87046859067d5970ce1e002")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_907915bdb87046859067d5970ce1e002")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -9249,35 +9270,14 @@ namespace st_907915bdb87046859067d5970ce1e002.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_907915bdb87046859067d5970ce1e002")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_907915bdb87046859067d5970ce1e002")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -9505,14 +9505,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_90775402985f4392bc69080aa5ebdfe2")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_90775402985f4392bc69080aa5ebdfe2")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -9904,35 +9925,14 @@ namespace st_90775402985f4392bc69080aa5ebdfe2.Properties {
   </ProjectExtensions>
 </Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_90775402985f4392bc69080aa5ebdfe2")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_90775402985f4392bc69080aa5ebdfe2")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -10341,7 +10341,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_DfLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\DF Transform_FactBudgetExpense&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\DF Transform_FactBudgetExpense&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -10437,7 +10437,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_PkgLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -10457,7 +10457,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_TaskList">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}" typ="PipelineTask" p="" name="DF Transform_FactBudgetExpense" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnderivedcolumn" name="Add Insert Defaults" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_17" /&gt;&lt;com id="26" dir="TRAN"  typ="trnderivedcolumn" name="Add Update Defaults" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_26" /&gt;&lt;com id="35" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="ADO NET Destination" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_35" /&gt;&lt;com id="72" dir="TRAN"  typ="trnconditionalsplit" name="Conditional Split" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_72" /&gt;&lt;com id="84" dir="TRAN"  typ="trnconditionalsplit" name="Conditional Split 1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_84" /&gt;&lt;com id="96" dir="TRAN"  typ="trndataconversion" name="Data Conversion" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_96" /&gt;&lt;com id="106" dir="TRAN"  typ="trnrowcount" name="DEST ADO NET Destination" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_106" /&gt;&lt;com id="110" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator BudgetRevenue" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_110" /&gt;&lt;com id="114" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_114" /&gt;&lt;com id="118" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination 1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_118" /&gt;&lt;com id="122" dir="TRAN"  typ="trnderivedcolumn" name="Handle Annual BudgetMonth" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_122" /&gt;&lt;com id="132" dir="TRAN"  typ="trnlookup" name="Lookup BudgetMonth" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_132" /&gt;&lt;com id="157" dir="TRAN"  typ="trnlookup" name="Lookup DimCampus" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_157" /&gt;&lt;com id="185" dir="TRAN"  typ="trnlookup" name="Lookup DimEntity" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_185" /&gt;&lt;com id="213" dir="TRAN"  typ="trnlookup" name="Lookup DimFinancialCategory" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_213" /&gt;&lt;com id="270" dir="TRAN"  typ="trnlookup" name="Member Exist?" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_270" /&gt;&lt;com id="312" dir="SRC"  typ="srcdatareader" name="Read From Source" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_312" /&gt;&lt;com id="375" dir="TRAN"  typ="trnderivedcolumn" name="SET CampusID -1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_375" /&gt;&lt;com id="384" dir="TRAN"  typ="trnderivedcolumn" name="SET EntityID -1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_384" /&gt;&lt;com id="393" dir="TRAN"  typ="trnderivedcolumn" name="SET FinancialCategoryID -1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_393" /&gt;&lt;com id="402" dir="TRAN"  typ="trnrowcount" name="SRC Read From Source" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_402" /&gt;&lt;com id="406" dir="TRAN"  typ="PragmaticWorks.TaskFactory.Components.Transforms.Hash.HashTransform, PragmaticWorks.TaskFactory.Components120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Hash Transform" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_406" /&gt;&lt;com id="418" dir="TRAN"  typ="PW.TaskFactory.SurrogateKeyTransform.SurrogateKeyTransform, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Surrogate Key Transform" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_418" /&gt;&lt;com id="438" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator BudgetRevenue" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_438" /&gt;&lt;com id="447" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_447" /&gt;&lt;com id="456" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination 1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_456" /&gt;&lt;com id="465" dir="TRAN"  typ="trnunionall" name="Union All" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_465" /&gt;&lt;com id="550" dir="TRAN"  typ="trnunionall" name="Union All 1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_550" /&gt;&lt;com id="665" dir="TRAN"  typ="trnunionall" name="Union All 2" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_665" /&gt;&lt;com id="735" dir="TRAN"  typ="trnunionall" name="Union All 3" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_735" /&gt;&lt;com id="815" dir="TRAN"  typ="trnunionall" name="Union All 4" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_815" /&gt;&lt;com id="895" dir="TRAN"  typ="trnconditionalsplit" name="Update or Do Nothing" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_895" /&gt;&lt;dp id="908" val="0"  ann="" c1="312" c2="402"/&gt;&lt;dp id="909" val="0"  ann="" c1="84" c2="157"/&gt;&lt;dp id="910" val="0"  ann="" c1="72" c2="96"/&gt;&lt;dp id="911" val="0"  ann="" c1="96" c2="132"/&gt;&lt;dp id="912" val="0"  ann="" c1="17" c2="735"/&gt;&lt;dp id="913" val="0"  ann="" c1="2" c2="406"/&gt;&lt;dp id="914" val="0"  ann="" c1="26" c2="735"/&gt;&lt;dp id="915" val="0"  ann="" c1="384" c2="550"/&gt;&lt;dp id="916" val="0"  ann="" c1="393" c2="665"/&gt;&lt;dp id="917" val="0"  ann="" c1="375" c2="465"/&gt;&lt;dp id="918" val="0"  ann="" c1="122" c2="815"/&gt;&lt;dp id="919" val="0"  ann="" c1="72" c2="110"/&gt;&lt;dp id="920" val="0"  ann="" c1="895" c2="114"/&gt;&lt;dp id="921" val="0"  ann="" c1="213" c2="665"/&gt;&lt;dp id="922" val="0"  ann="" c1="157" c2="465"/&gt;&lt;dp id="923" val="0"  ann="" c1="270" c2="895"/&gt;&lt;dp id="924" val="0"  ann="" c1="132" c2="815"/&gt;&lt;dp id="925" val="0"  ann="" c1="185" c2="550"/&gt;&lt;dp id="926" val="0"  ann="" c1="270" c2="418"/&gt;&lt;dp id="927" val="0"  ann="" c1="185" c2="384"/&gt;&lt;dp id="928" val="0"  ann="" c1="132" c2="122"/&gt;&lt;dp id="929" val="0"  ann="" c1="157" c2="375"/&gt;&lt;dp id="930" val="0"  ann="" c1="213" c2="393"/&gt;&lt;dp id="931" val="0"  ann="" c1="406" c2="185"/&gt;&lt;dp id="932" val="0"  ann="" c1="106" c2="35"/&gt;&lt;dp id="933" val="0"  ann="" c1="402" c2="2"/&gt;&lt;dp id="934" val="0"  ann="" c1="110" c2="438"/&gt;&lt;dp id="935" val="0"  ann="" c1="118" c2="456"/&gt;&lt;dp id="936" val="0"  ann="" c1="114" c2="447"/&gt;&lt;dp id="937" val="0"  ann="" c1="84" c2="118"/&gt;&lt;dp id="938" val="0"  ann="" c1="418" c2="17"/&gt;&lt;dp id="939" val="0"  ann="" c1="665" c2="72"/&gt;&lt;dp id="940" val="0"  ann="" c1="815" c2="84"/&gt;&lt;dp id="941" val="0"  ann="" c1="465" c2="270"/&gt;&lt;dp id="942" val="0"  ann="" c1="550" c2="213"/&gt;&lt;dp id="943" val="0"  ann="" c1="735" c2="106"/&gt;&lt;dp id="944" val="0"  ann="" c1="895" c2="26"/&gt;&lt;/tsk&gt;&lt;tsk id="{AADB0BF8-E6B3-4292-BBCF-32840E68A642}" typ="SQLTask" p="" name="Get Surrogate Key Seed" on="1" /&gt;&lt;tsk id="{E119FCC2-BA11-4290-B7D8-428BDC6E2897}" typ="SQLTask" p="" name="TRUNCATE TransformFactBudgetExpense" on="1" /&gt;&lt;pc id="{4D7FED07-54A7-406C-BC24-8B609593BB01}" op="2" and="True" val="0" task1="{E119FCC2-BA11-4290-B7D8-428BDC6E2897}" task2="{AADB0BF8-E6B3-4292-BBCF-32840E68A642}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{D92ED768-9D29-4742-922F-411DE082C663}" op="2" and="True" val="0" task1="{AADB0BF8-E6B3-4292-BBCF-32840E68A642}" task2="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}" typ="PipelineTask" p="" name="DF Transform_FactBudgetExpense" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnderivedcolumn" name="Add Insert Defaults" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_17" /&gt;&lt;com id="26" dir="TRAN"  typ="trnderivedcolumn" name="Add Update Defaults" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_26" /&gt;&lt;com id="35" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="ADO NET Destination" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_35" /&gt;&lt;com id="72" dir="TRAN"  typ="trnconditionalsplit" name="Conditional Split" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_72" /&gt;&lt;com id="84" dir="TRAN"  typ="trnconditionalsplit" name="Conditional Split 1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_84" /&gt;&lt;com id="96" dir="TRAN"  typ="trndataconversion" name="Data Conversion" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_96" /&gt;&lt;com id="106" dir="TRAN"  typ="trnrowcount" name="DEST ADO NET Destination" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_106" /&gt;&lt;com id="110" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator BudgetRevenue" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_110" /&gt;&lt;com id="114" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_114" /&gt;&lt;com id="118" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination 1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_118" /&gt;&lt;com id="122" dir="TRAN"  typ="trnderivedcolumn" name="Handle Annual BudgetMonth" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_122" /&gt;&lt;com id="132" dir="TRAN"  typ="trnlookup" name="Lookup BudgetMonth" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_132" /&gt;&lt;com id="157" dir="TRAN"  typ="trnlookup" name="Lookup DimCampus" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_157" /&gt;&lt;com id="185" dir="TRAN"  typ="trnlookup" name="Lookup DimEntity" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_185" /&gt;&lt;com id="213" dir="TRAN"  typ="trnlookup" name="Lookup DimFinancialCategory" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_213" /&gt;&lt;com id="276" dir="TRAN"  typ="trnlookup" name="Member Exist?" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_276" /&gt;&lt;com id="318" dir="SRC"  typ="srcdatareader" name="Read From Source" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_318" /&gt;&lt;com id="381" dir="TRAN"  typ="trnderivedcolumn" name="SET CampusID -1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_381" /&gt;&lt;com id="390" dir="TRAN"  typ="trnderivedcolumn" name="SET EntityID -1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_390" /&gt;&lt;com id="399" dir="TRAN"  typ="trnderivedcolumn" name="SET FinancialCategoryID -1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_399" /&gt;&lt;com id="408" dir="TRAN"  typ="trnrowcount" name="SRC Read From Source" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_408" /&gt;&lt;com id="412" dir="TRAN"  typ="PragmaticWorks.TaskFactory.Components.Transforms.Hash.HashTransform, PragmaticWorks.TaskFactory.Components120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Hash Transform" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_412" /&gt;&lt;com id="424" dir="TRAN"  typ="PW.TaskFactory.SurrogateKeyTransform.SurrogateKeyTransform, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Surrogate Key Transform" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_424" /&gt;&lt;com id="444" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator BudgetRevenue" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_444" /&gt;&lt;com id="453" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_453" /&gt;&lt;com id="462" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination 1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_462" /&gt;&lt;com id="471" dir="TRAN"  typ="trnunionall" name="Union All" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_471" /&gt;&lt;com id="556" dir="TRAN"  typ="trnunionall" name="Union All 1" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_556" /&gt;&lt;com id="671" dir="TRAN"  typ="trnunionall" name="Union All 2" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_671" /&gt;&lt;com id="741" dir="TRAN"  typ="trnunionall" name="Union All 3" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_741" /&gt;&lt;com id="821" dir="TRAN"  typ="trnunionall" name="Union All 4" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_821" /&gt;&lt;com id="901" dir="TRAN"  typ="trnconditionalsplit" name="Update or Do Nothing" pid="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}_901" /&gt;&lt;dp id="914" val="0"  ann="" c1="318" c2="408"/&gt;&lt;dp id="915" val="0"  ann="" c1="84" c2="157"/&gt;&lt;dp id="916" val="0"  ann="" c1="72" c2="96"/&gt;&lt;dp id="917" val="0"  ann="" c1="96" c2="132"/&gt;&lt;dp id="918" val="0"  ann="" c1="122" c2="821"/&gt;&lt;dp id="919" val="0"  ann="" c1="399" c2="671"/&gt;&lt;dp id="920" val="0"  ann="" c1="390" c2="556"/&gt;&lt;dp id="921" val="0"  ann="" c1="381" c2="471"/&gt;&lt;dp id="922" val="0"  ann="" c1="2" c2="412"/&gt;&lt;dp id="923" val="0"  ann="" c1="17" c2="741"/&gt;&lt;dp id="924" val="0"  ann="" c1="26" c2="741"/&gt;&lt;dp id="925" val="0"  ann="" c1="72" c2="110"/&gt;&lt;dp id="926" val="0"  ann="" c1="901" c2="114"/&gt;&lt;dp id="927" val="0"  ann="" c1="213" c2="671"/&gt;&lt;dp id="928" val="0"  ann="" c1="157" c2="471"/&gt;&lt;dp id="929" val="0"  ann="" c1="276" c2="901"/&gt;&lt;dp id="930" val="0"  ann="" c1="132" c2="821"/&gt;&lt;dp id="931" val="0"  ann="" c1="185" c2="556"/&gt;&lt;dp id="932" val="0"  ann="" c1="213" c2="399"/&gt;&lt;dp id="933" val="0"  ann="" c1="157" c2="381"/&gt;&lt;dp id="934" val="0"  ann="" c1="276" c2="424"/&gt;&lt;dp id="935" val="0"  ann="" c1="185" c2="390"/&gt;&lt;dp id="936" val="0"  ann="" c1="132" c2="122"/&gt;&lt;dp id="937" val="0"  ann="" c1="412" c2="185"/&gt;&lt;dp id="938" val="0"  ann="" c1="106" c2="35"/&gt;&lt;dp id="939" val="0"  ann="" c1="408" c2="2"/&gt;&lt;dp id="940" val="0"  ann="" c1="110" c2="444"/&gt;&lt;dp id="941" val="0"  ann="" c1="118" c2="462"/&gt;&lt;dp id="942" val="0"  ann="" c1="114" c2="453"/&gt;&lt;dp id="943" val="0"  ann="" c1="84" c2="118"/&gt;&lt;dp id="944" val="0"  ann="" c1="424" c2="17"/&gt;&lt;dp id="945" val="0"  ann="" c1="671" c2="72"/&gt;&lt;dp id="946" val="0"  ann="" c1="821" c2="84"/&gt;&lt;dp id="947" val="0"  ann="" c1="471" c2="276"/&gt;&lt;dp id="948" val="0"  ann="" c1="556" c2="213"/&gt;&lt;dp id="949" val="0"  ann="" c1="741" c2="106"/&gt;&lt;dp id="950" val="0"  ann="" c1="901" c2="26"/&gt;&lt;/tsk&gt;&lt;tsk id="{AADB0BF8-E6B3-4292-BBCF-32840E68A642}" typ="SQLTask" p="" name="Get Surrogate Key Seed" on="1" /&gt;&lt;tsk id="{E119FCC2-BA11-4290-B7D8-428BDC6E2897}" typ="SQLTask" p="" name="TRUNCATE TransformFactBudgetExpense" on="1" /&gt;&lt;pc id="{4D7FED07-54A7-406C-BC24-8B609593BB01}" op="2" and="True" val="0" task1="{E119FCC2-BA11-4290-B7D8-428BDC6E2897}" task2="{AADB0BF8-E6B3-4292-BBCF-32840E68A642}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{D92ED768-9D29-4742-922F-411DE082C663}" op="2" and="True" val="0" task1="{AADB0BF8-E6B3-4292-BBCF-32840E68A642}" task2="{9BC26738-5CF7-4B65-BDDA-75CB3F075FCE}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -10490,35 +10490,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_4b5558131a1a43c281afeba590625905")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_4b5558131a1a43c281afeba590625905")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -10639,34 +10618,104 @@ using System.Runtime.CompilerServices;
   </resheader>
 </root>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+                Name="st_4b5558131a1a43c281afeba590625905.csproj"
+                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{d459dc86-ca3b-45ea-8251-fb7ad6f2f857}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>st_4b5558131a1a43c281afeba590625905</RootNamespace>
+    <AssemblyName>st_4b5558131a1a43c281afeba590625905</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_4b5558131a1a43c281afeba590625905.Properties.Settings.get_Default():st_4b5558131a1a43c281afeba590625905.Properties.Sett" +
-    "ings")]
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
 
-namespace st_4b5558131a1a43c281afeba590625905.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>.\bin\Release\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+         <Generator>ResXFileCodeGenerator</Generator>
+         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+             <AutoGen>True</AutoGen>
+         <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+         <Generator>SettingsSingleFileGenerator</Generator>
+         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+         <AutoGen>True</AutoGen>
+         <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptMain.cs">
+         <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <!-- Include the build rules for a C# project.-->
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
+        <ProjectProperties HostName="ScriptTask"
+                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
+                           ApplicationType="usd"
+                           Language="cs"
+                           TemplatesPath=""
+                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
+                           DebugInfoCommandLine=""
+                           DebugInfoWorkingDir=""
+                           IconImageList=""/>
+        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
+        </Host>
+        <ProjectClient>
+            <HostIdentifier>SSIS_ST120</HostIdentifier>
+        </ProjectClient>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -11036,113 +11085,64 @@ namespace st_4b5558131a1a43c281afeba590625905
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="st_4b5558131a1a43c281afeba590625905.csproj"
-                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{d459dc86-ca3b-45ea-8251-fb7ad6f2f857}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>st_4b5558131a1a43c281afeba590625905</RootNamespace>
-    <AssemblyName>st_4b5558131a1a43c281afeba590625905</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>.\bin\Debug\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_4b5558131a1a43c281afeba590625905.Properties.Settings.get_Default():st_4b5558131a1a43c281afeba590625905.Properties.Sett" +
+    "ings")]
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>false</DebugSymbols>
-    <Optimize>true</Optimize>
-    <OutputPath>.\bin\Release\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AppDesigner Include="Properties\" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-         <Generator>ResXFileCodeGenerator</Generator>
-         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-             <AutoGen>True</AutoGen>
-         <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-         <Generator>SettingsSingleFileGenerator</Generator>
-         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-         <AutoGen>True</AutoGen>
-         <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="ScriptMain.cs">
-         <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <!-- Include the build rules for a C# project.-->
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-
-  <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
-        <ProjectProperties HostName="ScriptTask"
-                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
-                           ApplicationType="usd"
-                           Language="cs"
-                           TemplatesPath=""
-                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
-                           DebugInfoCommandLine=""
-                           DebugInfoWorkingDir=""
-                           IconImageList=""/>
-        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
-        </Host>
-        <ProjectClient>
-            <HostIdentifier>SSIS_ST120</HostIdentifier>
-        </ProjectClient>
-      </FlavorProperties>
-    </VisualStudio>
-  </ProjectExtensions>
-</Project>]]></ProjectItem>
+namespace st_4b5558131a1a43c281afeba590625905.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_4b5558131a1a43c281afeba590625905")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_4b5558131a1a43c281afeba590625905")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -11672,35 +11672,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_5216f8e3413f4009851a633ff82c45d2")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_5216f8e3413f4009851a633ff82c45d2")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -11820,35 +11799,6 @@ using System.Runtime.CompilerServices;
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_5216f8e3413f4009851a633ff82c45d2.Properties.Settings.get_Default():st_5216f8e3413f4009851a633ff82c45d2.Properties.Sett" +
-    "ings")]
-
-namespace st_5216f8e3413f4009851a633ff82c45d2.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -12024,26 +11974,6 @@ namespace st_5216f8e3413f4009851a633ff82c45d2
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Project"
-                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
-<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
-	<msb:PropertyGroup>
-		<msb:CodeName>st_5216f8e3413f4009851a633ff82c45d2</msb:CodeName>
-		<msb:DisplayName>st_5216f8e3413f4009851a633ff82c45d2</msb:DisplayName>
-		<msb:Language>msBuild</msb:Language>
-		<msb:ProjectId>{D002DEC8-8DD9-4EDE-A50E-31E81881DE52}</msb:ProjectId>
-	</msb:PropertyGroup>
-	<msb:ItemGroup>
-		<msb:Project Include="st_5216f8e3413f4009851a633ff82c45d2.csproj"/>
-		<msb:File Include="Properties\AssemblyInfo.cs"/>
-		<msb:File Include="Properties\Resources.resx"/>
-		<msb:File Include="Properties\Resources.Designer.cs"/>
-		<msb:File Include="Properties\Settings.Designer.cs"/>
-		<msb:File Include="Properties\Settings.settings"/>
-		<msb:File Include="ScriptMain.cs"/>
-	</msb:ItemGroup>
-</c:Project>]]></ProjectItem>
-              <ProjectItem
                 Name="st_5216f8e3413f4009851a633ff82c45d2.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -12143,14 +12073,84 @@ namespace st_5216f8e3413f4009851a633ff82c45d2
   </ProjectExtensions>
 </Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Project"
+                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
+	<msb:PropertyGroup>
+		<msb:CodeName>st_5216f8e3413f4009851a633ff82c45d2</msb:CodeName>
+		<msb:DisplayName>st_5216f8e3413f4009851a633ff82c45d2</msb:DisplayName>
+		<msb:Language>msBuild</msb:Language>
+		<msb:ProjectId>{D002DEC8-8DD9-4EDE-A50E-31E81881DE52}</msb:ProjectId>
+	</msb:PropertyGroup>
+	<msb:ItemGroup>
+		<msb:Project Include="st_5216f8e3413f4009851a633ff82c45d2.csproj"/>
+		<msb:File Include="Properties\AssemblyInfo.cs"/>
+		<msb:File Include="Properties\Resources.resx"/>
+		<msb:File Include="Properties\Resources.Designer.cs"/>
+		<msb:File Include="Properties\Settings.Designer.cs"/>
+		<msb:File Include="Properties\Settings.settings"/>
+		<msb:File Include="ScriptMain.cs"/>
+	</msb:ItemGroup>
+</c:Project>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_5216f8e3413f4009851a633ff82c45d2.Properties.Settings.get_Default():st_5216f8e3413f4009851a633ff82c45d2.Properties.Sett" +
+    "ings")]
+
+namespace st_5216f8e3413f4009851a633ff82c45d2.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_5216f8e3413f4009851a633ff82c45d2")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_5216f8e3413f4009851a633ff82c45d2")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -12690,14 +12690,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
   </resheader>
 </root>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_ff28ec630fe64161939f132a57cfcfed")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_ff28ec630fe64161939f132a57cfcfed")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -12871,35 +12892,14 @@ namespace st_ff28ec630fe64161939f132a57cfcfed.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_ff28ec630fe64161939f132a57cfcfed")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_ff28ec630fe64161939f132a57cfcfed")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -13754,13 +13754,21 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       <GraphLayout
         Capacity="128" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
+          Size="179,42"
+          Id="Package\DF Transform_FactBudgetExpense\Lookup BudgetMonth"
+          TopLeft="410.5,1229.5" />
+        <NodeLayout
+          Size="173,42"
+          Id="Package\DF Transform_FactBudgetExpense\Lookup DimCampus"
+          TopLeft="413.5,1637.5" />
+        <NodeLayout
           Size="164,42"
           Id="Package\DF Transform_FactBudgetExpense\Conditional Split 1"
           TopLeft="418,1535.5" />
         <NodeLayout
-          Size="223,42"
-          Id="Package\DF Transform_FactBudgetExpense\TF Terminator BudgetRevenue"
-          TopLeft="123.5,1229.5" />
+          Size="121,42"
+          Id="Package\DF Transform_FactBudgetExpense\Union All"
+          TopLeft="439.5,1841.5" />
         <NodeLayout
           Size="208,42"
           Id="Package\DF Transform_FactBudgetExpense\DEST ADO NET Destination"
@@ -13770,9 +13778,9 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\DF Transform_FactBudgetExpense\Conditional Split"
           TopLeft="422.5,1025.5" />
         <NodeLayout
-          Size="173,42"
-          Id="Package\DF Transform_FactBudgetExpense\Lookup DimCampus"
-          TopLeft="413.5,1637.5" />
+          Size="130,42"
+          Id="Package\DF Transform_FactBudgetExpense\Union All 3"
+          TopLeft="411,2249.5" />
         <NodeLayout
           Size="212,42"
           Id="Package\DF Transform_FactBudgetExpense\TF Surrogate Key Transform"
@@ -13790,13 +13798,13 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\DF Transform_FactBudgetExpense\SRC Read From Source"
           TopLeft="406,107.5" />
         <NodeLayout
+          Size="162,42"
+          Id="Package\DF Transform_FactBudgetExpense\SET CampusID -1"
+          TopLeft="277,1739.5" />
+        <NodeLayout
           Size="166,42"
           Id="Package\DF Transform_FactBudgetExpense\Read From Source"
           TopLeft="417,5.5" />
-        <NodeLayout
-          Size="179,42"
-          Id="Package\DF Transform_FactBudgetExpense\Lookup BudgetMonth"
-          TopLeft="410.5,1229.5" />
         <NodeLayout
           Size="130,42"
           Id="Package\DF Transform_FactBudgetExpense\Union All 2"
@@ -13806,9 +13814,17 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\DF Transform_FactBudgetExpense\SET FinancialCategoryID -1"
           TopLeft="231,821.5" />
         <NodeLayout
+          Size="211,42"
+          Id="Package\DF Transform_FactBudgetExpense\TF Terminator Destination 1"
+          TopLeft="5.50000000000023,1739.5" />
+        <NodeLayout
           Size="218,42"
           Id="Package\DF Transform_FactBudgetExpense\Lookup DimFinancialCategory"
           TopLeft="391,719.5" />
+        <NodeLayout
+          Size="152,42"
+          Id="Package\DF Transform_FactBudgetExpense\SET EntityID -1"
+          TopLeft="287,515.5" />
         <NodeLayout
           Size="213,42"
           Id="Package\DF Transform_FactBudgetExpense\Handle Annual BudgetMonth"
@@ -13817,10 +13833,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Size="240,42"
           Id="Package\DF Transform_FactBudgetExpense\DEST TF Terminator Destination 1"
           TopLeft="113,1637.5" />
-        <NodeLayout
-          Size="152,42"
-          Id="Package\DF Transform_FactBudgetExpense\SET EntityID -1"
-          TopLeft="287,515.5" />
         <NodeLayout
           Size="176,42"
           Id="Package\DF Transform_FactBudgetExpense\Add Update Defaults"
@@ -13835,44 +13847,24 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="422,1127.5" />
         <NodeLayout
           Size="130,42"
-          Id="Package\DF Transform_FactBudgetExpense\Union All 3"
-          TopLeft="411,2249.5" />
+          Id="Package\DF Transform_FactBudgetExpense\Union All 1"
+          TopLeft="435,617.5" />
         <NodeLayout
           Size="252,42"
           Id="Package\DF Transform_FactBudgetExpense\DEST TF Terminator BudgetRevenue"
           TopLeft="109,1127.5" />
         <NodeLayout
-          Size="121,42"
-          Id="Package\DF Transform_FactBudgetExpense\Union All"
-          TopLeft="439.5,1841.5" />
-        <NodeLayout
-          Size="162,42"
-          Id="Package\DF Transform_FactBudgetExpense\SET CampusID -1"
-          TopLeft="277,1739.5" />
+          Size="130,42"
+          Id="Package\DF Transform_FactBudgetExpense\Union All 4"
+          TopLeft="435,1433.5" />
         <NodeLayout
           Size="170,42"
           Id="Package\DF Transform_FactBudgetExpense\Add Insert Defaults"
           TopLeft="157,2147.5" />
         <NodeLayout
-          Size="130,42"
-          Id="Package\DF Transform_FactBudgetExpense\Union All 1"
-          TopLeft="435,617.5" />
-        <NodeLayout
-          Size="130,42"
-          Id="Package\DF Transform_FactBudgetExpense\Union All 4"
-          TopLeft="435,1433.5" />
-        <NodeLayout
-          Size="211,42"
-          Id="Package\DF Transform_FactBudgetExpense\TF Terminator Destination 1"
-          TopLeft="5.50000000000023,1739.5" />
-        <NodeLayout
-          Size="162,42"
-          Id="Package\DF Transform_FactBudgetExpense\Lookup DimEntity"
-          TopLeft="419,413.5" />
-        <NodeLayout
-          Size="202,42"
-          Id="Package\DF Transform_FactBudgetExpense\TF Terminator Destination"
-          TopLeft="639,2249.5" />
+          Size="223,42"
+          Id="Package\DF Transform_FactBudgetExpense\TF Terminator BudgetRevenue"
+          TopLeft="123.5,1229.5" />
         <NodeLayout
           Size="182,42"
           Id="Package\DF Transform_FactBudgetExpense\Update or Do Nothing"
@@ -13881,6 +13873,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Size="148,42"
           Id="Package\DF Transform_FactBudgetExpense\Member Exist?"
           TopLeft="426,1943.5" />
+        <NodeLayout
+          Size="202,42"
+          Id="Package\DF Transform_FactBudgetExpense\TF Terminator Destination"
+          TopLeft="639,2249.5" />
+        <NodeLayout
+          Size="162,42"
+          Id="Package\DF Transform_FactBudgetExpense\Lookup DimEntity"
+          TopLeft="419,413.5" />
         <NodeLayout
           Size="139,42"
           Id="Package\DF Transform_FactBudgetExpense\Add Defaults"
@@ -14223,78 +14223,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output4]"
-          TopLeft="465,761.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-130,60"
-              Start="0,0"
-              End="-130,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,20.2622950819672" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,20.2622950819672"
-                    Point2="0,24.2622950819672"
-                    Point3="-4,24.2622950819672" />
-                  <mssgle:LineSegment
-                    End="-126,24.2622950819672" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-126,24.2622950819672"
-                    Point2="-130,24.2622950819672"
-                    Point3="-130,28.2622950819672" />
-                  <mssgle:LineSegment
-                    End="-130,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-120.80638671875,29.2622950819672,111.6127734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output3]"
-          TopLeft="472.5,1679.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-114.5,60"
-              Start="0,0"
-              End="-114.5,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,20.3298969072165" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,20.3298969072165"
-                    Point2="0,24.3298969072165"
-                    Point3="-4,24.3298969072165" />
-                  <mssgle:LineSegment
-                    End="-110.5,24.3298969072165" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-110.5,24.3298969072165"
-                    Point2="-114.5,24.3298969072165"
-                    Point3="-114.5,28.3298969072165" />
-                  <mssgle:LineSegment
-                    End="-114.5,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-113.05638671875,29.3298969072165,111.6127734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output2]"
           TopLeft="471.5,1271.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -14330,7 +14258,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output1]"
+          Id="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output3]"
           TopLeft="474.333333333333,455.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -14366,7 +14294,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output]"
+          Id="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output2]"
           TopLeft="476.666666666667,1985.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -14397,7 +14325,79 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-173.139720052083,29.3850267379679,111.6127734375,11.609375"
+              BoundingBox="-173.139720052084,29.3850267379679,111.6127734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output1]"
+          TopLeft="472.5,1679.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-114.5,60"
+              Start="0,0"
+              End="-114.5,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.3298969072165" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,20.3298969072165"
+                    Point2="0,24.3298969072165"
+                    Point3="-4,24.3298969072165" />
+                  <mssgle:LineSegment
+                    End="-110.5,24.3298969072165" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-110.5,24.3298969072165"
+                    Point2="-114.5,24.3298969072165"
+                    Point3="-114.5,28.3298969072165" />
+                  <mssgle:LineSegment
+                    End="-114.5,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-113.05638671875,29.3298969072165,111.6127734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactBudgetExpense.Paths[Lookup No Match Output]"
+          TopLeft="465,761.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-130,60"
+              Start="0,0"
+              End="-130,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.2622950819672" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,20.2622950819672"
+                    Point2="0,24.2622950819672"
+                    Point3="-4,24.2622950819672" />
+                  <mssgle:LineSegment
+                    End="-126,24.2622950819672" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-126,24.2622950819672"
+                    Point2="-130,24.2622950819672"
+                    Point3="-130,28.2622950819672" />
+                  <mssgle:LineSegment
+                    End="-130,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-120.80638671875,29.2622950819672,111.6127734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -14637,148 +14637,12 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-147.61927734375,29.367816091954,54.7385546875,9.7490234375"
+              BoundingBox="-184.90634765625,29.367816091954,129.3126953125,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output6]"
-          TopLeft="332,1373.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="147.666666666667,60"
-              Start="0,0"
-              End="147.666666666667,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,31.5623100303951"
-                    Point2="0,35.5623100303951"
-                    Point3="4,35.5623100303951" />
-                  <mssgle:LineSegment
-                    End="143.666666666667,35.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="143.666666666667,35.5623100303951"
-                    Point2="147.666666666667,35.5623100303951"
-                    Point3="147.666666666667,39.5623100303951" />
-                  <mssgle:LineSegment
-                    End="147.666666666667,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output5]"
-          TopLeft="358,1781.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="123.166666666667,60"
-              Start="0,0"
-              End="123.166666666667,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.5301794453507" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,31.5301794453507"
-                    Point2="0,35.5301794453507"
-                    Point3="4,35.5301794453507" />
-                  <mssgle:LineSegment
-                    End="119.166666666667,35.5301794453507" />
-                  <mssgle:CubicBezierSegment
-                    Point1="119.166666666667,35.5301794453507"
-                    Point2="123.166666666667,35.5301794453507"
-                    Point3="123.166666666667,39.5301794453507" />
-                  <mssgle:LineSegment
-                    End="123.166666666667,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output4]"
-          TopLeft="335,863.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="144.666666666667,60"
-              Start="0,0"
-              End="144.666666666667,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,31.5623100303951"
-                    Point2="0,35.5623100303951"
-                    Point3="4,35.5623100303951" />
-                  <mssgle:LineSegment
-                    End="140.666666666667,35.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="140.666666666667,35.5623100303951"
-                    Point2="144.666666666667,35.5623100303951"
-                    Point3="144.666666666667,39.5623100303951" />
-                  <mssgle:LineSegment
-                    End="144.666666666667,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output3]"
-          TopLeft="363,557.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="116.666666666667,60"
-              Start="0,0"
-              End="116.666666666667,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,31.5623100303951"
-                    Point2="0,35.5623100303951"
-                    Point3="4,35.5623100303951" />
-                  <mssgle:LineSegment
-                    End="112.666666666667,35.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="112.666666666667,35.5623100303951"
-                    Point2="116.666666666667,35.5623100303951"
-                    Point3="116.666666666667,39.5623100303951" />
-                  <mssgle:LineSegment
-                    End="116.666666666667,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output2]"
           TopLeft="476,2189.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -14812,29 +14676,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output1]"
-          TopLeft="500,251.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output]"
+          Id="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output5]"
           TopLeft="242,2189.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -14859,6 +14701,164 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                     Point3="213.666666666667,39.5623100303951" />
                   <mssgle:LineSegment
                     End="213.666666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output4]"
+          TopLeft="500,251.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output3]"
+          TopLeft="358,1781.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="123.166666666667,60"
+              Start="0,0"
+              End="123.166666666667,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.5301794453507" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.5301794453507"
+                    Point2="0,35.5301794453507"
+                    Point3="4,35.5301794453507" />
+                  <mssgle:LineSegment
+                    End="119.166666666667,35.5301794453507" />
+                  <mssgle:CubicBezierSegment
+                    Point1="119.166666666667,35.5301794453507"
+                    Point2="123.166666666667,35.5301794453507"
+                    Point3="123.166666666667,39.5301794453507" />
+                  <mssgle:LineSegment
+                    End="123.166666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output2]"
+          TopLeft="363,557.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="116.666666666667,60"
+              Start="0,0"
+              End="116.666666666667,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.5623100303951"
+                    Point2="0,35.5623100303951"
+                    Point3="4,35.5623100303951" />
+                  <mssgle:LineSegment
+                    End="112.666666666667,35.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="112.666666666667,35.5623100303951"
+                    Point2="116.666666666667,35.5623100303951"
+                    Point3="116.666666666667,39.5623100303951" />
+                  <mssgle:LineSegment
+                    End="116.666666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output1]"
+          TopLeft="335,863.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="144.666666666667,60"
+              Start="0,0"
+              End="144.666666666667,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.5623100303951"
+                    Point2="0,35.5623100303951"
+                    Point3="4,35.5623100303951" />
+                  <mssgle:LineSegment
+                    End="140.666666666667,35.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="140.666666666667,35.5623100303951"
+                    Point2="144.666666666667,35.5623100303951"
+                    Point3="144.666666666667,39.5623100303951" />
+                  <mssgle:LineSegment
+                    End="144.666666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactBudgetExpense.Paths[Derived Column Output]"
+          TopLeft="332,1373.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="147.666666666667,60"
+              Start="0,0"
+              End="147.666666666667,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.5623100303951"
+                    Point2="0,35.5623100303951"
+                    Point3="4,35.5623100303951" />
+                  <mssgle:LineSegment
+                    End="143.666666666667,35.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="143.666666666667,35.5623100303951"
+                    Point2="147.666666666667,35.5623100303951"
+                    Point3="147.666666666667,39.5623100303951" />
+                  <mssgle:LineSegment
+                    End="147.666666666667,52.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -14957,7 +14957,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-83.61390625,29.3478260869565,141.2278125,11.658203125"
+              BoundingBox="-83.6139062500001,29.3478260869565,141.2278125,11.658203125"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -14986,6 +14986,29 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\DF Transform_FactBudgetExpense\Lookup BudgetMonth">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:string">false</Value>
+      </Property>
+      <Property>
+        <Name>UsedTableName</Name>
+        <Value
+          type="q3:string"></Value>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q4:string">0</Value>
+      </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
   <PipelineComponentMetadata
     design-time-name="Package\DF Transform_FactBudgetExpense\Lookup DimCampus">
     <Properties>
@@ -15026,63 +15049,17 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </Properties>
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
-    design-time-name="Package\DF Transform_FactBudgetExpense\Lookup BudgetMonth">
-    <Properties>
-      <Property>
-        <Name>OverwriteParamsSQLProp</Name>
-        <Value
-          type="q2:string">false</Value>
-      </Property>
-      <Property>
-        <Name>UsedTableName</Name>
-        <Value
-          type="q3:string"></Value>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q4:string">0</Value>
-      </Property>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
     design-time-name="Package\DF Transform_FactBudgetExpense\Lookup DimFinancialCategory">
     <Properties>
       <Property>
         <Name>OverwriteParamsSQLProp</Name>
         <Value
-          type="q2:boolean">false</Value>
-      </Property>
-      <Property>
-        <Name>UsedTableName</Name>
-        <Value
-          type="q3:string">[DW].[DimFinancialCategory]</Value>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q4:string">0</Value>
-      </Property>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\DF Transform_FactBudgetExpense\Lookup DimEntity">
-    <Properties>
-      <Property>
-        <Name>OverwriteParamsSQLProp</Name>
-        <Value
           type="q2:string">false</Value>
       </Property>
       <Property>
         <Name>UsedTableName</Name>
         <Value
-          type="q3:string">[DW].[DimEntity]</Value>
+          type="q3:string">[DW].[DimFinancialCategory]</Value>
       </Property>
       <Property>
         <Name>TableInfoObjectType</Name>
@@ -15106,6 +15083,29 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <Name>UsedTableName</Name>
         <Value
           type="q3:string">[DW].[FactBudgetExpense]</Value>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q4:string">0</Value>
+      </Property>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\DF Transform_FactBudgetExpense\Lookup DimEntity">
+    <Properties>
+      <Property>
+        <Name>OverwriteParamsSQLProp</Name>
+        <Value
+          type="q2:string">false</Value>
+      </Property>
+      <Property>
+        <Name>UsedTableName</Name>
+        <Value
+          type="q3:string">[DW].[DimEntity]</Value>
       </Property>
       <Property>
         <Name>TableInfoObjectType</Name>
