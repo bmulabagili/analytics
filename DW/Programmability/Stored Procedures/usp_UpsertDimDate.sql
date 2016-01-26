@@ -111,7 +111,7 @@ AS
 				THEN 1
 				ELSE 0 END AS CalendarLastDayOfMonthFlag
 			 , DATEPART(MONTH, @CurrentDate) AS CalendarMonth
-			 , CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107) AS CalendarMonthAbbreviation
+			 , LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3) AS CalendarMonthAbbreviation
 			 , DATENAME(MONTH, @currentDate) AS CalendarMonthLabel
 			 , DATEPART(QQ, @CurrentDate)  AS CalendarQuarter
 			 , 'Q' + CONVERT(CHAR(1), DATEPART(QQ, @CurrentDate)) + '-'
