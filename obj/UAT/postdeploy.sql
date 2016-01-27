@@ -20,7 +20,6 @@ USING (VALUES
     , (5, 'FellowshipOne_SmallGroupStatus', NULL)
 	, (6, 'MIP_RevenueAndExpense', NULL)	
 	, (7, 'MIP_Budget', NULL)
-	, (8, 'TransactionalManualDataEntry',NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
@@ -121,8 +120,7 @@ VALUES
   , (3, 7, 4)
   , (3, 7, 5)
   , (3, 7, 6)
-  , (3, 7, 7)
-  , (3, 8, 1);
+  , (3, 7, 7);
 
 --base tenants (including HBC
 MERGE INTO Tenant AS Target
@@ -673,3 +671,4 @@ SELECT 3, '37030', 'Revenue' UNION
 SELECT 3, '37030', 'Revenue' UNION
 SELECT 3, '37432', 'Revenue' UNION
 SELECT 3, '39999', 'Revenue' 
+GO
