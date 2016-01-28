@@ -5,7 +5,7 @@
   , CampusID INT NOT NULL
   , CalendarMonth INT NOT NULL
   , CalendarYear INT NOT NULL
-  , FirstTimeGiverCount INT NOT NULL
+  , StewardshipBudgetAmount INT NOT NULL
   --ETL Specific Columns
   , [ExecutionID]      VARCHAR(50) NOT NULL
   , [InsertedDateTime] DATETIME DEFAULT(GETUTCDATE()) NULL

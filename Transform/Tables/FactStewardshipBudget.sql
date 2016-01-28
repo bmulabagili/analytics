@@ -5,7 +5,7 @@
   , CampusID INT NOT NULL
   , CalendarMonth INT NOT NULL
   , CalendarYear INT NOT NULL
-  , StewardshipBudgetCount INT NOT NULL
+  , StewardshipBudgetAmount INT NOT NULL
 	   --ETL Specific Columns
   , ExecutionID        VARCHAR(50) NOT NULL
   , ETLActionID        INT NOT NULL
