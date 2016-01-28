@@ -356,6 +356,104 @@ GROUP BY
         </Field>
       </Fields>
     </DataSet>
+    <DataSet Name="Volunteers">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@CalendarYear">
+            <Value>=Parameters!CalendarYear.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@CampusID">
+            <Value>=Parameters!CampusID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT 
+	  DimDate.CalendarYear
+	, DimDate.CalendarMonth
+	, DimDate.CalendarMonthAbbreviation
+	, DimActivity.Name 
+	, FactAttendance.CampusID
+	, DimCampus.Code
+	, SUM(FactAttendance.AttendanceCount) AS AttendanceCount
+	, NumberOfSundays.SundayCount
+FROM DW.FactAttendance
+INNER JOIN DW.DimDate
+	ON FactAttendance.InstanceDateID = DimDate.DateID
+INNER JOIN DW.DimCampus
+	ON FactAttendance.CampusID = DimCampus.CampusID
+	AND FactAttendance.TenantID = DimCampus.TenantID
+INNER JOIN DW.DimMinistry
+	ON FactAttendance.MinistryID = DimMinistry.MinistryID
+	AND FactAttendance.TenantID = DimMinistry.TenantID
+--may not have to include activity, and attendanceType
+INNER JOIN DW.DimActivity 
+	ON FactAttendance.ActivityID = dimActivity.ActivityID
+	AND FactAttendance.TenantID = DimActivity.TenantID
+--INNER JOIN DW.DimRoster -- adds too much time in this query.
+--	ON FactAttendance.RosterID = DimRoster.RosterID
+--	AND FactAttendance.TenantID = DimRoster.TenantID
+INNER JOIN DW.DimAttendanceType
+	ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+	AND FactAttendance.TenantID = DimAttendanceType.TenantID
+INNER JOIN (
+	SELECT CalendarYear, CalendarMonth, COUNT(DISTINCT CalendarWeek) SundayCount
+	FROM DW.DimDate
+	WHERE
+		CalendarYear  = @CalendarYear
+		AND DayOfWeekLabel = 'Sunday'
+	GROUP BY
+		CalendarYear, CalendarMonth)NumberOfSundays
+	ON DimDate.CalendarMonth = NumberOfSundays.CalendarMonth
+	AND DimDate.CalendarYear = NumberOfSundays.CalendarYear
+WHERE
+	DimDate.CalendarYear = @CalendarYear
+	AND DimAttendanceType.Category = 'Volunteer'
+AND FactAttendance.CampusID = @CampusID
+GROUP BY
+	  DimDate.CalendarYear
+	, DimDate.CalendarMonth
+	, DimDate.CalendarMonthAbbreviation
+	, DimActivity.Name 
+	, FactAttendance.CampusID
+	, DimCampus.Code
+	, DimMinistry.CampusID
+	, NumberOfSundays.SundayCount</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="CalendarYear">
+          <DataField>CalendarYear</DataField>
+          <rd:TypeName>System.Int16</rd:TypeName>
+        </Field>
+        <Field Name="CalendarMonth">
+          <DataField>CalendarMonth</DataField>
+          <rd:TypeName>System.Byte</rd:TypeName>
+        </Field>
+        <Field Name="CalendarMonthAbbreviation">
+          <DataField>CalendarMonthAbbreviation</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CampusID">
+          <DataField>CampusID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Code">
+          <DataField>Code</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="AttendanceCount">
+          <DataField>AttendanceCount</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="SundayCount">
+          <DataField>SundayCount</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
   </DataSets>
   <ReportSections>
     <ReportSection>
@@ -938,7 +1036,7 @@ GROUP BY
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.27083in</Size>
                         <CellContents>
                           <Textbox Name="CalendarYear7">
                             <CanGrow>true</CanGrow>
@@ -971,7 +1069,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.27083in</Size>
                         <CellContents>
                           <Textbox Name="Textbox97">
                             <CanGrow>true</CanGrow>
@@ -1006,7 +1104,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.27083in</Size>
                         <CellContents>
                           <Textbox Name="Textbox98">
                             <CanGrow>true</CanGrow>
@@ -1041,7 +1139,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.27083in</Size>
                         <CellContents>
                           <Textbox Name="Textbox99">
                             <CanGrow>true</CanGrow>
@@ -1076,7 +1174,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.27083in</Size>
                         <CellContents>
                           <Textbox Name="Textbox100">
                             <CanGrow>true</CanGrow>
@@ -1123,7 +1221,7 @@ GROUP BY
                 </Filters>
                 <Top>1.03in</Top>
                 <Height>1.5in</Height>
-                <Width>3.32292in</Width>
+                <Width>3.27083in</Width>
                 <ZIndex>2</ZIndex>
                 <Style>
                   <Border>
@@ -1676,7 +1774,7 @@ GROUP BY
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="CalendarYear8">
                             <CanGrow>true</CanGrow>
@@ -1709,7 +1807,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox112">
                             <CanGrow>true</CanGrow>
@@ -1744,7 +1842,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox113">
                             <CanGrow>true</CanGrow>
@@ -1779,7 +1877,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox114">
                             <CanGrow>true</CanGrow>
@@ -1814,7 +1912,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox115">
                             <CanGrow>true</CanGrow>
@@ -1862,7 +1960,7 @@ GROUP BY
                 <Top>2.84944in</Top>
                 <Left>0.02083in</Left>
                 <Height>1.5in</Height>
-                <Width>3.32292in</Width>
+                <Width>3.25in</Width>
                 <ZIndex>4</ZIndex>
                 <Style>
                   <Border>
@@ -2416,7 +2514,7 @@ GROUP BY
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="CalendarYear9">
                             <CanGrow>true</CanGrow>
@@ -2449,7 +2547,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox127">
                             <CanGrow>true</CanGrow>
@@ -2484,7 +2582,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox128">
                             <CanGrow>true</CanGrow>
@@ -2519,7 +2617,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox129">
                             <CanGrow>true</CanGrow>
@@ -2554,7 +2652,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox130">
                             <CanGrow>true</CanGrow>
@@ -2602,7 +2700,7 @@ GROUP BY
                 <Top>4.66889in</Top>
                 <Left>0.02083in</Left>
                 <Height>1.5in</Height>
-                <Width>3.32292in</Width>
+                <Width>3.25in</Width>
                 <ZIndex>6</ZIndex>
                 <Style>
                   <Border>
@@ -3156,7 +3254,7 @@ GROUP BY
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="CalendarYear10">
                             <CanGrow>true</CanGrow>
@@ -3189,7 +3287,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox142">
                             <CanGrow>true</CanGrow>
@@ -3224,7 +3322,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox143">
                             <CanGrow>true</CanGrow>
@@ -3259,7 +3357,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox144">
                             <CanGrow>true</CanGrow>
@@ -3294,7 +3392,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox145">
                             <CanGrow>true</CanGrow>
@@ -3342,7 +3440,7 @@ GROUP BY
                 <Top>6.48833in</Top>
                 <Left>0.02083in</Left>
                 <Height>1.5in</Height>
-                <Width>3.32292in</Width>
+                <Width>3.25in</Width>
                 <ZIndex>8</ZIndex>
                 <Style>
                   <Border>
@@ -3896,7 +3994,7 @@ GROUP BY
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="CalendarYear11">
                             <CanGrow>true</CanGrow>
@@ -3929,7 +4027,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox157">
                             <CanGrow>true</CanGrow>
@@ -3964,7 +4062,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox158">
                             <CanGrow>true</CanGrow>
@@ -3999,7 +4097,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox159">
                             <CanGrow>true</CanGrow>
@@ -4034,7 +4132,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox160">
                             <CanGrow>true</CanGrow>
@@ -4082,7 +4180,7 @@ GROUP BY
                 <Top>8.30778in</Top>
                 <Left>0.02083in</Left>
                 <Height>1.5in</Height>
-                <Width>3.32292in</Width>
+                <Width>3.25in</Width>
                 <ZIndex>10</ZIndex>
                 <Style>
                   <Border>
@@ -4636,7 +4734,7 @@ GROUP BY
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="CalendarYear12">
                             <CanGrow>true</CanGrow>
@@ -4669,7 +4767,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox172">
                             <CanGrow>true</CanGrow>
@@ -4704,7 +4802,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox173">
                             <CanGrow>true</CanGrow>
@@ -4739,7 +4837,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox174">
                             <CanGrow>true</CanGrow>
@@ -4774,7 +4872,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.32292in</Size>
+                        <Size>1.25in</Size>
                         <CellContents>
                           <Textbox Name="Textbox175">
                             <CanGrow>true</CanGrow>
@@ -4822,7 +4920,7 @@ GROUP BY
                 <Top>10.12722in</Top>
                 <Left>0.02083in</Left>
                 <Height>1.5in</Height>
-                <Width>3.32292in</Width>
+                <Width>3.25in</Width>
                 <ZIndex>12</ZIndex>
                 <Style>
                   <Border>
@@ -5427,7 +5525,7 @@ GROUP BY
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="CalendarYear16">
                             <CanGrow>true</CanGrow>
@@ -5463,7 +5561,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox235">
                             <CanGrow>true</CanGrow>
@@ -5498,7 +5596,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox236">
                             <CanGrow>true</CanGrow>
@@ -5533,7 +5631,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox237">
                             <CanGrow>true</CanGrow>
@@ -5568,7 +5666,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox238">
                             <CanGrow>true</CanGrow>
@@ -5623,7 +5721,7 @@ GROUP BY
                 <Top>12.01153in</Top>
                 <Left>0.0625in</Left>
                 <Height>1.5in</Height>
-                <Width>3.21875in</Width>
+                <Width>3.20833in</Width>
                 <ZIndex>14</ZIndex>
                 <Style>
                   <Border>
@@ -6228,7 +6326,7 @@ GROUP BY
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="CalendarYear17">
                             <CanGrow>true</CanGrow>
@@ -6264,7 +6362,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox251">
                             <CanGrow>true</CanGrow>
@@ -6299,7 +6397,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox252">
                             <CanGrow>true</CanGrow>
@@ -6334,7 +6432,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox253">
                             <CanGrow>true</CanGrow>
@@ -6369,7 +6467,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox254">
                             <CanGrow>true</CanGrow>
@@ -6424,7 +6522,7 @@ GROUP BY
                 <Top>13.91257in</Top>
                 <Left>0.0625in</Left>
                 <Height>1.5in</Height>
-                <Width>3.21875in</Width>
+                <Width>3.20833in</Width>
                 <ZIndex>16</ZIndex>
                 <Style>
                   <Border>
@@ -7029,7 +7127,7 @@ GROUP BY
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="CalendarYear18">
                             <CanGrow>true</CanGrow>
@@ -7065,7 +7163,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox267">
                             <CanGrow>true</CanGrow>
@@ -7100,7 +7198,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox268">
                             <CanGrow>true</CanGrow>
@@ -7135,7 +7233,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox269">
                             <CanGrow>true</CanGrow>
@@ -7170,7 +7268,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.21875in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox270">
                             <CanGrow>true</CanGrow>
@@ -7225,7 +7323,7 @@ GROUP BY
                 <Top>15.80319in</Top>
                 <Left>0.0625in</Left>
                 <Height>1.5in</Height>
-                <Width>3.21875in</Width>
+                <Width>3.20833in</Width>
                 <ZIndex>18</ZIndex>
                 <Style>
                   <Border>
@@ -7837,7 +7935,7 @@ GROUP BY
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>1.1875in</Size>
+                        <Size>1.23958in</Size>
                         <CellContents>
                           <Textbox Name="CalendarYear19">
                             <CanGrow>true</CanGrow>
@@ -7870,7 +7968,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.1875in</Size>
+                        <Size>1.23958in</Size>
                         <CellContents>
                           <Textbox Name="Textbox304">
                             <CanGrow>true</CanGrow>
@@ -7905,7 +8003,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.1875in</Size>
+                        <Size>1.23958in</Size>
                         <CellContents>
                           <Textbox Name="Textbox313">
                             <CanGrow>true</CanGrow>
@@ -7940,7 +8038,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.1875in</Size>
+                        <Size>1.23958in</Size>
                         <CellContents>
                           <Textbox Name="Textbox314">
                             <CanGrow>true</CanGrow>
@@ -7975,7 +8073,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.1875in</Size>
+                        <Size>1.23958in</Size>
                         <CellContents>
                           <Textbox Name="Textbox315">
                             <CanGrow>true</CanGrow>
@@ -8014,7 +8112,7 @@ GROUP BY
                 <Top>17.63938in</Top>
                 <Left>0.03125in</Left>
                 <Height>1.5in</Height>
-                <Width>3.1875in</Width>
+                <Width>3.23958in</Width>
                 <ZIndex>21</ZIndex>
                 <Style>
                   <Border>
@@ -8598,7 +8696,7 @@ GROUP BY
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>1in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="CalendarYear21">
                             <CanGrow>true</CanGrow>
@@ -8631,7 +8729,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox356">
                             <CanGrow>true</CanGrow>
@@ -8666,7 +8764,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox357">
                             <CanGrow>true</CanGrow>
@@ -8701,7 +8799,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox358">
                             <CanGrow>true</CanGrow>
@@ -8736,7 +8834,7 @@ GROUP BY
                     </TablixMember>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1in</Size>
+                        <Size>1.20833in</Size>
                         <CellContents>
                           <Textbox Name="Textbox359">
                             <CanGrow>true</CanGrow>
@@ -8775,8 +8873,126 @@ GROUP BY
                 <Top>19.48313in</Top>
                 <Left>0.0625in</Left>
                 <Height>1.5in</Height>
-                <Width>3in</Width>
+                <Width>3.20833in</Width>
                 <ZIndex>23</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Tablix>
+              <Tablix Name="Tablix2">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>1in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox9">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=sum(Fields!AttendanceCount.Value/Fields!SundayCount.Value)</Value>
+                                      <Style>
+                                        <Format>0;(0)</Format>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox9</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Color>LightGrey</Color>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                            <rd:Selected>true</rd:Selected>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="CalendarMonthAbbreviation">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!CalendarMonthAbbreviation.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!CalendarMonthAbbreviation.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="RowGroup">
+                        <GroupExpressions>
+                          <GroupExpression />
+                        </GroupExpressions>
+                      </Group>
+                      <TablixHeader>
+                        <Size>1.20833in</Size>
+                        <CellContents>
+                          <Textbox Name="Textbox7">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>WFC Volunteers</Value>
+                                    <Style />
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>Textbox7</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Color>LightGrey</Color>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>Volunteers</DataSetName>
+                <Top>21.10986in</Top>
+                <Left>0.0625in</Left>
+                <Height>0.25in</Height>
+                <Width>2.20833in</Width>
+                <ZIndex>24</ZIndex>
                 <Style>
                   <Border>
                     <Style>None</Style>
@@ -8788,8 +9004,8 @@ GROUP BY
             <KeepTogether>true</KeepTogether>
             <Top>0.20139in</Top>
             <Left>0.17187in</Left>
-            <Height>21.38652in</Height>
-            <Width>4.01042in</Width>
+            <Height>21.60986in</Height>
+            <Width>5.84771in</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -8797,10 +9013,10 @@ GROUP BY
             </Style>
           </Rectangle>
         </ReportItems>
-        <Height>21.58791in</Height>
+        <Height>21.81125in</Height>
         <Style />
       </Body>
-      <Width>4.42187in</Width>
+      <Width>6.01958in</Width>
       <Page>
         <LeftMargin>1in</LeftMargin>
         <RightMargin>1in</RightMargin>
