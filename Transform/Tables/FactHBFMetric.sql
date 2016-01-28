@@ -2,6 +2,7 @@
 (
 	HBFMetricID INT NOT NULL 
   , TenantID INT NOT NULL
+  , SectionName NVARCHAR(255) NULL
   , MetricName NVARCHAR(255) NOT NULL
   , CalendarMonth INT NOT NULL
   , CalendarYear INT NOT NULL
