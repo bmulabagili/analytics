@@ -23,6 +23,7 @@ USING (VALUES
 	, (8, 'TransactionalManualDataEntry',NULL)
 	, (9, 'Paycor',NULL)
 	, (10, 'InfiniteCampus_Enrollment', NULL)
+	, (11, 'GoogleAnalytics',NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
@@ -126,7 +127,8 @@ VALUES
   , (3, 7, 7)
   , (3, 8, 1)
   , (3, 9, 0)
-  , (3, 10, 8);
+  , (3, 10, 8)
+  , (3, 11, 0);
 
 --base tenants (including HBC
 MERGE INTO Tenant AS Target
