@@ -679,3 +679,11 @@ SELECT 3, '37030', 'Revenue' UNION
 SELECT 3, '37030', 'Revenue' UNION
 SELECT 3, '37432', 'Revenue' UNION
 SELECT 3, '39999', 'Revenue' 
+
+
+TRUNCATE TABLE GoogleImportConfig
+
+INSERT INTO GoogleImportConfig
+SELECT 1, 22458219 AS AccountID, 'UA-22458219-1' AS WebProperty, 44282754 AS ProfileID, 'Main' AS ReportingSection UNION
+SELECT 2, 29527341 AS AccountID, 'UA-29527341-1' AS WebProperty, 56721937 AS ProfileID, 'Store' AS ReportingSection UNION
+SELECT 3, 29527341 AS AccountID, 'UA-29527341-2' AS WebProperty, 92087633 AS ProfileID, 'Store' AS ReportingSection
