@@ -24,6 +24,7 @@ USING (VALUES
 	, (9, 'Paycor',NULL)
 	, (10, 'InfiniteCampus_Enrollment', NULL)
 	, (11, 'GoogleAnalytics',NULL)
+	, (12, 'Mailchimp_Stats', NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
@@ -128,7 +129,8 @@ VALUES
   , (3, 8, 1)
   , (3, 9, 0)
   , (3, 10, 8)
-  , (3, 11, 0);
+  , (3, 11, 0)
+  , (3, 12, 0);
 
 --base tenants (including HBC
 MERGE INTO Tenant AS Target

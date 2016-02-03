@@ -20,6 +20,10 @@ USING (VALUES
     , (5, 'FellowshipOne_SmallGroupStatus', NULL)
 	, (6, 'MIP_RevenueAndExpense', NULL)	
 	, (7, 'MIP_Budget', NULL)
+	, (8, 'TransactionalManualDataEntry',NULL)
+	, (9, 'Paycor',NULL)
+	, (10, 'InfiniteCampus_Enrollment', NULL)
+	, (11, 'GoogleAnalytics',NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
@@ -61,7 +65,7 @@ USING (VALUES
   , (5, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HCA;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HCA', -1, GETUTCDATE(), GETUTCDATE(), '')
   , (6, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HMP;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HMP', -1, GETUTCDATE(), GETUTCDATE(), '')
   , (7, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=WITW;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-WITW', -1, GETUTCDATE(), GETUTCDATE(), '')
-	
+  , (8, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=IC;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
 )
 AS Source (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 ON Target.ConnectionStringID = Source.ConnectionStringID
@@ -120,7 +124,11 @@ VALUES
   , (3, 7, 4)
   , (3, 7, 5)
   , (3, 7, 6)
-  , (3, 7, 7);
+  , (3, 7, 7)
+  , (3, 8, 1)
+  , (3, 9, 0)
+  , (3, 10, 8)
+  , (3, 11, 0);
 
 --base tenants (including HBC
 MERGE INTO Tenant AS Target
@@ -671,4 +679,12 @@ SELECT 3, '37030', 'Revenue' UNION
 SELECT 3, '37030', 'Revenue' UNION
 SELECT 3, '37432', 'Revenue' UNION
 SELECT 3, '39999', 'Revenue' 
+
+
+TRUNCATE TABLE GoogleImportConfig
+
+INSERT INTO GoogleImportConfig
+SELECT 1, 22458219 AS AccountID, 'UA-22458219-1' AS WebProperty, 44282754 AS ProfileID, 'Main' AS ReportingSection UNION
+SELECT 2, 29527341 AS AccountID, 'UA-29527341-1' AS WebProperty, 56721937 AS ProfileID, 'Store' AS ReportingSection UNION
+SELECT 3, 29527341 AS AccountID, 'UA-29527341-2' AS WebProperty, 92087633 AS ProfileID, 'Store' AS ReportingSection
 GO
