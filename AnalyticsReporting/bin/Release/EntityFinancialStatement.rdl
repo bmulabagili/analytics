@@ -1158,15 +1158,12 @@ WITH Actuals AS (
         <CommandText>--actuals
 WITH Actuals AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactRevenue.Amount) AS Amount
@@ -1186,35 +1183,18 @@ WITH Actuals AS (
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -1272,18 +1252,16 @@ ORDER BY
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>--actuals
+        <CommandText>
+--actuals
 WITH Actuals AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactRevenue.Amount) AS Amount
@@ -1302,35 +1280,19 @@ WITH Actuals AS (
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
+		
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -1391,19 +1353,15 @@ ORDER BY
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
---budgeted
+        <CommandText>--budgeted
 WITH budgeted AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetRevenue.Amount) AS Amount
@@ -1420,35 +1378,19 @@ WITH budgeted AS (
 	WHERE
 		FactBudgetRevenue.BudgetMonth = @CalendarMonth
 		AND FactBudgetRevenue.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
+		
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -1509,15 +1451,12 @@ ORDER BY
         <CommandText>--budgeted
 WITH budgeted AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetRevenue.Amount) AS Amount
@@ -1533,35 +1472,18 @@ WITH budgeted AS (
 		AND glrg.Category = 'Revenue'
 	WHERE
 		FactBudgetRevenue.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -1590,8 +1512,7 @@ WITH budgeted AS (
 		EntityCode, GroupID
 ORDER BY
 	1,2
-;	
-</CommandText>
+;	</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -1625,15 +1546,12 @@ ORDER BY
         </QueryParameters>
         <CommandText>WITH Actuals AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactRevenue.Amount) AS Amount
@@ -1653,35 +1571,18 @@ ORDER BY
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -1695,15 +1596,12 @@ ORDER BY
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 ), budgeted AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetRevenue.Amount) AS Amount
@@ -1720,35 +1618,18 @@ ORDER BY
 	WHERE
 		FactBudgetRevenue.BudgetMonth = @CalendarMonth
 		AND FactBudgetRevenue.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -1770,8 +1651,6 @@ SELECT
 	FULL OUTER JOIN Budgeted
 		ON Actuals.EntityCode = Budgeted.EntityCode
 		AND Actuals.GroupID = Budgeted.GroupID
-	--WHERE
-		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
 	GROUP BY
 		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
 		, Actuals.GroupID</CommandText>
@@ -1799,17 +1678,15 @@ SELECT
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>WITH Actuals AS (
+        <CommandText>
+WITH Actuals AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactRevenue.Amount) AS Amount
@@ -1828,35 +1705,18 @@ SELECT
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -1870,15 +1730,12 @@ SELECT
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 ), budgeted AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetRevenue.Amount) AS Amount
@@ -1894,35 +1751,18 @@ SELECT
 		AND glrg.Category = 'Revenue'
 	WHERE
 		FactBudgetRevenue.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -1936,20 +1776,16 @@ SELECT
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 )
 SELECT 
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
-		, Actuals.GroupID
-		, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
-		
-	FROM Actuals
-	FULL OUTER JOIN Budgeted
-		ON Actuals.EntityCode = Budgeted.EntityCode
-		AND Actuals.GroupID = Budgeted.GroupID
-	--WHERE
-		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
-	GROUP BY
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
-		, Actuals.GroupID
-
+		ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
+	, Actuals.GroupID
+	, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
+FROM Actuals
+FULL OUTER JOIN Budgeted
+	ON Actuals.EntityCode = Budgeted.EntityCode
+	AND Actuals.GroupID = Budgeted.GroupID
+GROUP BY
+		ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
+	, Actuals.GroupID
 </CommandText>
       </Query>
       <Fields>
@@ -1978,19 +1814,15 @@ SELECT
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
---actuals
+        <CommandText>--actuals
 WITH Actuals AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactExpense.Amount) AS Amount
@@ -2010,35 +1842,18 @@ WITH Actuals AS (
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -2099,15 +1914,12 @@ ORDER BY
         <CommandText>--actuals
 WITH Actuals AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactExpense.Amount) AS Amount
@@ -2126,35 +1938,18 @@ WITH Actuals AS (
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -2218,15 +2013,12 @@ ORDER BY
         <CommandText>--budgeted
 WITH budgeted AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetExpense.Amount) AS Amount
@@ -2243,35 +2035,18 @@ WITH budgeted AS (
 	WHERE
 		FactBudgetExpense.BudgetMonth = @CalendarMonth
 		AND FactBudgetExpense.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -2332,15 +2107,12 @@ ORDER BY
         <CommandText>--budgeted
 WITH budgeted AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetExpense.Amount) AS Amount
@@ -2356,35 +2128,18 @@ WITH budgeted AS (
 		AND glrg.Category = 'Expense'
 	WHERE
 		FactBudgetExpense.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -2445,18 +2200,14 @@ ORDER BY
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>	
-WITH Actuals AS (
+        <CommandText>WITH Actuals AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactExpense.Amount) AS Amount
@@ -2476,35 +2227,18 @@ WITH Actuals AS (
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -2518,15 +2252,12 @@ WITH Actuals AS (
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 ), budgeted AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetExpense.Amount) AS Amount
@@ -2543,35 +2274,18 @@ WITH Actuals AS (
 	WHERE
 		FactBudgetExpense.BudgetMonth = @CalendarMonth
 		AND FactBudgetExpense.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -2625,15 +2339,12 @@ SELECT
         <CommandText>
 WITH Actuals AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactExpense.Amount) AS Amount
@@ -2652,35 +2363,18 @@ WITH Actuals AS (
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -2694,15 +2388,12 @@ WITH Actuals AS (
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 ), budgeted AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetExpense.Amount) AS Amount
@@ -2718,35 +2409,18 @@ WITH Actuals AS (
 		AND glrg.Category = 'Expense'
 	WHERE
 		FactBudgetExpense.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -2800,7 +2474,7 @@ SELECT
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>;
+        <CommandText>
 WITH ActualRevenue AS (
 	SELECT 
 		 DimEntity.Code AS EntityCode
@@ -2867,16 +2541,15 @@ WITH ActualRevenue AS (
 	UNION SELECT 'HBC', 0
 	UNION SELECT 'WITW', 0
 )
-
 SELECT 
-	  ActualRevenue.EntityCode
-	, SUM(ActualRevenue.Amount - ActualExpenses.Amount) AS Amount
-FROM ActualRevenue 
-INNER JOIN  ActualExpenses
-	ON ActualRevenue.EntityCode = ActualExpenses.EntityCode
+	EntityCode
+	, SUM(Amount) AS Amount
+FROM (
+	select EntityCode, sum(amount) AS Amount from ActualRevenue group by EntityCode
+	UNION
+	select EntityCode, sum(amount * -1) from ActualExpenses group by EntityCode)x
 GROUP BY
-	ActualRevenue.EntityCode
-;	</CommandText>
+	EntityCode</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -2962,15 +2635,15 @@ WITH BudgetRevenue AS (
 	UNION SELECT 'HBC', 0
 	UNION SELECT 'WITW', 0
 )
-
 SELECT 
-	  BudgetRevenue.EntityCode
-	, SUM(BudgetRevenue.Amount - BudgetExpenses.Amount) AS Amount
-FROM BudgetRevenue 
-INNER JOIN  BudgetExpenses
-	ON BudgetRevenue.EntityCode = BudgetExpenses.EntityCode
+	EntityCode
+	, SUM(Amount) AS Amount
+FROM (
+	select EntityCode, sum(amount) AS Amount from BudgetRevenue group by EntityCode
+	UNION
+	select EntityCode, sum(amount * -1) from BudgetExpenses group by EntityCode)x
 GROUP BY
-	BudgetRevenue.EntityCode
+	EntityCode
 ;	</CommandText>
       </Query>
       <Fields>
@@ -2995,8 +2668,7 @@ GROUP BY
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
---variance
+        <CommandText>--variance
 ;WITH RevenueActuals AS (
 	SELECT 
 		 DimEntity.Code AS EntityCode
@@ -3182,14 +2854,17 @@ GROUP BY
 	UNION SELECT 'HBC' , 0
 	UNION SELECT 'WITW', 0
 )
+
 SELECT 
-	RevenueVariance.EntityCode
-	, SUM(RevenueVariance.Amount - ExpenseVariance.Amount) AS Amount
-FROM RevenueVariance
-INNER JOIN ExpenseVariance
-	ON RevenueVariance.EntityCode = ExpenseVariance.EntityCode
+	EntityCode
+	, SUM(Amount) AS Amount
+FROM (
+	select EntityCode, sum(amount) AS Amount from RevenueVariance group by EntityCode
+	UNION
+	select EntityCode, sum(amount * -1) from ExpenseVariance group by EntityCode)x
 GROUP BY
-	RevenueVariance.EntityCode</CommandText>
+	EntityCode
+</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -3216,15 +2891,12 @@ GROUP BY
         <CommandText>--actuals
 ;WITH ActualRevenue AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactRevenue.Amount) AS Amount
@@ -3244,35 +2916,18 @@ GROUP BY
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -3288,15 +2943,12 @@ GROUP BY
 --actuals
  ActualExpense AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactExpense.Amount) AS Amount
@@ -3316,35 +2968,18 @@ GROUP BY
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -3357,16 +2992,16 @@ GROUP BY
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 )
-	SELECT 
-		  ActualRevenue.EntityCode
-		, SUM(ActualRevenue.Amount - ActualExpense.Amount) Amount
-	FROM ActualRevenue
-	INNER JOIN ActualExpense	
-		ON ActualRevenue.EntityCode = ActualExpense.EntityCode
-	GROUP BY
-		ActualRevenue.EntityCode
-ORDER BY
-	1,2
+SELECT 
+	EntityCode
+	, SUM(Amount) AS Amount
+FROM (
+	select EntityCode, sum(amount) AS Amount from ActualRevenue group by EntityCode
+	UNION
+	select EntityCode, sum(amount * -1) from ActualExpense group by EntityCode)x
+GROUP BY
+	EntityCode
+
 ;	</CommandText>
       </Query>
       <Fields>
@@ -3393,15 +3028,12 @@ ORDER BY
         </QueryParameters>
         <CommandText>WITH budgetedRevenue AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetRevenue.Amount) AS Amount
@@ -3418,35 +3050,18 @@ ORDER BY
 	WHERE
 		FactBudgetRevenue.BudgetMonth = @CalendarMonth
 		AND FactBudgetRevenue.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -3460,15 +3075,12 @@ ORDER BY
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 ), budgetedExpenses AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetExpense.Amount) AS Amount
@@ -3485,35 +3097,18 @@ ORDER BY
 	WHERE
 		FactBudgetExpense.BudgetMonth = @CalendarMonth
 		AND FactBudgetExpense.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -3526,18 +3121,16 @@ ORDER BY
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 )
-	
+SELECT 
+	EntityCode
+	, SUM(Amount) AS Amount
+FROM (
+	select EntityCode, sum(amount) AS Amount from budgetedRevenue group by EntityCode
+	UNION
+	select EntityCode, sum(amount * -1) from budgetedExpenses group by EntityCode)x
+GROUP BY
+	EntityCode
 
-	SELECT 
-		  budgetedRevenue.EntityCode
-		, SUM(budgetedRevenue.Amount - budgetedExpenses.Amount) Amount
-	FROM budgetedRevenue
-	INNER JOIN budgetedExpenses	
-		ON budgetedRevenue.EntityCode = budgetedExpenses.EntityCode
-	GROUP BY
-		budgetedRevenue.EntityCode
-ORDER BY
-	1,2
 ;	</CommandText>
       </Query>
       <Fields>
@@ -3564,15 +3157,12 @@ ORDER BY
         </QueryParameters>
         <CommandText>WITH ActualRevenue AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactRevenue.Amount) AS Amount
@@ -3592,35 +3182,18 @@ ORDER BY
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -3634,15 +3207,12 @@ ORDER BY
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 ), BudgetedRevenue AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetRevenue.Amount) AS Amount
@@ -3659,35 +3229,18 @@ ORDER BY
 	WHERE
 		FactBudgetRevenue.BudgetMonth = @CalendarMonth
 		AND FactBudgetRevenue.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -3709,22 +3262,18 @@ SELECT
 	FULL OUTER JOIN BudgetedRevenue
 		ON ActualRevenue.EntityCode = BudgetedRevenue.EntityCode
 		AND ActualRevenue.GroupID = BudgetedRevenue.GroupID
-	--WHERE
-		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
+
 	GROUP BY
 		  ISNULL(ActualRevenue.EntityCode, BudgetedRevenue.EntityCode)
 		, ActualRevenue.GroupID
 ), ActualExpenses AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactExpense.Amount) AS Amount
@@ -3744,35 +3293,18 @@ SELECT
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -3786,15 +3318,12 @@ SELECT
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 ), BudgetedExpenses AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetExpense.Amount) AS Amount
@@ -3811,35 +3340,18 @@ SELECT
 	WHERE
 		FactBudgetExpense.BudgetMonth = @CalendarMonth
 		AND FactBudgetExpense.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -3868,13 +3380,15 @@ SELECT
 		, ActualExpenses.GroupID
 )
 SELECT 
-	  VarianceRevenue.EntityCode
-	, SUM(VarianceRevenue.Amount - VarianceExpenses.Amount) AS Amount
-FROM VarianceRevenue
-INNER JOIN VarianceExpenses
-	ON VarianceRevenue.EntityCode = VarianceExpenses.EntityCode
+	EntityCode
+	, SUM(Amount) AS Amount
+FROM (
+	select EntityCode, sum(amount) AS Amount from VarianceRevenue group by EntityCode
+	UNION
+	select EntityCode, sum(amount * -1) from VarianceExpenses group by EntityCode)x
 GROUP BY
-	VarianceRevenue.EntityCode</CommandText>
+	EntityCode
+;</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -3892,10 +3406,11 @@ GROUP BY
         <DataSourceName>DW</DataSourceName>
         <QueryParameters>
           <QueryParameter Name="@CalendarYear">
-            <Value>=Parameters!CalendarMonth.Value</Value>
+            <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>;
+        <CommandText>
+;
 WITH ActualRevenue AS (
 	SELECT 
 		 DimEntity.Code AS EntityCode
@@ -3962,14 +3477,14 @@ WITH ActualRevenue AS (
 )
 
 SELECT 
-	  ActualRevenue.EntityCode
-	, SUM(ActualRevenue.Amount - ActualExpenses.Amount) AS Amount
-FROM ActualRevenue 
-INNER JOIN  ActualExpenses
-	ON ActualRevenue.EntityCode = ActualExpenses.EntityCode
+	EntityCode
+	, SUM(Amount) AS Amount
+FROM (
+	select EntityCode, sum(amount) AS Amount from ActualRevenue group by EntityCode
+	UNION
+	select EntityCode, sum(amount * -1) from ActualExpenses group by EntityCode)x
 GROUP BY
-	ActualRevenue.EntityCode
-;	</CommandText>
+	EntityCode</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -4050,16 +3565,15 @@ WITH BudgetRevenue AS (
 	UNION SELECT 'HBC', 0
 	UNION SELECT 'WITW', 0
 )
-
 SELECT 
-	  BudgetRevenue.EntityCode
-	, SUM(BudgetRevenue.Amount - BudgetExpenses.Amount) AS Amount
-FROM BudgetRevenue 
-INNER JOIN  BudgetExpenses
-	ON BudgetRevenue.EntityCode = BudgetExpenses.EntityCode
+	EntityCode
+	, SUM(Amount) AS Amount
+FROM (
+	select EntityCode, sum(amount) AS Amount from BudgetRevenue group by EntityCode
+	UNION
+	select EntityCode, sum(amount * -1) from BudgetExpenses group by EntityCode)x
 GROUP BY
-	BudgetRevenue.EntityCode
-;		</CommandText>
+	EntityCode</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -4263,13 +3777,16 @@ GROUP BY
 	UNION SELECT 'WITW', 0
 )
 SELECT 
-	RevenueVariance.EntityCode
-	, SUM(RevenueVariance.Amount - ExpenseVariance.Amount) AS Amount
-FROM RevenueVariance
-INNER JOIN ExpenseVariance
-	ON RevenueVariance.EntityCode = ExpenseVariance.EntityCode
+	EntityCode
+	, SUM(Amount) AS Amount
+FROM (
+	select EntityCode, sum(amount) AS Amount from RevenueVariance group by EntityCode
+	UNION
+	select EntityCode, sum(amount * -1) from ExpenseVariance group by EntityCode)x
 GROUP BY
-	RevenueVariance.EntityCode</CommandText>
+	EntityCode
+
+;		</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -4293,15 +3810,12 @@ GROUP BY
         <CommandText>--actuals
 ;WITH ActualRevenue AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactRevenue.Amount) AS Amount
@@ -4320,35 +3834,18 @@ GROUP BY
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -4364,15 +3861,12 @@ GROUP BY
 --actuals
  ActualExpense AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactExpense.Amount) AS Amount
@@ -4391,35 +3885,18 @@ GROUP BY
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -4433,15 +3910,15 @@ GROUP BY
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 )
 	SELECT 
-		  ActualRevenue.EntityCode
-		, SUM(ActualRevenue.Amount - ActualExpense.Amount) Amount
-	FROM ActualRevenue
-	INNER JOIN ActualExpense	
-		ON ActualRevenue.EntityCode = ActualExpense.EntityCode
-	GROUP BY
-		ActualRevenue.EntityCode
-ORDER BY
-	1,2
+	EntityCode
+	, SUM(Amount) AS Amount
+FROM (
+	select EntityCode, sum(amount) AS Amount from ActualRevenue group by EntityCode
+	UNION
+	select EntityCode, sum(amount * -1) from ActualExpense group by EntityCode)x
+GROUP BY
+	EntityCode
+
 ;	</CommandText>
       </Query>
       <Fields>
@@ -4465,15 +3942,12 @@ ORDER BY
         </QueryParameters>
         <CommandText>WITH budgetedRevenue AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetRevenue.Amount) AS Amount
@@ -4489,35 +3963,18 @@ ORDER BY
 		AND glrg.Category = 'Revenue'
 	WHERE
 		FactBudgetRevenue.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -4531,15 +3988,12 @@ ORDER BY
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 ), budgetedExpenses AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetExpense.Amount) AS Amount
@@ -4555,35 +4009,18 @@ ORDER BY
 		AND glrg.Category = 'Expense'
 	WHERE
 		FactBudgetExpense.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -4599,16 +4036,17 @@ ORDER BY
 	
 
 	SELECT 
-		  budgetedRevenue.EntityCode
-		, SUM(budgetedRevenue.Amount - budgetedExpenses.Amount) Amount
-	FROM budgetedRevenue
-	INNER JOIN budgetedExpenses	
-		ON budgetedRevenue.EntityCode = budgetedExpenses.EntityCode
-	GROUP BY
-		budgetedRevenue.EntityCode
-ORDER BY
-	1,2
-;	</CommandText>
+	EntityCode
+	, SUM(Amount) AS Amount
+FROM (
+	select EntityCode, sum(amount) AS Amount from budgetedRevenue group by EntityCode
+	UNION
+	select EntityCode, sum(amount * -1) from budgetedExpenses group by EntityCode)x
+GROUP BY
+	EntityCode
+
+;	
+	</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -4631,15 +4069,12 @@ ORDER BY
         </QueryParameters>
         <CommandText>WITH ActualRevenue AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactRevenue.Amount) AS Amount
@@ -4658,35 +4093,18 @@ ORDER BY
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -4700,15 +4118,12 @@ ORDER BY
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 ), BudgetedRevenue AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetRevenue.Amount) AS Amount
@@ -4724,35 +4139,18 @@ ORDER BY
 		AND glrg.Category = 'Revenue'
 	WHERE
 		FactBudgetRevenue.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
@@ -4781,15 +4179,12 @@ SELECT
 		, ActualRevenue.GroupID
 ), ActualExpenses AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactExpense.Amount) AS Amount
@@ -4808,35 +4203,18 @@ SELECT
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -4850,15 +4228,12 @@ SELECT
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 ), BudgetedExpenses AS (
 	SELECT 
-		 CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		 CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
 		, groupid
 		, SUM(FactBudgetExpense.Amount) AS Amount
@@ -4874,35 +4249,18 @@ SELECT
 		AND glrg.Category = 'Expense'
 	WHERE
 		FactBudgetExpense.BudgetYear = @CalendarYear
-		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-		)
-		--AND DimFinancialCategory.GLType = 'REV'
-		AND CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
-		  END &lt;&gt; 'unknown'
+		AND DimFinancialCategory.EntityCode = 'HBC'
+		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
 		-- ISNULL(GroupID, 5) 		
 		, GroupID
-		, CASE WHEN DimFinancialCategory.CampusCode = 'CH' THEN 'Camp'
-			ELSE CASE WHEN DimFinancialCategory.FundCode = '069' THEN 'VCF' 
-				ELSE CASE WHEN DimFinancialCategory.ProjectName LIKE 'VCB%' THEN 'VCB'
-				  ELSE CASE WHEN DimFinancialCategory.FundCode = '055' THEN 'BSC'
-				    ELSE CASE WHEN DimFinancialCategory.FundCode = '078' THEN 'Curriculum'
-				      ELSE 'unknown' END
-					END
-				  END
-				END
+		, CASE DimFinancialCategory.FundCode 
+			WHEN '055' THEN 'BSC'
+			WHEN '058' THEN 'Camp'
+			WHEN '069' THEN 'VCF'
+			WHEN '078' THEN 'Curriculum'
+			WHEN '098' THEN 'VCB'
 		  END
 	UNION
 	SELECT DISTINCT 'Camp' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
@@ -4931,13 +4289,15 @@ SELECT
 		, ActualExpenses.GroupID
 )
 SELECT 
-	  VarianceRevenue.EntityCode
-	, SUM(VarianceRevenue.Amount - VarianceExpenses.Amount) AS Amount
-FROM VarianceRevenue
-INNER JOIN VarianceExpenses
-	ON VarianceRevenue.EntityCode = VarianceExpenses.EntityCode
+	EntityCode
+	, SUM(Amount) AS Amount
+FROM (
+	select EntityCode, sum(amount) AS Amount from VarianceRevenue group by EntityCode
+	UNION
+	select EntityCode, sum(amount * -1) from VarianceExpenses group by EntityCode)x
 GROUP BY
-	VarianceRevenue.EntityCode</CommandText>
+	EntityCode
+</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -6783,8 +6143,8 @@ GROUP BY
             <KeepTogether>true</KeepTogether>
             <Top>0.20555in</Top>
             <Left>0.25in</Left>
-            <Height>3.54445in</Height>
-            <Width>8.56362in</Width>
+            <Height>3.11737in</Height>
+            <Width>6.36166in</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -8303,6 +7663,7 @@ GROUP BY
                                       <Value>=Sum(Fields!Amount.Value)</Value>
                                       <Style>
                                         <FontWeight>Bold</FontWeight>
+                                        <Format>'$'#,0;('$'#,0)</Format>
                                       </Style>
                                     </TextRun>
                                   </TextRuns>
@@ -8314,22 +7675,11 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
-                                <TopBorder>
-                                  <Color>Black</Color>
-                                </TopBorder>
-                                <BottomBorder>
-                                  <Color>Black</Color>
-                                </BottomBorder>
-                                <LeftBorder>
-                                  <Color>Black</Color>
-                                </LeftBorder>
-                                <RightBorder>
-                                  <Color>Black</Color>
-                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
                                 <PaddingBottom>2pt</PaddingBottom>
+                                <rd:FormatSymbolCulture>en-US</rd:FormatSymbolCulture>
                               </Style>
                             </Textbox>
                           </CellContents>
@@ -8357,11 +7707,6 @@ GROUP BY
                 <TablixRowHierarchy>
                   <TablixMembers>
                     <TablixMember>
-                      <Group Name="RowGroup">
-                        <GroupExpressions>
-                          <GroupExpression />
-                        </GroupExpressions>
-                      </Group>
                       <TablixHeader>
                         <Size>2.87501in</Size>
                         <CellContents>
@@ -8449,6 +7794,7 @@ GROUP BY
                                       <Value>=Sum(Fields!Amount.Value)</Value>
                                       <Style>
                                         <FontWeight>Bold</FontWeight>
+                                        <Format>'$'#,0;('$'#,0)</Format>
                                       </Style>
                                     </TextRun>
                                   </TextRuns>
@@ -8460,22 +7806,11 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
-                                <TopBorder>
-                                  <Color>Black</Color>
-                                </TopBorder>
-                                <BottomBorder>
-                                  <Color>Black</Color>
-                                </BottomBorder>
-                                <LeftBorder>
-                                  <Color>Black</Color>
-                                </LeftBorder>
-                                <RightBorder>
-                                  <Color>Black</Color>
-                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
                                 <PaddingBottom>2pt</PaddingBottom>
+                                <rd:FormatSymbolCulture>en-US</rd:FormatSymbolCulture>
                               </Style>
                             </Textbox>
                           </CellContents>
@@ -8545,6 +7880,7 @@ GROUP BY
                                       <Value>=Sum(Fields!Amount.Value)</Value>
                                       <Style>
                                         <FontWeight>Bold</FontWeight>
+                                        <Format>'$'#,0;('$'#,0)</Format>
                                       </Style>
                                     </TextRun>
                                   </TextRuns>
@@ -8556,22 +7892,11 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
-                                <TopBorder>
-                                  <Color>Black</Color>
-                                </TopBorder>
-                                <BottomBorder>
-                                  <Color>Black</Color>
-                                </BottomBorder>
-                                <LeftBorder>
-                                  <Color>Black</Color>
-                                </LeftBorder>
-                                <RightBorder>
-                                  <Color>Black</Color>
-                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
                                 <PaddingBottom>2pt</PaddingBottom>
+                                <rd:FormatSymbolCulture>en-US</rd:FormatSymbolCulture>
                               </Style>
                             </Textbox>
                           </CellContents>
@@ -8624,10 +7949,10 @@ GROUP BY
             </PageBreak>
             <PageName>Sub Entities Monthly</PageName>
             <KeepTogether>true</KeepTogether>
-            <Top>4.09234in</Top>
-            <Left>0.25in</Left>
-            <Height>3.57308in</Height>
-            <Width>8.56362in</Width>
+            <Top>3.44651in</Top>
+            <Left>0.26043in</Left>
+            <Height>3.10433in</Height>
+            <Width>6.36166in</Width>
             <ZIndex>1</ZIndex>
             <Style>
               <Border>
@@ -9864,6 +9189,7 @@ GROUP BY
                                       <Value>=Sum(Fields!Amount.Value)</Value>
                                       <Style>
                                         <FontWeight>Bold</FontWeight>
+                                        <Format>'$'#,0;('$'#,0)</Format>
                                       </Style>
                                     </TextRun>
                                   </TextRuns>
@@ -9875,22 +9201,11 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
-                                <TopBorder>
-                                  <Color>Black</Color>
-                                </TopBorder>
-                                <BottomBorder>
-                                  <Color>Black</Color>
-                                </BottomBorder>
-                                <LeftBorder>
-                                  <Color>Black</Color>
-                                </LeftBorder>
-                                <RightBorder>
-                                  <Color>Black</Color>
-                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
                                 <PaddingBottom>2pt</PaddingBottom>
+                                <rd:FormatSymbolCulture>en-US</rd:FormatSymbolCulture>
                               </Style>
                             </Textbox>
                           </CellContents>
@@ -10010,6 +9325,7 @@ GROUP BY
                                       <Value>=Sum(Fields!Amount.Value)</Value>
                                       <Style>
                                         <FontWeight>Bold</FontWeight>
+                                        <Format>'$'#,0;('$'#,0)</Format>
                                       </Style>
                                     </TextRun>
                                   </TextRuns>
@@ -10026,6 +9342,7 @@ GROUP BY
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
                                 <PaddingBottom>2pt</PaddingBottom>
+                                <rd:FormatSymbolCulture>en-US</rd:FormatSymbolCulture>
                               </Style>
                             </Textbox>
                           </CellContents>
@@ -10095,6 +9412,7 @@ GROUP BY
                                       <Value>=Sum(Fields!Amount.Value)</Value>
                                       <Style>
                                         <FontWeight>Bold</FontWeight>
+                                        <Format>'$'#,0;('$'#,0)</Format>
                                       </Style>
                                     </TextRun>
                                   </TextRuns>
@@ -10111,6 +9429,7 @@ GROUP BY
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
                                 <PaddingBottom>2pt</PaddingBottom>
+                                <rd:FormatSymbolCulture>en-US</rd:FormatSymbolCulture>
                               </Style>
                             </Textbox>
                           </CellContents>
@@ -10163,10 +9482,10 @@ GROUP BY
             </PageBreak>
             <PageName>Entities YTD</PageName>
             <KeepTogether>true</KeepTogether>
-            <Top>7.97912in</Top>
-            <Left>0.25in</Left>
-            <Height>3.54445in</Height>
-            <Width>8.56362in</Width>
+            <Top>6.64579in</Top>
+            <Left>0.26394in</Left>
+            <Height>2.9507in</Height>
+            <Width>6.34772in</Width>
             <ZIndex>2</ZIndex>
             <Style>
               <Border>
@@ -11398,6 +10717,7 @@ GROUP BY
                                       <Value>=Sum(Fields!Amount.Value)</Value>
                                       <Style>
                                         <FontWeight>Bold</FontWeight>
+                                        <Format>'$'#,0;('$'#,0)</Format>
                                       </Style>
                                     </TextRun>
                                   </TextRuns>
@@ -11409,22 +10729,11 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
-                                <TopBorder>
-                                  <Color>Black</Color>
-                                </TopBorder>
-                                <BottomBorder>
-                                  <Color>Black</Color>
-                                </BottomBorder>
-                                <LeftBorder>
-                                  <Color>Black</Color>
-                                </LeftBorder>
-                                <RightBorder>
-                                  <Color>Black</Color>
-                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
                                 <PaddingBottom>2pt</PaddingBottom>
+                                <rd:FormatSymbolCulture>en-US</rd:FormatSymbolCulture>
                               </Style>
                             </Textbox>
                           </CellContents>
@@ -11544,6 +10853,7 @@ GROUP BY
                                       <Value>=Sum(Fields!Amount.Value)</Value>
                                       <Style>
                                         <FontWeight>Bold</FontWeight>
+                                        <Format>'$'#,0;('$'#,0)</Format>
                                       </Style>
                                     </TextRun>
                                   </TextRuns>
@@ -11555,22 +10865,11 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
-                                <TopBorder>
-                                  <Color>Black</Color>
-                                </TopBorder>
-                                <BottomBorder>
-                                  <Color>Black</Color>
-                                </BottomBorder>
-                                <LeftBorder>
-                                  <Color>Black</Color>
-                                </LeftBorder>
-                                <RightBorder>
-                                  <Color>Black</Color>
-                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
                                 <PaddingBottom>2pt</PaddingBottom>
+                                <rd:FormatSymbolCulture>en-US</rd:FormatSymbolCulture>
                               </Style>
                             </Textbox>
                           </CellContents>
@@ -11640,6 +10939,7 @@ GROUP BY
                                       <Value>=Sum(Fields!Amount.Value)</Value>
                                       <Style>
                                         <FontWeight>Bold</FontWeight>
+                                        <Format>'$'#,0;('$'#,0)</Format>
                                       </Style>
                                     </TextRun>
                                   </TextRuns>
@@ -11651,22 +10951,11 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
-                                <TopBorder>
-                                  <Color>Black</Color>
-                                </TopBorder>
-                                <BottomBorder>
-                                  <Color>Black</Color>
-                                </BottomBorder>
-                                <LeftBorder>
-                                  <Color>Black</Color>
-                                </LeftBorder>
-                                <RightBorder>
-                                  <Color>Black</Color>
-                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
                                 <PaddingBottom>2pt</PaddingBottom>
+                                <rd:FormatSymbolCulture>en-US</rd:FormatSymbolCulture>
                               </Style>
                             </Textbox>
                           </CellContents>
@@ -11716,10 +11005,10 @@ GROUP BY
             </ReportItems>
             <PageName>Sub Entities YTD</PageName>
             <KeepTogether>true</KeepTogether>
-            <Top>11.86591in</Top>
-            <Left>0.25in</Left>
-            <Height>3.78909in</Height>
-            <Width>8.56362in</Width>
+            <Top>9.74149in</Top>
+            <Left>0.25001in</Left>
+            <Height>2.90367in</Height>
+            <Width>6.36166in</Width>
             <ZIndex>3</ZIndex>
             <Style>
               <Border>
@@ -11728,10 +11017,10 @@ GROUP BY
             </Style>
           </Rectangle>
         </ReportItems>
-        <Height>15.78536in</Height>
+        <Height>12.97286in</Height>
         <Style />
       </Body>
-      <Width>8.9439in</Width>
+      <Width>6.93348in</Width>
       <Page>
         <LeftMargin>1in</LeftMargin>
         <RightMargin>1in</RightMargin>
