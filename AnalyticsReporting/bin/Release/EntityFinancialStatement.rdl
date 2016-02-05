@@ -24,10 +24,10 @@
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>;WITH Actuals AS (
+        <CommandText>WITH Actuals AS (
 	SELECT 
 		  DimEntity.Code AS EntityCode
-		, ISNULL(GroupID, 7) AS GroupID
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(FactExpense.Amount) AS Amount
 	FROM dw.FactExpense
 	INNER JOIN dw.DimDate
@@ -41,6 +41,7 @@
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
@@ -52,7 +53,7 @@
 		)
 	GROUP BY
 		  DimEntity.Code
-		, glrg.GroupID
+		, ISNULL(GroupID, 8)
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
 	UNION
@@ -72,6 +73,7 @@
 			WHEN 4 THEN 'Facilities'
 			WHEN 5 THEN 'Ministry Expense'
 			WHEN 6 THEN 'Broadcast Expense'
+			WHEN 7 THEN 'Depreciation and Amortization'
 			ELSE 'Other (less than 5% of Overall expense)' END AS GroupName
 		, SUM(Amount) Amount
 	FROM Actuals
@@ -111,11 +113,10 @@ ORDER BY
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>;
-WITH Budget AS (
+        <CommandText>WITH Budget AS (
 	SELECT 
 		  DimEntity.Code AS EntityCode
-		, ISNULL(GroupID, 7) AS GroupID
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(Amount) AS Amount
 	FROM dw.FactBudgetExpense
 	INNER JOIN dw.DimEntity
@@ -127,6 +128,7 @@ WITH Budget AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetExpense.BudgetMonth = @CalendarMonth
 		AND FactBudgetExpense.BudgetYear = @CalendarYear
@@ -137,7 +139,7 @@ WITH Budget AS (
 		)
 	GROUP BY
 		DimEntity.Code
-		, glrg.GroupID
+		, ISNULL(GroupID, 8)
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
 	UNION
@@ -148,7 +150,7 @@ WITH Budget AS (
 	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
 )
 	SELECT   EntityCode
-		, ISNULL(GroupID, 7) AS GroupID
+		, GroupID
 		, CASE GroupID 
 			WHEN 1 THEN 'Compensation'
 			WHEN 2 THEN 'Allocated Overhead'
@@ -156,6 +158,7 @@ WITH Budget AS (
 			WHEN 4 THEN 'Facilities'
 			WHEN 5 THEN 'Ministry Expense'
 			WHEN 6 THEN 'Broadcast Expense'
+			WHEN 7 THEN 'Depreciation and Amortization'
 			ELSE 'Other (less than 5% of Overall expense)' END AS GroupName
 		, SUM(Amount) Amount
 	FROM Budget
@@ -193,12 +196,11 @@ WITH Budget AS (
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>;
---variance
+        <CommandText>--variance
 WITH Actuals AS (
 	SELECT 
 		  DimEntity.Code AS EntityCode
-		, ISNULL(GroupID, 7) AS GroupID
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(FactExpense.Amount) AS Amount
 	FROM dw.FactExpense
 	INNER JOIN dw.DimDate
@@ -212,6 +214,7 @@ WITH Actuals AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
@@ -223,7 +226,7 @@ WITH Actuals AS (
 		)
 	GROUP BY
 		  DimEntity.Code
-		, glrg.GroupID
+		, ISNULL(GroupID, 8)
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
 	UNION
@@ -235,7 +238,7 @@ WITH Actuals AS (
 ), Budget AS (
 	SELECT 
 		  DimEntity.Code AS EntityCode
-		, ISNULL(GroupID, 7) AS GroupID
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(Amount) AS Amount
 	FROM dw.FactBudgetExpense
 	INNER JOIN dw.DimEntity
@@ -247,6 +250,7 @@ WITH Actuals AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetExpense.BudgetMonth = @CalendarMonth
 		AND FactBudgetExpense.BudgetYear = @CalendarYear
@@ -257,7 +261,7 @@ WITH Actuals AS (
 		)
 	GROUP BY
 		DimEntity.Code
-		, glrg.GroupID
+		, ISNULL(GroupID, 8)
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
 	UNION
@@ -280,7 +284,8 @@ WITH Actuals AS (
 		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
 	GROUP BY
 		  ISNULL(Actuals.EntityCode, Budget.EntityCode)
-		, Actuals.GroupID</CommandText>
+		, Actuals.GroupID
+</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -312,8 +317,7 @@ WITH Actuals AS (
 WITH Actuals AS (
 	SELECT 
 		 DimEntity.Code AS EntityCode
-		--, ISNULL(GroupID, 5) AS GroupID
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactRevenue.Amount) AS Amount
 	FROM dw.FactRevenue
 	INNER JOIN dw.DimDate
@@ -326,7 +330,8 @@ WITH Actuals AS (
 		AND FactRevenue.TenantID = DimFinancialCategory.TenantID
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
-		
+		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
@@ -336,11 +341,9 @@ WITH Actuals AS (
 			OR --HBC only reports fund 025
 			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
 		)
-		AND glrg.Category = 'Revenue'
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3)
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 	UNION
@@ -356,19 +359,15 @@ WITH Actuals AS (
 		, CASE GroupID 
 			WHEN 1 THEN 'Unrestricted Donations'
 			WHEN 2 THEN 'Restricted Donations'
-			WHEN 3 THEN 'Other Sales (VCB, VCF, WITW, Curriculum)'
-			--WHEN 4 THEN 'COGS'  -- to be added in in a later step
-			--net sales to be added in later too
-			ELSE 'Other' END AS GroupName
+			ELSE 'Other Sales (VCB, VCF, WITW, Curriculum)'
+			END AS GroupName
 		, SUM(Amount) Amount
 	FROM Actuals
 	GROUP BY
 		EntityCode, GroupID
 ORDER BY
 	1,2
-;	
-
-</CommandText>
+;	</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -405,7 +404,6 @@ ORDER BY
 	SELECT 
 		 DimEntity.Code AS EntityCode
 		, ISNULL(GroupID, 3) AS GroupID
-		--, groupid
 		, SUM(FactBudgetRevenue.Amount) AS Amount
 	FROM dw.FactBudgetRevenue
 	INNER JOIN dw.DimEntity
@@ -417,6 +415,7 @@ ORDER BY
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetRevenue.BudgetMonth = @CalendarMonth
 		AND FactBudgetRevenue.BudgetYear = @CalendarYear
@@ -426,9 +425,8 @@ ORDER BY
 			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
 		)
 	GROUP BY
-		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		  DimEntity.Code
+		, ISNULL(GroupID, 3)
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 	UNION
@@ -444,17 +442,16 @@ ORDER BY
 		, CASE GroupID 
 			WHEN 1 THEN 'Unrestricted Donations'
 			WHEN 2 THEN 'Restricted Donations'
-			WHEN 3 THEN 'Other Sales (VCB, VCF, WITW, Curriculum)'
-			--WHEN 4 THEN 'COGS'  -- to be added in in a later step
-			--net sales to be added in later too
-			ELSE 'Other' END AS GroupName
+			ELSE 'Other Sales (VCB, VCF, WITW, Curriculum)'
+			END AS GroupName
 		, SUM(Amount) Amount
 	FROM Budgeted
 	GROUP BY
 		EntityCode, GroupID
 ORDER BY
 	1,2
-;	</CommandText>
+;	
+</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -504,6 +501,7 @@ ORDER BY
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
@@ -541,6 +539,7 @@ ORDER BY
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetRevenue.BudgetMonth = @CalendarMonth
 		AND FactBudgetRevenue.BudgetYear = @CalendarYear
@@ -563,17 +562,17 @@ ORDER BY
 	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 )
 SELECT 
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
-		, Actuals.GroupID
-		, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
+		ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
+	, Actuals.GroupID
+	, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
 		
-	FROM Actuals
-	FULL OUTER JOIN Budgeted
-		ON Actuals.EntityCode = Budgeted.EntityCode
-		AND Actuals.GroupID = Budgeted.GroupID
-	GROUP BY
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
-		, Actuals.GroupID</CommandText>
+FROM Actuals
+FULL OUTER JOIN Budgeted
+	ON Actuals.EntityCode = Budgeted.EntityCode
+	AND Actuals.GroupID = Budgeted.GroupID
+GROUP BY
+		ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
+	, Actuals.GroupID</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -598,12 +597,10 @@ SELECT
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
-WITH Actuals AS (
+        <CommandText>WITH Actuals AS (
 	SELECT 
 		 DimEntity.Code AS EntityCode
-		--, ISNULL(GroupID, 5) AS GroupID
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactRevenue.Amount) AS Amount
 	FROM dw.FactRevenue
 	INNER JOIN dw.DimDate
@@ -617,6 +614,7 @@ WITH Actuals AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
@@ -625,11 +623,9 @@ WITH Actuals AS (
 			OR --HBC only reports fund 025
 			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
 		)
-		--AND DimFinancialCategory.GLType = 'REV'
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3) 
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 	UNION
@@ -645,10 +641,8 @@ WITH Actuals AS (
 		, CASE GroupID 
 			WHEN 1 THEN 'Unrestricted Donations'
 			WHEN 2 THEN 'Restricted Donations'
-			WHEN 3 THEN 'Other Sales (VCB, VCF, WITW, Curriculum)'
-			--WHEN 4 THEN 'COGS'  -- to be added in in a later step
-			--net sales to be added in later too
-			ELSE 'Other' END AS GroupName
+			ELSE 'Other Sales (VCB, VCF, WITW, Curriculum)'
+			END AS GroupName
 		, SUM(Amount) Amount
 	FROM Actuals
 	GROUP BY
@@ -688,8 +682,7 @@ ORDER BY
 WITH Budgeted AS (
 	SELECT 
 		 DimEntity.Code AS EntityCode
-		--, ISNULL(GroupID, 5) AS GroupID
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactBudgetRevenue.Amount) AS Amount
 	FROM dw.FactBudgetRevenue
 	INNER JOIN dw.DimEntity
@@ -701,6 +694,7 @@ WITH Budgeted AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetRevenue.BudgetYear = @CalendarYear
 		AND (
@@ -710,8 +704,7 @@ WITH Budgeted AS (
 		)
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3)
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 	UNION
@@ -727,10 +720,8 @@ WITH Budgeted AS (
 		, CASE GroupID 
 			WHEN 1 THEN 'Unrestricted Donations'
 			WHEN 2 THEN 'Restricted Donations'
-			WHEN 3 THEN 'Other Sales (VCB, VCF, WITW, Curriculum)'
-			--WHEN 4 THEN 'COGS'  -- to be added in in a later step
-			--net sales to be added in later too
-			ELSE 'Other' END AS GroupName
+			ELSE 'Other Sales (VCB, VCF, WITW, Curriculum)'
+			END AS GroupName
 		, SUM(Amount) Amount
 	FROM Budgeted
 	GROUP BY
@@ -766,13 +757,11 @@ ORDER BY
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
---variance
+        <CommandText>--variance
 WITH Actuals AS (
 	SELECT 
 		 DimEntity.Code AS EntityCode
-		--, ISNULL(GroupID, 5) AS GroupID
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactRevenue.Amount) AS Amount
 	FROM dw.FactRevenue
 	INNER JOIN dw.DimDate
@@ -786,6 +775,7 @@ WITH Actuals AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
@@ -794,11 +784,9 @@ WITH Actuals AS (
 			OR --HBC only reports fund 025
 			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
 		)
-		--AND DimFinancialCategory.GLType = 'REV'
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3)
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 	UNION
@@ -811,8 +799,7 @@ WITH Actuals AS (
 , Budgeted AS (
 	SELECT 
 		 DimEntity.Code AS EntityCode
-		--, ISNULL(GroupID, 5) AS GroupID
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactBudgetRevenue.Amount) AS Amount
 	FROM dw.FactBudgetRevenue
 	INNER JOIN dw.DimEntity
@@ -824,6 +811,7 @@ WITH Actuals AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetRevenue.BudgetYear = @CalendarYear
 		AND (
@@ -833,8 +821,7 @@ WITH Actuals AS (
 		)
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3)
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 	UNION
@@ -845,19 +832,16 @@ WITH Actuals AS (
 	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 )
 SELECT 
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
-		, Actuals.GroupID
-		, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
-		
-	FROM Actuals
-	FULL OUTER JOIN Budgeted
-		ON Actuals.EntityCode = Budgeted.EntityCode
-		AND Actuals.GroupID = Budgeted.GroupID
-	--WHERE
-		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
-	GROUP BY
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
-		, Actuals.GroupID</CommandText>
+	  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
+	, Actuals.GroupID
+	, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
+FROM Actuals
+FULL OUTER JOIN Budgeted
+	ON Actuals.EntityCode = Budgeted.EntityCode
+	AND Actuals.GroupID = Budgeted.GroupID
+GROUP BY
+		ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
+	, Actuals.GroupID</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -885,7 +869,7 @@ SELECT
         <CommandText>WITH Actuals AS (
 	SELECT 
 		  DimEntity.Code AS EntityCode
-		, ISNULL(GroupID, 7) AS GroupID
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(FactExpense.Amount) AS Amount
 	FROM dw.FactExpense
 	INNER JOIN dw.DimDate
@@ -899,6 +883,7 @@ SELECT
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
@@ -909,7 +894,7 @@ SELECT
 		)
 	GROUP BY
 		  DimEntity.Code
-		, glrg.GroupID
+		, ISNULL(GroupID, 8)
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category = 'Expense'
 	UNION
@@ -968,7 +953,7 @@ ORDER BY
         <CommandText>WITH Budget AS (
 	SELECT 
 		  DimEntity.Code AS EntityCode
-		, ISNULL(GroupID, 7) AS GroupID
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(Amount) AS Amount
 	FROM dw.FactBudgetExpense
 	INNER JOIN dw.DimEntity
@@ -980,6 +965,7 @@ ORDER BY
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetExpense.BudgetYear = @CalendarYear
 		AND (
@@ -989,7 +975,7 @@ ORDER BY
 		)
 	GROUP BY
 		DimEntity.Code
-		, glrg.GroupID
+		, ISNULL(GroupID, 8)
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category = 'Expense'
 	UNION
@@ -1000,14 +986,15 @@ ORDER BY
 	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category = 'Expense'
 )
 	SELECT   EntityCode
-		, ISNULL(GroupID, 7) AS GroupID
-		, CASE GroupID 
+		, GroupID
+		,CASE GroupID 
 			WHEN 1 THEN 'Compensation'
 			WHEN 2 THEN 'Allocated Overhead'
 			WHEN 3 THEN 'Admin/IT'
 			WHEN 4 THEN 'Facilities'
 			WHEN 5 THEN 'Ministry Expense'
 			WHEN 6 THEN 'Broadcast Expense'
+			WHEN 7 THEN 'Depreciation and Amortization'
 			ELSE 'Other (less than 5% of Overall expense)' END AS GroupName
 		, SUM(Amount) Amount
 	FROM Budget
@@ -1046,7 +1033,7 @@ ORDER BY
 WITH Actuals AS (
 	SELECT 
 		  DimEntity.Code AS EntityCode
-		, ISNULL(GroupID, 7) AS GroupID
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(FactExpense.Amount) AS Amount
 	FROM dw.FactExpense
 	INNER JOIN dw.DimDate
@@ -1060,6 +1047,7 @@ WITH Actuals AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
@@ -1071,7 +1059,7 @@ WITH Actuals AS (
 		--AND DimFinancialCategory.GLType = 'REV'
 	GROUP BY
 		  DimEntity.Code
-		, glrg.GroupID
+		, ISNULL(GroupID, 8)
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category = 'Expense'
 	UNION
@@ -1083,7 +1071,7 @@ WITH Actuals AS (
 ), Budget AS (
 	SELECT 
 		  DimEntity.Code AS EntityCode
-		, ISNULL(GroupID, 7) AS GroupID
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(Amount) AS Amount
 	FROM dw.FactBudgetExpense
 	INNER JOIN dw.DimEntity
@@ -1095,6 +1083,7 @@ WITH Actuals AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetExpense.BudgetYear = @CalendarYear
 		AND (
@@ -1104,7 +1093,7 @@ WITH Actuals AS (
 		)
 	GROUP BY
 		DimEntity.Code
-		, glrg.GroupID
+		, ISNULL(GroupID, 8)
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category = 'Expense'
 	UNION
@@ -1123,8 +1112,6 @@ WITH Actuals AS (
 	FULL OUTER JOIN Budget
 		ON Actuals.EntityCode = Budget.EntityCode
 		AND Actuals.GroupID = Budget.GroupID
-	--WHERE
-		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
 	GROUP BY
 		  ISNULL(Actuals.EntityCode, Budget.EntityCode)
 		, Actuals.GroupID</CommandText>
@@ -1165,7 +1152,7 @@ WITH Actuals AS (
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactRevenue.Amount) AS Amount
 	FROM dw.FactRevenue
 	INNER JOIN dw.DimDate
@@ -1179,6 +1166,7 @@ WITH Actuals AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
@@ -1187,8 +1175,7 @@ WITH Actuals AS (
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -1213,10 +1200,8 @@ WITH Actuals AS (
 		, CASE GroupID 
 			WHEN 1 THEN 'Unrestricted Donations'
 			WHEN 2 THEN 'Restricted Donations'
-			WHEN 3 THEN 'Other Sales (VCB, VCF, WITW, Curriculum)'
-			--WHEN 4 THEN 'COGS'  -- to be added in in a later step
-			--net sales to be added in later too
-			ELSE 'Other' END AS GroupName
+			ELSE 'Other Sales (VCB, VCF, WITW, Curriculum)'
+			END AS GroupName
 		, SUM(Amount) Amount
 	FROM Actuals
 	GROUP BY
@@ -1252,8 +1237,7 @@ ORDER BY
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
---actuals
+        <CommandText>--actuals
 WITH Actuals AS (
 	SELECT 
 		 CASE DimFinancialCategory.FundCode 
@@ -1263,7 +1247,7 @@ WITH Actuals AS (
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactRevenue.Amount) AS Amount
 	FROM dw.FactRevenue
 	INNER JOIN dw.DimDate
@@ -1277,6 +1261,7 @@ WITH Actuals AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
@@ -1285,8 +1270,7 @@ WITH Actuals AS (
 		
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -1311,10 +1295,8 @@ WITH Actuals AS (
 		, CASE GroupID 
 			WHEN 1 THEN 'Unrestricted Donations'
 			WHEN 2 THEN 'Restricted Donations'
-			WHEN 3 THEN 'Other Sales (VCB, VCF, WITW, Curriculum)'
-			--WHEN 4 THEN 'COGS'  -- to be added in in a later step
-			--net sales to be added in later too
-			ELSE 'Other' END AS GroupName
+			ELSE 'Other Sales (VCB, VCF, WITW, Curriculum)'
+			END AS GroupName
 		, SUM(Amount) Amount
 	FROM Actuals
 	GROUP BY
@@ -1363,7 +1345,7 @@ WITH budgeted AS (
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactBudgetRevenue.Amount) AS Amount
 	FROM dw.FactBudgetRevenue
 	INNER JOIN dw.DimEntity
@@ -1372,19 +1354,18 @@ WITH budgeted AS (
 	INNER JOIN dw.DimFinancialCategory
 		ON FactBudgetRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactBudgetRevenue.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+	LEFT JOIN GLReportGrouping glrg 
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetRevenue.BudgetMonth = @CalendarMonth
 		AND FactBudgetRevenue.BudgetYear = @CalendarYear
 		AND DimFinancialCategory.EntityCode = 'HBC'
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
-		
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -1406,20 +1387,19 @@ WITH budgeted AS (
 	SELECT 
 		  EntityCode
 		, GroupID
-		, CASE GroupID 
+		,CASE GroupID 
 			WHEN 1 THEN 'Unrestricted Donations'
 			WHEN 2 THEN 'Restricted Donations'
-			WHEN 3 THEN 'Other Sales (VCB, VCF, WITW, Curriculum)'
-			--WHEN 4 THEN 'COGS'  -- to be added in in a later step
-			--net sales to be added in later too
-			ELSE 'Other' END AS GroupName
+			ELSE 'Other Sales (VCB, VCF, WITW, Curriculum)'
+			END AS GroupName
 		, SUM(Amount) Amount
 	FROM budgeted
 	GROUP BY
 		EntityCode, GroupID
 ORDER BY
 	1,2
-;	</CommandText>
+;	
+</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -1458,7 +1438,7 @@ WITH budgeted AS (
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactBudgetRevenue.Amount) AS Amount
 	FROM dw.FactBudgetRevenue
 	INNER JOIN dw.DimEntity
@@ -1470,14 +1450,14 @@ WITH budgeted AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetRevenue.BudgetYear = @CalendarYear
 		AND DimFinancialCategory.EntityCode = 'HBC'
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -1502,10 +1482,8 @@ WITH budgeted AS (
 		, CASE GroupID 
 			WHEN 1 THEN 'Unrestricted Donations'
 			WHEN 2 THEN 'Restricted Donations'
-			WHEN 3 THEN 'Other Sales (VCB, VCF, WITW, Curriculum)'
-			--WHEN 4 THEN 'COGS'  -- to be added in in a later step
-			--net sales to be added in later too
-			ELSE 'Other' END AS GroupName
+			ELSE 'Other Sales (VCB, VCF, WITW, Curriculum)'
+			END AS GroupName
 		, SUM(Amount) Amount
 	FROM budgeted
 	GROUP BY
@@ -1553,7 +1531,7 @@ ORDER BY
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactRevenue.Amount) AS Amount
 	FROM dw.FactRevenue
 	INNER JOIN dw.DimDate
@@ -1567,6 +1545,7 @@ ORDER BY
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
@@ -1575,8 +1554,7 @@ ORDER BY
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -1603,7 +1581,7 @@ ORDER BY
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactBudgetRevenue.Amount) AS Amount
 	FROM dw.FactBudgetRevenue
 	INNER JOIN dw.DimEntity
@@ -1615,6 +1593,7 @@ ORDER BY
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetRevenue.BudgetMonth = @CalendarMonth
 		AND FactBudgetRevenue.BudgetYear = @CalendarYear
@@ -1622,8 +1601,7 @@ ORDER BY
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -1643,17 +1621,16 @@ ORDER BY
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 )
 SELECT 
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
-		, Actuals.GroupID
-		, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
-		
-	FROM Actuals
-	FULL OUTER JOIN Budgeted
-		ON Actuals.EntityCode = Budgeted.EntityCode
-		AND Actuals.GroupID = Budgeted.GroupID
-	GROUP BY
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
-		, Actuals.GroupID</CommandText>
+	  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
+	, Actuals.GroupID
+	, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
+FROM Actuals
+FULL OUTER JOIN Budgeted
+	ON Actuals.EntityCode = Budgeted.EntityCode
+	AND Actuals.GroupID = Budgeted.GroupID
+GROUP BY
+	  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
+	, Actuals.GroupID</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -1678,8 +1655,7 @@ SELECT
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
-WITH Actuals AS (
+        <CommandText>WITH Actuals AS (
 	SELECT 
 		 CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
@@ -1688,7 +1664,7 @@ WITH Actuals AS (
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactRevenue.Amount) AS Amount
 	FROM dw.FactRevenue
 	INNER JOIN dw.DimDate
@@ -1702,6 +1678,7 @@ WITH Actuals AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
@@ -1709,8 +1686,7 @@ WITH Actuals AS (
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -1737,7 +1713,7 @@ WITH Actuals AS (
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactBudgetRevenue.Amount) AS Amount
 	FROM dw.FactBudgetRevenue
 	INNER JOIN dw.DimEntity
@@ -1749,14 +1725,14 @@ WITH Actuals AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetRevenue.BudgetYear = @CalendarYear
 		AND DimFinancialCategory.EntityCode = 'HBC'
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -1824,7 +1800,7 @@ WITH Actuals AS (
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(FactExpense.Amount) AS Amount
 	FROM dw.FactExpense
 	INNER JOIN dw.DimDate
@@ -1838,6 +1814,7 @@ WITH Actuals AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
@@ -1846,8 +1823,7 @@ WITH Actuals AS (
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 8)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -1870,12 +1846,14 @@ WITH Actuals AS (
 		  EntityCode
 		, GroupID
 		, CASE GroupID 
-			WHEN 1 THEN 'Unrestricted Donations'
-			WHEN 2 THEN 'Restricted Donations'
-			WHEN 3 THEN 'Other Sales (VCB, VCF, WITW, Curriculum)'
-			--WHEN 4 THEN 'COGS'  -- to be added in in a later step
-			--net sales to be added in later too
-			ELSE 'Other' END AS GroupName
+			WHEN 1 THEN 'Compensation'
+			WHEN 2 THEN 'Allocated Overhead'
+			WHEN 3 THEN 'Admin/IT'
+			WHEN 4 THEN 'Facilities'
+			WHEN 5 THEN 'Ministry Expense'
+			WHEN 6 THEN 'Broadcast Expense'
+			WHEN 7 THEN 'Depreciation and Amortization'
+			ELSE 'Other (less than 5% of Overall expense)' END AS GroupName
 		, SUM(Amount) Amount
 	FROM Actuals
 	GROUP BY
@@ -1921,7 +1899,7 @@ WITH Actuals AS (
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(FactExpense.Amount) AS Amount
 	FROM dw.FactExpense
 	INNER JOIN dw.DimDate
@@ -1932,9 +1910,10 @@ WITH Actuals AS (
 	INNER JOIN dw.DimFinancialCategory
 		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactExpense.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+	LEFT JOIN GLReportGrouping glrg 
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
@@ -1942,8 +1921,7 @@ WITH Actuals AS (
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 8)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -1965,13 +1943,15 @@ WITH Actuals AS (
 	SELECT 
 		  EntityCode
 		, GroupID
-		, CASE GroupID 
-			WHEN 1 THEN 'Unrestricted Donations'
-			WHEN 2 THEN 'Restricted Donations'
-			WHEN 3 THEN 'Other Sales (VCB, VCF, WITW, Curriculum)'
-			--WHEN 4 THEN 'COGS'  -- to be added in in a later step
-			--net sales to be added in later too
-			ELSE 'Other' END AS GroupName
+		,CASE GroupID 
+			WHEN 1 THEN 'Compensation'
+			WHEN 2 THEN 'Allocated Overhead'
+			WHEN 3 THEN 'Admin/IT'
+			WHEN 4 THEN 'Facilities'
+			WHEN 5 THEN 'Ministry Expense'
+			WHEN 6 THEN 'Broadcast Expense'
+			WHEN 7 THEN 'Depreciation and Amortization'
+			ELSE 'Other (less than 5% of Overall expense)' END AS GroupName
 		, SUM(Amount) Amount
 	FROM Actuals
 	GROUP BY
@@ -2020,7 +2000,7 @@ WITH budgeted AS (
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(FactBudgetExpense.Amount) AS Amount
 	FROM dw.FactBudgetExpense
 	INNER JOIN dw.DimEntity
@@ -2032,6 +2012,7 @@ WITH budgeted AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetExpense.BudgetMonth = @CalendarMonth
 		AND FactBudgetExpense.BudgetYear = @CalendarYear
@@ -2039,8 +2020,7 @@ WITH budgeted AS (
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 8)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -2063,12 +2043,14 @@ WITH budgeted AS (
 		  EntityCode
 		, GroupID
 		, CASE GroupID 
-			WHEN 1 THEN 'Unrestricted Donations'
-			WHEN 2 THEN 'Restricted Donations'
-			WHEN 3 THEN 'Other Sales (VCB, VCF, WITW, Curriculum)'
-			--WHEN 4 THEN 'COGS'  -- to be added in in a later step
-			--net sales to be added in later too
-			ELSE 'Other' END AS GroupName
+			WHEN 1 THEN 'Compensation'
+			WHEN 2 THEN 'Allocated Overhead'
+			WHEN 3 THEN 'Admin/IT'
+			WHEN 4 THEN 'Facilities'
+			WHEN 5 THEN 'Ministry Expense'
+			WHEN 6 THEN 'Broadcast Expense'
+			WHEN 7 THEN 'Depreciation and Amortization'
+			ELSE 'Other (less than 5% of Overall expense)' END AS GroupName
 		, SUM(Amount) Amount
 	FROM budgeted
 	GROUP BY
@@ -2114,7 +2096,7 @@ WITH budgeted AS (
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(FactBudgetExpense.Amount) AS Amount
 	FROM dw.FactBudgetExpense
 	INNER JOIN dw.DimEntity
@@ -2126,14 +2108,14 @@ WITH budgeted AS (
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetExpense.BudgetYear = @CalendarYear
 		AND DimFinancialCategory.EntityCode = 'HBC'
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 8)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -2156,12 +2138,14 @@ WITH budgeted AS (
 		  EntityCode
 		, GroupID
 		, CASE GroupID 
-			WHEN 1 THEN 'Unrestricted Donations'
-			WHEN 2 THEN 'Restricted Donations'
-			WHEN 3 THEN 'Other Sales (VCB, VCF, WITW, Curriculum)'
-			--WHEN 4 THEN 'COGS'  -- to be added in in a later step
-			--net sales to be added in later too
-			ELSE 'Other' END AS GroupName
+			WHEN 1 THEN 'Compensation'
+			WHEN 2 THEN 'Allocated Overhead'
+			WHEN 3 THEN 'Admin/IT'
+			WHEN 4 THEN 'Facilities'
+			WHEN 5 THEN 'Ministry Expense'
+			WHEN 6 THEN 'Broadcast Expense'
+			WHEN 7 THEN 'Depreciation and Amortization'
+			ELSE 'Other (less than 5% of Overall expense)' END AS GroupName
 		, SUM(Amount) Amount
 	FROM budgeted
 	GROUP BY
@@ -2209,7 +2193,7 @@ ORDER BY
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(FactExpense.Amount) AS Amount
 	FROM dw.FactExpense
 	INNER JOIN dw.DimDate
@@ -2220,9 +2204,10 @@ ORDER BY
 	INNER JOIN dw.DimFinancialCategory
 		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactExpense.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+	LEFT JOIN GLReportGrouping glrg 
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
@@ -2231,8 +2216,7 @@ ORDER BY
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 8)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -2259,7 +2243,7 @@ ORDER BY
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(FactBudgetExpense.Amount) AS Amount
 	FROM dw.FactBudgetExpense
 	INNER JOIN dw.DimEntity
@@ -2271,6 +2255,7 @@ ORDER BY
 	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetExpense.BudgetMonth = @CalendarMonth
 		AND FactBudgetExpense.BudgetYear = @CalendarYear
@@ -2278,8 +2263,7 @@ ORDER BY
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 8)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -2302,16 +2286,13 @@ SELECT
 		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
 		, Actuals.GroupID
 		, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
-		
-	FROM Actuals
-	FULL OUTER JOIN Budgeted
-		ON Actuals.EntityCode = Budgeted.EntityCode
-		AND Actuals.GroupID = Budgeted.GroupID
-	--WHERE
-		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
-	GROUP BY
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
-		, Actuals.GroupID</CommandText>
+FROM Actuals
+FULL OUTER JOIN Budgeted
+	ON Actuals.EntityCode = Budgeted.EntityCode
+	AND Actuals.GroupID = Budgeted.GroupID
+GROUP BY
+		ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
+	, Actuals.GroupID</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -2336,8 +2317,7 @@ SELECT
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
-WITH Actuals AS (
+        <CommandText>WITH Actuals AS (
 	SELECT 
 		 CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
@@ -2346,7 +2326,7 @@ WITH Actuals AS (
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(FactExpense.Amount) AS Amount
 	FROM dw.FactExpense
 	INNER JOIN dw.DimDate
@@ -2357,9 +2337,10 @@ WITH Actuals AS (
 	INNER JOIN dw.DimFinancialCategory
 		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactExpense.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+	LEFT JOIN GLReportGrouping glrg 
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
@@ -2367,8 +2348,7 @@ WITH Actuals AS (
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 8)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -2395,7 +2375,7 @@ WITH Actuals AS (
 			WHEN '078' THEN 'Curriculum'
 			WHEN '098' THEN 'VCB'
 		  END AS EntityCode
-		, groupid
+		, ISNULL(GroupID, 8) AS GroupID
 		, SUM(FactBudgetExpense.Amount) AS Amount
 	FROM dw.FactBudgetExpense
 	INNER JOIN dw.DimEntity
@@ -2404,17 +2384,17 @@ WITH Actuals AS (
 	INNER JOIN dw.DimFinancialCategory
 		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+	LEFT JOIN GLReportGrouping glrg 
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
+		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
 		FactBudgetExpense.BudgetYear = @CalendarYear
 		AND DimFinancialCategory.EntityCode = 'HBC'
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 8)
 		, CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
@@ -2434,19 +2414,17 @@ WITH Actuals AS (
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 )
 SELECT 
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
-		, Actuals.GroupID
-		, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
+		ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
+	, Actuals.GroupID
+	, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
 		
-	FROM Actuals
-	FULL OUTER JOIN Budgeted
-		ON Actuals.EntityCode = Budgeted.EntityCode
-		AND Actuals.GroupID = Budgeted.GroupID
-	--WHERE
-		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
-	GROUP BY
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
-		, Actuals.GroupID</CommandText>
+FROM Actuals
+FULL OUTER JOIN Budgeted
+	ON Actuals.EntityCode = Budgeted.EntityCode
+	AND Actuals.GroupID = Budgeted.GroupID
+GROUP BY
+	ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
+	, Actuals.GroupID</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -6519,7 +6497,7 @@ GROUP BY
                       </Group>
                       <SortExpressions>
                         <SortExpression>
-                          <Value>=Fields!GroupName.Value</Value>
+                          <Value>=Fields!GroupID.Value</Value>
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
@@ -8222,7 +8200,7 @@ GROUP BY
                       </Group>
                       <SortExpressions>
                         <SortExpression>
-                          <Value>=Fields!GroupName.Value</Value>
+                          <Value>=Fields!GroupID.Value</Value>
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
@@ -9755,7 +9733,7 @@ GROUP BY
                       </Group>
                       <SortExpressions>
                         <SortExpression>
-                          <Value>=Fields!GroupName.Value</Value>
+                          <Value>=Fields!GroupID.Value</Value>
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
