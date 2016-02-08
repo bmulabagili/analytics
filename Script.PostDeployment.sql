@@ -427,7 +427,7 @@ DECLARE @Entities TABLE (EntityCode NVARCHAR(4) )
 INSERT INTO @Entities
 SELECT 'HBC' UNION
 SELECT 'HCA' UNION
-SELECT 'HCF' UNION
+SELECT 'HBF' UNION
 SELECT 'WITW'
 
 WHILE EXISTS (Select 1 FROM @Entities)
@@ -614,7 +614,6 @@ BEGIN
 	SELECT 3, '30015', 'Revenue', @EntityCode UNION
 	SELECT 1, '30016', 'Revenue', @EntityCode UNION
 	SELECT 3, '30018', 'Revenue', @EntityCode UNION
-	SELECT 2, '30022', 'Revenue', @EntityCode UNION
 	SELECT 1, '30024', 'Revenue', @EntityCode UNION
 	SELECT 1, '30026', 'Revenue', @EntityCode UNION
 	SELECT 1, '30030', 'Revenue', @EntityCode UNION
@@ -716,10 +715,15 @@ BEGIN
 END
 	--hca exception for 30010
 	INSERT INTO GLReportGrouping
-	SELECT 1, '30010', 'Revenue', 'HCB'  UNION
-	SELECT 1, '30010', 'Revenue', 'HCF'  UNION
+	SELECT 1, '30010', 'Revenue', 'HBC'  UNION
+	SELECT 1, '30010', 'Revenue', 'HBF'  UNION
 	SELECT 1, '30010', 'Revenue', 'WITW' UNION
-	SELECT 3, '30010', 'Revenue', 'HCA' 
+	SELECT 3, '30010', 'Revenue', 'HCA'  UNION
+
+	SELECT 1, '30022', 'Revenue', 'HBC' UNION
+	SELECT 1, '30022', 'Revenue', 'HBF' UNION
+	SELECT 1, '30022', 'Revenue', 'WITW' UNION
+	SELECT 3, '30022', 'Revenue', 'HCA' 
 
 SELECT 
 	GroupID

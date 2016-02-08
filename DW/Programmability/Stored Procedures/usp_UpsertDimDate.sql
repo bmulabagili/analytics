@@ -137,19 +137,19 @@ AS
 			   END AS DayOfWeekAbbreviation
 			 , DATENAME(WEEKDAY, @CurrentDate) AS DayOfWeekLabel
 			 --come back to Fiscal stuff later
-			 , NULL AS FiscalDayOfWeek            
-			 , NULL AS FiscalDayOfMonth           
+			 , DATEPART(WEEKDAY, @CurrentDate) AS FiscalDayOfWeek            
+			 , DATEPART(DAY, @CurrentDate) AS FiscalDayOfMonth           
 			 , NULL AS FiscalDayOfYear            
-			 , NULL AS FiscalMonth                
-			 , NULL AS FiscalMonthAbbreviation    
-			 , NULL AS FiscalMonthLabel           
+			 ,  CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 6 THEN DATEPART(MONTH, @CurrentDate) + 6 ELSE DATEPART(MONTH, @CurrentDate) - 6 END AS FiscalMonth                
+			 , LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3) AS FiscalMonthAbbreviation    
+			 , DATENAME(MONTH, @currentDate) AS FiscalMonthLabel           
 			 , NULL AS FiscalQuarter              
 			 , NULL AS FiscalQuarterLabel         
 			 , NULL AS FiscalWeek                 
 			 , NULL AS FiscalWeekStartLabel       
 			 , NULL AS FiscalWeekEndLabel         
-			 , NULL AS FiscalYear                 
-			 , NULL AS FiscalYearLabel            
+			 , CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 6 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS FiscalYear                 
+			 , CONVERT(VARCHAR(4), CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 6 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS FiscalYearLabel            
 			 , NULL AS HolidayFlag                
 			 , CASE WHEN DATEPART(WEEKDAY, @CurrentDate) IN (1,7) THEN 1 ELSE 0 END AS WeekendFlag                
 			 , -1 AS ExecutionID
