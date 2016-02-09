@@ -490,7 +490,7 @@ BEGIN
 	SELECT 3, '50140', 'Expense', @EntityCode UNION
 	SELECT 3, '50149', 'Expense', @EntityCode UNION
 	SELECT 3, '50161', 'Expense', @EntityCode UNION
-	SELECT 5, '50170', 'Expense', @EntityCode UNION
+	SELECT 6, '50170', 'Expense', @EntityCode UNION
 	SELECT 6, '50171', 'Expense', @EntityCode UNION
 	SELECT 3, '50182', 'Expense', @EntityCode UNION
 	SELECT 3, '52010', 'Expense', @EntityCode UNION
@@ -514,6 +514,8 @@ BEGIN
 	SELECT 3, '54045', 'Expense', @EntityCode UNION
 	SELECT 3, '54050', 'Expense', @EntityCode UNION
 	SELECT 3, '54065', 'Expense', @EntityCode UNION
+	SELECT 6, '54069', 'Expense', @EntityCode UNION
+	SELECT 6, '54070', 'Expense', @EntityCode UNION
 	SELECT 4, '60307', 'Expense', @EntityCode UNION
 	SELECT 4, '60432', 'Expense', @EntityCode UNION
 	SELECT 4, '61045', 'Expense', @EntityCode UNION
@@ -538,11 +540,6 @@ BEGIN
 	SELECT 4, '78105', 'Expense', @EntityCode UNION
 	SELECT 5, '78111', 'Expense', @EntityCode UNION
 	SELECT 5, '78125', 'Expense', @EntityCode UNION
-	SELECT 2, '90122', 'Expense', @EntityCode UNION
-	SELECT 2, '90123', 'Expense', @EntityCode UNION
-	SELECT 2, '90125', 'Expense', @EntityCode UNION
-	SELECT 2, '90128', 'Expense', @EntityCode UNION
-	SELECT 2, '90172', 'Expense', @EntityCode UNION
 	SELECT 5, '90420', 'Expense', @EntityCode UNION
 	SELECT 5, '90422', 'Expense', @EntityCode UNION
 	SELECT 5, '90425', 'Expense', @EntityCode UNION
@@ -555,7 +552,7 @@ BEGIN
 	SELECT 2, '90511', 'Expense', @EntityCode UNION
 	SELECT 2, '90512', 'Expense', @EntityCode UNION
 	SELECT 2, '90514', 'Expense', @EntityCode UNION
-	SELECT 3, '90516', 'Expense', @EntityCode UNION
+	SELECT 2, '90516', 'Expense', @EntityCode UNION
 	SELECT 2, '90518', 'Expense', @EntityCode UNION
 	SELECT 2, '90610', 'Expense', @EntityCode UNION
 	SELECT 2, '90615', 'Expense', @EntityCode UNION
