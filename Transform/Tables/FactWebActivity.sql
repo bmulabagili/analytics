@@ -10,6 +10,7 @@
   , BounceCount			INT
   , SecondsOnSite		INT
   , PageViewCount		INT
+  , SocialVisits		INT
 
     --ETL Specific Columns
   , ExecutionID			VARCHAR(50) NOT NULL
