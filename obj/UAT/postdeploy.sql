@@ -24,6 +24,7 @@ USING (VALUES
 	, (9, 'Paycor',NULL)
 	, (10, 'InfiniteCampus_Enrollment', NULL)
 	, (11, 'GoogleAnalytics',NULL)
+	, (12, 'Mailchimp_Stats', NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
@@ -128,7 +129,8 @@ VALUES
   , (3, 8, 1)
   , (3, 9, 0)
   , (3, 10, 8)
-  , (3, 11, 0);
+  , (3, 11, 0)
+  , (3, 12, 0);
 
 --base tenants (including HBC
 MERGE INTO Tenant AS Target
@@ -416,270 +418,332 @@ UPDATE SET
     , Target.UpdatedDateTime   = Source.UpdatedDateTime
     , Target.HashValue		   = Source.HashValue
 ;
+--entity financial mapping
 TRUNCATE TABLE GLReportGrouping
-INSERT INTO GLReportGrouping
-SELECT 4,'15126', 'Expense' UNION
-SELECT 3,'15131', 'Expense' UNION
-SELECT 3,'15136', 'Expense' UNION
-SELECT 3,'15141', 'Expense' UNION
-SELECT 5,'15146', 'Expense' UNION
-SELECT 4,'15151', 'Expense' UNION
-SELECT 4,'15156', 'Expense' UNION
-SELECT 3,'15160', 'Expense' UNION
-SELECT 3,'15171', 'Expense' UNION
-SELECT 1,'40013', 'Expense' UNION
-SELECT 1,'40016', 'Expense' UNION
-SELECT 1,'40018', 'Expense' UNION
-SELECT 1,'40019', 'Expense' UNION
-SELECT 1,'40020', 'Expense' UNION
-SELECT 1,'40025', 'Expense' UNION
-SELECT 1,'40060', 'Expense' UNION
-SELECT 1,'40085', 'Expense' UNION
-SELECT 1,'40090', 'Expense' UNION
-SELECT 1,'41006', 'Expense' UNION
-SELECT 1,'41010', 'Expense' UNION
-SELECT 1,'41010', 'Expense' UNION
-SELECT 1,'41011', 'Expense' UNION
-SELECT 1,'41012', 'Expense' UNION
-SELECT 1,'41015', 'Expense' UNION
-SELECT 1,'41016', 'Expense' UNION
-SELECT 1,'41017', 'Expense' UNION
-SELECT 1,'41020', 'Expense' UNION
-SELECT 1,'41025', 'Expense' UNION
-SELECT 1,'41027', 'Expense' UNION
-SELECT 3,'41030', 'Expense' UNION
-SELECT 1,'42012', 'Expense' UNION
-SELECT 1,'42040', 'Expense' UNION
-SELECT 1,'42055', 'Expense' UNION
-SELECT 1,'42065', 'Expense' UNION
-SELECT 1,'43026', 'Expense' UNION
-SELECT 1,'43030', 'Expense' UNION
-SELECT 5,'43035', 'Expense' UNION
-SELECT 1,'44008', 'Expense' UNION
-SELECT 1,'44090', 'Expense' UNION
-SELECT 1,'45016', 'Expense' UNION
-SELECT 1,'45018', 'Expense' UNION
-SELECT 1,'45060', 'Expense' UNION
-SELECT 5,'45064', 'Expense' UNION
-SELECT 1,'46030', 'Expense' UNION
-SELECT 1,'49011', 'Expense' UNION
-SELECT 3,'49099', 'Expense' UNION
-SELECT 3,'50022', 'Expense' UNION
-SELECT 3,'50060', 'Expense' UNION
-SELECT 3,'50071', 'Expense' UNION
-SELECT 3,'50073', 'Expense' UNION
-SELECT 3,'50080', 'Expense' UNION
-SELECT 3,'50110', 'Expense' UNION
-SELECT 3,'50140', 'Expense' UNION
-SELECT 3,'50149', 'Expense' UNION
-SELECT 3,'50161', 'Expense' UNION
-SELECT 5,'50170', 'Expense' UNION
-SELECT 6,'50171', 'Expense' UNION
-SELECT 3,'50182', 'Expense' UNION
-SELECT 3,'52010', 'Expense' UNION
-SELECT 3,'52011', 'Expense' UNION
-SELECT 3,'52045', 'Expense' UNION
-SELECT 3,'52060', 'Expense' UNION
-SELECT 3,'52075', 'Expense' UNION
-SELECT 3,'52516', 'Expense' UNION
-SELECT 3,'52519', 'Expense' UNION
-SELECT 5,'52605', 'Expense' UNION
-SELECT 5,'52606', 'Expense' UNION
-SELECT 3,'52613', 'Expense' UNION
-SELECT 3,'52621', 'Expense' UNION
-SELECT 3,'52641', 'Expense' UNION
-SELECT 3,'52665', 'Expense' UNION
-SELECT 3,'52670', 'Expense' UNION
-SELECT 3,'53110', 'Expense' UNION
-SELECT 3,'53130', 'Expense' UNION
-SELECT 3,'53132', 'Expense' UNION
-SELECT 3,'54040', 'Expense' UNION
-SELECT 3,'54045', 'Expense' UNION
-SELECT 3,'54050', 'Expense' UNION
-SELECT 3,'54065', 'Expense' UNION
-SELECT 4,'60307', 'Expense' UNION
-SELECT 4,'60432', 'Expense' UNION
-SELECT 4,'61045', 'Expense' UNION
-SELECT 4,'62050', 'Expense' UNION
-SELECT 4,'62315', 'Expense' UNION
-SELECT 4,'62320', 'Expense' UNION
-SELECT 4,'62328', 'Expense' UNION
-SELECT 4,'62385', 'Expense' UNION
-SELECT 4,'63145', 'Expense' UNION
-SELECT 5,'70110', 'Expense' UNION
-SELECT 5,'70136', 'Expense' UNION
-SELECT 5,'70165', 'Expense' UNION
-SELECT 5,'70172', 'Expense' UNION
-SELECT 4,'70177', 'Expense' UNION
-SELECT 5,'70182', 'Expense' UNION
-SELECT 5,'70198', 'Expense' UNION
-SELECT 5,'70239', 'Expense' UNION
-SELECT 5,'70280', 'Expense' UNION
-SELECT 5,'70305', 'Expense' UNION
-SELECT 5,'78050', 'Expense' UNION
-SELECT 5,'78075', 'Expense' UNION
-SELECT 4,'78105', 'Expense' UNION
-SELECT 5,'78111', 'Expense' UNION
-SELECT 5,'78125', 'Expense' UNION
-SELECT 2,'90122', 'Expense' UNION
-SELECT 2,'90123', 'Expense' UNION
-SELECT 2,'90125', 'Expense' UNION
-SELECT 2,'90128', 'Expense' UNION
-SELECT 2,'90172', 'Expense' UNION
-SELECT 5,'90420', 'Expense' UNION
-SELECT 5,'90422', 'Expense' UNION
-SELECT 5,'90425', 'Expense' UNION
-SELECT 5,'90430', 'Expense' UNION
-SELECT 5,'90432', 'Expense' UNION
-SELECT 5,'90452', 'Expense' UNION
-SELECT 5,'90485', 'Expense' UNION
-SELECT 5,'90509', 'Expense' UNION
-SELECT 2,'90510', 'Expense' UNION
-SELECT 2,'90511', 'Expense' UNION
-SELECT 2,'90512', 'Expense' UNION
-SELECT 2,'90514', 'Expense' UNION
-SELECT 2,'90516', 'Expense' UNION
-SELECT 2,'90518', 'Expense' UNION
-SELECT 2,'90610', 'Expense' UNION
-SELECT 2,'90615', 'Expense' UNION
-SELECT 1,'40004', 'Expense' UNION
-SELECT 1,'40025', 'Expense' UNION
-SELECT 1,'40060', 'Expense' UNION
-SELECT 1,'40075', 'Expense' UNION
-SELECT 5,'44007', 'Expense' UNION
-SELECT 5,'44015', 'Expense' UNION
-SELECT 5,'45010', 'Expense' UNION
-SELECT 4,'45012', 'Expense' UNION
-SELECT 5,'50152', 'Expense' UNION
-SELECT 5,'70108', 'Expense' UNION
-SELECT 5,'70119', 'Expense' UNION
-SELECT 5,'70120', 'Expense' UNION
-SELECT 5,'70128', 'Expense' UNION
-SELECT 5,'70135', 'Expense' UNION
-SELECT 5,'70160', 'Expense' UNION
-SELECT 5,'70254', 'Expense' UNION
-SELECT 5,'70257', 'Expense' UNION
-SELECT 5,'70265', 'Expense' UNION
-SELECT 5,'70290', 'Expense' UNION
-SELECT 5,'70370', 'Expense' UNION
-SELECT 5,'70380', 'Expense' UNION
-SELECT 5,'70382', 'Expense' UNION
-SELECT 5,'70491', 'Expense' UNION
-SELECT 5,'70494', 'Expense' UNION
-SELECT 5,'70495', 'Expense' UNION
-SELECT 5,'70505', 'Expense' UNION
-SELECT 5,'70540', 'Expense' UNION
-SELECT 5,'70544', 'Expense' UNION
-SELECT 5,'70545', 'Expense' UNION
-SELECT 5,'70560', 'Expense' UNION
-SELECT 5,'70600', 'Expense' UNION
-SELECT 3,'90515', 'Expense' UNION
---Revenues
-SELECT 3, '30005', 'Revenue' UNION
-SELECT 3, '30007', 'Revenue' UNION
-SELECT 3, '30008', 'Revenue' UNION
-SELECT 1, '30010', 'Revenue' UNION
-SELECT 1, '30012', 'Revenue' UNION
-SELECT 3, '30015', 'Revenue' UNION
-SELECT 1, '30016', 'Revenue' UNION
-SELECT 3, '30018', 'Revenue' UNION
-SELECT 2, '30022', 'Revenue' UNION
-SELECT 1, '30024', 'Revenue' UNION
-SELECT 1, '30026', 'Revenue' UNION
-SELECT 1, '30030', 'Revenue' UNION
-SELECT 2, '30031', 'Revenue' UNION
-SELECT 3, '30034', 'Revenue' UNION
-SELECT 3, '30035', 'Revenue' UNION
-SELECT 3, '30038', 'Revenue' UNION
-SELECT 3, '30039', 'Revenue' UNION
-SELECT 3, '30040', 'Revenue' UNION
-SELECT 3, '30041', 'Revenue' UNION
-SELECT 3, '30042', 'Revenue' UNION
-SELECT 3, '30043', 'Revenue' UNION
-SELECT 3, '30046', 'Revenue' UNION
-SELECT 3, '30058', 'Revenue' UNION
-SELECT 3, '30060', 'Revenue' UNION
-SELECT 3, '30065', 'Revenue' UNION
-SELECT 2, '30067', 'Revenue' UNION
-SELECT 3, '30075', 'Revenue' UNION
-SELECT 3, '30085', 'Revenue' UNION
-SELECT 3, '30090', 'Revenue' UNION
-SELECT 3, '30091', 'Revenue' UNION
-SELECT 3, '30093', 'Revenue' UNION
-SELECT 3, '30094', 'Revenue' UNION
-SELECT 3, '30095', 'Revenue' UNION
-SELECT 3, '30096', 'Revenue' UNION
-SELECT 3, '30097', 'Revenue' UNION
-SELECT 3, '30098', 'Revenue' UNION
-SELECT 3, '30100', 'Revenue' UNION
-SELECT 3, '30101', 'Revenue' UNION
-SELECT 3, '30102', 'Revenue' UNION
-SELECT 3, '30104', 'Revenue' UNION
-SELECT 3, '30106', 'Revenue' UNION
-SELECT 3, '30108', 'Revenue' UNION
-SELECT 3, '30110', 'Revenue' UNION
-SELECT 3, '30112', 'Revenue' UNION
-SELECT 3, '30114', 'Revenue' UNION
-SELECT 3, '30116', 'Revenue' UNION
-SELECT 3, '30117', 'Revenue' UNION
-SELECT 3, '30118', 'Revenue' UNION
-SELECT 3, '30120', 'Revenue' UNION
-SELECT 1, '30150', 'Revenue' UNION
-SELECT 3, '30190', 'Revenue' UNION
-SELECT 3, '30195', 'Revenue' UNION
-SELECT 3, '30196', 'Revenue' UNION
-SELECT 3, '30197', 'Revenue' UNION
-SELECT 3, '30199', 'Revenue' UNION
-SELECT 3, '30200', 'Revenue' UNION
-SELECT 3, '30202', 'Revenue' UNION
-SELECT 3, '31025', 'Revenue' UNION
-SELECT 3, '31030', 'Revenue' UNION
-SELECT 3, '31035', 'Revenue' UNION
-SELECT 3, '32008', 'Revenue' UNION
-SELECT 3, '32010', 'Revenue' UNION
-SELECT 3, '32012', 'Revenue' UNION
-SELECT 3, '32018', 'Revenue' UNION
-SELECT 3, '32090', 'Revenue' UNION
-SELECT 3, '35001', 'Revenue' UNION
-SELECT 3, '35003', 'Revenue' UNION
-SELECT 3, '35004', 'Revenue' UNION
-SELECT 3, '35005', 'Revenue' UNION
-SELECT 3, '35010', 'Revenue' UNION
-SELECT 3, '35015', 'Revenue' UNION
-SELECT 3, '35020', 'Revenue' UNION
-SELECT 3, '35024', 'Revenue' UNION
-SELECT 3, '35025', 'Revenue' UNION
-SELECT 3, '35026', 'Revenue' UNION
-SELECT 3, '35050', 'Revenue' UNION
-SELECT 3, '35050', 'Revenue' UNION
-SELECT 3, '35060', 'Revenue' UNION
-SELECT 3, '35115', 'Revenue' UNION
-SELECT 3, '35126', 'Revenue' UNION
-SELECT 3, '35135', 'Revenue' UNION
-SELECT 3, '35141', 'Revenue' UNION
-SELECT 3, '35142', 'Revenue' UNION
-SELECT 3, '35143', 'Revenue' UNION
-SELECT 3, '35145', 'Revenue' UNION
-SELECT 3, '35158', 'Revenue' UNION
-SELECT 3, '37005', 'Revenue' UNION
-SELECT 3, '37006', 'Revenue' UNION
-SELECT 3, '37010', 'Revenue' UNION
-SELECT 3, '37012', 'Revenue' UNION
-SELECT 3, '37020', 'Revenue' UNION
-SELECT 3, '37020', 'Revenue' UNION
-SELECT 3, '37020', 'Revenue' UNION
-SELECT 3, '37021', 'Revenue' UNION
-SELECT 3, '37022', 'Revenue' UNION
-SELECT 3, '37022', 'Revenue' UNION
-SELECT 3, '37023', 'Revenue' UNION
-SELECT 3, '37024', 'Revenue' UNION
-SELECT 3, '37025', 'Revenue' UNION
-SELECT 3, '37025', 'Revenue' UNION
-SELECT 3, '37030', 'Revenue' UNION
-SELECT 3, '37030', 'Revenue' UNION
-SELECT 3, '37432', 'Revenue' UNION
-SELECT 3, '39999', 'Revenue' 
 
+DECLARE @EntityCode NVARCHAR(4)
+
+DECLARE @Entities TABLE (EntityCode NVARCHAR(4) )
+INSERT INTO @Entities
+SELECT 'HBC' UNION
+SELECT 'HCA' UNION
+SELECT 'HBF' UNION
+SELECT 'WITW'
+
+WHILE EXISTS (Select 1 FROM @Entities)
+BEGIN
+	SELECT TOP 1 @EntityCode = EntityCode FROM @Entities
+
+	INSERT INTO GLReportGrouping
+	SELECT 4, '15126', 'Expense', @EntityCode UNION
+	SELECT 3, '15131', 'Expense', @EntityCode UNION
+	SELECT 3, '15136', 'Expense', @EntityCode UNION
+	SELECT 3, '15141', 'Expense', @EntityCode UNION
+	SELECT 5, '15146', 'Expense', @EntityCode UNION
+	SELECT 4, '15151', 'Expense', @EntityCode UNION
+	SELECT 4, '15156', 'Expense', @EntityCode UNION
+	SELECT 3, '15160', 'Expense', @EntityCode UNION
+	SELECT 3, '15171', 'Expense', @EntityCode UNION
+	SELECT 1, '40013', 'Expense', @EntityCode UNION
+	SELECT 1, '40016', 'Expense', @EntityCode UNION
+	SELECT 1, '40018', 'Expense', @EntityCode UNION
+	SELECT 1, '40019', 'Expense', @EntityCode UNION
+	SELECT 1, '40020', 'Expense', @EntityCode UNION
+	SELECT 1, '40025', 'Expense', @EntityCode UNION
+	SELECT 1, '40060', 'Expense', @EntityCode UNION
+	SELECT 1, '40085', 'Expense', @EntityCode UNION
+	SELECT 1, '40090', 'Expense', @EntityCode UNION
+	SELECT 1, '41006', 'Expense', @EntityCode UNION
+	SELECT 1, '41010', 'Expense', @EntityCode UNION
+	SELECT 1, '41010', 'Expense', @EntityCode UNION
+	SELECT 1, '41011', 'Expense', @EntityCode UNION
+	SELECT 1, '41012', 'Expense', @EntityCode UNION
+	SELECT 1, '41015', 'Expense', @EntityCode UNION
+	SELECT 1, '41016', 'Expense', @EntityCode UNION
+	SELECT 1, '41017', 'Expense', @EntityCode UNION
+	SELECT 1, '41020', 'Expense', @EntityCode UNION
+	SELECT 1, '41025', 'Expense', @EntityCode UNION
+	SELECT 1, '41027', 'Expense', @EntityCode UNION
+	SELECT 3, '41030', 'Expense', @EntityCode UNION
+	SELECT 1, '42012', 'Expense', @EntityCode UNION
+	SELECT 1, '42040', 'Expense', @EntityCode UNION
+	SELECT 1, '42055', 'Expense', @EntityCode UNION
+	SELECT 1, '42065', 'Expense', @EntityCode UNION
+	SELECT 1, '43026', 'Expense', @EntityCode UNION
+	SELECT 1, '43030', 'Expense', @EntityCode UNION
+	SELECT 5, '43035', 'Expense', @EntityCode UNION
+	SELECT 1, '44008', 'Expense', @EntityCode UNION
+	SELECT 1, '44090', 'Expense', @EntityCode UNION
+	SELECT 1, '45016', 'Expense', @EntityCode UNION
+	SELECT 1, '45018', 'Expense', @EntityCode UNION
+	SELECT 1, '45060', 'Expense', @EntityCode UNION
+	SELECT 5, '45064', 'Expense', @EntityCode UNION
+	SELECT 1, '46030', 'Expense', @EntityCode UNION
+	SELECT 1, '49011', 'Expense', @EntityCode UNION
+	SELECT 3, '49099', 'Expense', @EntityCode UNION
+	SELECT 3, '50022', 'Expense', @EntityCode UNION
+	SELECT 3, '50060', 'Expense', @EntityCode UNION
+	SELECT 3, '50071', 'Expense', @EntityCode UNION
+	SELECT 3, '50073', 'Expense', @EntityCode UNION
+	SELECT 3, '50080', 'Expense', @EntityCode UNION
+	SELECT 3, '50110', 'Expense', @EntityCode UNION
+	SELECT 3, '50140', 'Expense', @EntityCode UNION
+	SELECT 3, '50149', 'Expense', @EntityCode UNION
+	SELECT 3, '50161', 'Expense', @EntityCode UNION
+	SELECT 6, '50170', 'Expense', @EntityCode UNION
+	SELECT 6, '50171', 'Expense', @EntityCode UNION
+	SELECT 3, '50182', 'Expense', @EntityCode UNION
+	SELECT 3, '52010', 'Expense', @EntityCode UNION
+	SELECT 3, '52011', 'Expense', @EntityCode UNION
+	SELECT 3, '52045', 'Expense', @EntityCode UNION
+	SELECT 3, '52060', 'Expense', @EntityCode UNION
+	SELECT 3, '52075', 'Expense', @EntityCode UNION
+	SELECT 3, '52516', 'Expense', @EntityCode UNION
+	SELECT 3, '52519', 'Expense', @EntityCode UNION
+	SELECT 5, '52605', 'Expense', @EntityCode UNION
+	SELECT 5, '52606', 'Expense', @EntityCode UNION
+	SELECT 3, '52613', 'Expense', @EntityCode UNION
+	SELECT 3, '52621', 'Expense', @EntityCode UNION
+	SELECT 3, '52641', 'Expense', @EntityCode UNION
+	SELECT 3, '52665', 'Expense', @EntityCode UNION
+	SELECT 3, '52670', 'Expense', @EntityCode UNION
+	SELECT 3, '53110', 'Expense', @EntityCode UNION
+	SELECT 3, '53130', 'Expense', @EntityCode UNION
+	SELECT 3, '53132', 'Expense', @EntityCode UNION
+	SELECT 3, '54040', 'Expense', @EntityCode UNION
+	SELECT 3, '54045', 'Expense', @EntityCode UNION
+	SELECT 3, '54050', 'Expense', @EntityCode UNION
+	SELECT 3, '54065', 'Expense', @EntityCode UNION
+	SELECT 6, '54069', 'Expense', @EntityCode UNION
+	SELECT 6, '54070', 'Expense', @EntityCode UNION
+	SELECT 4, '60307', 'Expense', @EntityCode UNION
+	SELECT 4, '60432', 'Expense', @EntityCode UNION
+	SELECT 4, '61045', 'Expense', @EntityCode UNION
+	SELECT 4, '62050', 'Expense', @EntityCode UNION
+	SELECT 4, '62315', 'Expense', @EntityCode UNION
+	SELECT 4, '62320', 'Expense', @EntityCode UNION
+	SELECT 4, '62328', 'Expense', @EntityCode UNION
+	SELECT 4, '62385', 'Expense', @EntityCode UNION
+	SELECT 4, '63145', 'Expense', @EntityCode UNION
+	SELECT 5, '70110', 'Expense', @EntityCode UNION
+	SELECT 5, '70136', 'Expense', @EntityCode UNION
+	SELECT 5, '70165', 'Expense', @EntityCode UNION
+	SELECT 5, '70172', 'Expense', @EntityCode UNION
+	SELECT 4, '70177', 'Expense', @EntityCode UNION
+	SELECT 5, '70182', 'Expense', @EntityCode UNION
+	SELECT 5, '70198', 'Expense', @EntityCode UNION
+	SELECT 5, '70239', 'Expense', @EntityCode UNION
+	SELECT 5, '70280', 'Expense', @EntityCode UNION
+	SELECT 5, '70305', 'Expense', @EntityCode UNION
+	SELECT 5, '78050', 'Expense', @EntityCode UNION
+	SELECT 5, '78075', 'Expense', @EntityCode UNION
+	SELECT 4, '78105', 'Expense', @EntityCode UNION
+	SELECT 5, '78111', 'Expense', @EntityCode UNION
+	SELECT 5, '78125', 'Expense', @EntityCode UNION
+	SELECT 5, '90420', 'Expense', @EntityCode UNION
+	SELECT 5, '90422', 'Expense', @EntityCode UNION
+	SELECT 5, '90425', 'Expense', @EntityCode UNION
+	SELECT 5, '90430', 'Expense', @EntityCode UNION
+	SELECT 5, '90432', 'Expense', @EntityCode UNION
+	SELECT 5, '90452', 'Expense', @EntityCode UNION
+	SELECT 5, '90485', 'Expense', @EntityCode UNION
+	SELECT 5, '90509', 'Expense', @EntityCode UNION
+	SELECT 2, '90510', 'Expense', @EntityCode UNION
+	SELECT 2, '90511', 'Expense', @EntityCode UNION
+	SELECT 2, '90512', 'Expense', @EntityCode UNION
+	SELECT 2, '90514', 'Expense', @EntityCode UNION
+	SELECT 2, '90516', 'Expense', @EntityCode UNION
+	SELECT 2, '90518', 'Expense', @EntityCode UNION
+	SELECT 2, '90610', 'Expense', @EntityCode UNION
+	SELECT 2, '90615', 'Expense', @EntityCode UNION
+	SELECT 1, '40004', 'Expense', @EntityCode UNION
+	SELECT 1, '40025', 'Expense', @EntityCode UNION
+	SELECT 1, '40060', 'Expense', @EntityCode UNION
+	SELECT 1, '40075', 'Expense', @EntityCode UNION
+	SELECT 5, '44007', 'Expense', @EntityCode UNION
+	SELECT 5, '44015', 'Expense', @EntityCode UNION
+	SELECT 5, '45010', 'Expense', @EntityCode UNION
+	SELECT 4, '45012', 'Expense', @EntityCode UNION
+	SELECT 5, '50152', 'Expense', @EntityCode UNION
+	SELECT 5, '70108', 'Expense', @EntityCode UNION
+	SELECT 5, '70119', 'Expense', @EntityCode UNION
+	SELECT 5, '70120', 'Expense', @EntityCode UNION
+	SELECT 5, '70128', 'Expense', @EntityCode UNION
+	SELECT 5, '70135', 'Expense', @EntityCode UNION
+	SELECT 5, '70160', 'Expense', @EntityCode UNION
+	SELECT 5, '70254', 'Expense', @EntityCode UNION
+	SELECT 5, '70257', 'Expense', @EntityCode UNION
+	SELECT 5, '70265', 'Expense', @EntityCode UNION
+	SELECT 5, '70290', 'Expense', @EntityCode UNION
+	SELECT 5, '70370', 'Expense', @EntityCode UNION
+	SELECT 5, '70380', 'Expense', @EntityCode UNION
+	SELECT 5, '70382', 'Expense', @EntityCode UNION
+	SELECT 5, '70491', 'Expense', @EntityCode UNION
+	SELECT 5, '70494', 'Expense', @EntityCode UNION
+	SELECT 5, '70495', 'Expense', @EntityCode UNION
+	SELECT 5, '70505', 'Expense', @EntityCode UNION
+	SELECT 5, '70540', 'Expense', @EntityCode UNION
+	SELECT 5, '70544', 'Expense', @EntityCode UNION
+	SELECT 5, '70545', 'Expense', @EntityCode UNION
+	SELECT 5, '70560', 'Expense', @EntityCode UNION
+	SELECT 5, '70600', 'Expense', @EntityCode UNION
+	SELECT 3, '90515', 'Expense', @EntityCode UNION
+	--adding "Depreciation and Amortization"
+	SELECT 7, '90139', 'Expense', @EntityCode UNION
+	SELECT 7, '90145', 'Expense', @EntityCode UNION
+	SELECT 7, '90222', 'Expense', @EntityCode UNION
+	SELECT 7, '90227', 'Expense', @EntityCode UNION
+	SELECT 7, '90232', 'Expense', @EntityCode UNION
+	SELECT 7, '90235', 'Expense', @EntityCode UNION
+	SELECT 7, '90237', 'Expense', @EntityCode UNION
+	SELECT 7, '90242', 'Expense', @EntityCode UNION
+	SELECT 7, '90247', 'Expense', @EntityCode UNION
+	SELECT 7, '80248', 'Expense', @EntityCode UNION
+	SELECT 7, '90252', 'Expense', @EntityCode UNION
+	SELECT 7, '90257', 'Expense', @EntityCode UNION
+	SELECT 7, '90270', 'Expense', @EntityCode UNION
+
+	--Revenues
+	SELECT 3, '30005', 'Revenue', @EntityCode UNION
+	SELECT 3, '30007', 'Revenue', @EntityCode UNION
+	SELECT 3, '30008', 'Revenue', @EntityCode UNION
+	SELECT 1, '30012', 'Revenue', @EntityCode UNION
+	SELECT 3, '30015', 'Revenue', @EntityCode UNION
+	SELECT 1, '30016', 'Revenue', @EntityCode UNION
+	SELECT 3, '30018', 'Revenue', @EntityCode UNION
+	SELECT 1, '30024', 'Revenue', @EntityCode UNION
+	SELECT 1, '30026', 'Revenue', @EntityCode UNION
+	SELECT 1, '30030', 'Revenue', @EntityCode UNION
+	SELECT 2, '30031', 'Revenue', @EntityCode UNION
+	SELECT 3, '30034', 'Revenue', @EntityCode UNION
+	SELECT 3, '30035', 'Revenue', @EntityCode UNION
+	SELECT 3, '30038', 'Revenue', @EntityCode UNION
+	SELECT 3, '30039', 'Revenue', @EntityCode UNION
+	SELECT 3, '30040', 'Revenue', @EntityCode UNION
+	SELECT 3, '30041', 'Revenue', @EntityCode UNION
+	SELECT 2, '30042', 'Revenue', @EntityCode UNION
+	SELECT 3, '30043', 'Revenue', @EntityCode UNION
+	SELECT 2, '30046', 'Revenue', @EntityCode UNION
+	SELECT 2, '30058', 'Revenue', @EntityCode UNION
+	SELECT 3, '30060', 'Revenue', @EntityCode UNION
+	SELECT 1, '30065', 'Revenue', @EntityCode UNION
+	SELECT 2, '30067', 'Revenue', @EntityCode UNION
+	SELECT 3, '30075', 'Revenue', @EntityCode UNION
+	SELECT 1, '30085', 'Revenue', @EntityCode UNION
+	SELECT 3, '30090', 'Revenue', @EntityCode UNION
+	SELECT 3, '30091', 'Revenue', @EntityCode UNION
+	SELECT 3, '30093', 'Revenue', @EntityCode UNION
+	SELECT 3, '30094', 'Revenue', @EntityCode UNION
+	SELECT 3, '30095', 'Revenue', @EntityCode UNION
+	SELECT 3, '30096', 'Revenue', @EntityCode UNION
+	SELECT 3, '30097', 'Revenue', @EntityCode UNION
+	SELECT 3, '30098', 'Revenue', @EntityCode UNION
+	SELECT 3, '30100', 'Revenue', @EntityCode UNION
+	SELECT 3, '30101', 'Revenue', @EntityCode UNION
+	SELECT 3, '30102', 'Revenue', @EntityCode UNION
+	SELECT 3, '30104', 'Revenue', @EntityCode UNION
+	SELECT 2, '30105', 'Revenue', @EntityCode UNION
+	SELECT 3, '30106', 'Revenue', @EntityCode UNION
+	SELECT 3, '30108', 'Revenue', @EntityCode UNION
+	SELECT 3, '30110', 'Revenue', @EntityCode UNION
+	SELECT 3, '30112', 'Revenue', @EntityCode UNION
+	SELECT 3, '30114', 'Revenue', @EntityCode UNION
+	SELECT 3, '30116', 'Revenue', @EntityCode UNION
+	SELECT 3, '30117', 'Revenue', @EntityCode UNION
+	SELECT 3, '30118', 'Revenue', @EntityCode UNION
+	SELECT 3, '30120', 'Revenue', @EntityCode UNION
+	SELECT 1, '30150', 'Revenue', @EntityCode UNION
+	SELECT 3, '30190', 'Revenue', @EntityCode UNION
+	SELECT 3, '30195', 'Revenue', @EntityCode UNION
+	SELECT 3, '30196', 'Revenue', @EntityCode UNION
+	SELECT 3, '30197', 'Revenue', @EntityCode UNION
+	SELECT 3, '30199', 'Revenue', @EntityCode UNION
+	SELECT 3, '30200', 'Revenue', @EntityCode UNION
+	SELECT 3, '30202', 'Revenue', @EntityCode UNION
+	SELECT 3, '31025', 'Revenue', @EntityCode UNION
+	SELECT 3, '31030', 'Revenue', @EntityCode UNION
+	SELECT 3, '31035', 'Revenue', @EntityCode UNION
+	SELECT 3, '32008', 'Revenue', @EntityCode UNION
+	SELECT 3, '32010', 'Revenue', @EntityCode UNION
+	SELECT 3, '32012', 'Revenue', @EntityCode UNION
+	SELECT 3, '32018', 'Revenue', @EntityCode UNION
+	SELECT 3, '32090', 'Revenue', @EntityCode UNION
+	SELECT 3, '35001', 'Revenue', @EntityCode UNION
+	SELECT 3, '35003', 'Revenue', @EntityCode UNION
+	SELECT 3, '35004', 'Revenue', @EntityCode UNION
+	SELECT 3, '35005', 'Revenue', @EntityCode UNION
+	SELECT 3, '35010', 'Revenue', @EntityCode UNION
+	SELECT 3, '35015', 'Revenue', @EntityCode UNION
+	SELECT 3, '35020', 'Revenue', @EntityCode UNION
+	SELECT 3, '35024', 'Revenue', @EntityCode UNION
+	SELECT 3, '35025', 'Revenue', @EntityCode UNION
+	SELECT 3, '35026', 'Revenue', @EntityCode UNION
+	SELECT 3, '35050', 'Revenue', @EntityCode UNION
+	SELECT 3, '35050', 'Revenue', @EntityCode UNION
+	SELECT 3, '35060', 'Revenue', @EntityCode UNION
+	SELECT 3, '35115', 'Revenue', @EntityCode UNION
+	SELECT 3, '35126', 'Revenue', @EntityCode UNION
+	SELECT 3, '35135', 'Revenue', @EntityCode UNION
+	SELECT 3, '35141', 'Revenue', @EntityCode UNION
+	SELECT 3, '35142', 'Revenue', @EntityCode UNION
+	SELECT 3, '35143', 'Revenue', @EntityCode UNION
+	SELECT 3, '35145', 'Revenue', @EntityCode UNION
+	SELECT 3, '35158', 'Revenue', @EntityCode UNION
+	SELECT 3, '37005', 'Revenue', @EntityCode UNION
+	SELECT 3, '37006', 'Revenue', @EntityCode UNION
+	SELECT 3, '37010', 'Revenue', @EntityCode UNION
+	SELECT 3, '37012', 'Revenue', @EntityCode UNION
+	SELECT 3, '37020', 'Revenue', @EntityCode UNION
+	SELECT 3, '37020', 'Revenue', @EntityCode UNION
+	SELECT 3, '37020', 'Revenue', @EntityCode UNION
+	SELECT 3, '37021', 'Revenue', @EntityCode UNION
+	SELECT 3, '37022', 'Revenue', @EntityCode UNION
+	SELECT 3, '37022', 'Revenue', @EntityCode UNION
+	SELECT 3, '37023', 'Revenue', @EntityCode UNION
+	SELECT 3, '37024', 'Revenue', @EntityCode UNION
+	SELECT 3, '37025', 'Revenue', @EntityCode UNION
+	SELECT 3, '37025', 'Revenue', @EntityCode UNION
+	SELECT 3, '37030', 'Revenue', @EntityCode UNION
+	SELECT 3, '37030', 'Revenue', @EntityCode UNION
+	SELECT 3, '37432', 'Revenue', @EntityCode UNION
+	SELECT 3, '39999', 'Revenue', @EntityCode
+
+	DELETE FROM @entities WHERE EntityCode = @EntityCode
+END
+	--hca exception for 30010
+	INSERT INTO GLReportGrouping
+	SELECT 1, '30010', 'Revenue', 'HBC'  UNION
+	SELECT 1, '30010', 'Revenue', 'HBF'  UNION
+	SELECT 1, '30010', 'Revenue', 'WITW' UNION
+	SELECT 3, '30010', 'Revenue', 'HCA'  UNION
+
+	SELECT 1, '30022', 'Revenue', 'HBC' UNION
+	SELECT 1, '30022', 'Revenue', 'HBF' UNION
+	SELECT 1, '30022', 'Revenue', 'WITW' UNION
+	SELECT 3, '30022', 'Revenue', 'HCA' 
+
+SELECT 
+	GroupID
+	, CASE WHEN Category = 'Revenue' THEN
+		CASE GroupID	
+			WHEN 1 THEN 'Unrestricted Donations'			
+			WHEN 2 THEN 'Restricted Donations'
+			WHEN 3 THEN 'Other Sales (VCB, VCF, WITW, Curriculum)' END 
+	  ELSE 
+		CASE GroupID
+			WHEN 1 THEN 'Compensation'			
+			WHEN 2 THEN 'Allocated Overhead'			
+			WHEN 3 THEN 'Admin/IT'			
+			WHEN 4 THEN 'Facilities'			
+			WHEN 5 THEN 'Ministry Expense'			
+			WHEN 6 THEN 'Broadcast Expense'			
+			WHEN 7 THEN 'Depreciation and Amortization'			
+			WHEN 8 THEN 'Other (less than 5% of Overall expense)' END
+	  END AS GroupName
+	, GLCode
+	, Category
+	, EntityCode			
+FROM GLReportGrouping
 
 TRUNCATE TABLE GoogleImportConfig
 

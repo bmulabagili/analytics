@@ -25,6 +25,7 @@ USING (VALUES
 	, (10, 'InfiniteCampus_Enrollment', NULL)
 	, (11, 'GoogleAnalytics',NULL)
 	, (12, 'Mailchimp_Stats', NULL)
+	, (13, 'MPX_Activity', NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
@@ -67,6 +68,7 @@ USING (VALUES
   , (6, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HMP;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HMP', -1, GETUTCDATE(), GETUTCDATE(), '')
   , (7, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=WITW;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-WITW', -1, GETUTCDATE(), GETUTCDATE(), '')
   , (8, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=IC;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (9, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=MPXWIWU;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
 )
 AS Source (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 ON Target.ConnectionStringID = Source.ConnectionStringID
@@ -130,7 +132,8 @@ VALUES
   , (3, 9, 0)
   , (3, 10, 8)
   , (3, 11, 0)
-  , (3, 12, 0);
+  , (3, 12, 0)
+  , (3, 13, 9);
 
 --base tenants (including HBC
 MERGE INTO Tenant AS Target
