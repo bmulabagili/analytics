@@ -12,8 +12,8 @@
   DTS:ObjectName="Process_MPX_Activity"
   DTS:PackageType="5"
   DTS:ProtectionLevel="2"
-  DTS:VersionBuild="46"
-  DTS:VersionGUID="{EA0E7902-C7A4-4450-AF04-BD927C066A71}">
+  DTS:VersionBuild="50"
+  DTS:VersionGUID="{AEFEB98A-A8E9-4819-9645-77471995E8B1}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:LogProviders>
@@ -183,6 +183,7 @@
       DTS:refId="Package\Execute SQL Task"
       DTS:CreationName="Microsoft.ExecuteSQLTask"
       DTS:Description="Execute SQL Task"
+      DTS:Disabled="True"
       DTS:DTSID="{C06F7579-6B4A-43C3-A313-56A19E9A2F7E}"
       DTS:ExecutableType="Microsoft.ExecuteSQLTask"
       DTS:LocaleID="-1"
@@ -202,9 +203,41 @@
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
+      DTS:refId="Package\Extract"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{40b0f151-b60d-426b-b23b-1e873b6e1944}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:ForceExecutionResult="0"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Extract">
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Extract\Extract_MPX_Activity"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{2b932196-0723-4a99-a048-d9a9f54fb4f1}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:ForceExecutionResult="0"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Extract_MPX_Activity"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Extract_MPX_Activity.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+    </DTS:Executable>
+    <DTS:Executable
       DTS:refId="Package\Foreach Loop Container"
       DTS:CreationName="STOCK:FOREACHLOOP"
       DTS:Description="Foreach Loop Container"
+      DTS:Disabled="True"
       DTS:DTSID="{7E970BB5-38EA-446E-A84B-6CA8DB797ADB}"
       DTS:ExecutableType="STOCK:FOREACHLOOP"
       DTS:ForceExecutionResult="0"
@@ -221,123 +254,73 @@
         </DTS:ObjectData>
       </DTS:ForEachEnumerator>
       <DTS:Variables />
+      <DTS:Executables />
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Transform and Load Dimensions"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{a2182b55-a843-4c3e-918b-05a73f767014}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Transform and Load Dimensions">
+      <DTS:Variables />
+      <DTS:Executables />
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Transform and Load Fact"
+      DTS:CreationName="STOCK:SEQUENCE"
+      DTS:Description="Sequence Container"
+      DTS:DTSID="{3b1b160c-a8a2-4bb0-9ee8-d10e278434a7}"
+      DTS:ExecutableType="STOCK:SEQUENCE"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Transform and Load Fact">
+      <DTS:Variables />
       <DTS:Executables>
         <DTS:Executable
-          DTS:refId="Package\Foreach Loop Container\Extract"
-          DTS:CreationName="STOCK:SEQUENCE"
-          DTS:Description="Sequence Container"
-          DTS:DTSID="{BAC15413-5491-43C0-833C-987237C457E0}"
-          DTS:ExecutableType="STOCK:SEQUENCE"
-          DTS:ForceExecutionResult="0"
+          DTS:refId="Package\Transform and Load Fact\Load_FactMPXActivity"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{df812471-c527-4dde-a619-5d3d8972f75c}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
           DTS:LocaleID="-1"
-          DTS:ObjectName="Extract">
+          DTS:ObjectName="Load_FactMPXActivity"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
           <DTS:Variables />
-          <DTS:Executables>
-            <DTS:Executable
-              DTS:refId="Package\Foreach Loop Container\Extract\Extract_MPX_Activity"
-              DTS:CreationName="Microsoft.ExecutePackageTask"
-              DTS:Description="Execute Package Task"
-              DTS:DTSID="{8BB3217C-DFDB-499D-9665-8CAA7C80AE2B}"
-              DTS:ExecutableType="Microsoft.ExecutePackageTask"
-              DTS:ForceExecutionResult="0"
-              DTS:LocaleID="-1"
-              DTS:ObjectName="Extract_MPX_Activity"
-              DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
-              <DTS:Variables />
-              <DTS:ObjectData>
-                <ExecutePackageTask>
-                  <UseProjectReference>True</UseProjectReference>
-                  <PackageName>Extract_MPX_Activity.dtsx</PackageName>
-                </ExecutePackageTask>
-              </DTS:ObjectData>
-            </DTS:Executable>
-          </DTS:Executables>
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Load_FactMPXActivity.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
-          DTS:refId="Package\Foreach Loop Container\Transform and Load Dimensions"
-          DTS:CreationName="STOCK:SEQUENCE"
-          DTS:Description="Sequence Container"
-          DTS:DTSID="{0439ED7E-4536-41E8-B658-F4FC3F31ADB3}"
-          DTS:ExecutableType="STOCK:SEQUENCE"
+          DTS:refId="Package\Transform and Load Fact\Transform_FactMPXActivity"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{66e3027c-8c2a-4eda-bd5a-2c54080c8fee}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
           DTS:LocaleID="-1"
-          DTS:ObjectName="Transform and Load Dimensions">
+          DTS:ObjectName="Transform_FactMPXActivity"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
           <DTS:Variables />
-          <DTS:Executables />
-        </DTS:Executable>
-        <DTS:Executable
-          DTS:refId="Package\Foreach Loop Container\Transform and Load Fact"
-          DTS:CreationName="STOCK:SEQUENCE"
-          DTS:Description="Sequence Container"
-          DTS:DTSID="{554209D5-BF26-4F28-A098-F0FC4892384A}"
-          DTS:ExecutableType="STOCK:SEQUENCE"
-          DTS:LocaleID="-1"
-          DTS:ObjectName="Transform and Load Fact">
-          <DTS:Variables />
-          <DTS:Executables>
-            <DTS:Executable
-              DTS:refId="Package\Foreach Loop Container\Transform and Load Fact\Load_FactMPXActivity"
-              DTS:CreationName="Microsoft.ExecutePackageTask"
-              DTS:Description="Execute Package Task"
-              DTS:DTSID="{C9462E63-9A83-44D1-A277-149C8F9C6E5F}"
-              DTS:ExecutableType="Microsoft.ExecutePackageTask"
-              DTS:LocaleID="-1"
-              DTS:ObjectName="Load_FactMPXActivity"
-              DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
-              <DTS:Variables />
-              <DTS:ObjectData>
-                <ExecutePackageTask>
-                  <UseProjectReference>True</UseProjectReference>
-                  <PackageName>Load_FactMPXActivity.dtsx</PackageName>
-                </ExecutePackageTask>
-              </DTS:ObjectData>
-            </DTS:Executable>
-            <DTS:Executable
-              DTS:refId="Package\Foreach Loop Container\Transform and Load Fact\Transform_FactMPXActivity"
-              DTS:CreationName="Microsoft.ExecutePackageTask"
-              DTS:Description="Execute Package Task"
-              DTS:DTSID="{23AF69CE-C7C6-4691-8E61-6C4B9AD0A761}"
-              DTS:ExecutableType="Microsoft.ExecutePackageTask"
-              DTS:LocaleID="-1"
-              DTS:ObjectName="Transform_FactMPXActivity"
-              DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
-              <DTS:Variables />
-              <DTS:ObjectData>
-                <ExecutePackageTask>
-                  <UseProjectReference>True</UseProjectReference>
-                  <PackageName>Transform_FactMPXActivity.dtsx</PackageName>
-                </ExecutePackageTask>
-              </DTS:ObjectData>
-            </DTS:Executable>
-          </DTS:Executables>
-          <DTS:PrecedenceConstraints>
-            <DTS:PrecedenceConstraint
-              DTS:refId="Package\Foreach Loop Container\Transform and Load Fact.PrecedenceConstraints[Constraint]"
-              DTS:CreationName=""
-              DTS:DTSID="{65649E33-F815-4998-B5BD-72D13DDA6BE6}"
-              DTS:From="Package\Foreach Loop Container\Transform and Load Fact\Transform_FactMPXActivity"
-              DTS:LogicalAnd="True"
-              DTS:ObjectName="Constraint"
-              DTS:To="Package\Foreach Loop Container\Transform and Load Fact\Load_FactMPXActivity" />
-          </DTS:PrecedenceConstraints>
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Transform_FactMPXActivity.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
         </DTS:Executable>
       </DTS:Executables>
       <DTS:PrecedenceConstraints>
         <DTS:PrecedenceConstraint
-          DTS:refId="Package\Foreach Loop Container.PrecedenceConstraints[Constraint]"
+          DTS:refId="Package\Transform and Load Fact.PrecedenceConstraints[Constraint]"
           DTS:CreationName=""
-          DTS:DTSID="{BB19FBB8-844F-4BE7-B4CE-4C5586F62D25}"
-          DTS:From="Package\Foreach Loop Container\Extract"
+          DTS:DTSID="{505c83b1-ffc6-4811-97a3-60351fb951d0}"
+          DTS:From="Package\Transform and Load Fact\Transform_FactMPXActivity"
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint"
-          DTS:To="Package\Foreach Loop Container\Transform and Load Dimensions" />
-        <DTS:PrecedenceConstraint
-          DTS:refId="Package\Foreach Loop Container.PrecedenceConstraints[Constraint 1]"
-          DTS:CreationName=""
-          DTS:DTSID="{EFA74B69-A4F9-4E62-B9F8-2A4F7E3A97D7}"
-          DTS:From="Package\Foreach Loop Container\Transform and Load Dimensions"
-          DTS:LogicalAnd="True"
-          DTS:ObjectName="Constraint 1"
-          DTS:To="Package\Foreach Loop Container\Transform and Load Fact" />
+          DTS:To="Package\Transform and Load Fact\Load_FactMPXActivity" />
       </DTS:PrecedenceConstraints>
     </DTS:Executable>
   </DTS:Executables>
@@ -392,36 +375,6 @@
               VSTAMajorVersion="3"
               VSTAMinorVersion="0"
               Language="CSharp">
-              <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_40f8933f761f46dd81081513edd0d92e")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_40f8933f761f46dd81081513edd0d92e")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -541,6 +494,35 @@ using System.Runtime.CompilerServices;
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_40f8933f761f46dd81081513edd0d92e.Properties.Settings.get_Default():st_40f8933f761f46dd81081513edd0d92e.Properties.Sett" +
+    "ings")]
+
+namespace st_40f8933f761f46dd81081513edd0d92e.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -784,34 +766,35 @@ namespace st_40f8933f761f46dd81081513edd0d92e
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
 //
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_40f8933f761f46dd81081513edd0d92e")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_40f8933f761f46dd81081513edd0d92e")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_40f8933f761f46dd81081513edd0d92e.Properties.Settings.get_Default():st_40f8933f761f46dd81081513edd0d92e.Properties.Sett" +
-    "ings")]
-
-namespace st_40f8933f761f46dd81081513edd0d92e.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Settings.settings"
                 Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
@@ -1509,35 +1492,34 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
   </resheader>
 </root>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_e953786d50ae4bdcaa91ac92901ad87a")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_e953786d50ae4bdcaa91ac92901ad87a")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_e953786d50ae4bdcaa91ac92901ad87a.Properties.Settings.get_Default():st_e953786d50ae4bdcaa91ac92901ad87a.Properties.Sett" +
+    "ings")]
 
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+namespace st_e953786d50ae4bdcaa91ac92901ad87a.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -1864,34 +1846,35 @@ namespace st_e953786d50ae4bdcaa91ac92901ad87a
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
 //
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_e953786d50ae4bdcaa91ac92901ad87a")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_e953786d50ae4bdcaa91ac92901ad87a")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_e953786d50ae4bdcaa91ac92901ad87a.Properties.Settings.get_Default():st_e953786d50ae4bdcaa91ac92901ad87a.Properties.Sett" +
-    "ings")]
-
-namespace st_e953786d50ae4bdcaa91ac92901ad87a.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Settings.settings"
                 Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
@@ -2191,35 +2174,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_4b4b618cc86f44d2a290f8ea79f88875")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_4b4b618cc86f44d2a290f8ea79f88875")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -2339,6 +2301,35 @@ using System.Runtime.CompilerServices;
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_4b4b618cc86f44d2a290f8ea79f88875.Properties.Settings.get_Default():st_4b4b618cc86f44d2a290f8ea79f88875.Properties.Sett" +
+    "ings")]
+
+namespace st_4b4b618cc86f44d2a290f8ea79f88875.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -2463,6 +2454,56 @@ namespace st_4b4b618cc86f44d2a290f8ea79f88875
     }
 }]]></ProjectItem>
               <ProjectItem
+                Name="Project"
+                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
+	<msb:PropertyGroup>
+		<msb:CodeName>st_4b4b618cc86f44d2a290f8ea79f88875</msb:CodeName>
+		<msb:DisplayName>st_4b4b618cc86f44d2a290f8ea79f88875</msb:DisplayName>
+		<msb:Language>msBuild</msb:Language>
+		<msb:ProjectId>{CE9D4E88-0596-4DA4-ABAE-37D34E8FA759}</msb:ProjectId>
+	</msb:PropertyGroup>
+	<msb:ItemGroup>
+		<msb:Project Include="st_4b4b618cc86f44d2a290f8ea79f88875.csproj"/>
+		<msb:File Include="Properties\AssemblyInfo.cs"/>
+		<msb:File Include="Properties\Resources.resx"/>
+		<msb:File Include="Properties\Resources.Designer.cs"/>
+		<msb:File Include="Properties\Settings.Designer.cs"/>
+		<msb:File Include="Properties\Settings.settings"/>
+		<msb:File Include="ScriptMain.cs"/>
+	</msb:ItemGroup>
+</c:Project>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_4b4b618cc86f44d2a290f8ea79f88875")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_4b4b618cc86f44d2a290f8ea79f88875")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+              <ProjectItem
                 Name="st_4b4b618cc86f44d2a290f8ea79f88875.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -2561,64 +2602,6 @@ namespace st_4b4b618cc86f44d2a290f8ea79f88875
     </VisualStudio>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
-              <ProjectItem
-                Name="Project"
-                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
-<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
-	<msb:PropertyGroup>
-		<msb:CodeName>st_4b4b618cc86f44d2a290f8ea79f88875</msb:CodeName>
-		<msb:DisplayName>st_4b4b618cc86f44d2a290f8ea79f88875</msb:DisplayName>
-		<msb:Language>msBuild</msb:Language>
-		<msb:ProjectId>{CE9D4E88-0596-4DA4-ABAE-37D34E8FA759}</msb:ProjectId>
-	</msb:PropertyGroup>
-	<msb:ItemGroup>
-		<msb:Project Include="st_4b4b618cc86f44d2a290f8ea79f88875.csproj"/>
-		<msb:File Include="Properties\AssemblyInfo.cs"/>
-		<msb:File Include="Properties\Resources.resx"/>
-		<msb:File Include="Properties\Resources.Designer.cs"/>
-		<msb:File Include="Properties\Settings.Designer.cs"/>
-		<msb:File Include="Properties\Settings.settings"/>
-		<msb:File Include="ScriptMain.cs"/>
-	</msb:ItemGroup>
-</c:Project>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_4b4b618cc86f44d2a290f8ea79f88875.Properties.Settings.get_Default():st_4b4b618cc86f44d2a290f8ea79f88875.Properties.Sett" +
-    "ings")]
-
-namespace st_4b4b618cc86f44d2a290f8ea79f88875.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -3052,7 +3035,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_PkgLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -3072,7 +3055,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_TaskList">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{C06F7579-6B4A-43C3-A313-56A19E9A2F7E}" typ="SQLTask" p="" name="Execute SQL Task" on="1" /&gt;&lt;tsk id="{7E970BB5-38EA-446E-A84B-6CA8DB797ADB}" typ="ForEachLoopContainer" p="" name="Foreach Loop Container" on="1" /&gt;&lt;pc id="{BB19FBB8-844F-4BE7-B4CE-4C5586F62D25}" op="2" and="True" val="0" task1="{BAC15413-5491-43C0-833C-987237C457E0}" task2="{0439ED7E-4536-41E8-B658-F4FC3F31ADB3}" p="{7E970BB5-38EA-446E-A84B-6CA8DB797ADB}" refId="Package\Foreach Loop Container.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{EFA74B69-A4F9-4E62-B9F8-2A4F7E3A97D7}" op="2" and="True" val="0" task1="{0439ED7E-4536-41E8-B658-F4FC3F31ADB3}" task2="{554209D5-BF26-4F28-A098-F0FC4892384A}" p="{7E970BB5-38EA-446E-A84B-6CA8DB797ADB}" refId="Package\Foreach Loop Container.PrecedenceConstraints[Constraint 1]"/&gt;&lt;tsk id="{BAC15413-5491-43C0-833C-987237C457E0}" typ="SequenceContainer" p="{7E970BB5-38EA-446E-A84B-6CA8DB797ADB}" name="Extract" on="1" /&gt;&lt;tsk id="{8BB3217C-DFDB-499D-9665-8CAA7C80AE2B}" typ="ExecutePackageTask" p="{BAC15413-5491-43C0-833C-987237C457E0}" name="Extract_MPX_Activity" on="1" /&gt;&lt;tsk id="{0439ED7E-4536-41E8-B658-F4FC3F31ADB3}" typ="SequenceContainer" p="{7E970BB5-38EA-446E-A84B-6CA8DB797ADB}" name="Transform and Load Dimensions" on="1" /&gt;&lt;tsk id="{554209D5-BF26-4F28-A098-F0FC4892384A}" typ="SequenceContainer" p="{7E970BB5-38EA-446E-A84B-6CA8DB797ADB}" name="Transform and Load Fact" on="1" /&gt;&lt;pc id="{65649E33-F815-4998-B5BD-72D13DDA6BE6}" op="2" and="True" val="0" task1="{23AF69CE-C7C6-4691-8E61-6C4B9AD0A761}" task2="{C9462E63-9A83-44D1-A277-149C8F9C6E5F}" p="{554209D5-BF26-4F28-A098-F0FC4892384A}" refId="Package\Foreach Loop Container\Transform and Load Fact.PrecedenceConstraints[Constraint]"/&gt;&lt;tsk id="{C9462E63-9A83-44D1-A277-149C8F9C6E5F}" typ="ExecutePackageTask" p="{554209D5-BF26-4F28-A098-F0FC4892384A}" name="Load_FactMPXActivity" on="1" /&gt;&lt;tsk id="{23AF69CE-C7C6-4691-8E61-6C4B9AD0A761}" typ="ExecutePackageTask" p="{554209D5-BF26-4F28-A098-F0FC4892384A}" name="Transform_FactMPXActivity" on="1" /&gt;&lt;pc id="{7B9723A0-0396-437E-9F24-ECE338F50E05}" op="2" and="True" val="0" task1="{C06F7579-6B4A-43C3-A313-56A19E9A2F7E}" task2="{7E970BB5-38EA-446E-A84B-6CA8DB797ADB}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{C06F7579-6B4A-43C3-A313-56A19E9A2F7E}" typ="SQLTask" p="" name="Execute SQL Task" on="0" /&gt;&lt;tsk id="{40b0f151-b60d-426b-b23b-1e873b6e1944}" typ="SequenceContainer" p="" name="Extract" on="1" /&gt;&lt;tsk id="{2b932196-0723-4a99-a048-d9a9f54fb4f1}" typ="ExecutePackageTask" p="{40b0f151-b60d-426b-b23b-1e873b6e1944}" name="Extract_MPX_Activity" on="1" /&gt;&lt;tsk id="{7E970BB5-38EA-446E-A84B-6CA8DB797ADB}" typ="ForEachLoopContainer" p="" name="Foreach Loop Container" on="0" /&gt;&lt;tsk id="{a2182b55-a843-4c3e-918b-05a73f767014}" typ="SequenceContainer" p="" name="Transform and Load Dimensions" on="1" /&gt;&lt;tsk id="{3b1b160c-a8a2-4bb0-9ee8-d10e278434a7}" typ="SequenceContainer" p="" name="Transform and Load Fact" on="1" /&gt;&lt;pc id="{505c83b1-ffc6-4811-97a3-60351fb951d0}" op="2" and="True" val="0" task1="{66e3027c-8c2a-4eda-bd5a-2c54080c8fee}" task2="{df812471-c527-4dde-a619-5d3d8972f75c}" p="{3b1b160c-a8a2-4bb0-9ee8-d10e278434a7}" refId="Package\Transform and Load Fact.PrecedenceConstraints[Constraint]"/&gt;&lt;tsk id="{df812471-c527-4dde-a619-5d3d8972f75c}" typ="ExecutePackageTask" p="{3b1b160c-a8a2-4bb0-9ee8-d10e278434a7}" name="Load_FactMPXActivity" on="1" /&gt;&lt;tsk id="{66e3027c-8c2a-4eda-bd5a-2c54080c8fee}" typ="ExecutePackageTask" p="{3b1b160c-a8a2-4bb0-9ee8-d10e278434a7}" name="Transform_FactMPXActivity" on="1" /&gt;&lt;pc id="{7B9723A0-0396-437E-9F24-ECE338F50E05}" op="2" and="True" val="0" task1="{C06F7579-6B4A-43C3-A313-56A19E9A2F7E}" task2="{7E970BB5-38EA-446E-A84B-6CA8DB797ADB}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -3104,36 +3087,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMajorVersion="3"
               VSTAMinorVersion="0"
               Language="CSharp">
-              <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_a3aefce48e4245edb27855a963f9195d")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_a3aefce48e4245edb27855a963f9195d")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -3352,6 +3305,35 @@ using System.Runtime.CompilerServices;
     </VisualStudio>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_a3aefce48e4245edb27855a963f9195d.Properties.Settings.get_Default():st_a3aefce48e4245edb27855a963f9195d.Properties.Sett" +
+    "ings")]
+
+namespace st_a3aefce48e4245edb27855a963f9195d.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -3721,34 +3703,35 @@ namespace st_a3aefce48e4245edb27855a963f9195d
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
 //
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_a3aefce48e4245edb27855a963f9195d")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_a3aefce48e4245edb27855a963f9195d")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_a3aefce48e4245edb27855a963f9195d.Properties.Settings.get_Default():st_a3aefce48e4245edb27855a963f9195d.Properties.Sett" +
-    "ings")]
-
-namespace st_a3aefce48e4245edb27855a963f9195d.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Settings.settings"
                 Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
@@ -4346,36 +4329,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_c2c3965ff7f44fdb8316a6d4de8fb6e3")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_c2c3965ff7f44fdb8316a6d4de8fb6e3")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -4494,6 +4447,35 @@ using System.Runtime.CompilerServices;
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_c2c3965ff7f44fdb8316a6d4de8fb6e3.Properties.Settings.get_Default():st_c2c3965ff7f44fdb8316a6d4de8fb6e3.Properties.Sett" +
+    "ings")]
+
+namespace st_c2c3965ff7f44fdb8316a6d4de8fb6e3.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -4689,34 +4671,35 @@ namespace st_c2c3965ff7f44fdb8316a6d4de8fb6e3
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
 //
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_c2c3965ff7f44fdb8316a6d4de8fb6e3")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_c2c3965ff7f44fdb8316a6d4de8fb6e3")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_c2c3965ff7f44fdb8316a6d4de8fb6e3.Properties.Settings.get_Default():st_c2c3965ff7f44fdb8316a6d4de8fb6e3.Properties.Sett" +
-    "ings")]
-
-namespace st_c2c3965ff7f44fdb8316a6d4de8fb6e3.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="st_c2c3965ff7f44fdb8316a6d4de8fb6e3.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -5146,36 +5129,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_6c464591d10545ba8f7031ffaa992be8")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_6c464591d10545ba8f7031ffaa992be8")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -5294,6 +5247,35 @@ using System.Runtime.CompilerServices;
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_6c464591d10545ba8f7031ffaa992be8.Properties.Settings.get_Default():st_6c464591d10545ba8f7031ffaa992be8.Properties.Sett" +
+    "ings")]
+
+namespace st_6c464591d10545ba8f7031ffaa992be8.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="st_6c464591d10545ba8f7031ffaa992be8.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -5537,34 +5519,35 @@ namespace st_6c464591d10545ba8f7031ffaa992be8
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
 //
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_6c464591d10545ba8f7031ffaa992be8")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_6c464591d10545ba8f7031ffaa992be8")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_6c464591d10545ba8f7031ffaa992be8.Properties.Settings.get_Default():st_6c464591d10545ba8f7031ffaa992be8.Properties.Sett" +
-    "ings")]
-
-namespace st_6c464591d10545ba8f7031ffaa992be8.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Settings.settings"
                 Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
@@ -5903,123 +5886,17 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <NodeLayout
           Size="163,42"
           Id="Package\Execute SQL Task"
-          TopLeft="490,68.75" />
-        <NodeLayout
-          Size="256,42"
-          Id="Package\Foreach Loop Container\Extract\Extract_MPX_Activity"
-          TopLeft="27,23" />
-        <ContainerLayout
-          HeaderHeight="43"
-          IsExpanded="True"
-          PanelSize="405,81"
-          Size="405,124"
-          Id="Package\Foreach Loop Container\Extract"
-          TopLeft="29.2499999999999,71.75" />
+          TopLeft="425,556.75" />
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="False"
-          PanelSize="756,323"
-          Size="404,43"
-          Id="Package\Foreach Loop Container\Transform and Load Dimensions"
-          TopLeft="28.25,235.75" />
-        <NodeLayout
-          Size="205,42"
-          Id="Package\Foreach Loop Container\Transform and Load Fact\Load_FactMPXActivity"
-          TopLeft="56,88" />
-        <NodeLayout
-          Size="272,42"
-          Id="Package\Foreach Loop Container\Transform and Load Fact\Transform_FactMPXActivity"
-          TopLeft="29,18" />
-        <EdgeLayout
-          Id="Package\Foreach Loop Container\Transform and Load Fact.PrecedenceConstraints[Constraint]"
-          TopLeft="161.75,60">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,28"
-              Start="0,0"
-              End="0,20.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,20.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <ContainerLayout
-          HeaderHeight="43"
-          IsExpanded="True"
-          PanelSize="405,181"
-          Size="405,224"
-          Id="Package\Foreach Loop Container\Transform and Load Fact"
-          TopLeft="29.2499999999999,336.75" />
-        <EdgeLayout
-          Id="Package\Foreach Loop Container.PrecedenceConstraints[Constraint]"
-          TopLeft="231,195.75">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,40"
-              Start="0,0"
-              End="0,32.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,32.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\Foreach Loop Container.PrecedenceConstraints[Constraint 1]"
-          TopLeft="231,278.75">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,58"
-              Start="0,0"
-              End="0,50.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,50.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <AnnotationLayout
-          Text="No Dims to transform and load "
-          ParentId="Package\Foreach Loop Container"
-          FontInfo="{assembly:Null}"
-          Size="197,40"
-          Id="53c153a5-0eef-4189-adc7-2bf3aacb339f"
-          TopLeft="450.25,229.75" />
-        <ContainerLayout
-          HeaderHeight="43"
-          IsExpanded="True"
           PanelSize="652,637"
-          Size="652,680"
+          Size="652,43"
           Id="Package\Foreach Loop Container"
-          TopLeft="256.25,188.75" />
+          TopLeft="191.25,676.75" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
-          TopLeft="571.5,110.75">
+          TopLeft="506.5,598.75">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -6051,6 +5928,68 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <NodeLayout
+          Size="256,42"
+          Id="Package\Extract\Extract_MPX_Activity"
+          TopLeft="27,23" />
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="405,81"
+          Size="405,124"
+          Id="Package\Extract"
+          TopLeft="288,21" />
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="False"
+          PanelSize="756,323"
+          Size="404,43"
+          Id="Package\Transform and Load Dimensions"
+          TopLeft="287,185" />
+        <NodeLayout
+          Size="205,42"
+          Id="Package\Transform and Load Fact\Load_FactMPXActivity"
+          TopLeft="56,88" />
+        <NodeLayout
+          Size="272,42"
+          Id="Package\Transform and Load Fact\Transform_FactMPXActivity"
+          TopLeft="29,18" />
+        <EdgeLayout
+          Id="Package\Transform and Load Fact.PrecedenceConstraints[Constraint]"
+          TopLeft="161.75,60">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,28"
+              Start="0,0"
+              End="0,20.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="405,181"
+          Size="405,224"
+          Id="Package\Transform and Load Fact"
+          TopLeft="288,286" />
+        <AnnotationLayout
+          Text="No Dims to transform and load "
+          ParentId="Package"
+          FontInfo="{assembly:Null}"
+          Size="197,40"
+          Id="88a92be6-dc78-4f80-a10c-73ebe7ed19ff"
+          TopLeft="709,179" />
       </GraphLayout>
     </LayoutInfo>
   </Package>

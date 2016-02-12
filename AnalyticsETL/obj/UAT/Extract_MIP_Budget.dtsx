@@ -12,8 +12,8 @@
   DTS:ObjectName="Extract_MIP_Budget"
   DTS:PackageType="5"
   DTS:ProtectionLevel="2"
-  DTS:VersionBuild="104"
-  DTS:VersionGUID="{C18AE993-4ADB-453F-B51C-3CEB522297F1}">
+  DTS:VersionBuild="108"
+  DTS:VersionGUID="{0DC2598A-7917-4092-AD70-AD3B353DC3E0}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -34,12 +34,12 @@
           DTS:ConnectionString="Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Initial Catalog=WITW;Provider=SQLNCLI11;Persist Security Info=True;packet size=4096;UserID=HBCMIPServices01;">
           <EncryptedData
             Type="http://www.w3.org/2001/04/xmlenc#Element"
-            Salt="2RK68Lq3QQ=="
-            IV="sNc4nN78rKM=" xmlns="http://www.w3.org/2001/04/xmlenc#">
+            Salt="lfbO3xIkVA=="
+            IV="ltg1lDlybtw=" xmlns="http://www.w3.org/2001/04/xmlenc#">
             <EncryptionMethod
               Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc" />
             <CipherData>
-              <CipherValue>sNc4nN78rKN4rbl6v7PDooJYCdHkLfm7kdswH+mnaIVVChJ4D4CwqcGQPWHJBh87aejNqL9VCaG6ujytAzKVXbVd0FSwwS5nEoQSSGmjYbP0CQXjJJM/HO7Hz4TabYtAWsvbDds3Qlce7TzX05Rwl0LG2QHe/c3R+mNgg1qdDiM=</CipherValue>
+              <CipherValue>ltg1lDlybtz6z5EbojOceqX6PB+8xQngnzCrz/jkefcnxgQtks+dgc7iqa+QmpY9FRDjYSHDgJI4aO9heljp0P+TmqSt5pDedReTp07++8m0fiCfl5+biLKbUdfnegtTc5ss/qpWWV4tU20ZEki+25dip/W8vH0PBD19Ef/n5rU=</CipherValue>
             </CipherData>
           </EncryptedData>
         </DTS:ConnectionManager>
@@ -532,8 +532,28 @@
                       dataType="System.String"
                       description="The SQL command to be executed."
                       name="SqlCommand"
-                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT DISTINCT
-	bwd.dtmLastModified
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">WITH Source AS (
+SELECT DISTINCT
+      ROW_NUMBER() OVER ( 
+		PARTITION BY  
+			  bwd.dtmWorksheetStart
+			, bwd.dtmWorksheetEnd
+			, bwd.sWorksheetCycle
+			, bwd.nNumCycles
+			, bwc.sColumnHeading
+			, bwt.sCodeIDf_0
+			, bwt.sCodeIDf_1
+			, ISNULL(NULLIF(bwt.sCodeIDf_2, ''), DB_NAME())
+			, bwt.sCodeIDf_3
+			, bwt.sCodeIDf_4
+			, bwt.sCodeIDf_5
+			, bwt.sCodeIDf_6
+			, bwt.sCodeIDf_7
+			, bwt.sCodeIDf_8
+			, bwt.sCodeIDf_9
+			, bwt.sCodeIDf_10
+		ORDER BY dtmLastModified DESC) AS RowNum
+	, bwd.dtmLastModified
 	, bwd.dtmWorksheetStart
 	, bwd.dtmWorksheetEnd
 	, bwd.sWorksheetCycle
@@ -612,7 +632,14 @@ LEFT JOIN [dbo].[tblAcctCode_7] ac7
 LEFT JOIN [dbo].[tblAcctCode_8] ac8
     ON bwt.sCodeIDf_8 = ac8.[sCodeID]
 LEFT JOIN [dbo].[tblAcctCode_9] ac9
-    ON bwt.sCodeIDf_9 = ac9.[sCodeID]</property>
+    ON bwt.sCodeIDf_9 = ac9.[sCodeID]
+)
+SELECT *
+FROM Source
+WHERE
+	RowNum = 1
+ORDER BY 
+	dtmFrom</property>
                     <property
                       dataType="System.String"
                       description="The variable that contains the SQL command to be executed."
@@ -1204,6 +1231,15 @@ LEFT JOIN [dbo].[tblAcctCode_9] ac9
                           lineageId="Package\Foreach EnabledTenant\DF Extract_MIP_Budget\OLE DB Source.Outputs[OLE DB Source Output].Columns[AccountingDesignationCode9]"
                           name="AccountingDesignationCode9"
                           truncationRowDisposition="FailComponent" />
+                        <outputColumn
+                          refId="Package\Foreach EnabledTenant\DF Extract_MIP_Budget\OLE DB Source.Outputs[OLE DB Source Output].Columns[RowNum]"
+                          dataType="i8"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="FailComponent"
+                          externalMetadataColumnId="Package\Foreach EnabledTenant\DF Extract_MIP_Budget\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[RowNum]"
+                          lineageId="Package\Foreach EnabledTenant\DF Extract_MIP_Budget\OLE DB Source.Outputs[OLE DB Source Output].Columns[RowNum]"
+                          name="RowNum"
+                          truncationRowDisposition="FailComponent" />
                       </outputColumns>
                       <externalMetadataColumns
                         isUsed="True">
@@ -1503,6 +1539,10 @@ LEFT JOIN [dbo].[tblAcctCode_9] ac9
                           dataType="str"
                           length="3"
                           name="AccountingDesignationCode9" />
+                        <externalMetadataColumn
+                          refId="Package\Foreach EnabledTenant\DF Extract_MIP_Budget\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[RowNum]"
+                          dataType="i8"
+                          name="RowNum" />
                       </externalMetadataColumns>
                     </output>
                     <output
@@ -1510,6 +1550,11 @@ LEFT JOIN [dbo].[tblAcctCode_9] ac9
                       isErrorOut="true"
                       name="OLE DB Source Error Output">
                       <outputColumns>
+                        <outputColumn
+                          refId="Package\Foreach EnabledTenant\DF Extract_MIP_Budget\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[RowNum]"
+                          dataType="i8"
+                          lineageId="Package\Foreach EnabledTenant\DF Extract_MIP_Budget\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[RowNum]"
+                          name="RowNum" />
                         <outputColumn
                           refId="Package\Foreach EnabledTenant\DF Extract_MIP_Budget\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[dtmLastModified]"
                           dataType="dbTimeStamp"
@@ -2862,35 +2907,14 @@ WHERE
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_0a9f94dc8fcf44ea8fad54ee8cf63fd6")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_0a9f94dc8fcf44ea8fad54ee8cf63fd6")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -3282,14 +3306,35 @@ namespace st_0a9f94dc8fcf44ea8fad54ee8cf63fd6.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_0a9f94dc8fcf44ea8fad54ee8cf63fd6")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_0a9f94dc8fcf44ea8fad54ee8cf63fd6")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -4017,35 +4062,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_32a0f3a33d66446b955dc60cfbfbe3b7")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_32a0f3a33d66446b955dc60cfbfbe3b7")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -4619,14 +4643,35 @@ namespace st_32a0f3a33d66446b955dc60cfbfbe3b7.Properties {
   </ProjectExtensions>
 </Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_32a0f3a33d66446b955dc60cfbfbe3b7")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_32a0f3a33d66446b955dc60cfbfbe3b7")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -5709,35 +5754,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_91aca17192274ab49a3af628e0fee4f9")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_91aca17192274ab49a3af628e0fee4f9")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -6129,14 +6153,35 @@ namespace st_91aca17192274ab49a3af628e0fee4f9.Properties {
   </ProjectExtensions>
 </Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_91aca17192274ab49a3af628e0fee4f9")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_91aca17192274ab49a3af628e0fee4f9")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -6509,7 +6554,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_DfLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[H4sIAAAAAAAEAO1XbW/aMBD+K1Y+h7wS3gZILdCtEm1RQdqHdapMcgnWEpvFTks77b/vMNCGFbaqdPuwlU/4fL7n/Dxn59yeUPnlg5CKRCBZwiuKZVDhNIOOMaLhF5rA1YnIgYYzMuB0mkI0AU65uuqfkMFC5TRU12eno+vjIkpAGd32kN6JQp3yWHTb73M6n60MpEfnNGTqrmO4NYMsspTLjhGmuQaTOAetMxbmQopYWeOv6RjyG8itU64gyaligi8tLARp9XWqOHkmIkgttDOasnvt9I5KCdk0ves8N5pOcp1RK5MySeE5iell1mpzA54wDr+G3oJ58DRmSs1bti3DGWRUWtnDylBk9i3j8cL2HKdmL2iWIrvnuOM1oWN2j4m6dd+segY5jV4k2NXHnCkgShAkVTGuqTHIRMyHEKuO4Tlm1fWtwCD2LvBG4yDw8WWPXAwHpH9MxqLIQyghu54VmK5T34sdOAdh78P1m6bb2A3pOd5BkP3BeEJ+Q3hgBU7pVzV9191LAeZ6SD5HUYRZxLRIlSwzUDc9p7kGHaDnGvSFMNaIqpn8tMU3uSjUvFCfy3q7juUFZs0xyqBWr8DT022vzmVLj8hY0Vz1BOcQKpF3jG+b49Q6L9L0u4FZRaVprBNdRXrZcuhoDz2xRCvHxsskyYAr+WBeG3oiTTEeilW6yYLH1UO8ANaupeBLBu19gR6nfobesuPwKR8ly5BOIZUbE/4vpWpvL964lmyvqHAf7+EbiAjiFxnfJbFTwzPtBcuCfn2RsXJ2SRx4VvAHRdbh/yuZL8UtSlwgBSuFifdUYz/w3zT+lzR2n2rsVptvGv99jY84F0p3DWulJ7BAqo4SyrhJ1IxJMl/pTjhAJJetxhRIMce+N8LbGYcZfvBZRekyMMiI5riNF9aLQU4E193+DmVXXYrv1/SncIkQNzyv7kdxxY0bUaXqTMPKdOr5FVoPXEqbzbAKsNV9OtiK+CtdSo8JHJWfGfbmEdP9ARwr5L3PDAAA]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\Foreach EnabledTenant\DF Extract_MIP_Budget&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[H4sIAAAAAAAEAO2XbW/aMBDHv4qV1yFxnngaILVAt0q0RQVpL9apMokTrDo2i52Wdtp33xFCF1bYqrJOmta8is/2/S/3yzmXzpSomw9SaRRRxRJR0yylNUFS2jXGJLwhCb06kRkl4RwNBZlxGk2pIEJfDU7QcKkzEurrs9Px9XEeJVQbvc6I3Mtcn4pY9jrvM7KYrw2oTxYkZPq+azh1Ay1TLlTXCHlWiCmYo+0zFmZSyVhbky98QrNbmlmnQtMkI5pJsbKwkCprUIQKk2cyotwCOyOcPRSL3hGlaDrj993neiuCLCNqp0olnD4nsGKbtX64oUiYoL+W3pJ5XGnMtV60bVuFc5oSZaWPO0OZ2ndMxEvbxbhuL0nKIbvn8MRlQifsAQJ1Gp7puwY6jV4E7OpjxjRFWiJIqmaiSI2BpnIxorHuGi42fcezAgPZu8SbzYPEJ5d9dDEaosExmsg8C2lF2XGtwHRwY692gA/S3qfrtUynuVvSxe5BkoPhZIp+k/DACnDl8k3PcfamAGI9JJ6jKIIoYpJzraoZaJgubpWiQ1hZir5QxhoTPVefLuUd6stcaHSR6wW4cz9XaeM64PaC1atWFbX6OVRPr7Ouy3YxQhNNMt2XQtBQy6xrfN2UU/s85/ybAVFFlWls1rGx3rQa4GJ+dRe4hVrVNxwmSUqFVo/m0tCXnIM/gFU5ySq7R3AAlEu33K9yaO9z9WPqZ/EtOwyfZqRiGZEZ5WpjgvtKsPb25s3Siu01GTtPGTt+643xP8x469wsOW9RdrDlBiscf56xX3wNdlD28SsyBuf/FeEB9FO3NIJK5nkqdiEuCtkNnLdC/vuYj4SQuugaSthTuoRUHSWECRPpOVNosUaPBKWRWrUaM4ryBfS9EVCFYQoffFbTxZtgoDHJ4DFe+MoY6ESKotvfQXbdpXhevSihlULcdN2GF8U1J25GNR/Pwtps5no10ggcQlqt0Kd0q/vE0Ip4ay6VnwkYVX8z7M1PTO875gkbqc8MAAA=]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\Foreach EnabledTenant\DF Extract_MIP_Budget&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -6605,7 +6650,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_PkgLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -6625,7 +6670,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_TaskList">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{9b3a8ae9-fb9b-463e-a757-e81da5fb3746}" typ="ForEachLoopContainer" p="" name="Foreach EnabledTenant" on="1"  tag1="User::TenantID" tag2="User::ConnectionString"/&gt;&lt;tsk id="{21E2CBDC-BDF0-44D6-86CD-B5B0F795F67E}" typ="PipelineTask" p="{9b3a8ae9-fb9b-463e-a757-e81da5fb3746}" name="DF Extract_MIP_Budget" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{21E2CBDC-BDF0-44D6-86CD-B5B0F795F67E}_2" /&gt;&lt;com id="20" dir="TRAN"  typ="trnrowcount" name="DEST Write to Destination" pid="{21E2CBDC-BDF0-44D6-86CD-B5B0F795F67E}_20" /&gt;&lt;com id="24" dir="SRC"  typ="srcoledb" name="OLE DB Source" pid="{21E2CBDC-BDF0-44D6-86CD-B5B0F795F67E}_24" /&gt;&lt;com id="195" dir="TRAN"  typ="trnrowcount" name="SRC OLE DB Source" pid="{21E2CBDC-BDF0-44D6-86CD-B5B0F795F67E}_195" /&gt;&lt;com id="199" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="Write to Destination" pid="{21E2CBDC-BDF0-44D6-86CD-B5B0F795F67E}_199" /&gt;&lt;dp id="320" val="0"  ann="" c1="2" c2="20"/&gt;&lt;dp id="321" val="0"  ann="" c1="24" c2="195"/&gt;&lt;dp id="322" val="0"  ann="" c1="195" c2="2"/&gt;&lt;dp id="323" val="0"  ann="" c1="20" c2="199"/&gt;&lt;/tsk&gt;&lt;tsk id="{565bba57-c976-48a0-9eaf-692798d474e0}" typ="SQLTask" p="" name="Get Enabled Tenants" on="1" /&gt;&lt;tsk id="{5439E8D1-4CE0-4641-B0DB-7C4BCCA0F681}" typ="SQLTask" p="" name="Get Last Successful ExecutionDateTime" on="0" /&gt;&lt;tsk id="{15CDC9DC-D786-46F1-9EAB-517D842B4A01}" typ="SQLTask" p="" name="TRUNCATE extractMIP_Budget" on="1" /&gt;&lt;pc id="{AAF72F5F-DFCF-4104-9058-33DA030A47E5}" op="2" and="True" val="0" task1="{15CDC9DC-D786-46F1-9EAB-517D842B4A01}" task2="{565bba57-c976-48a0-9eaf-692798d474e0}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{068999AC-DAA8-47B0-8F73-66E593EFD5B1}" op="2" and="True" val="0" task1="{5439E8D1-4CE0-4641-B0DB-7C4BCCA0F681}" task2="{15CDC9DC-D786-46F1-9EAB-517D842B4A01}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;pc id="{EA441597-BFAE-4F84-805C-5D844FDBD2B1}" op="2" and="True" val="0" task1="{565bba57-c976-48a0-9eaf-692798d474e0}" task2="{9b3a8ae9-fb9b-463e-a757-e81da5fb3746}" p="" refId="Package.PrecedenceConstraints[Constraint 2]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{9b3a8ae9-fb9b-463e-a757-e81da5fb3746}" typ="ForEachLoopContainer" p="" name="Foreach EnabledTenant" on="1"  tag1="User::TenantID" tag2="User::ConnectionString"/&gt;&lt;tsk id="{21E2CBDC-BDF0-44D6-86CD-B5B0F795F67E}" typ="PipelineTask" p="{9b3a8ae9-fb9b-463e-a757-e81da5fb3746}" name="DF Extract_MIP_Budget" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{21E2CBDC-BDF0-44D6-86CD-B5B0F795F67E}_2" /&gt;&lt;com id="20" dir="TRAN"  typ="trnrowcount" name="DEST Write to Destination" pid="{21E2CBDC-BDF0-44D6-86CD-B5B0F795F67E}_20" /&gt;&lt;com id="24" dir="SRC"  typ="srcoledb" name="OLE DB Source" pid="{21E2CBDC-BDF0-44D6-86CD-B5B0F795F67E}_24" /&gt;&lt;com id="198" dir="TRAN"  typ="trnrowcount" name="SRC OLE DB Source" pid="{21E2CBDC-BDF0-44D6-86CD-B5B0F795F67E}_198" /&gt;&lt;com id="202" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="Write to Destination" pid="{21E2CBDC-BDF0-44D6-86CD-B5B0F795F67E}_202" /&gt;&lt;dp id="323" val="0"  ann="" c1="2" c2="20"/&gt;&lt;dp id="324" val="0"  ann="" c1="24" c2="198"/&gt;&lt;dp id="325" val="0"  ann="" c1="198" c2="2"/&gt;&lt;dp id="326" val="0"  ann="" c1="20" c2="202"/&gt;&lt;/tsk&gt;&lt;tsk id="{565bba57-c976-48a0-9eaf-692798d474e0}" typ="SQLTask" p="" name="Get Enabled Tenants" on="1" /&gt;&lt;tsk id="{5439E8D1-4CE0-4641-B0DB-7C4BCCA0F681}" typ="SQLTask" p="" name="Get Last Successful ExecutionDateTime" on="0" /&gt;&lt;tsk id="{15CDC9DC-D786-46F1-9EAB-517D842B4A01}" typ="SQLTask" p="" name="TRUNCATE extractMIP_Budget" on="1" /&gt;&lt;pc id="{AAF72F5F-DFCF-4104-9058-33DA030A47E5}" op="2" and="True" val="0" task1="{15CDC9DC-D786-46F1-9EAB-517D842B4A01}" task2="{565bba57-c976-48a0-9eaf-692798d474e0}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{068999AC-DAA8-47B0-8F73-66E593EFD5B1}" op="2" and="True" val="0" task1="{5439E8D1-4CE0-4641-B0DB-7C4BCCA0F681}" task2="{15CDC9DC-D786-46F1-9EAB-517D842B4A01}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;pc id="{EA441597-BFAE-4F84-805C-5D844FDBD2B1}" op="2" and="True" val="0" task1="{565bba57-c976-48a0-9eaf-692798d474e0}" task2="{9b3a8ae9-fb9b-463e-a757-e81da5fb3746}" p="" refId="Package.PrecedenceConstraints[Constraint 2]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -6658,35 +6703,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_5d54a8668cbf441082053817bd3233c9")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_5d54a8668cbf441082053817bd3233c9")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -6806,6 +6830,105 @@ using System.Runtime.CompilerServices;
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+              <ProjectItem
+                Name="st_5d54a8668cbf441082053817bd3233c9.csproj"
+                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1fd22343-82ce-488b-9924-560b8c1f0bc8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>st_5d54a8668cbf441082053817bd3233c9</RootNamespace>
+    <AssemblyName>st_5d54a8668cbf441082053817bd3233c9</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>.\bin\Release\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+         <Generator>ResXFileCodeGenerator</Generator>
+         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+             <AutoGen>True</AutoGen>
+         <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+         <Generator>SettingsSingleFileGenerator</Generator>
+         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+         <AutoGen>True</AutoGen>
+         <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptMain.cs">
+         <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <!-- Include the build rules for a C# project.-->
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
+        <ProjectProperties HostName="ScriptTask"
+                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
+                           ApplicationType="usd"
+                           Language="cs"
+                           TemplatesPath=""
+                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
+                           DebugInfoCommandLine=""
+                           DebugInfoWorkingDir=""
+                           IconImageList=""/>
+        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
+        </Host>
+        <ProjectClient>
+            <HostIdentifier>SSIS_ST120</HostIdentifier>
+        </ProjectClient>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -7175,105 +7298,6 @@ namespace st_5d54a8668cbf441082053817bd3233c9
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="st_5d54a8668cbf441082053817bd3233c9.csproj"
-                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1fd22343-82ce-488b-9924-560b8c1f0bc8}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>st_5d54a8668cbf441082053817bd3233c9</RootNamespace>
-    <AssemblyName>st_5d54a8668cbf441082053817bd3233c9</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>.\bin\Debug\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>false</DebugSymbols>
-    <Optimize>true</Optimize>
-    <OutputPath>.\bin\Release\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AppDesigner Include="Properties\" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-         <Generator>ResXFileCodeGenerator</Generator>
-         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-             <AutoGen>True</AutoGen>
-         <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-         <Generator>SettingsSingleFileGenerator</Generator>
-         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-         <AutoGen>True</AutoGen>
-         <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="ScriptMain.cs">
-         <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <!-- Include the build rules for a C# project.-->
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-
-  <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
-        <ProjectProperties HostName="ScriptTask"
-                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
-                           ApplicationType="usd"
-                           Language="cs"
-                           TemplatesPath=""
-                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
-                           DebugInfoCommandLine=""
-                           DebugInfoWorkingDir=""
-                           IconImageList=""/>
-        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
-        </Host>
-        <ProjectClient>
-            <HostIdentifier>SSIS_ST120</HostIdentifier>
-        </ProjectClient>
-      </FlavorProperties>
-    </VisualStudio>
-  </ProjectExtensions>
-</Project>]]></ProjectItem>
-              <ProjectItem
                 Name="Properties\Settings.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
 // <auto-generated>
@@ -7303,14 +7327,35 @@ namespace st_5d54a8668cbf441082053817bd3233c9.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_5d54a8668cbf441082053817bd3233c9")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_5d54a8668cbf441082053817bd3233c9")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -7840,35 +7885,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_193c16f6421843479d27554ffb7ac2de")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_193c16f6421843479d27554ffb7ac2de")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -8311,14 +8335,35 @@ namespace st_193c16f6421843479d27554ffb7ac2de.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_193c16f6421843479d27554ffb7ac2de")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_193c16f6421843479d27554ffb7ac2de")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -8640,35 +8685,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_ffc4ceb75a204bdc9baed25b86981d5d")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_ffc4ceb75a204bdc9baed25b86981d5d")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -9060,14 +9084,35 @@ namespace st_ffc4ceb75a204bdc9baed25b86981d5d.Properties {
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_ffc4ceb75a204bdc9baed25b86981d5d")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_ffc4ceb75a204bdc9baed25b86981d5d")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -9884,50 +9929,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\Foreach EnabledTenant\DF Extract_MIP_Budget\Add Defaults"
           TopLeft="37,209.5" />
         <EdgeLayout
-          Id="Package\Foreach EnabledTenant\DF Extract_MIP_Budget.Paths[OLE DB Source Output]"
-          TopLeft="110.25,60">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,47.5"
-              Start="0,0"
-              End="0,40">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,40" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\Foreach EnabledTenant\DF Extract_MIP_Budget.Paths[Derived Column Output]"
-          TopLeft="106.5,251.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
           Id="Package\Foreach EnabledTenant\DF Extract_MIP_Budget.Paths[Row Count Output 2]"
           TopLeft="106.5,353.5">
           <EdgeLayout.Curve>
@@ -9971,6 +9972,50 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Foreach EnabledTenant\DF Extract_MIP_Budget.Paths[OLE DB Source Output]"
+          TopLeft="110.25,60">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,47.5"
+              Start="0,0"
+              End="0,40">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,40" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Foreach EnabledTenant\DF Extract_MIP_Budget.Paths[Derived Column Output]"
+          TopLeft="106.5,251.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
         <AnnotationLayout
           Text="Again, this package needs to be upgraded to multi-tenant"
           ParentId="Package\Foreach EnabledTenant\DF Extract_MIP_Budget"
@@ -9982,7 +10027,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </LayoutInfo>
   </TaskHost>
   <PipelineComponentMetadata
-    design-time-name="Package\Foreach EnabledTenant\DF Extract_MIP_Budget\OLE DB Source">
+    design-time-name="Package\Foreach EnabledTenant\DF Extract_MIP_Budget\Write to Destination">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
@@ -9990,7 +10035,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </Properties>
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
-    design-time-name="Package\Foreach EnabledTenant\DF Extract_MIP_Budget\Write to Destination">
+    design-time-name="Package\Foreach EnabledTenant\DF Extract_MIP_Budget\OLE DB Source">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
