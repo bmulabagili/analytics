@@ -726,7 +726,7 @@ END
 	SELECT 1, '30022', 'Revenue', 'HBF' UNION
 	SELECT 1, '30022', 'Revenue', 'WITW' UNION
 	SELECT 3, '30022', 'Revenue', 'HCA' 
-
+/*
 SELECT 
 	GroupID
 	, CASE WHEN Category = 'Revenue' THEN
@@ -749,10 +749,124 @@ SELECT
 	, Category
 	, EntityCode			
 FROM GLReportGrouping
-
+*/
 TRUNCATE TABLE GoogleImportConfig
 
 INSERT INTO GoogleImportConfig
 SELECT 1, 22458219 AS AccountID, 'UA-22458219-1' AS WebProperty, 44282754 AS ProfileID, 'Main' AS ReportingSection UNION
 SELECT 2, 29527341 AS AccountID, 'UA-29527341-1' AS WebProperty, 56721937 AS ProfileID, 'Store' AS ReportingSection UNION
 SELECT 3, 29527341 AS AccountID, 'UA-29527341-2' AS WebProperty, 92087633 AS ProfileID, 'Store' AS ReportingSection
+
+
+TRUNCATE TABLE Paycor_MIP_MAPPING
+
+INSERT INTO Paycor_MIP_Mapping
+(GLOrgCode, GLAccountNumber, GLCode, FundCode, EntityCode, CampusCode, CategoryCode, AccountingCode9, AccountingName9)
+SELECT '11001000','025-CS-PER1-4016-40013', '40013','025','HBC', 'RM', 'PER1', 'Jeff'   , 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11001000','025-CS-PER1-4016-40090', '40090','025','HBC', 'RM', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11001000','11'					  , '40025','025','HBC', 'RM', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11001001','025-CS-PER1-4016-40013', '40013','025','HBC', 'RM', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11001001','025-CS-PER1-4016-40090', '40090','025','HBC', 'RM', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11001001','11'                    , '40090','025','HBC', 'RM', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11001002','025-CS-PER1-4016-40013', '40013','025','HBC', 'RM', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11001002','025-CS-PER1-4016-40090', '40090','025','HBC', 'RM', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11001002','11'                    , '40090','025','HBC', 'RM', 'PER1', 'Jeff' 	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11001003','025-CS-PER1-4016-40013', '40013','025','HBC', 'RM', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11001003','025-CS-PER1-4016-40090', '40090','025','HBC', 'RM', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11001003','11'                    , '40090','025','HBC', 'RM', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11001004','025-CS-PER1-4016-40013', '40013','025','HBC', 'RM', 'PER1', 'Dean'	, 'Direct (Ops)'											  UNION
+SELECT '11001004','025-CS-PER1-4016-40090', '40090','025','HBC', 'RM', 'PER1', 'Dean'	, 'Direct (Ops)'											  UNION
+SELECT '11001004','11'					  , '40025','025','HBC', 'RM', 'PER1', 'Dean'	, 'Direct (Ops)'											  UNION
+SELECT '11002000','025-CS-PER1-4016-40013', '40013','025','HBC', 'EL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11002000','025-CS-PER1-4016-40090', '40090','025','HBC', 'EL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11002000','11'                    , '40090','025','HBC', 'EL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11002001','025-CS-PER1-4016-40013', '40013','025','HBC', 'EL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11002001','025-CS-PER1-4016-40090', '40090','025','HBC', 'EL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11002001','11'					  , '40025','025','HBC', 'EL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11002002','025-CS-PER1-4016-40013', '40013','025','HBC', 'EL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11002002','025-CS-PER1-4016-40090', '40090','025','HBC', 'EL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11002002','11'                    , '40090','025','HBC', 'EL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11002003','025-CS-PER1-4016-40013', '40013','025','HBC', 'EL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11002003','025-CS-PER1-4016-40090', '40090','025','HBC', 'EL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11002003','11'					  , '40025','025','HBC', 'EL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11002004','025-CS-PER1-4016-40013', '40013','025','HBC', 'EL', 'PER1', 'Dean'	, 'Direct (Ops)'											  UNION
+SELECT '11002004','025-CS-PER1-4016-40090', '40090','025','HBC', 'EL', 'PER1', 'Dean'	, 'Direct (Ops)'											  UNION
+SELECT '11002004','11'					  , '40025','025','HBC', 'EL', 'PER1', 'Dean'	, 'Direct (Ops)'											  UNION
+SELECT '11003000','025-CS-PER1-4016-40013', '40013','025','HBC', 'NI', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11003000','025-CS-PER1-4016-40090', '40090','025','HBC', 'NI', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11003000','11'					  , '40025','025','HBC', 'NI', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11003001','025-CS-PER1-4016-40013', '40013','025','HBC', 'NI', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11003001','025-CS-PER1-4016-40090', '40013','025','HBC', 'NI', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11003001','11'                    , '40013','025','HBC', 'NI', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11003003','025-CS-PER1-4016-40013', '40013','025','HBC', 'NI', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11003003','025-CS-PER1-4016-40090', '40090','025','HBC', 'NI', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11003003','11'                    , '40090','025','HBC', 'NI', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11004000','025-CS-PER1-4016-40013', '40013','025','HBC', 'CL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11004000','025-CS-PER1-4016-40090', '40090','025','HBC', 'CL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11004000','11'                    , '40090','025','HBC', 'CL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11004002','025-CS-PER1-4016-40013', '40013','025','HBC', 'CL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11004002','025-CS-PER1-4016-40090', '40090','025','HBC', 'CL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11004002','11'                    , '40090','025','HBC', 'CL', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11004004','025-CS-PER1-4016-40013', '40013','025','HBC', 'CL', 'PER1', 'Dean'	, 'Direct (Ops)'											  UNION
+SELECT '11004004','025-CS-PER1-4016-40090', '40090','025','HBC', 'CL', 'PER1', 'Dean'	, 'Direct (Ops)'											  UNION
+SELECT '11004004','11'                    , '40090','025','HBC', 'CL', 'PER1', 'Dean'	, 'Direct (Ops)'											  UNION
+SELECT '11005000','025-CS-PER1-4016-40013', '40013','025','HBC', 'AU', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11005000','025-CS-PER1-4016-40090', '40090','025','HBC', 'AU', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11005000','11'					  , '40025','025','HBC', 'AU', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11005001','025-CS-PER1-4016-40013', '40013','025','HBC', 'AU', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11005001','025-CS-PER1-4016-40090', '40090','025','HBC', 'AU', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11005001','11'                    , '40090','025','HBC', 'AU', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11005002','025-CS-PER1-4016-40013', '40013','025','HBC', 'AU', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11005002','025-CS-PER1-4016-40090', '40090','025','HBC', 'AU', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11005002','11'                    , '40090','025','HBC', 'AU', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11005003','025-CS-PER1-4016-40013', '40013','025','HBC', 'AU', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11005003','025-CS-PER1-4016-40090', '40090','025','HBC', 'AU', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11005003','11'                    , '40090','025','HBC', 'AU', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11006000','025-CS-PER1-4016-40013', '40013','025','HBC', 'CC', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11006000','025-CS-PER1-4016-40090', '40090','025','HBC', 'CC', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11006000','11'					  , '40025','025','HBC', 'CC', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11006003','025-CS-PER1-4016-40013', '40013','025','HBC', 'CC', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11006003','025-CS-PER1-4016-40090', '40090','025','HBC', 'CC', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11006003','11'                    , '40090','025','HBC', 'CC', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11007000','025-CS-PER1-4016-40013', '40013','025','HBC', 'DR', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11007000','025-CS-PER1-4016-40090', '40090','025','HBC', 'DR', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '11007000','11'                    , '40090','025','HBC', 'DR', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+--IE == indirect expenses campus/column								 					 															  
+SELECT '15999000','025-CS-PER1-4016-40013', '40013','025','HBC', 'IE', 'PER1', 'Garrett', 'Indirect BSC net'										  UNION
+SELECT '15999000','025-CS-PER1-4016-40090', '40090','025','HBC', 'IE', 'PER1', 'Garrett', 'Indirect BSC net'										  UNION
+SELECT '15999000','11'					  , '40025','025','HBC', 'IE', 'PER1', 'Garrett', 'Indirect BSC net'										  UNION
+SELECT '17999000','025-CS-PER1-4016-40013', '40013','025','HBC', 'IE', 'PER1', 'Fred'	, 'Indirect Accounting, VCF net, Development net $0)'		  UNION
+SELECT '17999000','025-CS-PER1-4016-40090', '40090','025','HBC', 'IE', 'PER1', 'Fred'	, 'Indirect Accounting, VCF net, Development net $0)'		  UNION
+SELECT '17999000','11'					  , '40025','025','HBC', 'IE', 'PER1', 'Fred'	, 'Indirect Accounting, VCF net, Development net $0)'		  UNION
+SELECT '18999000','025-CS-PER1-4016-40013', '40013','025','HBC', 'IE', 'PER1', 'Dean'	, 'Indirect (IT)'											  UNION
+SELECT '18999000','025-CS-PER1-4016-40090', '40090','025','HBC', 'IE', 'PER1', 'Dean'	, 'Indirect (IT)'											  UNION
+SELECT '18999000','11'					  , '40025','025','HBC', 'IE', 'PER1', 'Dean'	, 'Indirect (IT)'											  UNION
+SELECT '19999026','025-CS-PER1-4016-40013', '40013','025','HBC', 'IE', 'PER1', 'Luke'	, 'Indirect (Worship, Prod, CSvcs/Comm, Online, spec Events)' UNION
+SELECT '19999026','025-CS-PER1-4016-40090', '40090','025','HBC', 'IE', 'PER1', 'Luke'	, 'Indirect (Worship, Prod, CSvcs/Comm, Online, spec Events)' UNION
+SELECT '19999026','11'					  , '40025','025','HBC', 'IE', 'PER1', 'Luke'	, 'Indirect (Worship, Prod, CSvcs/Comm, Online, spec Events)' UNION
+SELECT '19999027','025-CS-PER1-4016-40013', '40013','025','HBC', 'IE', 'PER1', 'Luke'	, 'Indirect (Worship, Prod, CSvcs/Comm, Online, spec Events)' UNION
+SELECT '19999027','025-CS-PER1-4016-40090', '40090','025','HBC', 'IE', 'PER1', 'Luke'	, 'Indirect (Worship, Prod, CSvcs/Comm, Online, spec Events)' UNION
+SELECT '19999027','11'					  , '40025','025','HBC', 'IE', 'PER1', 'Luke'	, 'Indirect (Worship, Prod, CSvcs/Comm, Online, spec Events)' UNION
+SELECT '19999028','025-CS-PER1-4016-40013', '40013','025','HBC', 'IE', 'PER1', 'Luke'	, 'Indirect (Worship, Prod, CSvcs/Comm, Online, spec Events)' UNION
+SELECT '19999028','025-CS-PER1-4016-40090', '40090','025','HBC', 'IE', 'PER1', 'Luke'	, 'Indirect (Worship, Prod, CSvcs/Comm, Online, spec Events)' UNION
+SELECT '19999028','11'					  , '40025','025','HBC', 'IE', 'PER1', 'Luke'	, 'Indirect (Worship, Prod, CSvcs/Comm, Online, spec Events)' UNION
+SELECT '20999000','025-CS-PER1-4016-40013', '40013','025','HBC', 'IE', 'PER1', 'Scott'	, 'Indirect (Pastoral+Exec Suport)'                           UNION
+SELECT '20999000','025-CS-PER1-4016-40090', '40025','025','HBC', 'IE', 'PER1', 'Scott'	, 'Indirect (Pastoral+Exec Suport)'							  UNION
+SELECT '20999000','11'					  , '40025','025','HBC', 'IE', 'PER1', 'Scott'	, 'Indirect (Pastoral+Exec Suport)'							  UNION
+SELECT '21999000','025-CS-PER1-4016-40013', '40013','025','HBC', 'IE', 'PER1', 'Dean'	, 'Indirect (Central Svcs)'									  UNION
+SELECT '21999000','025-CS-PER1-4016-40090', '40090','025','HBC', 'IE', 'PER1', 'Dean'	, 'Indirect (Central Svcs)'									  UNION
+SELECT '21999000','11'					  , '40025','025','HBC', 'IE', 'PER1', 'Dean'	, 'Indirect (Central Svcs)'									  UNION
+SELECT '23999000','025-CS-PER1-4016-40013', '40013','025','HBC', 'IE', 'PER1', 'Fred'	, 'Indirect Accounting, VCF net, Development net $0)'		  UNION
+SELECT '23999000','025-CS-PER1-4016-40090', '40013','025','HBC', 'IE', 'PER1', 'Fred'	, 'Indirect Accounting, VCF net, Development net $0)'		  UNION
+SELECT '23999000','11'					  , '40025','025','HBC', 'IE', 'PER1', 'Fred'	, 'Indirect Accounting, VCF net, Development net $0)'		  UNION
+SELECT '26999000','025-CS-PER1-4016-40013', '40013','025','HBC', 'IE', 'PER1', 'Fred'	, 'Indirect Accounting, VCF net, Development net $0)'		  UNION
+SELECT '26999000','025-CS-PER1-4016-40090', '40090','025','HBC', 'IE', 'PER1', 'Fred'	, 'Indirect Accounting, VCF net, Development net $0)'		  UNION
+SELECT '26999000','11'                    , '40090','025','HBC', 'IE', 'PER1', 'Fred'	, 'Indirect Accounting, VCF net, Development net $0)'		  UNION
+SELECT '27999000','025-CS-PER1-4016-40013', '40013','025','HBC', 'IE', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '27999000','025-CS-PER1-4016-40090', '40090','025','HBC', 'IE', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '27999000','11'                    , '40090','025','HBC', 'IE', 'PER1', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
+SELECT '28999000','025-CS-PER1-4016-40013', '40013','025','HBC', 'IE', 'PER1', 'Jeff'	, 'Indirect (Interns)'										  UNION
+SELECT '28999000','025-CS-PER1-4016-40090', '40090','025','HBC', 'IE', 'PER1', 'Jeff'	, 'Indirect (Interns)'										  UNION
+SELECT '28999000','11'                    , '40090','025','HBC', 'IE', 'PER1', 'Jeff'	, 'Indirect (Interns)'
+
+SELECT * FROM Paycor_MIP_MAPPING
