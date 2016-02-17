@@ -757,54 +757,159 @@ SELECT 1, 22458219 AS AccountID, 'UA-22458219-1' AS WebProperty, 44282754 AS Pro
 SELECT 2, 29527341 AS AccountID, 'UA-29527341-1' AS WebProperty, 56721937 AS ProfileID, 'Store' AS ReportingSection UNION
 SELECT 3, 29527341 AS AccountID, 'UA-29527341-2' AS WebProperty, 92087633 AS ProfileID, 'Store' AS ReportingSection
 
+TRUNCATE TABLE CampusXLTReportGroup;
 
-TRUNCATE TABLE Paycor_MIP_MAPPING
+INSERT INTO CampusXLTReportGroup
+SELECT 1 , 'Administration'  , 'General Office'								, 'Dean' Union
+SELECT 2 , 'Administration'  , 'Office Equipment'							, 'Dean' Union
+SELECT 3 , 'Administration'  , 'Technology'									, 'Dean' Union
+SELECT 4 , 'Administration'  , 'Printing'									, 'Dean' Union  
+SELECT 5 , 'Administration'  , 'Banking, Legal, Audit, Professional Fees'	, 'Fred' Union
+SELECT 6 , 'Administration'  , 'Payroll Processing Fees'					, 'Luke' Union
+SELECT 7 , 'Administration'  , 'Insurance'									, 'Dean' Union
+		 				     
+SELECT 8 , 'Facilities'      ,'Facilities & Grounds Maintenance'			, 'Dean' UNION
+SELECT 9 , 'Facilities'      ,'Utilities'									, 'Dean' UNION
+SELECT 10, 'Facilities'      ,'Service Support'								, 'Dean' UNION
+SELECT 11, 'Facilities'      ,'Mortgage'									, 'XLT' UNION
 
-INSERT INTO Paycor_MIP_Mapping
-(GLOrgCode, CampusCode, AccountingCode9, AccountingName9)
-SELECT '11001000','RM', 'Jeff'  , 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11001001','RM', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11001002','RM', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11001003','RM', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11001004','RM', 'Dean'	, 'Direct (Ops)'											  UNION
-SELECT '11002000','EL', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11002001','EL', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11002002','EL', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11002003','EL', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11002004','EL', 'Dean'	, 'Direct (Ops)'											  UNION
-SELECT '11003000','NI', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11003001','NI', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11003003','NI', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11004000','CL', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11004002','CL', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11004004','CL', 'Dean'	, 'Direct (Ops)'											  UNION
-SELECT '11005000','AU', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11005001','AU', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11005002','AU', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11005003','AU', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11006000','CC', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11006003','CC', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '11007000','DR', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '15999000','IE', 'Garrett', 'Indirect BSC net'										  UNION
-SELECT '17999000','IE', 'Fred'	, 'Indirect Accounting, VCF net, Development net $0)'		  UNION
-SELECT '18999000','IE', 'Dean'	, 'Indirect (IT)'											  UNION
-SELECT '19999026','IE', 'Luke'	, 'Indirect (Worship, Prod, CSvcs/Comm, Online, spec Events)' UNION
-SELECT '19999027','IE', 'Luke'	, 'Indirect (Worship, Prod, CSvcs/Comm, Online, spec Events)' UNION
-SELECT '19999028','IE', 'Luke'	, 'Indirect (Worship, Prod, CSvcs/Comm, Online, spec Events)' UNION
-SELECT '20999000','IE', 'Scott'	, 'Indirect (Pastoral+Exec Suport)'                           UNION
-SELECT '21999000','IE', 'Dean'	, 'Indirect (Central Svcs)'									  UNION
-SELECT '23999000','IE', 'Fred'	, 'Indirect Accounting, VCF net, Development net $0)'		  UNION
-SELECT '26999000','IE', 'Fred'	, 'Indirect Accounting, VCF net, Development net $0)'		  UNION
-SELECT '27999000','IE', 'Jeff'	, 'Direct (Min Staff/Admin)'								  UNION
-SELECT '28999000','IE', 'Jeff'	, 'Indirect (Interns)'										  
-;
+SELECT 12, 'Camp Operations' ,'Operating Expense'							, 'Dean' UNION
 
-SELECT * FROM Paycor_MIP_MAPPING;
-EXEC [DW].[usp_UpsertDimFinancialCategory__PaycorAdjustments];
+SELECT 13, 'Ministries'      ,'Ministry Expansion and Development'          , 'XLT' UNION
+SELECT 14, 'Ministries'      ,'Special Events'								, 'Luke' UNION
+SELECT 15, 'Ministries'      ,'Online Services'								, 'Luke' UNION
+SELECT 16, 'Ministries'      ,'Adult'										, 'Jeff' UNION
+SELECT 17, 'Ministries'      ,'Single Parent'								, 'Jeff' UNION
+SELECT 18, 'Ministries'      ,'Biblical Soul Care'							, 'Garret' UNION
+SELECT 19, 'Ministries'      ,'Family'										, 'Jeff' UNION
+SELECT 20, 'Ministries'      ,'Student'										, 'Dean' UNION
+SELECT 21, 'Ministries'      ,'Worship'										, 'Luke' UNION
+SELECT 22, 'Ministries'      ,'Stewardship'									, 'Trei' UNION
+SELECT 23, 'Ministries'      ,'Missions & Outreach & Church Plant'			, 'XLT' UNION
+SELECT 24, 'Ministries'      ,'Congregation/FOCIS'							, 'Jeff' UNION
+SELECT 25, 'Ministries'      ,'Production'									, 'Luke' UNION
+SELECT 26, 'Ministries'      ,'Creative Services, Video Prod, Media'		, 'Luke' UNION
+SELECT 27, 'Ministries'      ,'Food Ministry'								, ''  UNION
 
+SELECT 28, 'Ministries'      ,'Harvest Studio Production'					, ''  
 
---insert the paycor "glcodes" into GLReportGrouping
-INSERT INTO GLReportGrouping
-SELECT 1, GLOrgCode, 'Expense', 'HBC'
-FROM Paycor_MIP_Mapping;
+--xlt mapping:
+TRUNCATE TABLE CampusXLTReportGroupMap
+--1. General Office
 
+--2. Office Equipment –Expenses with the department code 5058
+INSERT INTO CampusXLTReportGroupMap
+SELECT FinancialCategoryID, 2
+FROM DW.DimFinancialCategory
+WHERE
+	EntityCode = 'HBC'
+	AND Departmentcode = '5058'
+--3. Technology
+
+--4. Printing – Expenses with the department code 5078
+INSERT INTO CampusXLTReportGroupMap
+SELECT FinancialCategoryID, 4
+FROM DW.DimFinancialCategory
+WHERE
+	EntityCode = 'HBC'
+	AND Departmentcode = '5078'
+--5. Banking, Legal, Audit, Professional Fees
+
+--6. Payroll Processing Fees
+
+--7. Insurance
+
+--8.Facilities & Grounds Maintenance
+
+--9.Utilities
+
+--10.Service Support – department 6197
+INSERT INTO CampusXLTReportGroupMap
+SELECT FinancialCategoryID, 10
+FROM DW.DimFinancialCategory
+WHERE
+	EntityCode = 'HBC'
+	AND Departmentcode = '6197'
+
+--11.Mortgage
+
+--12.Operating Expense (under camp operations, also called camp  operating expense on xlt management report tab) – all expenses under fund 058
+INSERT INTO CampusXLTReportGroupMap
+SELECT FinancialCategoryID, 12
+FROM DW.DimFinancialCategory
+WHERE
+	EntityCode = 'HBC'
+	AND FundCode = '058'
+
+--13.Ministry Expansion and Development
+
+--14.Special Events
+
+--15.Online Services – All expenses with department 5164
+INSERT INTO CampusXLTReportGroupMap
+SELECT FinancialCategoryID, 15
+FROM DW.DimFinancialCategory
+WHERE
+	EntityCode = 'HBC'
+	AND Departmentcode = '5164'
+
+--16.Adult
+
+--17.Single Parent – all expenses with department code 7059
+INSERT INTO CampusXLTReportGroupMap
+SELECT FinancialCategoryID, 17
+FROM DW.DimFinancialCategory
+WHERE
+	EntityCode = 'HBC'
+	AND Departmentcode = '7059'
+
+--18.Biblical Soul Care – all expenses with fund 055
+INSERT INTO CampusXLTReportGroupMap
+SELECT FinancialCategoryID, 18
+FROM DW.DimFinancialCategory
+WHERE
+	EntityCode = 'HBC'
+	AND FundCode = '055'
+
+--19.Family 
+
+--20.Student
+
+--21.Worship
+
+--22.Stewardship – all expenses with department code 7280
+INSERT INTO CampusXLTReportGroupMap
+SELECT FinancialCategoryID, 22
+FROM DW.DimFinancialCategory
+WHERE
+	EntityCode = 'HBC'
+	AND Departmentcode = '7280'
+--23.Missions & Outreach & Church Plant
+
+--24.Congregation/FOCIS
+
+--25.Production – all expenses with department 5160
+INSERT INTO CampusXLTReportGroupMap
+SELECT FinancialCategoryID, 25
+FROM DW.DimFinancialCategory
+WHERE
+	EntityCode = 'HBC'
+	AND Departmentcode = '5160'
+
+--26.Creative Services, Video Prod, Media – all expenses in department codes 5158, 5159, or 6137
+INSERT INTO CampusXLTReportGroupMap
+SELECT FinancialCategoryID, 26
+FROM DW.DimFinancialCategory
+WHERE
+	EntityCode = 'HBC'
+	AND Departmentcode IN ('5158','5159','6137')
+
+--27.Food Ministry
+
+--28.Harvest Studio production – all expenses with fund 069
+INSERT INTO CampusXLTReportGroupMap
+SELECT FinancialCategoryID, 28
+FROM DW.DimFinancialCategory
+WHERE
+	EntityCode = 'HBC'
+	AND FundCode = '069'
