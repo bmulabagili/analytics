@@ -726,7 +726,7 @@ END
 	SELECT 1, '30022', 'Revenue', 'HBF' UNION
 	SELECT 1, '30022', 'Revenue', 'WITW' UNION
 	SELECT 3, '30022', 'Revenue', 'HCA' 
-/*
+
 SELECT 
 	GroupID
 	, CASE WHEN Category = 'Revenue' THEN
@@ -749,7 +749,7 @@ SELECT
 	, Category
 	, EntityCode			
 FROM GLReportGrouping
-*/
+
 TRUNCATE TABLE GoogleImportConfig
 
 INSERT INTO GoogleImportConfig
