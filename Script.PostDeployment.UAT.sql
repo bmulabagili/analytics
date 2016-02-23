@@ -59,8 +59,7 @@ UPDATE SET
 MERGE INTO dbo.ConnectionString AS Target
 USING (VALUES
      (0, N'FlatFileSource', N'FlatFileSource', -1, GETUTCDATE(), GETUTCDATE(), '')
-  ,	(1, N'Data Source=devharvestbible.database.windows.net;Persist Security Info=True;Initial Catalog=HarvestBible;packet size=4096', 'Harvest bible connection string.', -1, GETUTCDATE(), GETUTCDATE(), '')
-        --Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=52projectsMIP;Password=Proj3ct$;Initial Catalog=CHC;Provider=SQLNCLI11.1;Auto Translate=False;
+  ,	(1, N'Data Source=devharvestbible.database.windows.net;User ID=HB1User;Password=u53r4hb1!;Initial Catalog=HarvestBible;Provider=SQLNCLI11.1;Auto Translate=False;', 'Harvest bible connection string.', -1, GETUTCDATE(), GETUTCDATE(), '')
   , (2, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=CHC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-CHC', -1, GETUTCDATE(), GETUTCDATE(), '')
   , (3, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=HBC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBC', -1, GETUTCDATE(), GETUTCDATE(), '')
   , (4, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=HBF;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBF', -1, GETUTCDATE(), GETUTCDATE(), '')
