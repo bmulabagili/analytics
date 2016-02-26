@@ -12,8 +12,8 @@
   DTS:ObjectName="Transform_FactSmallGroup"
   DTS:PackageType="5"
   DTS:ProtectionLevel="2"
-  DTS:VersionBuild="164"
-  DTS:VersionGUID="{4F97D321-CD15-452E-A420-46E0CF430D57}">
+  DTS:VersionBuild="166"
+  DTS:VersionGUID="{750BD6CC-6B8E-4E20-9C53-6C039E3CC337}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:LogProviders>
@@ -881,7 +881,7 @@ where [refTable].[TenantID] = ? and [refTable].[GroupName] = ?</property>
                   containsID="true"
                   dataType="System.String"
                   description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
-                  name="ParameterMap">#{Package\DF Transform_FactSmallGroup\2265:invalid};#{Package\DF Transform_FactSmallGroup\2266:invalid};</property>
+                  name="ParameterMap">#{Package\DF Transform_FactSmallGroup\2157:invalid};#{Package\DF Transform_FactSmallGroup\2158:invalid};</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -1235,21 +1235,20 @@ where [refTable].[TenantID] = ? and [refTable].[CalendarMonth] = ? and [refTable
                   name="SqlCommand"
                   UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT DISTINCT
        TenantID
-     , LTRIM(RTRIM(GroupName)) AS GroupName
+    , LTRIM(RTRIM(GroupName)) AS GroupName
      , MONTH(CONVERT(DATETIME, LEFT(REPLACE(ReportPeriod, 'Month: ',''), CHARINDEX(' ', REPLACE(ReportPeriod, 'Month: ','')) -1 ) + ' 1, '
-	   + RIGHT(ReportPeriod, 4) ) ) As CalendarMonth
+	+ RIGHT(ReportPeriod, 4) ) ) As CalendarMonth
      , Year(CONVERT(DATETIME, LEFT(REPLACE(ReportPeriod, 'Month: ',''), CHARINDEX(' ', REPLACE(ReportPeriod, 'Month: ','')) -1 ) + ' 1, '
 	   + RIGHT(ReportPeriod, 4) ) ) As CalendarYear
-    --, CONVERT(INT, LEFT(TotalGroups, 12)) AS TotalGroups
-    , CONVERT(INT, (CONVERT(DECIMAL(12,9), TotalGroups) ))AS TotalGroups
-    , CASE WHEN MissingReports   = '' THEN 0 ELSE MissingReports   END AS MissingReports
-    , CASE WHEN DidNotMeets      = '' THEN 0 ELSE DidNotMeets      END AS DidNotMeets
-    , CASE WHEN ActualAttendance = '' THEN 0 ELSE ActualAttendance END AS ActualAttendance
-    , CASE WHEN UniqueAttenders  = '' THEN 0 ELSE UniqueAttenders  END AS UniqueAttenders
-    , CONVERT(INT, (CONVERT(DECIMAL(12,9), TotalLeaders) ) ) AS TotalLeaders
-    , CONVERT(INT, (CONVERT(DECIMAL(12,9), ISNULL(NULLIF(TotalMembers,''),'0')) ) ) AS TotalMembers
-    --, CONVERT(INT, (CONVERT(DECIMAL(12,9), TotalProspects) ) ) AS TotalProspects
-    , CASE WHEN TotalProspects = ''  THEN 0 ELSE TotalProspects END AS TotalProspects
+    , CONVERT(INT, (CONVERT(DECIMAL(12,9), CASE WHEN TRY_CONVERT(INT, TotalGroups       ) IS NULL THEN 0 ELSE TotalGroups      END ) ) ) AS TotalGroups
+    , CONVERT(INT, (CONVERT(DECIMAL(12,9), CASE WHEN TRY_CONVERT(INT, MissingReports    ) IS NULL THEN 0 ELSE MissingReports   END ) ) ) AS MissingReports
+    , CONVERT(INT, (CONVERT(DECIMAL(12,9), CASE WHEN TRY_CONVERT(INT, DidNotMeets       ) IS NULL THEN 0 ELSE DidNotMeets      END ) ) ) AS DidNotMeets
+    , CONVERT(INT, (CONVERT(DECIMAL(12,9), CASE WHEN TRY_CONVERT(INT, ActualAttendance  ) IS NULL THEN 0 ELSE ActualAttendance END ) ) ) AS ActualAttendance
+    , CONVERT(INT, (CONVERT(DECIMAL(12,9), CASE WHEN TRY_CONVERT(INT, UniqueAttenders   ) IS NULL THEN 0 ELSE UniqueAttenders  END ) ) ) AS UniqueAttenders
+    , CONVERT(INT, (CONVERT(DECIMAL(12,9), CASE WHEN TRY_CONVERT(INT, TotalLeaders      ) IS NULL THEN 0 ELSE TotalLeaders     END ) ) ) AS TotalLeaders
+    , CONVERT(INT, (CONVERT(DECIMAL(12,9), CASE WHEN TRY_CONVERT(INT, TotalMembers      ) IS NULL THEN 0 ELSE TotalMembers     END ) ) ) AS TotalMembers
+    , CONVERT(INT, (CONVERT(DECIMAL(12,9), CASE WHEN TRY_CONVERT(INT, TotalProspects    ) IS NULL THEN 0 ELSE TotalProspects   END ) ) )  AS TotalProspects
+
 FROM [extract].fellowshipone_smallgroupstatus
 WHERE TRY_CONVERT(INT, NULLIF(RowNumber, '')) IS NOT NULL;</property>
                 <property
@@ -3218,14 +3217,14 @@ WHERE TRY_CONVERT(INT, NULLIF(RowNumber, '')) IS NOT NULL;</property>
               startId="Package\DF Transform_FactSmallGroup\Lookup DimSmallGroupDetail.Outputs[Lookup Match Output]" />
             <path
               refId="Package\DF Transform_FactSmallGroup.Paths[Lookup No Match Output1]"
-              endId="Package\DF Transform_FactSmallGroup\TF Surrogate Key Transform.Inputs[SurrogateKeyInput]"
-              name="Lookup No Match Output"
-              startId="Package\DF Transform_FactSmallGroup\Member Exist?.Outputs[Lookup No Match Output]" />
-            <path
-              refId="Package\DF Transform_FactSmallGroup.Paths[Lookup No Match Output]"
               endId="Package\DF Transform_FactSmallGroup\SET DimSmallGroupDetailID -1.Inputs[Derived Column Input]"
               name="Lookup No Match Output"
               startId="Package\DF Transform_FactSmallGroup\Lookup DimSmallGroupDetail.Outputs[Lookup No Match Output]" />
+            <path
+              refId="Package\DF Transform_FactSmallGroup.Paths[Lookup No Match Output]"
+              endId="Package\DF Transform_FactSmallGroup\TF Surrogate Key Transform.Inputs[SurrogateKeyInput]"
+              name="Lookup No Match Output"
+              startId="Package\DF Transform_FactSmallGroup\Member Exist?.Outputs[Lookup No Match Output]" />
             <path
               refId="Package\DF Transform_FactSmallGroup.Paths[Output]"
               endId="Package\DF Transform_FactSmallGroup\Lookup DimSmallGroupDetail.Inputs[Lookup Input]"
@@ -3375,6 +3374,15 @@ WHERE TRY_CONVERT(INT, NULLIF(RowNumber, '')) IS NOT NULL;</property>
               VSTAMajorVersion="3"
               VSTAMinorVersion="0"
               Language="CSharp">
+              <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -3594,35 +3602,6 @@ WHERE TRY_CONVERT(INT, NULLIF(RowNumber, '')) IS NOT NULL;</property>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_3f38422ba6024083b1a330deed97968a.Properties.Settings.get_Default():st_3f38422ba6024083b1a330deed97968a.Properties.Sett" +
-    "ings")]
-
-namespace st_3f38422ba6024083b1a330deed97968a.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
-              <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
 
@@ -3766,6 +3745,35 @@ namespace st_3f38422ba6024083b1a330deed97968a
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_3f38422ba6024083b1a330deed97968a.Properties.Settings.get_Default():st_3f38422ba6024083b1a330deed97968a.Properties.Sett" +
+    "ings")]
+
+namespace st_3f38422ba6024083b1a330deed97968a.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\AssemblyInfo.cs"
                 Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -3795,15 +3803,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -4566,6 +4565,15 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -4684,35 +4692,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_afc808b0314a44c29dca282112c5e8f6.Properties.Settings.get_Default():st_afc808b0314a44c29dca282112c5e8f6.Properties.Sett" +
-    "ings")]
-
-namespace st_afc808b0314a44c29dca282112c5e8f6.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -5138,6 +5117,35 @@ namespace st_afc808b0314a44c29dca282112c5e8f6
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_afc808b0314a44c29dca282112c5e8f6.Properties.Settings.get_Default():st_afc808b0314a44c29dca282112c5e8f6.Properties.Sett" +
+    "ings")]
+
+namespace st_afc808b0314a44c29dca282112c5e8f6.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\AssemblyInfo.cs"
                 Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -5167,15 +5175,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -5465,6 +5464,15 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -5583,35 +5591,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_de2ac7b33da64c17b06cb7497508d508.Properties.Settings.get_Default():st_de2ac7b33da64c17b06cb7497508d508.Properties.Sett" +
-    "ings")]
-
-namespace st_de2ac7b33da64c17b06cb7497508d508.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -5794,133 +5773,6 @@ string sSourceID = ReadVariable("System::SourceID").ToString().ToUpper();
     }
 }]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Resources.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_de2ac7b33da64c17b06cb7497508d508.Properties.Resources.get_ResourceManager():System.Resources.Resou" +
-    "rceManager")]
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_de2ac7b33da64c17b06cb7497508d508.Properties.Resources.get_Culture():System.Globalization.CultureIn" +
-    "fo")]
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_de2ac7b33da64c17b06cb7497508d508.Properties.Resources.set_Culture(System.Globalization.CultureInfo" +
-    "):Void")]
-
-namespace st_de2ac7b33da64c17b06cb7497508d508.Properties {
-    
-    
-    /// <summary>
-    ///   A strongly-typed resource class, for looking up localized strings, etc.
-    /// </summary>
-    // This class was auto-generated by the StronglyTypedResourceBuilder
-    // class via a tool like ResGen or Visual Studio.
-    // To add or remove a member, edit your .ResX file then rerun ResGen
-    // with the /str option, or rebuild your VS project.
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-    internal class Resources {
-        
-        private static global::System.Resources.ResourceManager resourceMan;
-        
-        private static global::System.Globalization.CultureInfo resourceCulture;
-        
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
-        }
-        
-        /// <summary>
-        ///   Returns the cached ResourceManager instance used by this class.
-        /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if ((resourceMan == null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("st_de2ac7b33da64c17b06cb7497508d508.Properties.Resources", typeof(Resources).Assembly);
-                    resourceMan = temp;
-                }
-                return resourceMan;
-            }
-        }
-        
-        /// <summary>
-        ///   Overrides the current thread's CurrentUICulture property for all
-        ///   resource lookups using this strongly typed resource class.
-        /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
-            get {
-                return resourceCulture;
-            }
-            set {
-                resourceCulture = value;
-            }
-        }
-    }
-}]]></ProjectItem>
-              <ProjectItem
-                Name="Project"
-                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
-<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
-	<msb:PropertyGroup>
-		<msb:CodeName>st_de2ac7b33da64c17b06cb7497508d508</msb:CodeName>
-		<msb:DisplayName>st_de2ac7b33da64c17b06cb7497508d508</msb:DisplayName>
-		<msb:Language>msBuild</msb:Language>
-		<msb:ProjectId>{5ECC787E-D314-4D45-9AB0-55F29819CCD9}</msb:ProjectId>
-	</msb:PropertyGroup>
-	<msb:ItemGroup>
-		<msb:Project Include="st_de2ac7b33da64c17b06cb7497508d508.csproj"/>
-		<msb:File Include="Properties\AssemblyInfo.cs"/>
-		<msb:File Include="Properties\Resources.resx"/>
-		<msb:File Include="Properties\Resources.Designer.cs"/>
-		<msb:File Include="Properties\Settings.Designer.cs"/>
-		<msb:File Include="Properties\Settings.settings"/>
-		<msb:File Include="ScriptMain.cs"/>
-	</msb:ItemGroup>
-</c:Project>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_de2ac7b33da64c17b06cb7497508d508")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_de2ac7b33da64c17b06cb7497508d508")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
-              <ProjectItem
                 Name="st_de2ac7b33da64c17b06cb7497508d508.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -6019,6 +5871,153 @@ using System.Runtime.CompilerServices;
     </VisualStudio>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
+              <ProjectItem
+                Name="Project"
+                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
+	<msb:PropertyGroup>
+		<msb:CodeName>st_de2ac7b33da64c17b06cb7497508d508</msb:CodeName>
+		<msb:DisplayName>st_de2ac7b33da64c17b06cb7497508d508</msb:DisplayName>
+		<msb:Language>msBuild</msb:Language>
+		<msb:ProjectId>{5ECC787E-D314-4D45-9AB0-55F29819CCD9}</msb:ProjectId>
+	</msb:PropertyGroup>
+	<msb:ItemGroup>
+		<msb:Project Include="st_de2ac7b33da64c17b06cb7497508d508.csproj"/>
+		<msb:File Include="Properties\AssemblyInfo.cs"/>
+		<msb:File Include="Properties\Resources.resx"/>
+		<msb:File Include="Properties\Resources.Designer.cs"/>
+		<msb:File Include="Properties\Settings.Designer.cs"/>
+		<msb:File Include="Properties\Settings.settings"/>
+		<msb:File Include="ScriptMain.cs"/>
+	</msb:ItemGroup>
+</c:Project>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_de2ac7b33da64c17b06cb7497508d508.Properties.Settings.get_Default():st_de2ac7b33da64c17b06cb7497508d508.Properties.Sett" +
+    "ings")]
+
+namespace st_de2ac7b33da64c17b06cb7497508d508.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_de2ac7b33da64c17b06cb7497508d508")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_de2ac7b33da64c17b06cb7497508d508")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Resources.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_de2ac7b33da64c17b06cb7497508d508.Properties.Resources.get_ResourceManager():System.Resources.Resou" +
+    "rceManager")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_de2ac7b33da64c17b06cb7497508d508.Properties.Resources.get_Culture():System.Globalization.CultureIn" +
+    "fo")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_de2ac7b33da64c17b06cb7497508d508.Properties.Resources.set_Culture(System.Globalization.CultureInfo" +
+    "):Void")]
+
+namespace st_de2ac7b33da64c17b06cb7497508d508.Properties {
+    
+    
+    /// <summary>
+    ///   A strongly-typed resource class, for looking up localized strings, etc.
+    /// </summary>
+    // This class was auto-generated by the StronglyTypedResourceBuilder
+    // class via a tool like ResGen or Visual Studio.
+    // To add or remove a member, edit your .ResX file then rerun ResGen
+    // with the /str option, or rebuild your VS project.
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    internal class Resources {
+        
+        private static global::System.Resources.ResourceManager resourceMan;
+        
+        private static global::System.Globalization.CultureInfo resourceCulture;
+        
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        internal Resources() {
+        }
+        
+        /// <summary>
+        ///   Returns the cached ResourceManager instance used by this class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if ((resourceMan == null)) {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("st_de2ac7b33da64c17b06cb7497508d508.Properties.Resources", typeof(Resources).Assembly);
+                    resourceMan = temp;
+                }
+                return resourceMan;
+            }
+        }
+        
+        /// <summary>
+        ///   Overrides the current thread's CurrentUICulture property for all
+        ///   resource lookups using this strongly typed resource class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
+                return resourceCulture;
+            }
+            set {
+                resourceCulture = value;
+            }
+        }
+    }
+}]]></ProjectItem>
               <BinaryItem
                 Name="st_de2ac7b33da64c17b06cb7497508d508.dll">TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1v
@@ -6178,14 +6177,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_1bddcbb3a1d84c409aadf59904725889")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_1bddcbb3a1d84c409aadf59904725889")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -6306,104 +6326,34 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
   </resheader>
 </root>]]></ProjectItem>
               <ProjectItem
-                Name="st_1bddcbb3a1d84c409aadf59904725889.csproj"
-                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{bdb154bd-c8f9-4a77-bb8f-9ffac652a329}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>st_1bddcbb3a1d84c409aadf59904725889</RootNamespace>
-    <AssemblyName>st_1bddcbb3a1d84c409aadf59904725889</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>.\bin\Debug\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_1bddcbb3a1d84c409aadf59904725889.Properties.Settings.get_Default():st_1bddcbb3a1d84c409aadf59904725889.Properties.Sett" +
+    "ings")]
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>false</DebugSymbols>
-    <Optimize>true</Optimize>
-    <OutputPath>.\bin\Release\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AppDesigner Include="Properties\" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-         <Generator>ResXFileCodeGenerator</Generator>
-         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-             <AutoGen>True</AutoGen>
-         <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-         <Generator>SettingsSingleFileGenerator</Generator>
-         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-         <AutoGen>True</AutoGen>
-         <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="ScriptMain.cs">
-         <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <!-- Include the build rules for a C# project.-->
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-
-  <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
-        <ProjectProperties HostName="ScriptTask"
-                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
-                           ApplicationType="usd"
-                           Language="cs"
-                           TemplatesPath=""
-                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
-                           DebugInfoCommandLine=""
-                           DebugInfoWorkingDir=""
-                           IconImageList=""/>
-        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
-        </Host>
-        <ProjectClient>
-            <HostIdentifier>SSIS_ST120</HostIdentifier>
-        </ProjectClient>
-      </FlavorProperties>
-    </VisualStudio>
-  </ProjectExtensions>
-</Project>]]></ProjectItem>
+namespace st_1bddcbb3a1d84c409aadf59904725889.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -6548,64 +6498,113 @@ namespace st_1bddcbb3a1d84c409aadf59904725889
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+                Name="st_1bddcbb3a1d84c409aadf59904725889.csproj"
+                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{bdb154bd-c8f9-4a77-bb8f-9ffac652a329}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>st_1bddcbb3a1d84c409aadf59904725889</RootNamespace>
+    <AssemblyName>st_1bddcbb3a1d84c409aadf59904725889</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_1bddcbb3a1d84c409aadf59904725889.Properties.Settings.get_Default():st_1bddcbb3a1d84c409aadf59904725889.Properties.Sett" +
-    "ings")]
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
 
-namespace st_1bddcbb3a1d84c409aadf59904725889.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>.\bin\Release\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+         <Generator>ResXFileCodeGenerator</Generator>
+         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+             <AutoGen>True</AutoGen>
+         <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+         <Generator>SettingsSingleFileGenerator</Generator>
+         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+         <AutoGen>True</AutoGen>
+         <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptMain.cs">
+         <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <!-- Include the build rules for a C# project.-->
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
+        <ProjectProperties HostName="ScriptTask"
+                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
+                           ApplicationType="usd"
+                           Language="cs"
+                           TemplatesPath=""
+                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
+                           DebugInfoCommandLine=""
+                           DebugInfoWorkingDir=""
+                           IconImageList=""/>
+        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
+        </Host>
+        <ProjectClient>
+            <HostIdentifier>SSIS_ST120</HostIdentifier>
+        </ProjectClient>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_1bddcbb3a1d84c409aadf59904725889")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_1bddcbb3a1d84c409aadf59904725889")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -6990,7 +6989,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_DfLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\DF Transform_FactSmallGroup&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\DF Transform_FactSmallGroup&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -7086,7 +7085,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_PkgLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -7106,7 +7105,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_TaskList">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="False" LogConnectionMgrs="True"&gt;&lt;tsk id="{77A14A95-01A8-473C-A3D8-1C25A18BA832}" typ="PipelineTask" p="" name="DF Transform_FactSmallGroup" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnderivedcolumn" name="Add Insert Defaults" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_17" /&gt;&lt;com id="26" dir="TRAN"  typ="trnderivedcolumn" name="Add Update Defaults" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_26" /&gt;&lt;com id="35" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="ADO NET Destination" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_35" /&gt;&lt;com id="80" dir="TRAN"  typ="trnrowcount" name="DEST ADO NET Destination" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_80" /&gt;&lt;com id="84" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_84" /&gt;&lt;com id="88" dir="TRAN"  typ="trnlookup" name="Lookup DimSmallGroupDetail" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_88" /&gt;&lt;com id="116" dir="TRAN"  typ="trnlookup" name="Member Exist?" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_116" /&gt;&lt;com id="152" dir="SRC"  typ="srcdatareader" name="Read From Source" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_152" /&gt;&lt;com id="200" dir="TRAN"  typ="trnderivedcolumn" name="SET DimSmallGroupDetailID -1" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_200" /&gt;&lt;com id="206" dir="TRAN"  typ="trnrowcount" name="SRC Read From Source" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_206" /&gt;&lt;com id="210" dir="TRAN"  typ="PragmaticWorks.TaskFactory.Components.Transforms.Hash.HashTransform, PragmaticWorks.TaskFactory.Components120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Hash Transform" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_210" /&gt;&lt;com id="229" dir="TRAN"  typ="PW.TaskFactory.SurrogateKeyTransform.SurrogateKeyTransform, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Surrogate Key Transform" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_229" /&gt;&lt;com id="249" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_249" /&gt;&lt;com id="258" dir="TRAN"  typ="trnunionall" name="Union All" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_258" /&gt;&lt;com id="358" dir="TRAN"  typ="trnunionall" name="Union All 1" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_358" /&gt;&lt;com id="446" dir="TRAN"  typ="trnconditionalsplit" name="Update or Do Nothing" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_446" /&gt;&lt;dp id="459" val="0"  ann="" c1="152" c2="206"/&gt;&lt;dp id="460" val="0"  ann="" c1="200" c2="358"/&gt;&lt;dp id="461" val="0"  ann="" c1="2" c2="210"/&gt;&lt;dp id="462" val="0"  ann="" c1="26" c2="258"/&gt;&lt;dp id="463" val="0"  ann="" c1="17" c2="258"/&gt;&lt;dp id="464" val="0"  ann="" c1="446" c2="84"/&gt;&lt;dp id="465" val="0"  ann="" c1="116" c2="446"/&gt;&lt;dp id="466" val="0"  ann="" c1="88" c2="358"/&gt;&lt;dp id="467" val="0"  ann="" c1="88" c2="200"/&gt;&lt;dp id="468" val="0"  ann="" c1="116" c2="229"/&gt;&lt;dp id="469" val="0"  ann="" c1="210" c2="88"/&gt;&lt;dp id="470" val="0"  ann="" c1="80" c2="35"/&gt;&lt;dp id="471" val="0"  ann="" c1="206" c2="2"/&gt;&lt;dp id="472" val="0"  ann="" c1="84" c2="249"/&gt;&lt;dp id="473" val="0"  ann="" c1="229" c2="17"/&gt;&lt;dp id="474" val="0"  ann="" c1="358" c2="116"/&gt;&lt;dp id="475" val="0"  ann="" c1="258" c2="80"/&gt;&lt;dp id="476" val="0"  ann="" c1="446" c2="26"/&gt;&lt;/tsk&gt;&lt;tsk id="{D1A6CDDE-4F99-48C4-B952-972D42AD634C}" typ="SQLTask" p="" name="Get Surrogate Key Seed" on="1" /&gt;&lt;tsk id="{B7B1B863-9BE7-4561-A4ED-65962D649221}" typ="SQLTask" p="" name="TRUNCATE TransformFactSmallGroup" on="1" /&gt;&lt;pc id="{8D83BD22-52C6-4938-91C2-A2DE30562298}" op="2" and="True" val="0" task1="{B7B1B863-9BE7-4561-A4ED-65962D649221}" task2="{D1A6CDDE-4F99-48C4-B952-972D42AD634C}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{CE3783F0-C115-4E3F-BC20-F51B13F1B8D6}" op="2" and="True" val="0" task1="{D1A6CDDE-4F99-48C4-B952-972D42AD634C}" task2="{77A14A95-01A8-473C-A3D8-1C25A18BA832}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{77A14A95-01A8-473C-A3D8-1C25A18BA832}" typ="PipelineTask" p="" name="DF Transform_FactSmallGroup" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnderivedcolumn" name="Add Insert Defaults" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_17" /&gt;&lt;com id="26" dir="TRAN"  typ="trnderivedcolumn" name="Add Update Defaults" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_26" /&gt;&lt;com id="35" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="ADO NET Destination" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_35" /&gt;&lt;com id="80" dir="TRAN"  typ="trnrowcount" name="DEST ADO NET Destination" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_80" /&gt;&lt;com id="84" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_84" /&gt;&lt;com id="88" dir="TRAN"  typ="trnlookup" name="Lookup DimSmallGroupDetail" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_88" /&gt;&lt;com id="116" dir="TRAN"  typ="trnlookup" name="Member Exist?" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_116" /&gt;&lt;com id="152" dir="SRC"  typ="srcdatareader" name="Read From Source" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_152" /&gt;&lt;com id="200" dir="TRAN"  typ="trnderivedcolumn" name="SET DimSmallGroupDetailID -1" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_200" /&gt;&lt;com id="206" dir="TRAN"  typ="trnrowcount" name="SRC Read From Source" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_206" /&gt;&lt;com id="210" dir="TRAN"  typ="PragmaticWorks.TaskFactory.Components.Transforms.Hash.HashTransform, PragmaticWorks.TaskFactory.Components120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Hash Transform" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_210" /&gt;&lt;com id="229" dir="TRAN"  typ="PW.TaskFactory.SurrogateKeyTransform.SurrogateKeyTransform, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Surrogate Key Transform" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_229" /&gt;&lt;com id="249" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_249" /&gt;&lt;com id="258" dir="TRAN"  typ="trnunionall" name="Union All" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_258" /&gt;&lt;com id="358" dir="TRAN"  typ="trnunionall" name="Union All 1" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_358" /&gt;&lt;com id="446" dir="TRAN"  typ="trnconditionalsplit" name="Update or Do Nothing" pid="{77A14A95-01A8-473C-A3D8-1C25A18BA832}_446" /&gt;&lt;dp id="459" val="0"  ann="" c1="152" c2="206"/&gt;&lt;dp id="460" val="0"  ann="" c1="200" c2="358"/&gt;&lt;dp id="461" val="0"  ann="" c1="2" c2="210"/&gt;&lt;dp id="462" val="0"  ann="" c1="26" c2="258"/&gt;&lt;dp id="463" val="0"  ann="" c1="17" c2="258"/&gt;&lt;dp id="464" val="0"  ann="" c1="446" c2="84"/&gt;&lt;dp id="465" val="0"  ann="" c1="116" c2="446"/&gt;&lt;dp id="466" val="0"  ann="" c1="88" c2="358"/&gt;&lt;dp id="467" val="0"  ann="" c1="88" c2="200"/&gt;&lt;dp id="468" val="0"  ann="" c1="116" c2="229"/&gt;&lt;dp id="469" val="0"  ann="" c1="210" c2="88"/&gt;&lt;dp id="470" val="0"  ann="" c1="80" c2="35"/&gt;&lt;dp id="471" val="0"  ann="" c1="206" c2="2"/&gt;&lt;dp id="472" val="0"  ann="" c1="84" c2="249"/&gt;&lt;dp id="473" val="0"  ann="" c1="229" c2="17"/&gt;&lt;dp id="474" val="0"  ann="" c1="358" c2="116"/&gt;&lt;dp id="475" val="0"  ann="" c1="258" c2="80"/&gt;&lt;dp id="476" val="0"  ann="" c1="446" c2="26"/&gt;&lt;/tsk&gt;&lt;tsk id="{D1A6CDDE-4F99-48C4-B952-972D42AD634C}" typ="SQLTask" p="" name="Get Surrogate Key Seed" on="1" /&gt;&lt;tsk id="{B7B1B863-9BE7-4561-A4ED-65962D649221}" typ="SQLTask" p="" name="TRUNCATE TransformFactSmallGroup" on="1" /&gt;&lt;pc id="{8D83BD22-52C6-4938-91C2-A2DE30562298}" op="2" and="True" val="0" task1="{B7B1B863-9BE7-4561-A4ED-65962D649221}" task2="{D1A6CDDE-4F99-48C4-B952-972D42AD634C}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{CE3783F0-C115-4E3F-BC20-F51B13F1B8D6}" op="2" and="True" val="0" task1="{D1A6CDDE-4F99-48C4-B952-972D42AD634C}" task2="{77A14A95-01A8-473C-A3D8-1C25A18BA832}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -7138,6 +7137,15 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMajorVersion="3"
               VSTAMinorVersion="0"
               Language="CSharp">
+              <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -7257,35 +7265,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_4805878567ca4e4abae2c49ede7696f7.Properties.Settings.get_Default():st_4805878567ca4e4abae2c49ede7696f7.Properties.Sett" +
-    "ings")]
-
-namespace st_4805878567ca4e4abae2c49ede7696f7.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -7754,6 +7733,35 @@ namespace st_4805878567ca4e4abae2c49ede7696f7
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_4805878567ca4e4abae2c49ede7696f7.Properties.Settings.get_Default():st_4805878567ca4e4abae2c49ede7696f7.Properties.Sett" +
+    "ings")]
+
+namespace st_4805878567ca4e4abae2c49ede7696f7.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\AssemblyInfo.cs"
                 Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -7783,15 +7791,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -8321,6 +8320,15 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -8439,35 +8447,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_ade1737cbb084058a08b6b12162cb74b.Properties.Settings.get_Default():st_ade1737cbb084058a08b6b12162cb74b.Properties.Sett" +
-    "ings")]
-
-namespace st_ade1737cbb084058a08b6b12162cb74b.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="st_ade1737cbb084058a08b6b12162cb74b.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -8762,6 +8741,35 @@ namespace st_ade1737cbb084058a08b6b12162cb74b
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_ade1737cbb084058a08b6b12162cb74b.Properties.Settings.get_Default():st_ade1737cbb084058a08b6b12162cb74b.Properties.Sett" +
+    "ings")]
+
+namespace st_ade1737cbb084058a08b6b12162cb74b.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\AssemblyInfo.cs"
                 Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -8791,15 +8799,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -9121,6 +9120,15 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -9339,35 +9347,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_b536ee6fafcf445ea989218da3adc637.Properties.Settings.get_Default():st_b536ee6fafcf445ea989218da3adc637.Properties.Sett" +
-    "ings")]
-
-namespace st_b536ee6fafcf445ea989218da3adc637.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
-              <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
 
@@ -9511,6 +9490,35 @@ namespace st_b536ee6fafcf445ea989218da3adc637
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_b536ee6fafcf445ea989218da3adc637.Properties.Settings.get_Default():st_b536ee6fafcf445ea989218da3adc637.Properties.Sett" +
+    "ings")]
+
+namespace st_b536ee6fafcf445ea989218da3adc637.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\AssemblyInfo.cs"
                 Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -9540,15 +9548,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -9954,24 +9953,24 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </LayoutInfo>
   </Package>
   <DtsEventHandler
-    design-time-name="{CC05AE07-845B-439D-9BE9-6978643E7F94}">
+    design-time-name="Package.EventHandlers[OnError]">
     <LayoutInfo>
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="NaN,NaN"
-          Id="{649ED1BE-345F-42AA-A0F4-E268A944BE71}"
+          Id="Package.EventHandlers[OnError]\SSISOpsEhObj_OnError_Start"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{478C7E89-95D6-4537-8E91-8C3EDA6AB919}"
+          Id="Package.EventHandlers[OnError]\SSISOpsEhObj_Package_OnError"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{153976B6-FD1B-4B42-9246-A8DAED5C485E}"
+          Id="Package.EventHandlers[OnError]\SSISOpsEhObj_Task_OnError"
           TopLeft="NaN,NaN" />
         <EdgeLayout
-          Id="{A86872F9-0F30-4166-8A08-EA65BF496211}"
+          Id="Package.EventHandlers[OnError].PrecedenceConstraints[{A9EB9FBE-F8A5-49C1-826D-FD27B30DE29E\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -9991,7 +9990,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{DB74643D-6526-4859-812A-97A3DE473B6F}"
+          Id="Package.EventHandlers[OnError].PrecedenceConstraints[{AE92E245-56D9-45EC-B83A-C7A174D051E2\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10014,44 +10013,44 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </LayoutInfo>
   </DtsEventHandler>
   <DtsEventHandler
-    design-time-name="{7EA4C8BD-340B-4AAA-A2CF-2862F0407A5A}">
+    design-time-name="Package.EventHandlers[OnPostExecute]">
     <LayoutInfo>
       <GraphLayout
         Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="NaN,NaN"
-          Id="{D16F4281-6F8E-4AC2-A73F-5C451573EC35}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_77A14A9501A8473CA3D81C25A18BA832_1"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{D7526069-80BC-427E-96C4-34F96431DE9A}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_77A14A9501A8473CA3D81C25A18BA832_2"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{493BB72A-DE50-4B23-B8B2-C6B4F18AB9F5}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_77A14A9501A8473CA3D81C25A18BA832_3"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{058679D0-33F1-4319-A689-B4121BD2C5F5}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_OnPostExecute_LogVariableOrConn"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{BDB2EE2F-9E73-4BFA-B1BB-E4A821C29D9A}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_OnPostExecute_SSISOpsScript"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{D2E7F479-34CF-4D6B-98A4-D1095E6F0592}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_OnPostExecute_Start"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{6055D326-6DE6-4AC1-BB85-058A58C81075}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_Package_OnPostExecute"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{33106561-DFA4-4640-A999-7E9CAFBB2588}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_Task_OnPostExecute"
           TopLeft="NaN,NaN" />
         <EdgeLayout
-          Id="{0459D180-AF1A-4598-B110-BDB0E1506BF9}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{0864F38C-E04F-406D-A0B4-C56FF1D1273E\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10071,7 +10070,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{1DE67551-697B-4D1F-9E62-4952AFF580D0}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{1FEB57D2-78C5-44D0-8284-6268B850EB36\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10091,7 +10090,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{208F0E85-8ADF-47F9-8F1F-59B5D067FEE7}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{4ABFA3CF-226C-4A50-9DB2-7162DBBAA7DC\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10111,7 +10110,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{40ECC376-E1AB-41AF-9CE8-B89286B61DA2}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{4C4BB6BD-18AF-417B-B8CE-47444B592DD1\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10131,7 +10130,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{4A7FABCC-0CA6-4F09-ACB0-8C632461902C}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{853301A1-5DF4-4BB0-A737-88384733F2FB\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10151,7 +10150,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{5BAB633F-9F5D-4BBA-B34E-86EAE6B31C2C}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{94813235-F93C-45BB-9A5A-6052A600C9A2\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10171,7 +10170,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{7246C575-DFE0-4614-8A9D-D68246AF5920}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{FBC5887B-3454-4501-9BF0-C90E92FF1DDB\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10194,24 +10193,24 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </LayoutInfo>
   </DtsEventHandler>
   <DtsEventHandler
-    design-time-name="{1203B69A-7CB1-413B-9B69-8A93028B5E5D}">
+    design-time-name="Package.EventHandlers[OnPreExecute]">
     <LayoutInfo>
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="NaN,NaN"
-          Id="{8CE7BE8C-B873-4E2C-BBA9-D879601993ED}"
+          Id="Package.EventHandlers[OnPreExecute]\SSISOpsEhObj_OnPreExecute_Start"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{D3E357A2-4657-4444-8833-0480380D15CA}"
+          Id="Package.EventHandlers[OnPreExecute]\SSISOpsEhObj_Package_OnPreExecute"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{FECDBCCA-9731-47D9-92E8-6238B88EAB20}"
+          Id="Package.EventHandlers[OnPreExecute]\SSISOpsEhObj_Task_OnPreExecute"
           TopLeft="NaN,NaN" />
         <EdgeLayout
-          Id="{4002EF95-F3E5-4E3D-A3DE-2920814FAE85}"
+          Id="Package.EventHandlers[OnPreExecute].PrecedenceConstraints[{51BEE2A3-D689-41D8-8327-6F66E7D287CC\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10231,7 +10230,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{9BD9B054-0A25-40DC-A9DE-2E6B7D29C83D}"
+          Id="Package.EventHandlers[OnPreExecute].PrecedenceConstraints[{BB3A676B-CB03-40E0-B3FD-69AD4C9B356A\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10254,20 +10253,20 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </LayoutInfo>
   </DtsEventHandler>
   <DtsEventHandler
-    design-time-name="{13102A50-42F9-48F1-AD95-308248CB12C3}">
+    design-time-name="Package.EventHandlers[OnVariableValueChanged]">
     <LayoutInfo>
       <GraphLayout
         Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="NaN,NaN"
-          Id="{48FFD6F6-EB70-4D08-9EBF-3B7ADDE25690}"
+          Id="Package.EventHandlers[OnVariableValueChanged]\SSISOpsEhObj_OnVariableValueChanged_Start"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{5C842089-675B-4898-BD73-F8FEF048B2EC}"
+          Id="Package.EventHandlers[OnVariableValueChanged]\SSISOpsEhObj_Task_OnVariableValueChanged"
           TopLeft="NaN,NaN" />
         <EdgeLayout
-          Id="{6C06A72B-3B83-40D9-9482-A3D69B36D613}"
+          Id="Package.EventHandlers[OnVariableValueChanged].PrecedenceConstraints[{9DDF646D-F6C3-41AF-B31D-5A3C6B13F5FA\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10290,24 +10289,24 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </LayoutInfo>
   </DtsEventHandler>
   <DtsEventHandler
-    design-time-name="{BD6E8F18-7942-4B33-9A68-51DC5C3859AE}">
+    design-time-name="Package.EventHandlers[OnWarning]">
     <LayoutInfo>
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="NaN,NaN"
-          Id="{04E24645-9A19-4281-90BB-5475C5173940}"
+          Id="Package.EventHandlers[OnWarning]\SSISOpsEhObj_OnWarning_Start"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{BE2B68A1-52D1-42B5-B7BE-9A155D614CCE}"
+          Id="Package.EventHandlers[OnWarning]\SSISOpsEhObj_Package_OnWarning"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{1044C572-B704-4C76-AC16-9CB4E4CE0693}"
+          Id="Package.EventHandlers[OnWarning]\SSISOpsEhObj_Task_OnWarning"
           TopLeft="NaN,NaN" />
         <EdgeLayout
-          Id="{0FB3EA97-DB28-459D-BC15-FB47823A570E}"
+          Id="Package.EventHandlers[OnWarning].PrecedenceConstraints[{1B2E1D1F-D091-4092-B208-19A4901A04A1\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10327,7 +10326,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{AB8F9A15-5B0C-4CD0-AD15-88111705290E}"
+          Id="Package.EventHandlers[OnWarning].PrecedenceConstraints[{35F4A7B4-E270-4783-ACA1-A0790817BE5C\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10614,42 +10613,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\DF Transform_FactSmallGroup.Paths[Lookup No Match Output]"
-          TopLeft="660,363">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-119,64"
-              Start="0,0"
-              End="-119,56.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,28" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,28"
-                    Point2="0,32"
-                    Point3="-4,32" />
-                  <mssgle:LineSegment
-                    End="-115,32" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-115,32"
-                    Point2="-119,32"
-                    Point3="-119,36" />
-                  <mssgle:LineSegment
-                    End="-119,56.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-115.30638671875,37,111.6127734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactSmallGroup.Paths[Lookup No Match Output1]"
           TopLeft="646.333333333333,633.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -10681,6 +10644,42 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
               BoundingBox="-71.4730533854167,29.385026737968,111.6127734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactSmallGroup.Paths[Lookup No Match Output1]"
+          TopLeft="660,363">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-119,64"
+              Start="0,0"
+              End="-119,56.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,28" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,28"
+                    Point2="0,32"
+                    Point3="-4,32" />
+                  <mssgle:LineSegment
+                    End="-115,32" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-115,32"
+                    Point2="-119,32"
+                    Point3="-119,36" />
+                  <mssgle:LineSegment
+                    End="-119,56.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-115.30638671875,37,111.6127734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -10781,28 +10780,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactSmallGroup.Paths[Derived Column Output]"
-          TopLeft="543.166666666667,469">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,25"
-              Start="0,0"
-              End="0,17.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,17.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
           Id="Package\DF Transform_FactSmallGroup.Paths[Derived Column Output3]"
           TopLeft="615,837.5">
           <EdgeLayout.Curve>
@@ -10884,6 +10861,28 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                   Capacity="5">
                   <mssgle:LineSegment
                     End="0,45.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactSmallGroup.Paths[Derived Column Output]"
+          TopLeft="543.166666666667,469">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,25"
+              Start="0,0"
+              End="0,17.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,17.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
