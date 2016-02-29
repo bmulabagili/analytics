@@ -87,7 +87,7 @@ AS
 		, ISNULL(Actuals.CalendarYear, Budgeted.CalendarYear) AS CalendarYear
 		, ISNULL(Actuals.CalendarMonth, Budgeted.CalendarMonth) AS CalendarMonth
 		, SUM(ISNULL(Budgeted.Amount, 0)) AS BudgetAmount
-		, SUM(ISNULL(Actuals.Amount, 0)) AS AcutalAmount
+		, SUM(ISNULL(Actuals.Amount, 0)) AS ActualAmount
 	FROM Actuals
 	FULL OUTER JOIN Budgeted
 		ON Actuals.EntityCode = Budgeted.EntityCode

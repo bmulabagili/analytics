@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [DW].[usp_Dashboard-HCAEnrollment]
 AS
-	SELECT 
-		SchoolYear
+	SELECT
+	      ROW_NUMBER() OVER (ORDER BY SchoolYear) AS RowNumber
+		, SchoolYear
 		, MAX(EnrollmentCount) AS EnrollmentCount
 	FROM (
 		SELECT 
