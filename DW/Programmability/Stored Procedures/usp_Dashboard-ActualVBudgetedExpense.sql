@@ -79,7 +79,11 @@ AS
 			, DimEntity.Code
 	)
 	SELECT 
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
+		   ROW_NUMBER() OVER (ORDER BY 
+			  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
+			, ISNULL(Actuals.CalendarYear, Budgeted.CalendarYear)
+			, ISNULL(Actuals.CalendarMonth, Budgeted.CalendarMonth) ) AS RowNum
+		, ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
 		, ISNULL(Actuals.CalendarYear, Budgeted.CalendarYear) AS CalendarYear
 		, ISNULL(Actuals.CalendarMonth, Budgeted.CalendarMonth) AS CalendarMonth
 		, SUM(ISNULL(Budgeted.Amount, 0)) AS BudgetAmount

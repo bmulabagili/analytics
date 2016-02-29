@@ -53,7 +53,8 @@ AS
 		, ISNULL(GroupID, 3)
 )
 SELECT
-	  CalendarYear
+	ROW_NUMBER() OVER (ORDER BY  EntityCode, CalendarYear, CalendarMonth) AS RowNum
+	, CalendarYear
 	, CalendarMonth
 	, EntityCode
 	, SUM(Amount) Amount

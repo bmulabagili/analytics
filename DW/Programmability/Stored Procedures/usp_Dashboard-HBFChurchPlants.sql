@@ -14,7 +14,8 @@ AS
 			ActualDate >= CONVERT(DATE, CONVERT(VARCHAR(2), @StartCalendarMonth) + '/1/' +  CONVERT(VARCHAR(4), @StartCalendarYear) )
 	)
 	SELECT
-		  FactHBFMetric.CalendarYear
+	      ROW_NUMBER() OVER (ORDER BY FactHBFMetric.CalendarYear, FactHBFMetric.CalendarMonth)
+		, FactHBFMetric.CalendarYear
 		, FactHBFMetric.CalendarMonth
 		, SUM(HBFMetricAmount) AS ChurchPlants
 	FROM DW.FactHBFMetric
