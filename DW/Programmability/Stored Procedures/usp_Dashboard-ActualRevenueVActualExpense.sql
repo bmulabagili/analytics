@@ -92,6 +92,8 @@ AS
 	FROM ActualRevenue
 	FULL OUTER JOIN ActualExpense
 		ON ActualRevenue.EntityCode = ActualExpense.EntityCode
+		AND ActualRevenue.CalendarMonth = ActualExpense.CalendarMonth
+		AND ActualRevenue.CalendarYear = ActualExpense.CalendarYear
 	GROUP BY
 		  ISNULL(ActualRevenue.EntityCode, ActualExpense.EntityCode)
 		, ISNULL(ActualRevenue.CalendarYear, ActualExpense.CalendarYear)

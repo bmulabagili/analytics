@@ -91,6 +91,8 @@ AS
 	FROM Actuals
 	FULL OUTER JOIN Budgeted
 		ON Actuals.EntityCode = Budgeted.EntityCode
+		AND Actuals.CalendarMonth = Budgeted.CalendarMonth
+		AND Actuals.CalendarYear = Budgeted.CalendarYear
 	GROUP BY
 		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
 		, ISNULL(Actuals.CalendarYear, Budgeted.CalendarYear)
