@@ -247,7 +247,7 @@ WITH Actuals AS (
 	SELECT DISTINCT 'HBC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
 	UNION
 	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
-), Budget AS (
+), Budgeted AS (
 	SELECT 
 		  DimEntity.Code AS EntityCode
 		, ISNULL(GroupID, 8) AS GroupID
@@ -287,20 +287,35 @@ WITH Actuals AS (
 	UNION
 	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping
 )
+, Actual AS (
 	SELECT 
-		  ISNULL(Actuals.EntityCode, Budget.EntityCode) AS EntityCode
-		, Actuals.GroupID
-		, SUM(ISNULL(Budget.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
-		
+		EntityCode, GroupID, SUM(Amount) AS Amount
 	FROM Actuals
-	FULL OUTER JOIN Budget
-		ON Actuals.EntityCode = Budget.EntityCode
-		AND Actuals.GroupID = Budget.GroupID
-	--WHERE
-		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
 	GROUP BY
-		  ISNULL(Actuals.EntityCode, Budget.EntityCode)
-		, Actuals.GroupID</CommandText>
+		EntityCode, GroupID
+), Budget AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Budgeted
+	GROUP BY
+		EntityCode, GroupID
+)
+SELECT 
+		ISNULL(Actual.EntityCode, Budget.EntityCode) AS EntityCode
+	, Actual.GroupID
+	, SUM(ISNULL(Actual.Amount, 0))  AS Actual
+	, SUM(ISNULL(Budget.Amount, 0)) AS Budget
+	, SUM(ISNULL(Budget.Amount, 0) - ISNULL(Actual.Amount, 0)) AS Amount
+		
+FROM Actual
+LEFT JOIN Budget
+	ON Actual.EntityCode = Budget.EntityCode
+	AND Actual.GroupID = Budget.GroupID
+GROUP BY
+		ISNULL(Actual.EntityCode, Budget.EntityCode)
+	, Actual.GroupID
+ORDER BY 1,2
+	</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -311,8 +326,16 @@ WITH Actuals AS (
           <DataField>GroupID</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
+        <Field Name="Actual">
+          <DataField>Actual</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
         <Field Name="Amount">
           <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="Budget">
+          <DataField>Budget</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
       </Fields>
@@ -591,18 +614,35 @@ ORDER BY
 	UNION
 	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 )
+, Actual AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Actuals
+	GROUP BY
+		EntityCode, GroupID
+), Budget AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Budgeted
+	GROUP BY
+		EntityCode, GroupID
+)
 SELECT 
-		ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
-	, Actuals.GroupID
-	, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
+		ISNULL(Actual.EntityCode, Budget.EntityCode) AS EntityCode
+	, Actual.GroupID
+	, SUM(ISNULL(Actual.Amount, 0))  AS Actual
+	, SUM(ISNULL(Budget.Amount, 0)) AS Budget
+	, SUM(ISNULL(Actual.Amount, 0) - ISNULL(Budget.Amount, 0)) AS Amount
 		
-FROM Actuals
-FULL OUTER JOIN Budgeted
-	ON Actuals.EntityCode = Budgeted.EntityCode
-	AND Actuals.GroupID = Budgeted.GroupID
+FROM Actual
+LEFT JOIN Budget
+	ON Actual.EntityCode = Budget.EntityCode
+	AND Actual.GroupID = Budget.GroupID
 GROUP BY
-		ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
-	, Actuals.GroupID</CommandText>
+		ISNULL(Actual.EntityCode, Budget.EntityCode)
+	, Actual.GroupID
+ORDER BY 1,2
+	</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -613,8 +653,16 @@ GROUP BY
           <DataField>GroupID</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
+        <Field Name="Actual">
+          <DataField>Actual</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
         <Field Name="Amount">
           <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="Budget">
+          <DataField>Budget</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
       </Fields>
@@ -889,17 +937,35 @@ WITH Actuals AS (
 	UNION
 	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 )
+, Actual AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Actuals
+	GROUP BY
+		EntityCode, GroupID
+), Budget AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Budgeted
+	GROUP BY
+		EntityCode, GroupID
+)
 SELECT 
-	  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
-	, Actuals.GroupID
-	, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
-FROM Actuals
-FULL OUTER JOIN Budgeted
-	ON Actuals.EntityCode = Budgeted.EntityCode
-	AND Actuals.GroupID = Budgeted.GroupID
+		ISNULL(Actual.EntityCode, Budget.EntityCode) AS EntityCode
+	, Actual.GroupID
+	, SUM(ISNULL(Actual.Amount, 0))  AS Actual
+	, SUM(ISNULL(Budget.Amount, 0)) AS Budget
+	, SUM(ISNULL(Actual.Amount, 0) - ISNULL(Budget.Amount, 0)) AS Amount
+		
+FROM Actual
+LEFT JOIN Budget
+	ON Actual.EntityCode = Budget.EntityCode
+	AND Actual.GroupID = Budget.GroupID
 GROUP BY
-		ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
-	, Actuals.GroupID</CommandText>
+		ISNULL(Actual.EntityCode, Budget.EntityCode)
+	, Actual.GroupID
+ORDER BY 1,2
+	</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -910,8 +976,16 @@ GROUP BY
           <DataField>GroupID</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
+        <Field Name="Actual">
+          <DataField>Actual</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
         <Field Name="Amount">
           <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="Budget">
+          <DataField>Budget</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
       </Fields>
@@ -1150,7 +1224,7 @@ WITH Actuals AS (
 	SELECT DISTINCT 'HBC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category = 'Expense'
 	UNION
 	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category = 'Expense'
-), Budget AS (
+), Budgeted AS (
 	SELECT 
 		  DimEntity.Code AS EntityCode
 		, ISNULL(GroupID, 8) AS GroupID
@@ -1190,18 +1264,35 @@ WITH Actuals AS (
 	UNION
 	SELECT DISTINCT 'WITW' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category = 'Expense'
 )
+	, Actual AS (
 	SELECT 
-		  ISNULL(Actuals.EntityCode, Budget.EntityCode) AS EntityCode
-		, Actuals.GroupID
-		, SUM(ISNULL(Budget.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
-		
+		EntityCode, GroupID, SUM(Amount) AS Amount
 	FROM Actuals
-	FULL OUTER JOIN Budget
-		ON Actuals.EntityCode = Budget.EntityCode
-		AND Actuals.GroupID = Budget.GroupID
 	GROUP BY
-		  ISNULL(Actuals.EntityCode, Budget.EntityCode)
-		, Actuals.GroupID</CommandText>
+		EntityCode, GroupID
+), Budget AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Budgeted
+	GROUP BY
+		EntityCode, GroupID
+)
+SELECT 
+		ISNULL(Actual.EntityCode, Budget.EntityCode) AS EntityCode
+	, Actual.GroupID
+	, SUM(ISNULL(Actual.Amount, 0))  AS Actual
+	, SUM(ISNULL(Budget.Amount, 0)) AS Budget
+	, SUM(ISNULL(Budget.Amount, 0) - ISNULL(Actual.Amount, 0)) AS Amount
+		
+FROM Actual
+LEFT JOIN Budget
+	ON Actual.EntityCode = Budget.EntityCode
+	AND Actual.GroupID = Budget.GroupID
+GROUP BY
+		ISNULL(Actual.EntityCode, Budget.EntityCode)
+	, Actual.GroupID
+ORDER BY 1,2
+	</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -1212,8 +1303,16 @@ WITH Actuals AS (
           <DataField>GroupID</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
+        <Field Name="Actual">
+          <DataField>Actual</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
         <Field Name="Amount">
           <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="Budget">
+          <DataField>Budget</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
       </Fields>
@@ -1714,17 +1813,35 @@ ORDER BY
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 )
+, Actual AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Actuals
+	GROUP BY
+		EntityCode, GroupID
+), Budget AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Budgeted
+	GROUP BY
+		EntityCode, GroupID
+)
 SELECT 
-	  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
-	, Actuals.GroupID
-	, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
-FROM Actuals
-FULL OUTER JOIN Budgeted
-	ON Actuals.EntityCode = Budgeted.EntityCode
-	AND Actuals.GroupID = Budgeted.GroupID
+		ISNULL(Actual.EntityCode, Budget.EntityCode) AS EntityCode
+	, Actual.GroupID
+	, SUM(ISNULL(Actual.Amount, 0))  AS Actual
+	, SUM(ISNULL(Budget.Amount, 0)) AS Budget
+	, SUM(ISNULL(Budget.Amount, 0) - ISNULL(Actual.Amount, 0)) AS Amount
+		
+FROM Actual
+LEFT JOIN Budget
+	ON Actual.EntityCode = Budget.EntityCode
+	AND Actual.GroupID = Budget.GroupID
 GROUP BY
-	  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
-	, Actuals.GroupID</CommandText>
+		ISNULL(Actual.EntityCode, Budget.EntityCode)
+	, Actual.GroupID
+ORDER BY 1,2
+	</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -1735,8 +1852,16 @@ GROUP BY
           <DataField>GroupID</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
+        <Field Name="Actual">
+          <DataField>Actual</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
         <Field Name="Amount">
           <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="Budget">
+          <DataField>Budget</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
       </Fields>
@@ -1752,7 +1877,7 @@ GROUP BY
             <Value>=Parameters!CalendarMonth.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>	WITH Actuals AS (
+        <CommandText>WITH Actuals AS (
 	SELECT 
 		 CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
@@ -1849,17 +1974,35 @@ GROUP BY
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 )
+, Actual AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Actuals
+	GROUP BY
+		EntityCode, GroupID
+), Budget AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Budgeted
+	GROUP BY
+		EntityCode, GroupID
+)
 SELECT 
-		ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
-	, Actuals.GroupID
-	, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
-FROM Actuals
-FULL OUTER JOIN Budgeted
-	ON Actuals.EntityCode = Budgeted.EntityCode
-	AND Actuals.GroupID = Budgeted.GroupID
+		ISNULL(Actual.EntityCode, Budget.EntityCode) AS EntityCode
+	, Actual.GroupID
+	, SUM(ISNULL(Actual.Amount, 0))  AS Actual
+	, SUM(ISNULL(Budget.Amount, 0)) AS Budget
+	, SUM(ISNULL(Actual.Amount, 0) - ISNULL(Budget.Amount, 0)) AS Amount
+		
+FROM Actual
+LEFT JOIN Budget
+	ON Actual.EntityCode = Budget.EntityCode
+	AND Actual.GroupID = Budget.GroupID
 GROUP BY
-		ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
-	, Actuals.GroupID</CommandText>
+		ISNULL(Actual.EntityCode, Budget.EntityCode)
+	, Actual.GroupID
+ORDER BY 1,2
+	</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -1870,8 +2013,16 @@ GROUP BY
           <DataField>GroupID</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
+        <Field Name="Actual">
+          <DataField>Actual</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
         <Field Name="Amount">
           <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="Budget">
+          <DataField>Budget</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
       </Fields>
@@ -2387,17 +2538,35 @@ ORDER BY
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 )
+, Actual AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Actuals
+	GROUP BY
+		EntityCode, GroupID
+), Budget AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Budgeted
+	GROUP BY
+		EntityCode, GroupID
+)
 SELECT 
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
-		, Actuals.GroupID
-		, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
-FROM Actuals
-FULL OUTER JOIN Budgeted
-	ON Actuals.EntityCode = Budgeted.EntityCode
-	AND Actuals.GroupID = Budgeted.GroupID
+		ISNULL(Actual.EntityCode, Budget.EntityCode) AS EntityCode
+	, Actual.GroupID
+	, SUM(ISNULL(Actual.Amount, 0))  AS Actual
+	, SUM(ISNULL(Budget.Amount, 0)) AS Budget
+	, SUM(ISNULL(Budget.Amount, 0) - ISNULL(Actual.Amount, 0)) AS Amount
+		
+FROM Actual
+LEFT JOIN Budget
+	ON Actual.EntityCode = Budget.EntityCode
+	AND Actual.GroupID = Budget.GroupID
 GROUP BY
-		ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
-	, Actuals.GroupID</CommandText>
+		ISNULL(Actual.EntityCode, Budget.EntityCode)
+	, Actual.GroupID
+ORDER BY 1,2
+	</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -2408,8 +2577,16 @@ GROUP BY
           <DataField>GroupID</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
+        <Field Name="Actual">
+          <DataField>Actual</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
         <Field Name="Amount">
           <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="Budget">
+          <DataField>Budget</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
       </Fields>
@@ -2425,8 +2602,7 @@ GROUP BY
             <Value>=Parameters!CalendarMonth.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
-	WITH Actuals AS (
+        <CommandText>	WITH Actuals AS (
 	SELECT 
 		 CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
@@ -2523,18 +2699,35 @@ GROUP BY
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 )
+, Actual AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Actuals
+	GROUP BY
+		EntityCode, GroupID
+), Budget AS (
+	SELECT 
+		EntityCode, GroupID, SUM(Amount) AS Amount
+	FROM Budgeted
+	GROUP BY
+		EntityCode, GroupID
+)
 SELECT 
-		ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
-	, Actuals.GroupID
-	, SUM(ISNULL(Budgeted.Amount, 0)) - SUM(ISNULL(Actuals.Amount, 0)) AS Amount
+		ISNULL(Actual.EntityCode, Budget.EntityCode) AS EntityCode
+	, Actual.GroupID
+	, SUM(ISNULL(Actual.Amount, 0))  AS Actual
+	, SUM(ISNULL(Budget.Amount, 0)) AS Budget
+	, SUM(ISNULL(Budget.Amount, 0) - ISNULL(Actual.Amount, 0)) AS Amount
 		
-FROM Actuals
-FULL OUTER JOIN Budgeted
-	ON Actuals.EntityCode = Budgeted.EntityCode
-	AND Actuals.GroupID = Budgeted.GroupID
+FROM Actual
+LEFT JOIN Budget
+	ON Actual.EntityCode = Budget.EntityCode
+	AND Actual.GroupID = Budget.GroupID
 GROUP BY
-	ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
-	, Actuals.GroupID</CommandText>
+		ISNULL(Actual.EntityCode, Budget.EntityCode)
+	, Actual.GroupID
+ORDER BY 1,2
+	</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -2545,8 +2738,16 @@ GROUP BY
           <DataField>GroupID</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
+        <Field Name="Actual">
+          <DataField>Actual</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
         <Field Name="Amount">
           <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="Budget">
+          <DataField>Budget</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
       </Fields>
@@ -2857,9 +3058,8 @@ GROUP BY
 	SELECT 
 		  ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode) AS EntityCode
 		, SUM(ISNULL(RevenueBudgeted.Amount, 0)) - SUM(ISNULL(RevenueActuals.Amount, 0)) AS Amount
-		
-	FROM RevenueActuals
-	FULL OUTER JOIN RevenueBudgeted
+	FROM (SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueActuals GROUP BY EntityCode, GroupID )RevenueActuals
+	FULL OUTER JOIN ((SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueBudgeted GROUP BY EntityCode, GroupID )) RevenueBudgeted
 		ON RevenueActuals.EntityCode = RevenueBudgeted.EntityCode
 		AND RevenueActuals.GroupID = RevenueBudgeted.GroupID
 	GROUP BY
@@ -2868,8 +3068,8 @@ GROUP BY
 	UNION SELECT 'HCA' , 0
 	UNION SELECT 'HBC' , 0
 	UNION SELECT 'WITW', 0
-
-), ExpenseActuals AS (
+)
+, ExpenseActuals AS (
 	SELECT 
 		  DimEntity.Code AS EntityCode
 		, ISNULL(GroupID, 8) AS GroupID
@@ -2892,9 +3092,13 @@ GROUP BY
 		AND DimDate.CalendarYear = @CalendarYear
 		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
 		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
+			DimEntity.Code IN ('HCA')
 			OR --HBC only reports fund 025
 			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+			OR --HBF Is now only fund 025
+			(DimEntity.Code = 'HBF' AND DimFinancialCategory.FundCode = '025')
+			OR --WITW excludes funds 084 and 088
+			(DimEntity.Code = 'WITW' AND DimFinancialCategory.FundCode NOT IN ('084','088') )
 		)
 		--AND DimFinancialCategory.GLType = 'REV'
 	GROUP BY
@@ -2948,8 +3152,8 @@ GROUP BY
 		  ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode) AS EntityCode
 		, SUM(ISNULL(ExpenseBudgeted.Amount, 0)) - SUM(ISNULL(ExpenseActuals.Amount, 0)) AS Amount
 		
-	FROM ExpenseActuals
-	FULL OUTER JOIN ExpenseBudgeted
+	FROM (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseActuals GROUP BY EntityCode, GroupID) ExpenseActuals
+	FULL OUTER JOIN (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseBudgeted GROUP BY EntityCode, GroupID) ExpenseBudgeted
 		ON ExpenseActuals.EntityCode = ExpenseBudgeted.EntityCode
 		AND ExpenseActuals.GroupID = ExpenseBudgeted.GroupID
 	--WHERE
@@ -3261,7 +3465,7 @@ GROUP BY
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>WITH ActualRevenue AS (
+        <CommandText>WITH RevenueActuals AS (
 	SELECT 
 		 CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
@@ -3311,7 +3515,7 @@ GROUP BY
 	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
-), BudgetedRevenue AS (
+), RevenueBudgeted AS (
 	SELECT 
 		 CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
@@ -3360,19 +3564,19 @@ GROUP BY
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 ), VarianceRevenue as (
 SELECT 
-		  ISNULL(ActualRevenue.EntityCode, BudgetedRevenue.EntityCode) AS EntityCode
-		, ActualRevenue.GroupID
-		, SUM(ISNULL(BudgetedRevenue.Amount, 0)) - SUM(ISNULL(ActualRevenue.Amount, 0)) AS Amount
+		  ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode) AS EntityCode
+		, RevenueActuals.GroupID
+		, SUM(ISNULL(RevenueBudgeted.Amount, 0)) - SUM(ISNULL(RevenueActuals.Amount, 0)) AS Amount
 		
-	FROM ActualRevenue
-	FULL OUTER JOIN BudgetedRevenue
-		ON ActualRevenue.EntityCode = BudgetedRevenue.EntityCode
-		AND ActualRevenue.GroupID = BudgetedRevenue.GroupID
+	FROM (SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueActuals GROUP BY EntityCode, GroupID )RevenueActuals
+	FULL OUTER JOIN ((SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueBudgeted GROUP BY EntityCode, GroupID )) RevenueBudgeted
+		ON RevenueActuals.EntityCode = RevenueBudgeted.EntityCode
+		AND RevenueActuals.GroupID = RevenueBudgeted.GroupID
 
 	GROUP BY
-		  ISNULL(ActualRevenue.EntityCode, BudgetedRevenue.EntityCode)
-		, ActualRevenue.GroupID
-), ActualExpenses AS (
+		  ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode)
+		, RevenueActuals.GroupID
+), ExpenseActuals AS (
 	SELECT 
 		 CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
@@ -3422,7 +3626,7 @@ SELECT
 	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
-), BudgetedExpenses AS (
+), ExpenseBudgeted AS (
 	SELECT 
 		 CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
@@ -3471,17 +3675,17 @@ SELECT
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 ), VarianceExpenses as (
 SELECT 
-		  ISNULL(ActualExpenses.EntityCode, BudgetedExpenses.EntityCode) AS EntityCode
-		, ActualExpenses.GroupID
-		, SUM(ISNULL(BudgetedExpenses.Amount, 0)) - SUM(ISNULL(ActualExpenses.Amount, 0)) AS Amount
+		  ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode) AS EntityCode
+		, ExpenseActuals.GroupID
+		, SUM(ISNULL(ExpenseBudgeted.Amount, 0)) - SUM(ISNULL(ExpenseActuals.Amount, 0)) AS Amount
 		
-	FROM ActualExpenses
-	FULL OUTER JOIN BudgetedExpenses
-		ON ActualExpenses.EntityCode = BudgetedExpenses.EntityCode
-		AND ActualExpenses.GroupID = BudgetedExpenses.GroupID
+	FROM (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseActuals GROUP BY EntityCode, GroupID) ExpenseActuals
+	FULL OUTER JOIN (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseBudgeted GROUP BY EntityCode, GroupID) ExpenseBudgeted
+		ON ExpenseActuals.EntityCode = ExpenseBudgeted.EntityCode
+		AND ExpenseActuals.GroupID = ExpenseBudgeted.GroupID
 	GROUP BY
-		  ISNULL(ActualExpenses.EntityCode, BudgetedExpenses.EntityCode)
-		, ActualExpenses.GroupID
+		  ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode)
+		, ExpenseActuals.GroupID
 )
 SELECT 
 	EntityCode
@@ -3810,8 +4014,8 @@ GROUP BY
 		  ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode) AS EntityCode
 		, SUM(ISNULL(RevenueBudgeted.Amount, 0)) - SUM(ISNULL(RevenueActuals.Amount, 0)) AS Amount
 		
-	FROM RevenueActuals
-	FULL OUTER JOIN RevenueBudgeted
+	FROM (SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueActuals GROUP BY EntityCode, GroupID )RevenueActuals
+	FULL OUTER JOIN ((SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueBudgeted GROUP BY EntityCode, GroupID )) RevenueBudgeted
 		ON RevenueActuals.EntityCode = RevenueBudgeted.EntityCode
 		AND RevenueActuals.GroupID = RevenueBudgeted.GroupID
 	--WHERE
@@ -3908,8 +4112,8 @@ GROUP BY
 		  ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode) AS EntityCode
 		, SUM(ISNULL(ExpenseBudgeted.Amount, 0)) - SUM(ISNULL(ExpenseActuals.Amount, 0)) AS Amount
 		
-	FROM ExpenseActuals
-	FULL OUTER JOIN ExpenseBudgeted
+	FROM (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseActuals GROUP BY EntityCode, GroupID) ExpenseActuals
+	FULL OUTER JOIN (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseBudgeted GROUP BY EntityCode, GroupID) ExpenseBudgeted
 		ON ExpenseActuals.EntityCode = ExpenseBudgeted.EntityCode
 		AND ExpenseActuals.GroupID = ExpenseBudgeted.GroupID
 	GROUP BY
@@ -4219,7 +4423,7 @@ GROUP BY
             <Value>=Parameters!CalendarMonth.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>WITH ActualRevenue AS (
+        <CommandText>WITH RevenueActuals AS (
 	SELECT 
 		 CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
@@ -4268,7 +4472,7 @@ GROUP BY
 	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
-), BudgetedRevenue AS (
+), RevenueBudgeted AS (
 	SELECT 
 		CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
@@ -4317,17 +4521,17 @@ GROUP BY
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 ), VarianceRevenue as (
 	SELECT 
-			ISNULL(ActualRevenue.EntityCode, BudgetedRevenue.EntityCode) AS EntityCode
-		, ActualRevenue.GroupID
-		, SUM(ISNULL(BudgetedRevenue.Amount, 0)) - SUM(ISNULL(ActualRevenue.Amount, 0)) AS Amount	
-	FROM ActualRevenue
-	FULL OUTER JOIN BudgetedRevenue
-		ON ActualRevenue.EntityCode = BudgetedRevenue.EntityCode
-		AND ActualRevenue.GroupID = BudgetedRevenue.GroupID
+			ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode) AS EntityCode
+		, RevenueActuals.GroupID
+		, SUM(ISNULL(RevenueBudgeted.Amount, 0)) - SUM(ISNULL(RevenueActuals.Amount, 0)) AS Amount	
+	FROM (SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueActuals GROUP BY EntityCode, GroupID )RevenueActuals
+	FULL OUTER JOIN ((SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueBudgeted GROUP BY EntityCode, GroupID )) RevenueBudgeted
+		ON RevenueActuals.EntityCode = RevenueBudgeted.EntityCode
+		AND RevenueActuals.GroupID = RevenueBudgeted.GroupID
 	GROUP BY
-			ISNULL(ActualRevenue.EntityCode, BudgetedRevenue.EntityCode)
-		, ActualRevenue.GroupID
-), ActualExpenses AS (
+			ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode)
+		, RevenueActuals.GroupID
+), ExpenseActuals AS (
 	SELECT 
 		 CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
@@ -4376,7 +4580,7 @@ GROUP BY
 	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
-), BudgetedExpenses AS (
+), ExpenseBudgeted AS (
 	SELECT 
 		 CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
@@ -4425,16 +4629,16 @@ GROUP BY
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 ), VarianceExpenses as (
 	SELECT 
-		  ISNULL(ActualExpenses.EntityCode, BudgetedExpenses.EntityCode) AS EntityCode
-		, ActualExpenses.GroupID
-		, SUM(ISNULL(BudgetedExpenses.Amount, 0)) - SUM(ISNULL(ActualExpenses.Amount, 0)) AS Amount
-	FROM ActualExpenses
-	FULL OUTER JOIN BudgetedExpenses
-		ON ActualExpenses.EntityCode = BudgetedExpenses.EntityCode
-		AND ActualExpenses.GroupID = BudgetedExpenses.GroupID
+		  ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode) AS EntityCode
+		, ExpenseActuals.GroupID
+		, SUM(ISNULL(ExpenseBudgeted.Amount, 0)) - SUM(ISNULL(ExpenseActuals.Amount, 0)) AS Amount
+	FROM (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseActuals GROUP BY EntityCode, GroupID) ExpenseActuals
+	FULL OUTER JOIN (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseBudgeted GROUP BY EntityCode, GroupID) ExpenseBudgeted
+		ON ExpenseActuals.EntityCode = ExpenseBudgeted.EntityCode
+		AND ExpenseActuals.GroupID = ExpenseBudgeted.GroupID
 	GROUP BY
-		  ISNULL(ActualExpenses.EntityCode, BudgetedExpenses.EntityCode)
-		, ActualExpenses.GroupID
+		  ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode)
+		, ExpenseActuals.GroupID
 )
 SELECT 
 	EntityCode
