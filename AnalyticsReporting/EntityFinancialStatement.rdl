@@ -1831,7 +1831,7 @@ SELECT
 	, Actual.GroupID
 	, SUM(ISNULL(Actual.Amount, 0))  AS Actual
 	, SUM(ISNULL(Budget.Amount, 0)) AS Budget
-	, SUM(ISNULL(Budget.Amount, 0) - ISNULL(Actual.Amount, 0)) AS Amount
+	, SUM( ISNULL(Actual.Amount, 0) - ISNULL(Budget.Amount, 0)) AS Amount
 		
 FROM Actual
 LEFT JOIN Budget
@@ -1902,8 +1902,9 @@ ORDER BY 1,2
 		AND glrg.Category = 'Revenue'
 		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
-		DimDate.CalendarYear = @CalendarYear
-		AND DimDate.ActualDate &lt;= DATEADD(DAY, -1, DATEADD(MONTH, 1, CONVERT(DATE, CONVERT(VARCHAR(2), @CalendarMonth) + '/1/' + CONVERT(VARCHAR(4), @CalendarYear))))
+		DimDate.CalendarMonth &lt;= @CalendarMonth
+		AND DimDate.CalendarYear = @CalendarYear
+		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
 		AND DimFinancialCategory.EntityCode = 'HBC'
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
@@ -1949,8 +1950,8 @@ ORDER BY 1,2
 		AND glrg.Category = 'Revenue'
 		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
-		FactBudgetRevenue.BudgetYear = @CalendarYear
-		AND FactBudgetRevenue.BudgetMonth &lt;= @CalendarMonth
+		FactBudgetRevenue.BudgetMonth &lt;= @CalendarMonth
+		AND FactBudgetRevenue.BudgetYear = @CalendarYear
 		AND DimFinancialCategory.EntityCode = 'HBC'
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
@@ -1992,7 +1993,7 @@ SELECT
 	, Actual.GroupID
 	, SUM(ISNULL(Actual.Amount, 0))  AS Actual
 	, SUM(ISNULL(Budget.Amount, 0)) AS Budget
-	, SUM(ISNULL(Actual.Amount, 0) - ISNULL(Budget.Amount, 0)) AS Amount
+	, SUM( ISNULL(Actual.Amount, 0) - ISNULL(Budget.Amount, 0)) AS Amount
 		
 FROM Actual
 LEFT JOIN Budget
@@ -2001,8 +2002,7 @@ LEFT JOIN Budget
 GROUP BY
 		ISNULL(Actual.EntityCode, Budget.EntityCode)
 	, Actual.GroupID
-ORDER BY 1,2
-	</CommandText>
+ORDER BY 1,2</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -3057,7 +3057,7 @@ GROUP BY
 ), RevenueVariance AS (
 	SELECT 
 		  ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode) AS EntityCode
-		, SUM(ISNULL(RevenueBudgeted.Amount, 0)) - SUM(ISNULL(RevenueActuals.Amount, 0)) AS Amount
+		, SUM(ISNULL(RevenueActuals.Amount, 0) - ISNULL(RevenueBudgeted.Amount, 0)) AS Amount
 	FROM (SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueActuals GROUP BY EntityCode, GroupID )RevenueActuals
 	FULL OUTER JOIN ((SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueBudgeted GROUP BY EntityCode, GroupID )) RevenueBudgeted
 		ON RevenueActuals.EntityCode = RevenueBudgeted.EntityCode
@@ -3132,9 +3132,13 @@ GROUP BY
 		FactBudgetExpense.BudgetMonth = @CalendarMonth
 		AND FactBudgetExpense.BudgetYear = @CalendarYear
 		AND (
-			DimEntity.Code IN ('HBF','HCA','WITW')
+			DimEntity.Code IN ('HCA')
 			OR --HBC only reports fund 025
 			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+			OR --HBF Is now only fund 025
+			(DimEntity.Code = 'HBF' AND DimFinancialCategory.FundCode = '025')
+			OR --WITW excludes funds 084 and 088
+			(DimEntity.Code = 'WITW' AND DimFinancialCategory.FundCode NOT IN ('084','088') )
 		)
 	GROUP BY
 		DimEntity.Code
@@ -3150,7 +3154,7 @@ GROUP BY
 ), ExpenseVariance AS (
 	SELECT 
 		  ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode) AS EntityCode
-		, SUM(ISNULL(ExpenseBudgeted.Amount, 0)) - SUM(ISNULL(ExpenseActuals.Amount, 0)) AS Amount
+		, SUM( ISNULL(ExpenseBudgeted.Amount, 0) - ISNULL(ExpenseActuals.Amount, 0)) AS Amount
 		
 	FROM (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseActuals GROUP BY EntityCode, GroupID) ExpenseActuals
 	FULL OUTER JOIN (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseBudgeted GROUP BY EntityCode, GroupID) ExpenseBudgeted
@@ -3165,14 +3169,13 @@ GROUP BY
 	UNION SELECT 'HBC' , 0
 	UNION SELECT 'WITW', 0
 )
-
 SELECT 
 	EntityCode
 	, SUM(Amount) AS Amount
 FROM (
 	select EntityCode, sum(amount) AS Amount from RevenueVariance group by EntityCode
 	UNION
-	select EntityCode, sum(amount * -1) from ExpenseVariance group by EntityCode)x
+	select EntityCode, sum(amount) from ExpenseVariance group by EntityCode)x
 GROUP BY
 	EntityCode</CommandText>
       </Query>
@@ -3492,7 +3495,6 @@ GROUP BY
 	WHERE
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
-		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
 		AND DimFinancialCategory.EntityCode = 'HBC'
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
@@ -3562,11 +3564,11 @@ GROUP BY
 	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
-), VarianceRevenue as (
+), RevenueVariance as (
 SELECT 
 		  ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode) AS EntityCode
 		, RevenueActuals.GroupID
-		, SUM(ISNULL(RevenueBudgeted.Amount, 0)) - SUM(ISNULL(RevenueActuals.Amount, 0)) AS Amount
+		, SUM( ISNULL(RevenueActuals.Amount, 0) - ISNULL(RevenueBudgeted.Amount, 0))  AS Amount
 		
 	FROM (SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueActuals GROUP BY EntityCode, GroupID )RevenueActuals
 	FULL OUTER JOIN ((SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueBudgeted GROUP BY EntityCode, GroupID )) RevenueBudgeted
@@ -3603,7 +3605,7 @@ SELECT
 	WHERE
 		DimDate.CalendarMonth = @CalendarMonth
 		AND DimDate.CalendarYear = @CalendarYear
-		AND DimDate.ActualDate &lt;= GETDATE() --possible parameter3
+		
 		AND DimFinancialCategory.EntityCode = 'HBC'
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
@@ -3673,7 +3675,7 @@ SELECT
 	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
-), VarianceExpenses as (
+), ExpenseVariance as (
 SELECT 
 		  ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode) AS EntityCode
 		, ExpenseActuals.GroupID
@@ -3691,9 +3693,9 @@ SELECT
 	EntityCode
 	, SUM(Amount) AS Amount
 FROM (
-	select EntityCode, sum(amount) AS Amount from VarianceRevenue group by EntityCode
+	select EntityCode, sum(amount) AS Amount from RevenueVariance group by EntityCode
 	UNION
-	select EntityCode, sum(amount * -1) from VarianceExpenses group by EntityCode)x
+	select EntityCode, sum(amount) from ExpenseVariance group by EntityCode)x
 GROUP BY
 	EntityCode
 ;</CommandText>
@@ -3929,8 +3931,7 @@ GROUP BY
 ;WITH RevenueActuals AS (
 	SELECT 
 		 DimEntity.Code AS EntityCode
-		--, ISNULL(GroupID, 5) AS GroupID
-		, groupid
+		, ISNULL(GroupID, 3) AS GroupID
 		, SUM(FactRevenue.Amount) AS Amount
 	FROM dw.FactRevenue
 	INNER JOIN dw.DimDate
@@ -3946,8 +3947,8 @@ GROUP BY
 		AND glrg.Category = 'Revenue'
 		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
-		DimDate.CalendarYear = @CalendarYear
-		AND DimDate.ActualDate &lt;= DATEADD(DAY, -1, DATEADD(MONTH, 1, CONVERT(DATE, CONVERT(VARCHAR(2), @CalendarMonth) + '/1/' + CONVERT(VARCHAR(4), @CalendarYear))))
+		DimDate.CalendarMonth &lt;= @CalendarMonth
+		AND DimDate.CalendarYear = @CalendarYear
 		AND (
 			DimEntity.Code IN ('HCA')
 			OR --HBC only reports fund 025
@@ -3959,8 +3960,7 @@ GROUP BY
 		)
 	GROUP BY
 		DimEntity.Code
-		-- ISNULL(GroupID, 5) 		
-		, GroupID
+		, ISNULL(GroupID, 3) 
 	UNION
 	SELECT DISTINCT 'HBF' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 	UNION
@@ -3987,8 +3987,8 @@ GROUP BY
 		AND glrg.Category = 'Revenue'
 		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
-		FactBudgetRevenue.BudgetYear = @CalendarYear
-		AND FactBudgetRevenue.BudgetMonth &lt;= @CalendarMonth
+		FactBudgetRevenue.BudgetMonth &lt;= @CalendarMonth
+		AND FactBudgetRevenue.BudgetYear = @CalendarYear
 		AND (
 			DimEntity.Code IN ('HCA')
 			OR --HBC only reports fund 025
@@ -4012,22 +4012,19 @@ GROUP BY
 ), RevenueVariance AS (
 	SELECT 
 		  ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode) AS EntityCode
-		, SUM(ISNULL(RevenueBudgeted.Amount, 0)) - SUM(ISNULL(RevenueActuals.Amount, 0)) AS Amount
-		
+		, SUM(ISNULL(RevenueActuals.Amount, 0) - ISNULL(RevenueBudgeted.Amount, 0)) AS Amount
 	FROM (SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueActuals GROUP BY EntityCode, GroupID )RevenueActuals
 	FULL OUTER JOIN ((SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueBudgeted GROUP BY EntityCode, GroupID )) RevenueBudgeted
 		ON RevenueActuals.EntityCode = RevenueBudgeted.EntityCode
 		AND RevenueActuals.GroupID = RevenueBudgeted.GroupID
-	--WHERE
-		--ISNULL(Actuals.EntityCode, Budget.EntityCode) IS NOT NULL
 	GROUP BY
 		  ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode)
 	UNION SELECT 'HBF' , 0
 	UNION SELECT 'HCA' , 0
 	UNION SELECT 'HBC' , 0
 	UNION SELECT 'WITW', 0
-
-), ExpenseActuals AS (
+)
+, ExpenseActuals AS (
 	SELECT 
 		  DimEntity.Code AS EntityCode
 		, ISNULL(GroupID, 8) AS GroupID
@@ -4046,8 +4043,8 @@ GROUP BY
 		AND glrg.Category = 'Expense'
 		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
-		DimDate.CalendarYear = @CalendarYear
-		AND DimDate.ActualDate &lt;= DATEADD(DAY, -1, DATEADD(MONTH, 1, CONVERT(DATE, CONVERT(VARCHAR(2), @CalendarMonth) + '/1/' + CONVERT(VARCHAR(4), @CalendarYear))))
+		DimDate.CalendarMonth &lt;= @CalendarMonth
+		AND DimDate.CalendarYear = @CalendarYear
 		AND (
 			DimEntity.Code IN ('HCA')
 			OR --HBC only reports fund 025
@@ -4057,6 +4054,7 @@ GROUP BY
 			OR --WITW excludes funds 084 and 088
 			(DimEntity.Code = 'WITW' AND DimFinancialCategory.FundCode NOT IN ('084','088') )
 		)
+		--AND DimFinancialCategory.GLType = 'REV'
 	GROUP BY
 		  DimEntity.Code
 		, ISNULL(GroupID, 8)
@@ -4080,13 +4078,13 @@ GROUP BY
 	INNER JOIN dw.DimFinancialCategory
 		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
+	LEFT JOIN GLReportGrouping glrg 
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
 		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
-		FactBudgetExpense.BudgetYear = @CalendarYear
-		AND FactBudgetExpense.BudgetMonth &lt;= @CalendarMonth
+		FactBudgetExpense.BudgetMonth &lt;= @CalendarMonth
+		AND FactBudgetExpense.BudgetYear = @CalendarYear
 		AND (
 			DimEntity.Code IN ('HCA')
 			OR --HBC only reports fund 025
@@ -4110,12 +4108,14 @@ GROUP BY
 ), ExpenseVariance AS (
 	SELECT 
 		  ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode) AS EntityCode
-		, SUM(ISNULL(ExpenseBudgeted.Amount, 0)) - SUM(ISNULL(ExpenseActuals.Amount, 0)) AS Amount
+		, SUM( ISNULL(ExpenseBudgeted.Amount, 0) - ISNULL(ExpenseActuals.Amount, 0)) AS Amount
 		
 	FROM (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseActuals GROUP BY EntityCode, GroupID) ExpenseActuals
 	FULL OUTER JOIN (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseBudgeted GROUP BY EntityCode, GroupID) ExpenseBudgeted
 		ON ExpenseActuals.EntityCode = ExpenseBudgeted.EntityCode
 		AND ExpenseActuals.GroupID = ExpenseBudgeted.GroupID
+	--WHERE
+		--ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode) IS NOT NULL
 	GROUP BY
 		  ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode)
 	UNION SELECT 'HBF' , 0
@@ -4129,11 +4129,9 @@ SELECT
 FROM (
 	select EntityCode, sum(amount) AS Amount from RevenueVariance group by EntityCode
 	UNION
-	select EntityCode, sum(amount * -1) from ExpenseVariance group by EntityCode)x
+	select EntityCode, sum(amount) from ExpenseVariance group by EntityCode)x
 GROUP BY
-	EntityCode
-
-;		</CommandText>
+	EntityCode</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -4443,13 +4441,13 @@ GROUP BY
 	INNER JOIN dw.DimFinancialCategory
 		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactRevenue.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN GLReportGrouping glrg 
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Revenue'
 		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
-		DimDate.CalendarYear = @CalendarYear
-		AND DimDate.ActualDate &lt;= DATEADD(DAY, -1, DATEADD(MONTH, 1, CONVERT(DATE, CONVERT(VARCHAR(2), @CalendarMonth) + '/1/' + CONVERT(VARCHAR(4), @CalendarYear))))
+		DimDate.CalendarMonth &lt;= @CalendarMonth
+		AND DimDate.CalendarYear = @CalendarYear
 		AND DimFinancialCategory.EntityCode = 'HBC'
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
@@ -4474,7 +4472,7 @@ GROUP BY
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 ), RevenueBudgeted AS (
 	SELECT 
-		CASE DimFinancialCategory.FundCode 
+		 CASE DimFinancialCategory.FundCode 
 			WHEN '055' THEN 'BSC'
 			WHEN '058' THEN 'Camp'
 			WHEN '069' THEN 'VCF'
@@ -4495,8 +4493,8 @@ GROUP BY
 		AND glrg.Category = 'Revenue'
 		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
-		FactBudgetRevenue.BudgetYear = @CalendarYear
-		AND FactBudgetRevenue.BudgetMonth &lt;= @CalendarMonth
+		FactBudgetRevenue.BudgetMonth &lt;= @CalendarMonth
+		AND FactBudgetRevenue.BudgetYear = @CalendarYear
 		AND DimFinancialCategory.EntityCode = 'HBC'
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
@@ -4519,17 +4517,19 @@ GROUP BY
 	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Revenue'
-), VarianceRevenue as (
-	SELECT 
-			ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode) AS EntityCode
+), RevenueVariance as (
+SELECT 
+		  ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode) AS EntityCode
 		, RevenueActuals.GroupID
-		, SUM(ISNULL(RevenueBudgeted.Amount, 0)) - SUM(ISNULL(RevenueActuals.Amount, 0)) AS Amount	
+		, SUM( ISNULL(RevenueActuals.Amount, 0) - ISNULL(RevenueBudgeted.Amount, 0))  AS Amount
+		
 	FROM (SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueActuals GROUP BY EntityCode, GroupID )RevenueActuals
 	FULL OUTER JOIN ((SELECT EntityCode, GroupID, MAX(Amount) AS Amount FROM RevenueBudgeted GROUP BY EntityCode, GroupID )) RevenueBudgeted
 		ON RevenueActuals.EntityCode = RevenueBudgeted.EntityCode
 		AND RevenueActuals.GroupID = RevenueBudgeted.GroupID
+
 	GROUP BY
-			ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode)
+		  ISNULL(RevenueActuals.EntityCode, RevenueBudgeted.EntityCode)
 		, RevenueActuals.GroupID
 ), ExpenseActuals AS (
 	SELECT 
@@ -4556,8 +4556,9 @@ GROUP BY
 		AND glrg.Category = 'Expense'
 		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
-		DimDate.CalendarYear = @CalendarYear
-		AND DimDate.ActualDate &lt;= DATEADD(DAY, -1, DATEADD(MONTH, 1, CONVERT(DATE, CONVERT(VARCHAR(2), @CalendarMonth) + '/1/' + CONVERT(VARCHAR(4), @CalendarYear))))
+		DimDate.CalendarMonth &lt;= @CalendarMonth
+		AND DimDate.CalendarYear = @CalendarYear
+		
 		AND DimFinancialCategory.EntityCode = 'HBC'
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
@@ -4598,13 +4599,13 @@ GROUP BY
 	INNER JOIN dw.DimFinancialCategory
 		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN GLReportGrouping glrg 
+	LEFT JOIN GLReportGrouping glrg --Check out the ones that DON'T map!
 		ON DimFinancialCategory.GLCode = glrg.GLCode
 		AND glrg.Category = 'Expense'
 		AND DimEntity.Code = glrg.EntityCode 
 	WHERE
-		FactBudgetExpense.BudgetYear = @CalendarYear
-		AND FactBudgetExpense.BudgetMonth &lt;= @CalendarMonth
+		FactBudgetExpense.BudgetMonth &lt;= @CalendarMonth
+		AND FactBudgetExpense.BudgetYear = @CalendarYear
 		AND DimFinancialCategory.EntityCode = 'HBC'
 		AND DimFinancialCategory.FundCode IN('055','058','069','078','098')
 	GROUP BY
@@ -4627,11 +4628,12 @@ GROUP BY
 	SELECT DISTINCT 'BSC' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
 	UNION
 	SELECT DISTINCT 'Curriculum' EntityCode, GroupID, 0 Amount FROM GLReportGrouping WHERE Category ='Expense'
-), VarianceExpenses as (
-	SELECT 
+), ExpenseVariance as (
+SELECT 
 		  ISNULL(ExpenseActuals.EntityCode, ExpenseBudgeted.EntityCode) AS EntityCode
 		, ExpenseActuals.GroupID
 		, SUM(ISNULL(ExpenseBudgeted.Amount, 0)) - SUM(ISNULL(ExpenseActuals.Amount, 0)) AS Amount
+		
 	FROM (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseActuals GROUP BY EntityCode, GroupID) ExpenseActuals
 	FULL OUTER JOIN (SELECT EntityCode, GroupID, SUM(Amount) AS Amount FROM ExpenseBudgeted GROUP BY EntityCode, GroupID) ExpenseBudgeted
 		ON ExpenseActuals.EntityCode = ExpenseBudgeted.EntityCode
@@ -4644,11 +4646,12 @@ SELECT
 	EntityCode
 	, SUM(Amount) AS Amount
 FROM (
-	select EntityCode, sum(amount) AS Amount from VarianceRevenue group by EntityCode
+	select EntityCode, sum(amount) AS Amount from RevenueVariance group by EntityCode
 	UNION
-	select EntityCode, sum(amount * -1) from VarianceExpenses group by EntityCode)x
+	select EntityCode, sum(amount) from ExpenseVariance group by EntityCode)x
 GROUP BY
-	EntityCode</CommandText>
+	EntityCode
+;</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -5857,7 +5860,7 @@ GROUP BY
                       </Group>
                       <SortExpressions>
                         <SortExpression>
-                          <Value>=Fields!GroupName.Value</Value>
+                          <Value>=Fields!GroupID.Value</Value>
                         </SortExpression>
                       </SortExpressions>
                     </TablixMember>
@@ -8850,7 +8853,7 @@ GROUP BY
                       </Group>
                       <SortExpressions>
                         <SortExpression>
-                          <Value>=Fields!GroupName.Value</Value>
+                          <Value>=Fields!GroupID.Value</Value>
                         </SortExpression>
                       </SortExpressions>
                     </TablixMember>
