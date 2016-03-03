@@ -787,7 +787,8 @@ GROUP BY
             <Value>=Parameters!BudgetMonth.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>WITH Attendance AS(
+        <CommandText>
+WITH Attendance AS(
 	SELECT FactAttendance.CampusID, DimCampus.Code, SUM(AttendanceCount) AttendanceCount
 	FROM dw.FactAttendance
 	INNER JOIN DW.DimAttendanceType
@@ -822,10 +823,9 @@ GROUP BY
 	FROM  CampusAllocationCalculation
 	GROUP BY 
 		CampusID, Code
-), BudgetRevenue AS (
+), CompleteBudgetRevenue AS (
 	SELECT
 		  CampusAllocation.Code AS CampusCode
-		, FactBudgetRevenue.BudgetYear
 		, SUM(Amount * CampusAllocation.CampusPercent) AS Amount 
 	FROM dw.FactBudgetRevenue
 	INNER JOIN dw.DimEntity
@@ -838,11 +838,13 @@ GROUP BY
 		 AND FactBudgetRevenue.BudgetYear = @BudgetYear AND FactBudgetRevenue.BudgetMonth &lt;= @BudgetMonth
 	GROUP BY
 		  CampusAllocation.Code
-		, FactBudgetRevenue.BudgetYear
-), BudgetExpense AS (
+), BudgetRevenue AS (
+	SELECT CampusCode, SUM(Amount) AS Amount
+	FROM CompleteBudgetRevenue
+	GROUP BY CampusCode
+), CompleteBudgetExpense AS (
 	SELECT
 		  CampusAllocation.Code AS CampusCode
-		, FactBudgetExpense.BudgetYear
 		, SUM(Amount * CampusAllocation.CampusPercent) AS Amount 
 	FROM dw.FactBudgetExpense
 	INNER JOIN dw.DimEntity
@@ -859,28 +861,32 @@ GROUP BY
 		ON 1=1
 	WHERE
 		DimEntity.Code = 'HBC'
-		 AND BudgetYear IN (@BudgetYear)
+		 AND BudgetYear  = @BudgetYear
+		 AND FactBudgetExpense.BudgetMonth &lt;= @BudgetMonth
 	GROUP BY
 		  CampusAllocation.Code
-		, FactBudgetExpense.BudgetYear
 		UNION
 	SELECT DISTINCT 
 			  CampusAllocation.Code AS CampusCode
-			, @BudgetYear AS BudgetYear
 			, 0 AS Amount
 		FROM CampusXLTReportGroupMap 
 		INNER JOIN CampusXLTReportGroup
 			ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
 		INNER JOIN CampusAllocation
 			ON 1=1
+), BudgetExpense AS (
+	SELECT CampusCode, SUM(Amount) AS Amount
+	FROM CompleteBudgetExpense
+	GROUP BY CampusCode
 )
 SELECT 
 	BudgetRevenue.CampusCode
+	, SUM(BudgetRevenue.Amount) as Revenue
+	, SUM(BudgetExpense.Amount) AS Expense
 	, SUM(BudgetRevenue.Amount - BudgetExpense.Amount) AS Amount
 FROM BudgetRevenue
 INNER JOIN BudgetExpense
 	ON BudgetRevenue.CampusCode = BudgetExpense.CampusCode
-	And BudgetRevenue.BudgetYear = BudgetExpense.BudgetYear
 GROUP BY
 	BudgetRevenue.CampusCode</CommandText>
       </Query>
@@ -889,8 +895,16 @@ GROUP BY
           <DataField>CampusCode</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="Revenue">
+          <DataField>Revenue</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
         <Field Name="Amount">
           <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="Expense">
+          <DataField>Expense</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
       </Fields>
