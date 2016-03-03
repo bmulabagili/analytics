@@ -197,7 +197,8 @@ INNER JOIN CampusXLTReportGroup
 INNER JOIN CampusAllocation
 	ON 1=1
 WHERE
-	DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+	DimEntity.Code = 'HBC'
+	AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 GROUP BY
 	  CampusXLTReportGroup.CampusXLTReportGroupID
 	, CampusXLTReportGroup.Heading
@@ -243,7 +244,7 @@ SELECT DISTINCT
         </Field>
         <Field Name="CalendarYear">
           <DataField>CalendarYear</DataField>
-          <rd:TypeName>System.Int16</rd:TypeName>
+          <rd:TypeName>System.Object</rd:TypeName>
         </Field>
         <Field Name="Amount">
           <DataField>Amount</DataField>
@@ -320,7 +321,8 @@ SELECT DISTINCT
 	INNER JOIN CampusAllocation
 		ON 1=1
 	WHERE
-		BudgetYear IN (@BudgetYear)
+		DimEntity.Code = 'HBC'
+		AND BudgetYear IN (@BudgetYear)
 	GROUP BY
 		  CampusXLTReportGroup.CampusXLTReportGroupID
 		, CampusXLTReportGroup.Heading
@@ -367,7 +369,9 @@ SELECT DISTINCT
 	INNER JOIN CampusAllocation
 		ON 1=1
 	WHERE
-		( DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth)
+		DimEntity.Code = 'HBC'
+		AND DimDate.CalendarYear = @BudgetYear 
+		AND DimDate.CalendarMonth &lt;= @BudgetMonth
 	GROUP BY
 		  CampusXLTReportGroup.CampusXLTReportGroupID
 		, CampusXLTReportGroup.Heading
@@ -561,10 +565,13 @@ INNER JOIN dw.DimEntity
 INNER JOIN CampusAllocation
 	ON 1=1
 WHERE
-	 DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+	 FactRevenue.EntityID = 3
+	 AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 GROUP BY
 	  CampusAllocation.Code
-	, DimDate.CalendarYear</CommandText>
+	, DimDate.CalendarYear
+
+</CommandText>
       </Query>
       <Fields>
         <Field Name="CampusCode">
@@ -725,6 +732,8 @@ INNER JOIN dw.DimEntity
 INNER JOIN CampusAllocation
 	ON 1=1
 WHERE
+	 DimEntity.Code = 'HBC'
+	 AND 
 	 DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 GROUP BY
 	  CampusAllocation.Code
@@ -741,7 +750,8 @@ GROUP BY
 	INNER JOIN CampusAllocation
 		ON 1=1
 	WHERE
-		 FactBudgetRevenue.BudgetYear = @BudgetYear AND FactBudgetRevenue.BudgetMonth &lt;= @BudgetMonth
+		 DimEntity.Code = 'HBC'
+		 AND FactBudgetRevenue.BudgetYear = @BudgetYear AND FactBudgetRevenue.BudgetMonth &lt;= @BudgetMonth
 	GROUP BY
 		  CampusAllocation.Code
 		, FactBudgetRevenue.BudgetYear
