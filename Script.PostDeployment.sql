@@ -824,9 +824,9 @@ SELECT 23, 'Ministries'      ,'Missions & Outreach & Church Plant'			, 'XLT' UNI
 SELECT 24, 'Ministries'      ,'Congregation/FOCIS'							, 'Jeff' UNION
 SELECT 25, 'Ministries'      ,'Production'									, 'Luke' UNION
 SELECT 26, 'Ministries'      ,'Creative Services, Video Prod, Media'		, 'Luke' UNION
-SELECT 27, 'Ministries'      ,'Food Ministry'								, ''  UNION
+SELECT 27, 'Ministries'      ,'Other'										, ''  --UNION
 
-SELECT 28, 'Ministries'      ,'Harvest Studio Production'					, ''  
+--SELECT 28, 'Ministries'      ,'Harvest Studio Production'					, ''  
 
 --xlt mapping:
 TRUNCATE TABLE CampusXLTReportGroupMap
@@ -1030,9 +1030,9 @@ WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '6147'
 --28.Harvest Studio production – all expenses with fund 069
-INSERT INTO CampusXLTReportGroupMap
-SELECT FinancialCategoryID, 28
-FROM DW.DimFinancialCategory
-WHERE
-	EntityCode = 'HBC'
-	AND FundCode = '095'
+--INSERT INTO CampusXLTReportGroupMap
+--SELECT FinancialCategoryID, 28
+--FROM DW.DimFinancialCategory
+--WHERE
+--	EntityCode = 'HBC'
+--	AND FundCode = '095'
