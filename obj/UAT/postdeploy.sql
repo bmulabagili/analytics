@@ -26,7 +26,6 @@ USING (VALUES
 	, (11, 'GoogleAnalytics',NULL)
 	, (12, 'Mailchimp_Stats', NULL)
 	, (13, 'MPX_Activity', NULL)
-	, (14, 'Asterix_CallMetrics', NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
@@ -57,37 +56,71 @@ UPDATE SET
     , Target.[Description] = Source.[Description] 
 ;
 --base connectionstrings
-MERGE INTO dbo.ConnectionString AS Target
-USING (VALUES
-    (0, N'FlatFileSource', N'FlatFileSource', -1, GETUTCDATE(), GETUTCDATE(), '')
-  ,	(1, N'Data Source=devharvestbible.database.windows.net;Persist Security Info=True;Initial Catalog=HarvestBible;packet size=4096', 'Harvest bible connection string.', -1, GETUTCDATE(), GETUTCDATE(), '')
-        --Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=52projectsMIP;Password=Proj3ct$;Initial Catalog=CHC;Provider=SQLNCLI11.1;Auto Translate=False;
-  , (2, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=CHC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-CHC', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (3, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HBC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBC', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (4, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HBF;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBF', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (5, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HCA;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HCA', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (6, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HMP;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HMP', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (7, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=WITW;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-WITW', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (8, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=IC;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (9, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=MPXWIWU;Provider=SQLNCLI11.1;Auto Translate=False;', 'MPX-US', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (10, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=MPXWIWC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MPX-Canada', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (11, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=AsterixAdmin;Provider=SQLNCLI11.1;Auto Translate=False;', 'AsterixAdmin', -1, GETUTCDATE(), GETUTCDATE(), '')
-)
-AS Source (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
-ON Target.ConnectionStringID = Source.ConnectionStringID
-WHEN MATCHED THEN 
-UPDATE SET 
-      Target.[Source]          = Source.[Source]
-    , Target.Note              = Source.Note
-    , Target.ExecutionID	      = Source.ExecutionID
-    , Target.InsertedDateTime  = Source.InsertedDateTime
-    , Target.UpdatedDateTime   = Source.UpdatedDateTime
-    , Target.HashValue		 = Source.HashValue
-WHEN NOT MATCHED BY TARGET THEN
-INSERT (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
-VALUES (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
-;
-
+IF @@SERVERNAME = 'UATANALYTICS' 
+BEGIN
+	MERGE INTO dbo.ConnectionString AS Target
+	USING (VALUES
+		 (0, N'FlatFileSource', N'FlatFileSource', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  ,	(1, N'Data Source=devharvestbible.database.windows.net;User ID=HB1User;Password=u53r4hb1!;Initial Catalog=HarvestBible;Provider=SQLNCLI11.1;Auto Translate=False;', 'Harvest bible connection string.', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (2, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=CHC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-CHC', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (3, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=HBC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBC', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (4, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=HBF;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBF', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (5, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=HCA;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HCA', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (6, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=HMP;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HMP', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (7, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=WITW;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-WITW', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  --for some reason the infinite campus data was named harvest on 219
+	  , (8 , N'Data Source=192.168.240.219;User ID=Proj3ct$;Password=C4lr1ss14n;Initial Catalog=harvest;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (9 , N'Data Source=192.168.240.219;User ID=Proj3ct$;Password=C4lr1ss14n;Initial Catalog=MPXWIWU;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (10, N'Data Source=192.168.240.219;User ID=Proj3ct$;Password=C4lr1ss14n;Initial Catalog=MPXWIWC;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
+	)
+	AS Source (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+	ON Target.ConnectionStringID = Source.ConnectionStringID
+	WHEN MATCHED THEN 
+	UPDATE SET 
+		  Target.[Source]          = Source.[Source]
+		, Target.Note              = Source.Note
+		, Target.ExecutionID	      = Source.ExecutionID
+		, Target.InsertedDateTime  = Source.InsertedDateTime
+		, Target.UpdatedDateTime   = Source.UpdatedDateTime
+		, Target.HashValue		 = Source.HashValue
+	WHEN NOT MATCHED BY TARGET THEN
+	INSERT (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+	VALUES (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+	;
+END
+ELSE
+BEGIN
+	MERGE INTO dbo.ConnectionString AS Target
+	USING (VALUES
+		(0, N'FlatFileSource', N'FlatFileSource', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  ,	(1, N'Data Source=devharvestbible.database.windows.net;Persist Security Info=True;Initial Catalog=HarvestBible;packet size=4096', 'Harvest bible connection string.', -1, GETUTCDATE(), GETUTCDATE(), '')
+			--Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=52projectsMIP;Password=Proj3ct$;Initial Catalog=CHC;Provider=SQLNCLI11.1;Auto Translate=False;
+	  , (2, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=CHC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-CHC', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (3, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HBC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBC', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (4, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HBF;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBF', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (5, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HCA;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HCA', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (6, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HMP;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HMP', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (7, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=WITW;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-WITW', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (8, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=IC;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (9, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=MPXWIWU;Provider=SQLNCLI11.1;Auto Translate=False;', 'MPX-US', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (10, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=MPXWIWC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MPX-Canada', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (11, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=AsterixAdmin;Provider=SQLNCLI11.1;Auto Translate=False;', 'AsterixAdmin', -1, GETUTCDATE(), GETUTCDATE(), '')
+	)
+	AS Source (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+	ON Target.ConnectionStringID = Source.ConnectionStringID
+	WHEN MATCHED THEN 
+	UPDATE SET 
+		  Target.[Source]          = Source.[Source]
+		, Target.Note              = Source.Note
+		, Target.ExecutionID	      = Source.ExecutionID
+		, Target.InsertedDateTime  = Source.InsertedDateTime
+		, Target.UpdatedDateTime   = Source.UpdatedDateTime
+		, Target.HashValue		 = Source.HashValue
+	WHEN NOT MATCHED BY TARGET THEN
+	INSERT (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+	VALUES (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
+	;
+END
 --define HBC Tenant
 MERGE INTO Tenant AS Target
  USING (VALUES
@@ -137,8 +170,7 @@ VALUES
   , (3, 11, 0)
   , (3, 12, 0)
   , (3, 13, 9)
-  , (3, 13, 10)
-  , (3, 14, 11);
+  , (3, 13, 10);
 
 --base tenants (including HBC
 MERGE INTO Tenant AS Target
@@ -198,7 +230,7 @@ USING ( VALUES
     , (3 , 3, 'CL', 'Crystal Lake'        , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
     , (4 , 3, 'EL', 'Elgin'               , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
     , (5 , 3, 'NI', 'Niles'               , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (6 , 3, 'NS', 'Deerfield Rd'        , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    , (6 , 3, 'DR', 'Deerfield Rd'        , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
     , (7 , 3, 'RM', 'Rolling Meadows'     , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
     , (8 , 3, 'SP', 'Elgin Campus Spanish', '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
     , (9 , 3, 'WW', 'Online Church'       , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
@@ -792,9 +824,9 @@ SELECT 23, 'Ministries'      ,'Missions & Outreach & Church Plant'			, 'XLT' UNI
 SELECT 24, 'Ministries'      ,'Congregation/FOCIS'							, 'Jeff' UNION
 SELECT 25, 'Ministries'      ,'Production'									, 'Luke' UNION
 SELECT 26, 'Ministries'      ,'Creative Services, Video Prod, Media'		, 'Luke' UNION
-SELECT 27, 'Ministries'      ,'Food Ministry'								, ''  UNION
+SELECT 27, 'Ministries'      ,'Other'										, ''  --UNION
 
-SELECT 28, 'Ministries'      ,'Harvest Studio Production'					, ''  
+--SELECT 28, 'Ministries'      ,'Harvest Studio Production'					, ''  
 
 --xlt mapping:
 TRUNCATE TABLE CampusXLTReportGroupMap
@@ -998,10 +1030,10 @@ WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '6147'
 --28.Harvest Studio production – all expenses with fund 069
-INSERT INTO CampusXLTReportGroupMap
-SELECT FinancialCategoryID, 28
-FROM DW.DimFinancialCategory
-WHERE
-	EntityCode = 'HBC'
-	AND FundCode = '095'
+--INSERT INTO CampusXLTReportGroupMap
+--SELECT FinancialCategoryID, 28
+--FROM DW.DimFinancialCategory
+--WHERE
+--	EntityCode = 'HBC'
+--	AND FundCode = '095'
 GO

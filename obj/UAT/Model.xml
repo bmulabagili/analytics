@@ -12404,40 +12404,40 @@
 		FROM DW.DimDate
 		WHERE
 			ActualDate >= CONVERT(DATE, CONVERT(VARCHAR(2), @StartCalendarMonth) + '/1/' +  CONVERT(VARCHAR(4), @StartCalendarYear) )
-), ActualRevenue AS (
-	SELECT 
-		  DimDate.CalendarYear
-		, DimDate.CalendarMonth
-		, DimEntity.Code AS EntityCode
-		, SUM(FactRevenue.Amount) AS Amount
-	FROM dw.FactRevenue
-	INNER JOIN dw.DimDate
-		ON FactRevenue.DateID = DimDate.DateID
-	INNER JOIN dw.DimEntity
-		ON FactRevenue.EntityID = DimEntity.EntityID
-		AND FactRevenue.TenantID = DimEntity.TenantID
-	INNER JOIN dw.DimFinancialCategory
-		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
-		AND FactRevenue.TenantID = DimFinancialCategory.TenantID
-	INNER JOIN Calendar
-		ON DimDate.CalendarYear = Calendar.CalendarYear
-		AND DimDate.CalendarMonth = Calendar.CalendarMonth
-	WHERE
-		(
-			DimEntity.Code IN ('HCA')
-			OR --HBC only reports fund 025
-			(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
-			OR --HBF Is now only fund 025
-			(DimEntity.Code = 'HBF' AND DimFinancialCategory.FundCode = '025')
-			OR --WITW excludes funds 084 and 088
-			(DimEntity.Code = 'WITW' AND DimFinancialCategory.FundCode NOT IN ('084','088') )
-		)
-		AND DimEntity.Code IN (SELECT Item FROM dbo.fnSplit( @EntityCSVList, ',')) 
-	GROUP BY
-		  DimDate.CalendarYear
-		, DimDate.CalendarMonth
-		, DimEntity.Code
-), ActualExpense AS (
+	), ActualRevenue AS (
+		SELECT 
+			  DimDate.CalendarYear
+			, DimDate.CalendarMonth
+			, DimEntity.Code AS EntityCode
+			, SUM(FactRevenue.Amount) AS Amount
+		FROM dw.FactRevenue
+		INNER JOIN dw.DimDate
+			ON FactRevenue.DateID = DimDate.DateID
+		INNER JOIN dw.DimEntity
+			ON FactRevenue.EntityID = DimEntity.EntityID
+			AND FactRevenue.TenantID = DimEntity.TenantID
+		INNER JOIN dw.DimFinancialCategory
+			ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+			AND FactRevenue.TenantID = DimFinancialCategory.TenantID
+		INNER JOIN Calendar
+			ON DimDate.CalendarYear = Calendar.CalendarYear
+			AND DimDate.CalendarMonth = Calendar.CalendarMonth
+		WHERE
+			(
+				DimEntity.Code IN ('HCA')
+				OR --HBC only reports fund 025
+				(DimEntity.Code = 'HBC' AND DimFinancialCategory.FundCode = '025')
+				OR --HBF Is now only fund 025
+				(DimEntity.Code = 'HBF' AND DimFinancialCategory.FundCode = '025')
+				OR --WITW excludes funds 084 and 088
+				(DimEntity.Code = 'WITW' AND DimFinancialCategory.FundCode NOT IN ('084','088') )
+			)
+			AND DimEntity.Code IN (SELECT Item FROM dbo.fnSplit( @EntityCSVList, ',')) 
+		GROUP BY
+			  DimDate.CalendarYear
+			, DimDate.CalendarMonth
+			, DimEntity.Code
+	), ActualExpense AS (
 		SELECT 
 			  DimDate.CalendarYear
 			, DimDate.CalendarMonth
@@ -12470,9 +12470,13 @@
 			  DimDate.CalendarYear
 			, DimDate.CalendarMonth
 			, DimEntity.Code
-)
-SELECT 
-		  ISNULL(ActualRevenue.EntityCode, ActualExpense.EntityCode) AS EntityCode
+	)
+	SELECT 
+	      ROW_NUMBER() OVER (ORDER BY 
+			  ISNULL(ActualRevenue.EntityCode, ActualExpense.EntityCode)
+			, ISNULL(ActualRevenue.CalendarYear, ActualExpense.CalendarYear)
+			, ISNULL(ActualRevenue.CalendarMonth, ActualExpense.CalendarMonth) ) AS RowNum
+		, ISNULL(ActualRevenue.EntityCode, ActualExpense.EntityCode) AS EntityCode
 		, ISNULL(ActualRevenue.CalendarYear, ActualExpense.CalendarYear) AS CalendarYear
 		, ISNULL(ActualRevenue.CalendarMonth, ActualExpense.CalendarMonth) AS CalendarMonth
 		, SUM(ISNULL(ActualRevenue.Amount, 0)) AS ActualRevenue
@@ -12480,6 +12484,8 @@ SELECT
 	FROM ActualRevenue
 	FULL OUTER JOIN ActualExpense
 		ON ActualRevenue.EntityCode = ActualExpense.EntityCode
+		AND ActualRevenue.CalendarMonth = ActualExpense.CalendarMonth
+		AND ActualRevenue.CalendarYear = ActualExpense.CalendarYear
 	GROUP BY
 		  ISNULL(ActualRevenue.EntityCode, ActualExpense.EntityCode)
 		, ISNULL(ActualRevenue.CalendarYear, ActualExpense.CalendarYear)
@@ -12660,16 +12666,16 @@ SELECT
 					<References Name="[DW].[DimEntity].[Code]" />
 				</Entry>
 				<Entry>
-					<References Name="[DW].[DimDate].[CalendarYear]" />
-				</Entry>
-				<Entry>
-					<References Name="[DW].[DimDate].[CalendarYear]" />
-				</Entry>
-				<Entry>
 					<References Name="[DW].[DimDate].[CalendarMonth]" />
 				</Entry>
 				<Entry>
 					<References Name="[DW].[DimDate].[CalendarMonth]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[CalendarYear]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[CalendarYear]" />
 				</Entry>
 			</Relationship>
 			<Relationship Name="DynamicObjects">
@@ -12839,7 +12845,7 @@ SELECT
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="Length" Value="3663" />
+				<Property Name="Length" Value="4081" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
 				<Property Name="HeaderContents" Value="CREATE PROCEDURE [DW].[usp_Dashboard-ActualRevenueVActualExpense]&#xD;&#xA;&#x9;  @StartCalendarMonth INT  &#xD;&#xA;&#x9;, @StartCalendarYear INT &#xD;&#xA;&#x9;, @NumberOfMonths INT &#xD;&#xA;&#x9;, @EntityCSVList NVARCHAR(20) &#xD;&#xA;AS" />
@@ -12923,14 +12929,20 @@ SELECT
 			, DimEntity.Code
 	)
 	SELECT 
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
+		   ROW_NUMBER() OVER (ORDER BY 
+			  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
+			, ISNULL(Actuals.CalendarYear, Budgeted.CalendarYear)
+			, ISNULL(Actuals.CalendarMonth, Budgeted.CalendarMonth) ) AS RowNum
+		, ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
 		, ISNULL(Actuals.CalendarYear, Budgeted.CalendarYear) AS CalendarYear
 		, ISNULL(Actuals.CalendarMonth, Budgeted.CalendarMonth) AS CalendarMonth
 		, SUM(ISNULL(Budgeted.Amount, 0)) AS BudgetAmount
-		, SUM(ISNULL(Actuals.Amount, 0)) AS AcutalAmount
+		, SUM(ISNULL(Actuals.Amount, 0)) AS ActualAmount
 	FROM Actuals
 	FULL OUTER JOIN Budgeted
 		ON Actuals.EntityCode = Budgeted.EntityCode
+		AND Actuals.CalendarMonth = Budgeted.CalendarMonth
+		AND Actuals.CalendarYear = Budgeted.CalendarYear
 	GROUP BY
 		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
 		, ISNULL(Actuals.CalendarYear, Budgeted.CalendarYear)
@@ -13112,16 +13124,16 @@ SELECT
 					<References Name="[DW].[DimEntity].[Code]" />
 				</Entry>
 				<Entry>
-					<References Name="[DW].[DimDate].[CalendarYear]" />
-				</Entry>
-				<Entry>
-					<References Name="[DW].[FactBudgetExpense].[BudgetYear]" />
-				</Entry>
-				<Entry>
 					<References Name="[DW].[DimDate].[CalendarMonth]" />
 				</Entry>
 				<Entry>
 					<References Name="[DW].[FactBudgetExpense].[BudgetMonth]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[CalendarYear]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactBudgetExpense].[BudgetYear]" />
 				</Entry>
 			</Relationship>
 			<Relationship Name="DynamicObjects">
@@ -13291,7 +13303,7 @@ SELECT
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="Length" Value="3633" />
+				<Property Name="Length" Value="3958" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
 				<Property Name="HeaderContents" Value="CREATE PROCEDURE [DW].[usp_Dashboard-ActualVBudgetedExpense]&#xD;&#xA;&#x9;  @StartCalendarMonth INT  &#xD;&#xA;&#x9;, @StartCalendarYear INT &#xD;&#xA;&#x9;, @NumberOfMonths INT &#xD;&#xA;&#x9;, @EntityCSVList NVARCHAR(20) &#xD;&#xA;AS" />
@@ -13375,14 +13387,20 @@ SELECT
 			, DimEntity.Code
 	)
 	SELECT 
-		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
+		  ROW_NUMBER() OVER (ORDER BY 
+			  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
+			, ISNULL(Actuals.CalendarYear, Budgeted.CalendarYear)
+			, ISNULL(Actuals.CalendarMonth, Budgeted.CalendarMonth) ) AS RowNum
+		,  ISNULL(Actuals.EntityCode, Budgeted.EntityCode) AS EntityCode
 		, ISNULL(Actuals.CalendarYear, Budgeted.CalendarYear) AS CalendarYear
 		, ISNULL(Actuals.CalendarMonth, Budgeted.CalendarMonth) AS CalendarMonth
 		, SUM(ISNULL(Budgeted.Amount, 0)) AS BudgetAmount
-		, SUM(ISNULL(Actuals.Amount, 0)) AS AcutalAmount
+		, SUM(ISNULL(Actuals.Amount, 0)) AS ActualAmount
 	FROM Actuals
 	FULL OUTER JOIN Budgeted
 		ON Actuals.EntityCode = Budgeted.EntityCode
+		AND Actuals.CalendarMonth = Budgeted.CalendarMonth
+		AND Actuals.CalendarYear = Budgeted.CalendarYear
 	GROUP BY
 		  ISNULL(Actuals.EntityCode, Budgeted.EntityCode)
 		, ISNULL(Actuals.CalendarYear, Budgeted.CalendarYear)
@@ -13564,16 +13582,16 @@ SELECT
 					<References Name="[DW].[DimEntity].[Code]" />
 				</Entry>
 				<Entry>
-					<References Name="[DW].[DimDate].[CalendarYear]" />
-				</Entry>
-				<Entry>
-					<References Name="[DW].[FactBudgetRevenue].[BudgetYear]" />
-				</Entry>
-				<Entry>
 					<References Name="[DW].[DimDate].[CalendarMonth]" />
 				</Entry>
 				<Entry>
 					<References Name="[DW].[FactBudgetRevenue].[BudgetMonth]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[CalendarYear]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactBudgetRevenue].[BudgetYear]" />
 				</Entry>
 			</Relationship>
 			<Relationship Name="DynamicObjects">
@@ -13743,7 +13761,7 @@ SELECT
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="Length" Value="3633" />
+				<Property Name="Length" Value="3958" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
 				<Property Name="HeaderContents" Value="CREATE PROCEDURE [DW].[usp_Dashboard-ActualVBudgetedRevenue]&#xD;&#xA;&#x9;  @StartCalendarMonth INT  &#xD;&#xA;&#x9;, @StartCalendarYear INT &#xD;&#xA;&#x9;, @NumberOfMonths INT &#xD;&#xA;&#x9;, @EntityCSVList NVARCHAR(20) &#xD;&#xA;AS" />
@@ -13801,7 +13819,8 @@ SELECT
 		, ISNULL(GroupID, 3)
 )
 SELECT
-	  CalendarYear
+	ROW_NUMBER() OVER (ORDER BY  EntityCode, CalendarYear, CalendarMonth) AS RowNum
+	, CalendarYear
 	, CalendarMonth
 	, EntityCode
 	, SUM(Amount) Amount
@@ -13948,13 +13967,13 @@ ORDER BY
 					<References Name="[dbo].[fnSplit].[Item]" />
 				</Entry>
 				<Entry>
+					<References Name="[DW].[DimEntity].[Code]" />
+				</Entry>
+				<Entry>
 					<References Name="[DW].[DimDate].[CalendarYear]" />
 				</Entry>
 				<Entry>
 					<References Name="[DW].[DimDate].[CalendarMonth]" />
-				</Entry>
-				<Entry>
-					<References Name="[DW].[DimEntity].[Code]" />
 				</Entry>
 			</Relationship>
 			<Relationship Name="DynamicObjects">
@@ -14091,7 +14110,7 @@ ORDER BY
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="Length" Value="2206" />
+				<Property Name="Length" Value="2288" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
 				<Property Name="HeaderContents" Value="CREATE PROCEDURE [DW].[usp_Dashboard-Contributions]&#xD;&#xA;&#x9;  @StartCalendarMonth INT  &#xD;&#xA;&#x9;, @StartCalendarYear INT &#xD;&#xA;&#x9;, @NumberOfMonths INT &#xD;&#xA;&#x9;, @EntityCSVList NVARCHAR(20) &#xD;&#xA;AS" />
@@ -14110,7 +14129,8 @@ ORDER BY
 			ActualDate >= CONVERT(DATE, CONVERT(VARCHAR(2), @StartCalendarMonth) + '/1/' +  CONVERT(VARCHAR(4), @StartCalendarYear) )
 	)
 	SELECT
-		  FactHBFMetric.CalendarYear
+	      ROW_NUMBER() OVER (ORDER BY FactHBFMetric.CalendarYear, FactHBFMetric.CalendarMonth)
+		, FactHBFMetric.CalendarYear
 		, FactHBFMetric.CalendarMonth
 		, SUM(HBFMetricAmount) AS ChurchPlants
 	FROM DW.FactHBFMetric
@@ -14276,7 +14296,7 @@ ORDER BY
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="Length" Value="852" />
+				<Property Name="Length" Value="945" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
 				<Property Name="HeaderContents" Value="CREATE PROCEDURE [DW].[usp_Dashboard-HBFChurchPlants]&#xD;&#xA;&#x9;  @StartCalendarMonth INT  &#xD;&#xA;&#x9;, @StartCalendarYear INT &#xD;&#xA;&#x9;, @NumberOfMonths INT &#xD;&#xA;&#x9;, @EntityCSVList NVARCHAR(20) &#xD;&#xA;AS" />
@@ -14285,8 +14305,9 @@ ORDER BY
 		<Element Type="SqlProcedure" Name="[DW].[usp_Dashboard-HCAEnrollment]">
 			<Property Name="BodyScript">
 				<Value><![CDATA[
-	SELECT 
-		SchoolYear
+	SELECT
+	      ROW_NUMBER() OVER (ORDER BY SchoolYear) AS RowNumber
+		, SchoolYear
 		, MAX(EnrollmentCount) AS EnrollmentCount
 	FROM (
 		SELECT 
@@ -14338,7 +14359,7 @@ ORDER BY
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="Length" Value="523" />
+				<Property Name="Length" Value="585" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
 				<Property Name="HeaderContents" Value="CREATE PROCEDURE [DW].[usp_Dashboard-HCAEnrollment]&#xD;&#xA;AS" />
