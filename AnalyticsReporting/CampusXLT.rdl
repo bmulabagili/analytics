@@ -585,15 +585,25 @@ GROUP BY
 		AND CalendarYear IN (@BudgetYear)
 	GROUP BY
 		FactAttendance.CampusID, DimCampus.Code
+	UNION
+	SELECT CampusID, Code, 0 AS AttendanceCount 
+	FROM dw.DimCampus
+	WHERE DimCampus.Code NOT IN ('--','WW','SP')
 ), AttendanceTotal AS (
 	SELECT SUM(AttendanceCount) AS AttendanceCount
 	FROM Attendance
-), CampusAllocation AS (
+) , CampusAllocationCalculation AS (
 	SELECT 
 		CampusID, Code
 		--, Attendance.AttendanceCount, (SELECT AttendanceCount FROM AttendanceTotal)
 		, (Attendance.AttendanceCount * 1.0) / (SELECT AttendanceCount FROM AttendanceTotal) AS CampusPercent
 	FROM Attendance
+), CampusAllocation AS (
+	SELECT
+		CampusID, Code, MAX(CampusPercent) AS CampusPercent
+	FROM  CampusAllocationCalculation
+	GROUP BY 
+		CampusID, Code
 )
 SELECT
 	  CampusAllocation.Code AS CampusCode
