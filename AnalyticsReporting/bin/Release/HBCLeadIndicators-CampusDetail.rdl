@@ -75,17 +75,19 @@
 		, DimCampus.Code
 ), FilledSrc AS (
 	SELECT DISTINCT 
-			CalendarYear.CalendarYear
-		, CalendarMonth.CalendarMonth
-		, CalendarMonth.CalendarMonthAbbreviation
+		  Calendar.CalendarYear
+		, Calendar.CalendarMonth
+		, Calendar.CalendarMonthAbbreviation
 		, LifeEventType.LifeEventTypeName
 		, Campus.CampusID
 		, Campus.Code
 		, 0 AS LifeEventCount
-	FROM (SELECT DISTINCT Name AS LifeEventTypeName FROM DW.DimLifeEventType WHERE LifeEventTypeID &gt; 0) LifeEventType
-		, (SELECT DISTINCT CampusID, Code FROM src)Campus
-		, (SELECT DISTINCT CalendarYear FROM Src) CalendarYear
-		, (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM Src) CalendarMonth
+	FROM (SELECT DISTINCT Name AS LifeEventTypeName FROM DW.DimLifeEventType WHERE LifeEventTypeID &gt; 0 UNION
+		  SELECT 'FTV Children') LifeEventType
+		, (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID &gt; 0)Campus
+		, (SELECT DISTINCT CalendarYear,CalendarMonth, CalendarMonthAbbreviation 
+		   FROM DW.DimDate 
+		   WHERE DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100)) Calendar
 	UNION
 	SELECT *
 	FROM src
@@ -99,6 +101,7 @@ SELECT
 	, Code
 	, SUM(LifeEventCount) AS LifeEventCount
 FROM FilledSrc
+WHERE CampusID = @CampusID
 GROUP BY
 	CalendarYear
 	, CalendarMonth
@@ -175,56 +178,104 @@ FROM DW.DimCampus</CommandText>
             <Value>=Parameters!CampusID.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>SELECT 
-	  DimDate.CalendarYear
-	, DimDate.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, CASE WHEN DimActivity.Name LIKE '%Awana%' THEN 'Awana'
-		ELSE CASE WHEN DimActivity.Name LIKE '%Junior High%' THEN 'Junior High' 
-			ELSE CASE WHEN DimActivity.Name LIKE '%Senior High%' OR DimActivity.Name LIKE '%High School%' THEN 'Senior High' END 
-		END
-	  END AS AttendanceCategory
-	, FactAttendance.CampusID
-	, DimCampus.Code
-	, SUM(FactAttendance.AttendanceCount) AS AttendanceCount
-FROM DW.FactAttendance
-INNER JOIN DW.DimDate
-	ON FactAttendance.InstanceDateID = DimDate.DateID
-INNER JOIN DW.DimCampus
-	ON FactAttendance.CampusID = DimCampus.CampusID
-	AND FactAttendance.TenantID = DimCampus.TenantID
-INNER JOIN DW.DimMinistry
-	ON FactAttendance.MinistryID = DimMinistry.MinistryID
-	AND FactAttendance.TenantID = DimMinistry.TenantID
---may not have to include activity, and attendanceType
-INNER JOIN DW.DimActivity 
-	ON FactAttendance.ActivityID = dimActivity.ActivityID
-	AND FactAttendance.TenantID = DimActivity.TenantID
---INNER JOIN DW.DimRoster -- adds too much time in this query.
---	ON FactAttendance.RosterID = DimRoster.RosterID
---	AND FactAttendance.TenantID = DimRoster.TenantID
-INNER JOIN DW.DimAttendanceType
-	ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
-	AND FactAttendance.TenantID = DimAttendanceType.TenantID
-WHERE
-	DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100)
-	AND DimAttendanceType.Category = 'Attendee'
-	AND ( 
-		DimActivity.Name like '%awana%'
-		Or DimActivity.Name like '%high%' )
-	AND FactAttendance.CampusID = @CampusID
+        <CommandText>WITH Src AS (
+	SELECT 
+		  DimDate.CalendarYear
+		, DimDate.CalendarMonth
+		, DimDate.CalendarMonthAbbreviation
+		, CASE WHEN DimActivity.Name LIKE '%Awana%' THEN 'Awana'
+			ELSE CASE WHEN DimActivity.Name LIKE '%Junior High%' THEN 'Junior High' 
+				ELSE CASE WHEN DimActivity.Name LIKE '%Senior High%' OR DimActivity.Name LIKE '%High School%' THEN 'Senior High' END 
+			END
+		  END AS AttendanceCategory
+		, FactAttendance.CampusID
+		, DimCampus.Code
+		, SUM(FactAttendance.AttendanceCount) AS AttendanceCount
+	FROM DW.FactAttendance
+	INNER JOIN DW.DimDate
+		ON FactAttendance.InstanceDateID = DimDate.DateID
+	INNER JOIN DW.DimCampus
+		ON FactAttendance.CampusID = DimCampus.CampusID
+		AND FactAttendance.TenantID = DimCampus.TenantID
+	INNER JOIN DW.DimMinistry
+		ON FactAttendance.MinistryID = DimMinistry.MinistryID
+		AND FactAttendance.TenantID = DimMinistry.TenantID
+	--may not have to include activity, and attendanceType
+	INNER JOIN DW.DimActivity 
+		ON FactAttendance.ActivityID = dimActivity.ActivityID
+		AND FactAttendance.TenantID = DimActivity.TenantID
+	--INNER JOIN DW.DimRoster -- adds too much time in this query.
+	--	ON FactAttendance.RosterID = DimRoster.RosterID
+	--	AND FactAttendance.TenantID = DimRoster.TenantID
+	INNER JOIN DW.DimAttendanceType
+		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+		AND FactAttendance.TenantID = DimAttendanceType.TenantID
+	WHERE
+		DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100)
+		AND DimAttendanceType.Category = 'Attendee'
+		AND ( 
+			DimActivity.Name like '%awana%'
+			Or DimActivity.Name like '%high%' )
+		AND FactAttendance.CampusID = @CampusID
+	GROUP BY
+		  DimDate.CalendarYear
+		, DimDate.CalendarMonth
+		, DimDate.CalendarMonthAbbreviation
+		, CASE WHEN DimActivity.Name LIKE '%Awana%' THEN 'Awana'
+			ELSE CASE WHEN DimActivity.Name LIKE '%Junior High%' THEN 'Junior High' 
+				ELSE CASE WHEN DimActivity.Name LIKE '%Senior High%' OR DimActivity.Name LIKE '%High School%' THEN 'Senior High' END 
+			END
+		  END
+		, FactAttendance.CampusID
+		, DimCampus.Code
+		, DimMinistry.CampusID
+), FilledSrc AS (
+	SELECT 
+		  Calendar.CalendarYear
+		, Calendar.CalendarMonth
+		, Calendar.CalendarMonthAbbreviation
+		, AttendanceCategory.AttendanceCategory
+		, Campus.CampusID
+		, Campus.Code	
+		, 0 AS AttendanceCount
+	FROM (
+			SELECT 'Awana' AS AttendanceCategory UNION
+			SELECT 'Junior High' UNION
+			SELECT 'Senior High') AttendanceCategory
+		, (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID &gt; 0)Campus
+		, (SELECT DISTINCT CalendarYear,CalendarMonth, CalendarMonthAbbreviation 
+		   FROM DW.DimDate 
+		   WHERE DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100) ) Calendar
+	UNION
+	SELECT
+		  CalendarYear
+		, CalendarMonth
+		, CalendarMonthAbbreviation
+		, AttendanceCategory
+		, CampusID
+		, Code
+		, AttendanceCount
+	FROM Src
+)
+SELECT 
+	  CalendarYear
+	, CalendarMonth
+    , CalendarMonthAbbreviation
+	, AttendanceCategory
+	, CampusID
+	, Code
+	, SUM(AttendanceCount) AS AttendanceCount
+FROM FilledSrc
+WHERE CampusID = @CampusID
 GROUP BY
-	  DimDate.CalendarYear
-	, DimDate.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, CASE WHEN DimActivity.Name LIKE '%Awana%' THEN 'Awana'
-		ELSE CASE WHEN DimActivity.Name LIKE '%Junior High%' THEN 'Junior High' 
-			ELSE CASE WHEN DimActivity.Name LIKE '%Senior High%' OR DimActivity.Name LIKE '%High School%' THEN 'Senior High' END 
-		END
-	  END
-	, FactAttendance.CampusID
-	, DimCampus.Code
-	, DimMinistry.CampusID</CommandText>
+	CalendarYear
+	, CalendarMonth
+    , CalendarMonthAbbreviation
+	, AttendanceCategory
+	, CampusID
+	, Code
+ORDER BY
+	1,2</CommandText>
       </Query>
       <Fields>
         <Field Name="CalendarYear">
@@ -267,37 +318,76 @@ GROUP BY
           <QueryParameter Name="@CalendarMonth">
             <Value>=Parameters!CalendarMonth.Value</Value>
           </QueryParameter>
-          <QueryParameter Name="@campusID">
+          <QueryParameter Name="@CampusID">
             <Value>=Parameters!CampusID.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
-SELECT  
-	  FactSmallGroup.CalendarYear
-	, FactSmallGroup.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, DimSmallGroupDetail.CampusID
-	, DimCampus.Code
-	, SUM(FactSmallGroup.ActualAttendance) AS AttendanceCount
-FROM dw.FactSmallGroup
-INNER JOIN dw.DimSmallGroupDetail
-	ON FactSmallGroup.SmallGroupDetailID = DimSmallGroupDetail.SmallGroupDetailID
-	AND FactSmallGroup.TenantID = DimSmallGroupDetail.TenantID
-INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
-	ON FactSmallGroup.CalendarMonth = DimDate.CalendarMonth
-INNER JOIN DW.DimCampus
-	ON DimSmallGroupDetail.CampusID = DimCampus.CampusID
-	AND DimSmallGroupDetail.TenantID = DimCampus.TenantID
-WHERE
-	FactSmallGroup.CalendarYear = @CalendarYear -1
-	OR (FactSmallGroup.CalendarYear = @CalendarYear AND FactSmallGroup.CalendarMonth &lt;= @CalendarMonth)
-	AND DimSmallGroupDetail.CampusID = @campusID
+        <CommandText>WITH Src AS (
+	SELECT  
+		  FactSmallGroup.CalendarYear
+		, FactSmallGroup.CalendarMonth
+		, DimDate.CalendarMonthAbbreviation
+		, DimSmallGroupDetail.CampusID
+		, DimCampus.Code
+		, SUM(FactSmallGroup.ActualAttendance) AS AttendanceCount
+	FROM dw.FactSmallGroup
+	INNER JOIN dw.DimSmallGroupDetail
+		ON FactSmallGroup.SmallGroupDetailID = DimSmallGroupDetail.SmallGroupDetailID
+		AND FactSmallGroup.TenantID = DimSmallGroupDetail.TenantID
+	INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
+		ON FactSmallGroup.CalendarMonth = DimDate.CalendarMonth
+	INNER JOIN DW.DimCampus
+		ON DimSmallGroupDetail.CampusID = DimCampus.CampusID
+		AND DimSmallGroupDetail.TenantID = DimCampus.TenantID
+	WHERE
+		FactSmallGroup.CalendarYear = @CalendarYear -1
+		OR (FactSmallGroup.CalendarYear = @CalendarYear AND FactSmallGroup.CalendarMonth &lt;= @CalendarMonth)
+		AND DimSmallGroupDetail.CampusID = @CampusID
+	GROUP BY
+		FactSmallGroup.CalendarYear
+		, FactSmallGroup.CalendarMonth
+		, DimDate.CalendarMonthAbbreviation
+		, DimSmallGroupDetail.CampusID
+		, DimCampus.Code
+), FilledSrc AS (
+	SELECT DISTINCT 
+		  Calendar.CalendarYear
+		, Calendar.CalendarMonth
+		, Calendar.CalendarMonthAbbreviation
+		, Campus.CampusID
+		, Campus.Code
+		, 0 AS AttendanceCount
+	FROM (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID &gt; 0)Campus
+		, (SELECT DISTINCT CalendarYear,CalendarMonth, CalendarMonthAbbreviation 
+		   FROM DW.DimDate 
+		   WHERE DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100) ) Calendar
+	UNION
+	SELECT 
+		  CalendarYear
+		, CalendarMonth
+		, CalendarMonthAbbreviation
+		, CampusID
+		, Code
+		, AttendanceCount
+	FROM src
+)
+SELECT 
+	  CalendarYear
+	, CalendarMonth
+    , CalendarMonthAbbreviation
+	, CampusID
+	, Code
+	, SUM(AttendanceCount) AS AttendanceCount
+FROM FilledSrc
+WHERE CampusID = @CampusID
 GROUP BY
-	FactSmallGroup.CalendarYear
-	, FactSmallGroup.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, DimSmallGroupDetail.CampusID
-	, DimCampus.Code</CommandText>
+	CalendarYear
+	, CalendarMonth
+    , CalendarMonthAbbreviation
+	, CampusID
+	, Code
+ORDER BY
+	1,2</CommandText>
       </Query>
       <Fields>
         <Field Name="CalendarYear">
@@ -336,34 +426,67 @@ GROUP BY
           <QueryParameter Name="@CalendarMonth">
             <Value>=Parameters!CalendarMonth.Value</Value>
           </QueryParameter>
-          <QueryParameter Name="@campusID">
+          <QueryParameter Name="@CampusID">
             <Value>=Parameters!CampusID.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
-SELECT  
-	  FactFirstTimeGiver.CalendarYear
-	, FactFirstTimeGiver.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, FactFirstTimeGiver.CampusID
-	, DimCampus.Code
-	, SUM(FactFirstTimeGiver.FirstTimeGiverCount) AS FirstTimeGiverCount
-FROM dw.FactFirstTimeGiver
-INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
-	ON FactFirstTimeGiver.CalendarMonth = DimDate.CalendarMonth
-INNER JOIN DW.DimCampus
-	ON FactFirstTimeGiver.CampusID = DimCampus.CampusID
-	AND FactFirstTimeGiver.TenantID = DimCampus.TenantID
-WHERE
-	FactFirstTimeGiver.CalendarYear = @CalendarYear -1
-	OR (FactFirstTimeGiver.CalendarYear = @CalendarYear AND FactFirstTimeGiver.CalendarMonth &lt;= @CalendarMonth)
-	AND FactFirstTimeGiver.CampusID = @campusID
+        <CommandText>WITH Src AS (
+	SELECT  
+		  FactFirstTimeGiver.CalendarYear
+		, FactFirstTimeGiver.CalendarMonth
+		, DimDate.CalendarMonthAbbreviation
+		, FactFirstTimeGiver.CampusID
+		, DimCampus.Code
+		, SUM(FactFirstTimeGiver.FirstTimeGiverCount) AS FirstTimeGiverCount
+	FROM dw.FactFirstTimeGiver
+	INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
+		ON FactFirstTimeGiver.CalendarMonth = DimDate.CalendarMonth
+	INNER JOIN DW.DimCampus
+		ON FactFirstTimeGiver.CampusID = DimCampus.CampusID
+		AND FactFirstTimeGiver.TenantID = DimCampus.TenantID
+	WHERE
+		FactFirstTimeGiver.CalendarYear = @CalendarYear -1
+		OR (FactFirstTimeGiver.CalendarYear = @CalendarYear AND FactFirstTimeGiver.CalendarMonth &lt;= @CalendarMonth)
+		AND FactFirstTimeGiver.CampusID = @CampusID
+	GROUP BY
+		FactFirstTimeGiver.CalendarYear
+		, FactFirstTimeGiver.CalendarMonth
+		, DimDate.CalendarMonthAbbreviation
+		, FactFirstTimeGiver.CampusID
+		, DimCampus.Code
+), FilledSrc AS (
+	SELECT DISTINCT 
+		  Calendar.CalendarYear
+		, Calendar.CalendarMonth
+		, Calendar.CalendarMonthAbbreviation
+		, Campus.CampusID
+		, Campus.Code
+		, 0 AS FirstTimeGiverCount
+	FROM (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID &gt; 0)Campus
+		, (SELECT DISTINCT CalendarYear,CalendarMonth, CalendarMonthAbbreviation 
+		   FROM DW.DimDate 
+		   WHERE DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100) ) Calendar
+	UNION
+	SELECT *
+	FROM src
+)
+SELECT 
+	  CalendarYear
+	, CalendarMonth
+    , CalendarMonthAbbreviation
+	, CampusID
+	, Code
+	, SUM(FirstTimeGiverCount) AS FirstTimeGiverCount
+FROM FilledSrc
+WHERE CampusID = @CampusID
 GROUP BY
-	FactFirstTimeGiver.CalendarYear
-	, FactFirstTimeGiver.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, FactFirstTimeGiver.CampusID
-	, DimCampus.Code</CommandText>
+	CalendarYear
+	, CalendarMonth
+    , CalendarMonthAbbreviation
+	, CampusID
+	, Code
+ORDER BY
+	1,2</CommandText>
       </Query>
       <Fields>
         <Field Name="CalendarYear">
@@ -402,58 +525,106 @@ GROUP BY
           <QueryParameter Name="@CampusID">
             <Value>=Parameters!CampusID.Value</Value>
           </QueryParameter>
+          <QueryParameter Name="@CalendarMonth">
+            <Value>=Parameters!CalendarMonth.Value</Value>
+          </QueryParameter>
         </QueryParameters>
-        <CommandText>SELECT 
-	  DimDate.CalendarYear
-	, DimDate.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, DimActivity.Name 
-	, FactAttendance.CampusID
-	, DimCampus.Code
-	, SUM(FactAttendance.AttendanceCount) AS AttendanceCount
-	, NumberOfSundays.SundayCount
-FROM DW.FactAttendance
-INNER JOIN DW.DimDate
-	ON FactAttendance.InstanceDateID = DimDate.DateID
-INNER JOIN DW.DimCampus
-	ON FactAttendance.CampusID = DimCampus.CampusID
-	AND FactAttendance.TenantID = DimCampus.TenantID
-INNER JOIN DW.DimMinistry
-	ON FactAttendance.MinistryID = DimMinistry.MinistryID
-	AND FactAttendance.TenantID = DimMinistry.TenantID
---may not have to include activity, and attendanceType
-INNER JOIN DW.DimActivity 
-	ON FactAttendance.ActivityID = dimActivity.ActivityID
-	AND FactAttendance.TenantID = DimActivity.TenantID
---INNER JOIN DW.DimRoster -- adds too much time in this query.
---	ON FactAttendance.RosterID = DimRoster.RosterID
---	AND FactAttendance.TenantID = DimRoster.TenantID
-INNER JOIN DW.DimAttendanceType
-	ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
-	AND FactAttendance.TenantID = DimAttendanceType.TenantID
-INNER JOIN (
-	SELECT CalendarYear, CalendarMonth, COUNT(DISTINCT CalendarWeek) SundayCount
-	FROM DW.DimDate
+        <CommandText>WITH Src AS (
+	SELECT 
+		  DimDate.CalendarYear
+		, DimDate.CalendarMonth
+		, DimDate.CalendarMonthAbbreviation
+		, DimActivity.Name 
+		, FactAttendance.CampusID
+		, DimCampus.Code
+		, SUM(FactAttendance.AttendanceCount) AS AttendanceCount
+		, NumberOfSundays.SundayCount
+	FROM DW.FactAttendance
+	INNER JOIN DW.DimDate
+		ON FactAttendance.InstanceDateID = DimDate.DateID
+	INNER JOIN DW.DimCampus
+		ON FactAttendance.CampusID = DimCampus.CampusID
+		AND FactAttendance.TenantID = DimCampus.TenantID
+	INNER JOIN DW.DimMinistry
+		ON FactAttendance.MinistryID = DimMinistry.MinistryID
+		AND FactAttendance.TenantID = DimMinistry.TenantID
+	--may not have to include activity, and attendanceType
+	INNER JOIN DW.DimActivity 
+		ON FactAttendance.ActivityID = dimActivity.ActivityID
+		AND FactAttendance.TenantID = DimActivity.TenantID
+	--INNER JOIN DW.DimRoster -- adds too much time in this query.
+	--	ON FactAttendance.RosterID = DimRoster.RosterID
+	--	AND FactAttendance.TenantID = DimRoster.TenantID
+	INNER JOIN DW.DimAttendanceType
+		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+		AND FactAttendance.TenantID = DimAttendanceType.TenantID
+	INNER JOIN (
+		SELECT CalendarYear, CalendarMonth, COUNT(DISTINCT CalendarWeek) SundayCount
+		FROM DW.DimDate
+		WHERE
+			CalendarYear  = @CalendarYear
+			AND DayOfWeekLabel = 'Sunday'
+		GROUP BY
+			CalendarYear, CalendarMonth)NumberOfSundays
+		ON DimDate.CalendarMonth = NumberOfSundays.CalendarMonth
+		AND DimDate.CalendarYear = NumberOfSundays.CalendarYear
 	WHERE
-		CalendarYear  = @CalendarYear
-		AND DayOfWeekLabel = 'Sunday'
+		DimDate.CalendarYear = @CalendarYear
+		AND DimAttendanceType.Category = 'Volunteer'
+	AND FactAttendance.CampusID = @CampusID
 	GROUP BY
-		CalendarYear, CalendarMonth)NumberOfSundays
-	ON DimDate.CalendarMonth = NumberOfSundays.CalendarMonth
-	AND DimDate.CalendarYear = NumberOfSundays.CalendarYear
-WHERE
-	DimDate.CalendarYear = @CalendarYear
-	AND DimAttendanceType.Category = 'Volunteer'
-AND FactAttendance.CampusID = @CampusID
+		  DimDate.CalendarYear
+		, DimDate.CalendarMonth
+		, DimDate.CalendarMonthAbbreviation
+		, DimActivity.Name 
+		, FactAttendance.CampusID
+		, DimCampus.Code
+		, DimMinistry.CampusID
+		, NumberOfSundays.SundayCount
+), FilledSrc AS (
+	SELECT DISTINCT 
+		  Calendar.CalendarYear
+		, Calendar.CalendarMonth
+		, Calendar.CalendarMonthAbbreviation
+		, Volunteers.Name
+		, Campus.CampusID
+		, Campus.Code
+		, 0 AS AttendanceCount
+		, SundayCount
+	FROM (SELECT DISTINCT Name FROM Src) AS Volunteers
+		, (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID &gt; 0)Campus
+		, (SELECT CalendarYear, CalendarMonth, CalendarMonthAbbreviation,  COUNT(DISTINCT CalendarWeek) SundayCount
+		FROM DW.DimDate
+		WHERE
+			DayOfWeekLabel = 'Sunday' 
+		    AND DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100) 
+		GROUP BY
+			CalendarYear, CalendarMonth, CalendarMonthAbbreviation) Calendar
+	UNION
+	SELECT *
+	FROM src
+)
+SELECT 
+	  CalendarYear
+	, CalendarMonth
+    , CalendarMonthAbbreviation
+	, Name
+	, CampusID
+	, Code
+	, SundayCount
+	, SUM(AttendanceCount) AS AttendanceCount
+FROM FilledSrc
+WHERE CampusID = @CampusID
 GROUP BY
-	  DimDate.CalendarYear
-	, DimDate.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, DimActivity.Name 
-	, FactAttendance.CampusID
-	, DimCampus.Code
-	, DimMinistry.CampusID
-	, NumberOfSundays.SundayCount</CommandText>
+	CalendarYear
+	, CalendarMonth
+    , CalendarMonthAbbreviation
+	, Name
+	, CampusID
+	, Code
+	, SundayCount
+ORDER BY
+	1,2</CommandText>
       </Query>
       <Fields>
         <Field Name="CalendarYear">
@@ -5746,13 +5917,6 @@ GROUP BY
                       <FilterValue DataType="Integer">1</FilterValue>
                     </FilterValues>
                   </Filter>
-                  <Filter>
-                    <FilterExpression>=Fields!CalendarMonth.Value</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue>=Parameters!CalendarMonth.Value</FilterValue>
-                    </FilterValues>
-                  </Filter>
                 </Filters>
                 <Top>11.27195in</Top>
                 <Height>1.25in</Height>
@@ -6543,13 +6707,6 @@ GROUP BY
                     <Operator>Equal</Operator>
                     <FilterValues>
                       <FilterValue DataType="Integer">1</FilterValue>
-                    </FilterValues>
-                  </Filter>
-                  <Filter>
-                    <FilterExpression>=Fields!CalendarMonth.Value</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue>=Parameters!CalendarMonth.Value</FilterValue>
                     </FilterValues>
                   </Filter>
                 </Filters>
@@ -7344,13 +7501,6 @@ GROUP BY
                       <FilterValue DataType="Integer">1</FilterValue>
                     </FilterValues>
                   </Filter>
-                  <Filter>
-                    <FilterExpression>=Fields!CalendarMonth.Value</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue>=Parameters!CalendarMonth.Value</FilterValue>
-                    </FilterValues>
-                  </Filter>
                 </Filters>
                 <Top>14.51917in</Top>
                 <Height>1.25in</Height>
@@ -7476,7 +7626,7 @@ GROUP BY
                       <TablixCells>
                         <TablixCell>
                           <CellContents>
-                            <Textbox Name="AttendanceCount2">
+                            <Textbox Name="AttendanceCount">
                               <CanGrow>true</CanGrow>
                               <KeepTogether>true</KeepTogether>
                               <Paragraphs>
@@ -7490,7 +7640,7 @@ GROUP BY
                                   <Style />
                                 </Paragraph>
                               </Paragraphs>
-                              <rd:DefaultName>AttendanceCount1</rd:DefaultName>
+                              <rd:DefaultName>AttendanceCount</rd:DefaultName>
                               <Style>
                                 <Border>
                                   <Color>LightGrey</Color>
@@ -7506,7 +7656,7 @@ GROUP BY
                         </TablixCell>
                         <TablixCell>
                           <CellContents>
-                            <Textbox Name="AttendanceCount3">
+                            <Textbox Name="AttendanceCoun3">
                               <CanGrow>true</CanGrow>
                               <KeepTogether>true</KeepTogether>
                               <Paragraphs>
