@@ -27,51 +27,87 @@
             <Value>=Parameters!CampusID.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>SELECT 
-	  DimDate.CalendarYear
-	, DimDate.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, CASE WHEN DimLifeEventType.Name = 'FTV' THEN
-		CASE WHEN DimActivity.Name LIKE '%Worship%' OR FactLifeEvent.Age &gt;= 18 THEN 'FTV Adults'
-			ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' OR FactLifeEvent.Age &lt;18 THEN 'FTV Children' END 
-		END
-	  ELSE	
-		DimLifeEventType.Name
-	  END AS LifeEventTypeName
-	, FactLifeEvent.CampusID
-	, DimCampus.Code
+        <CommandText>WITH Src AS (
+	SELECT 
+		  DimDate.CalendarYear
+		, DimDate.CalendarMonth
+		, DimDate.CalendarMonthAbbreviation
+		, CASE WHEN DimLifeEventType.Name = 'FTV' THEN
+			CASE WHEN DimActivity.Name LIKE '%Worship%' OR FactLifeEvent.Age &gt;= 18 THEN 'FTV Adults'
+				ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' OR FactLifeEvent.Age &lt;18 THEN 'FTV Children' END 
+			END
+		  ELSE	
+			DimLifeEventType.Name
+		  END AS LifeEventTypeName
+		, FactLifeEvent.CampusID
+		, DimCampus.Code
+		, SUM(LifeEventCount) AS LifeEventCount
+	FROM DW.FactLifeEvent
+	INNER JOIN DW.DimDate
+		ON FactLifeEvent.InstanceDateID = DimDate.DateID
+	INNER JOIN DW.DimLifeEventType 
+		ON FactLifeEvent.LifeEventTypeID = DimLifeEventType.LifeEventTypeID
+		AND FactLifeEvent.TenantID = DimLifeEventType.TenantID
+	INNER JOIN DW.DimMinistry
+		ON FactLifeEvent.MinistryID = DimMinistry.MinistryID
+		AND FactLifeEvent.TenantID = DimMinistry.TenantID
+	INNER JOIN DW.DimActivity 
+		ON FactLifeEvent.ActivityID = dimActivity.ActivityID
+		AND FactLifeEvent.TenantID = DimActivity.TenantID
+	INNER JOIN DW.DimCampus
+		ON FactLifeEvent.CampusID = DimCampus.CampusID
+		AND FactLifeEvent.TenantID = DimCampus.TenantID
+	WHERE
+		DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100)
+	AND FactLifeEvent.CampusID = @CampusID
+	GROUP BY
+		  DimDate.CalendarYear
+		, DimDate.CalendarMonth
+		, DimDate.CalendarMonthAbbreviation
+		, CASE WHEN DimLifeEventType.Name = 'FTV' THEN
+			CASE WHEN DimActivity.Name LIKE '%Worship%' OR FactLifeEvent.Age &gt;= 18 THEN 'FTV Adults'
+				ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' OR FactLifeEvent.Age &lt;18 THEN 'FTV Children' END 
+			END
+		  ELSE	
+			DimLifeEventType.Name
+		  END 
+		, FactLifeEvent.CampusID
+		, DimCampus.Code
+), FilledSrc AS (
+	SELECT DISTINCT 
+			CalendarYear.CalendarYear
+		, CalendarMonth.CalendarMonth
+		, CalendarMonth.CalendarMonthAbbreviation
+		, LifeEventType.LifeEventTypeName
+		, Campus.CampusID
+		, Campus.Code
+		, 0 AS LifeEventCount
+	FROM (SELECT DISTINCT Name AS LifeEventTypeName FROM DW.DimLifeEventType WHERE LifeEventTypeID &gt; 0) LifeEventType
+		, (SELECT DISTINCT CampusID, Code FROM src)Campus
+		, (SELECT DISTINCT CalendarYear FROM Src) CalendarYear
+		, (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM Src) CalendarMonth
+	UNION
+	SELECT *
+	FROM src
+)
+SELECT 
+	  CalendarYear
+	, CalendarMonth
+    , CalendarMonthAbbreviation
+	, LifeEventTypeName
+	, CampusID
+	, Code
 	, SUM(LifeEventCount) AS LifeEventCount
-FROM DW.FactLifeEvent
-INNER JOIN DW.DimDate
-	ON FactLifeEvent.InstanceDateID = DimDate.DateID
-INNER JOIN DW.DimLifeEventType 
-	ON FactLifeEvent.LifeEventTypeID = DimLifeEventType.LifeEventTypeID
-	AND FactLifeEvent.TenantID = DimLifeEventType.TenantID
-INNER JOIN DW.DimMinistry
-	ON FactLifeEvent.MinistryID = DimMinistry.MinistryID
-	AND FactLifeEvent.TenantID = DimMinistry.TenantID
-INNER JOIN DW.DimActivity 
-	ON FactLifeEvent.ActivityID = dimActivity.ActivityID
-	AND FactLifeEvent.TenantID = DimActivity.TenantID
-INNER JOIN DW.DimCampus
-	ON FactLifeEvent.CampusID = DimCampus.CampusID
-	AND FactLifeEvent.TenantID = DimCampus.TenantID
-WHERE
-	DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100)
-AND FactLifeEvent.CampusID = @CampusID
+FROM FilledSrc
 GROUP BY
-	  DimDate.CalendarYear
-	, DimDate.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, CASE WHEN DimLifeEventType.Name = 'FTV' THEN
-		CASE WHEN DimActivity.Name LIKE '%Worship%' OR FactLifeEvent.Age &gt;= 18 THEN 'FTV Adults'
-			ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' OR FactLifeEvent.Age &lt;18 THEN 'FTV Children' END 
-		END
-	  ELSE	
-		DimLifeEventType.Name
-	  END 
-	, FactLifeEvent.CampusID
-	, DimCampus.Code</CommandText>
+	CalendarYear
+	, CalendarMonth
+    , CalendarMonthAbbreviation
+	, LifeEventTypeName
+	, CampusID
+	, Code
+ORDER BY
+	1,2</CommandText>
       </Query>
       <Fields>
         <Field Name="CalendarYear">
