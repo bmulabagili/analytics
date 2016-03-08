@@ -25,6 +25,8 @@
           </QueryParameter>
         </QueryParameters>
         <CommandText>
+          WITH Src AS (
+
           SELECT
           DimDate.CalendarYear
           , DimDate.CalendarMonth
@@ -48,9 +50,6 @@
           INNER JOIN DW.DimActivity
           ON FactAttendance.ActivityID = dimActivity.ActivityID
           AND FactAttendance.TenantID = DimActivity.TenantID
-          --INNER JOIN DW.DimRoster -- adds too much time in this query.
-          --	ON FactAttendance.RosterID = DimRoster.RosterID
-          --	AND FactAttendance.TenantID = DimRoster.TenantID
           INNER JOIN DW.DimAttendanceType
           ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
           AND FactAttendance.TenantID = DimAttendanceType.TenantID
@@ -70,6 +69,54 @@
           , FactAttendance.CampusID
           , DimCampus.Code
           , DimMinistry.CampusID
+
+          ), FilledSrc AS (
+          SELECT DISTINCT
+          Calendar.CalendarYear
+          , Calendar.CalendarMonth
+          , Calendar.CalendarMonthAbbreviation
+          , Attendance.AttendanceCategory
+          , Campus.CampusID
+          , Campus.Code
+          , 0 AS AttendanceCount
+          FROM (SELECT 'Worship Attendance - Adults' AS AttendanceCategory UNION
+          SELECT 'Worship Attenance - Children' AS AttendanceCategory) Attendance
+          , (SELECT DISTINCT Name AS LifeEventTypeName FROM DW.DimLifeEventType WHERE LifeEventTypeID &gt; 0 UNION
+          SELECT 'FTV Children') LifeEventType
+          , (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID &gt; 0)Campus
+          , (SELECT DISTINCT CalendarYear,CalendarMonth, CalendarMonthAbbreviation
+          FROM DW.DimDate
+          WHERE DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100)) Calendar
+          UNION
+          SELECT
+          CalendarYear
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , AttendanceCategory
+          , CampusID
+          , Code
+          , AttendanceCount
+          FROM src
+          )
+          SELECT
+          CalendarYear
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , AttendanceCategory
+          , CampusID
+          , Code
+          , SUM(AttendanceCount) AS AttendanceCount
+          FROM FilledSrc
+WHERE CampusID &gt; 0
+          GROUP BY
+          CalendarYear
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , AttendanceCategory
+          , CampusID
+          , Code
+          ORDER BY
+          1,2
         </CommandText>
       </Query>
       <Fields>
@@ -138,6 +185,7 @@
           </QueryParameter>
         </QueryParameters>
         <CommandText>
+          WITH Src AS (
           SELECT
           FactStewardshipGiving.CalendarYear
           , FactStewardshipGiving.CalendarMonth
@@ -154,13 +202,47 @@
           WHERE
           FactStewardshipGiving.CalendarYear = @CalendarYear -1
           OR (FactStewardshipGiving.CalendarYear = @CalendarYear AND FactStewardshipGiving.CalendarMonth &lt;= @CalendarMonth)
-
           GROUP BY
           FactStewardshipGiving.CalendarYear
           , FactStewardshipGiving.CalendarMonth
           , DimDate.CalendarMonthAbbreviation
           , FactStewardshipGiving.CampusID
           , DimCampus.Code
+          ), FilledSrc AS (
+          SELECT DISTINCT
+          Calendar.CalendarYear
+          , Calendar.CalendarMonth
+          , Calendar.CalendarMonthAbbreviation
+          , Campus.CampusID
+          , Campus.Code
+          , 0 AS StewardshipGivingAmount
+          FROM (SELECT DISTINCT Name AS LifeEventTypeName FROM DW.DimLifeEventType WHERE LifeEventTypeID &gt; 0 UNION
+          SELECT 'FTV Children') LifeEventType
+          , (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID &gt; 0)Campus
+          , (SELECT DISTINCT CalendarYear,CalendarMonth, CalendarMonthAbbreviation
+          FROM DW.DimDate
+          WHERE DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100)) Calendar
+          UNION
+          SELECT *
+          FROM src
+          )
+          SELECT
+          CalendarYear
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , CampusID
+          , Code
+          , SUM(StewardshipGivingAmount) AS StewardshipGivingAmount
+          FROM FilledSrc
+WHERE CampusID &gt; 0
+          GROUP BY
+          CalendarYear
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , CampusID
+          , Code
+          ORDER BY
+          1,2
         </CommandText>
       </Query>
       <Fields>
@@ -198,17 +280,17 @@
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
           <QueryParameter Name="@CalendarMonth">
-            <Value>=Parameters!CalendarYear.Value</Value>
+            <Value>=Parameters!CalendarMonth.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
+        <CommandText>          WITH src AS (
           SELECT
           'Budget' AS RowName
           , FactStewardshipBudget.CalendarMonth
           , DimDate.CalendarMonthAbbreviation
           , FactStewardshipBudget.CampusID
           , DimCampus.Code
-          , SUM(FactStewardshipBudget.StewardshipBudgetAmount) AS StewardshipBudgetAmount
+          , SUM(FactStewardshipBudget.StewardshipBudgetAmount) AS StewardshipAmount
           FROM DW.FactStewardshipBudget
           INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
           ON FactStewardshipBudget.CalendarMonth = DimDate.CalendarMonth
@@ -217,7 +299,6 @@
           AND FactStewardshipBudget.TenantID = DimCampus.TenantID
           WHERE
           (FactStewardshipBudget.CalendarYear = @CalendarYear AND FactStewardshipBudget.CalendarMonth &lt;= @CalendarMonth)
-          --AND FactStewardshipBudget.CampusID = @campusID
           GROUP BY
           FactStewardshipBudget.CalendarYear
           , FactStewardshipBudget.CalendarMonth
@@ -240,13 +321,51 @@
           AND FactStewardshipGiving.TenantID = DimCampus.TenantID
           WHERE
           (FactStewardshipGiving.CalendarYear = @CalendarYear AND FactStewardshipGiving.CalendarMonth &lt;= @CalendarMonth)
-          --AND FactStewardshipBudget.CampusID = @campusID
           GROUP BY
           FactStewardshipGiving.CalendarYear
           , FactStewardshipGiving.CalendarMonth
           , DimDate.CalendarMonthAbbreviation
           , FactStewardshipGiving.CampusID
           , DimCampus.Code
+          ), FilledSrc AS (
+          SELECT
+          Stewardship.RowName
+          , Calendar.CalendarMonth
+          , Calendar.CalendarMonthAbbreviation
+          , Campus.CampusID
+          , Campus.Code
+          , Stewardship.StewardshipAmount
+          FROM (SELECT 'Actuals' AS RowName, 0 AS StewardshipAmount UNION
+          SELECT 'Budget' AS RowName, 0 AS StewardshipAmount) Stewardship
+          , (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID &gt; 0)Campus
+          , (SELECT DISTINCT CalendarYear,CalendarMonth, CalendarMonthAbbreviation
+          FROM DW.DimDate
+          WHERE CalendarYear = @CalendarYear AND CalendarMonth &lt;= @CalendarMonth ) Calendar
+          UNION
+          SELECT
+          RowName
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , CampusID
+          , Code
+          , StewardshipAmount
+          FROM Src
+          )
+          SELECT
+          RowName
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , CampusID
+          , Code
+          , SUM(StewardshipAmount) AS StewardshipAmount
+          FROM FilledSrc
+          WHERE CampusID &gt; 0 
+          GROUP BY
+          RowName
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , CampusID
+          , Code
         </CommandText>
       </Query>
       <Fields>
@@ -270,8 +389,8 @@
           <DataField>Code</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="StewardshipBudgetAmount">
-          <DataField>StewardshipBudgetAmount</DataField>
+        <Field Name="StewardshipAmount">
+          <DataField>StewardshipAmount</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
       </Fields>
@@ -2688,7 +2807,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(Fields!StewardshipBudgetAmount.Value)</Value>
+                                      <Value>=Sum(Fields!StewardshipAmount.Value)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -2720,7 +2839,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(Fields!StewardshipBudgetAmount.Value)</Value>
+                                      <Value>=Sum(Fields!StewardshipAmount.Value)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -2757,7 +2876,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Actuals", Nothing, Fields!StewardshipBudgetAmount.Value))</Value>
+                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Actuals", Nothing, Fields!StewardshipAmount.Value))</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -2790,7 +2909,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Actuals", Nothing, Fields!StewardshipBudgetAmount.Value))</Value>
+                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Actuals", Nothing, Fields!StewardshipAmount.Value))</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -2828,7 +2947,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value)) / Sum(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value))</Value>
+                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value)) / Sum(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value))</Value>
                                       <Style>
                                         <Format>0%</Format>
                                       </Style>
@@ -2861,7 +2980,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value)) / Sum(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value))</Value>
+                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value)) / Sum(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value))</Value>
                                       <Style>
                                         <Format>0%</Format>
                                       </Style>
@@ -2899,7 +3018,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value), sum, Nothing)</Value>
+                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value), sum, Nothing)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -2932,7 +3051,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value), sum, Nothing)</Value>
+                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value), sum, Nothing)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -2970,7 +3089,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value), sum, Nothing) / RunningValue(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value), sum, Nothing)</Value>
+                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value), sum, Nothing) / RunningValue(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value), sum, Nothing)</Value>
                                       <Style>
                                         <Format>0%</Format>
                                       </Style>
@@ -3003,7 +3122,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value), sum, Nothing) / RunningValue(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value), sum, Nothing)</Value>
+                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value), sum, Nothing) / RunningValue(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value), sum, Nothing)</Value>
                                       <Style>
                                         <Format>0%</Format>
                                       </Style>
@@ -7394,7 +7513,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(Fields!StewardshipBudgetAmount.Value)</Value>
+                                      <Value>=Sum(Fields!StewardshipAmount.Value)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -7426,7 +7545,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(Fields!StewardshipBudgetAmount.Value)</Value>
+                                      <Value>=Sum(Fields!StewardshipAmount.Value)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -7463,7 +7582,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Actuals", Nothing, Fields!StewardshipBudgetAmount.Value))</Value>
+                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Actuals", Nothing, Fields!StewardshipAmount.Value))</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -7496,7 +7615,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Actuals", Nothing, Fields!StewardshipBudgetAmount.Value))</Value>
+                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Actuals", Nothing, Fields!StewardshipAmount.Value))</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -7534,7 +7653,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value,Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value)) / Sum(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value))</Value>
+                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value,Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value)) / Sum(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value))</Value>
                                       <Style>
                                         <Format>0%</Format>
                                       </Style>
@@ -7567,7 +7686,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value,Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value)) / Sum(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value))</Value>
+                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value,Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value)) / Sum(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value))</Value>
                                       <Style>
                                         <Format>0%</Format>
                                       </Style>
@@ -7605,7 +7724,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value,Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value),sum, Nothing)</Value>
+                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value,Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value),sum, Nothing)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -7638,7 +7757,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value,Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value),sum, Nothing)</Value>
+                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value,Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value),sum, Nothing)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -7676,7 +7795,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value,Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value),sum, Nothing) / RunningValue( IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value),sum, Nothing)</Value>
+                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value,Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value),sum, Nothing) / RunningValue( IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value),sum, Nothing)</Value>
                                       <Style>
                                         <Format>0%</Format>
                                       </Style>
@@ -7709,7 +7828,7 @@
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value,Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value),sum, Nothing) / RunningValue( IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value),sum, Nothing)</Value>
+                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value,Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value),sum, Nothing) / RunningValue( IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value),sum, Nothing)</Value>
                                       <Style>
                                         <Format>0%</Format>
                                       </Style>
