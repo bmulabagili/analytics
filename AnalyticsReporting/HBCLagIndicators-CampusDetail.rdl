@@ -23,53 +23,103 @@
           <QueryParameter Name="@CalendarMonth">
             <Value>=Parameters!CalendarMonth.Value</Value>
           </QueryParameter>
+          <QueryParameter Name="@CampusID">
+            <Value>=Parameters!CampusID.Value</Value>
+          </QueryParameter>
         </QueryParameters>
         <CommandText>
-SELECT 
-	  DimDate.CalendarYear
-	, DimDate.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, CASE WHEN DimActivity.Name LIKE '%Worship%' THEN 'Worship Attendance - Adults'
-		ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' THEN 'Worship Attenance - Children' END 
-	  END AS AttendanceCategory
-	, FactAttendance.CampusID
-	, DimCampus.Code
-	, SUM(FactAttendance.AttendanceCount) AS AttendanceCount
-FROM DW.FactAttendance
-INNER JOIN DW.DimDate
-	ON FactAttendance.InstanceDateID = DimDate.DateID
-INNER JOIN DW.DimCampus
-	ON FactAttendance.CampusID = DimCampus.CampusID
-	AND FactAttendance.TenantID = DimCampus.TenantID
-INNER JOIN DW.DimMinistry
-	ON FactAttendance.MinistryID = DimMinistry.MinistryID
-	AND FactAttendance.TenantID = DimMinistry.TenantID
---may not have to include activity, and attendanceType
-INNER JOIN DW.DimActivity 
-	ON FactAttendance.ActivityID = dimActivity.ActivityID
-	AND FactAttendance.TenantID = DimActivity.TenantID
---INNER JOIN DW.DimRoster -- adds too much time in this query.
---	ON FactAttendance.RosterID = DimRoster.RosterID
---	AND FactAttendance.TenantID = DimRoster.TenantID
-INNER JOIN DW.DimAttendanceType
-	ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
-	AND FactAttendance.TenantID = DimAttendanceType.TenantID
-WHERE
-	DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100)
-	AND DimAttendanceType.Category = 'Attendee'
-	AND CASE WHEN DimActivity.Name LIKE '%Worship%' THEN 'Worship Attendance - Adults'
-		ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' THEN 'Worship Attenance - Children' END 
-	  END IS NOT NULL
-GROUP BY
-	  DimDate.CalendarYear
-	, DimDate.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, CASE WHEN DimActivity.Name LIKE '%Worship%' THEN 'Worship Attendance - Adults'
-		ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' THEN 'Worship Attenance - Children' END 
-	  END
-	, FactAttendance.CampusID
-	, DimCampus.Code
-	, DimMinistry.CampusID</CommandText>
+          WITH Src AS (
+
+          SELECT
+          DimDate.CalendarYear
+          , DimDate.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , CASE WHEN DimActivity.Name LIKE '%Worship%' THEN 'Worship Attendance - Adults'
+          ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' THEN 'Worship Attenance - Children' END
+          END AS AttendanceCategory
+          , FactAttendance.CampusID
+          , DimCampus.Code
+          , SUM(FactAttendance.AttendanceCount) AS AttendanceCount
+          FROM DW.FactAttendance
+          INNER JOIN DW.DimDate
+          ON FactAttendance.InstanceDateID = DimDate.DateID
+          INNER JOIN DW.DimCampus
+          ON FactAttendance.CampusID = DimCampus.CampusID
+          AND FactAttendance.TenantID = DimCampus.TenantID
+          INNER JOIN DW.DimMinistry
+          ON FactAttendance.MinistryID = DimMinistry.MinistryID
+          AND FactAttendance.TenantID = DimMinistry.TenantID
+          --may not have to include activity, and attendanceType
+          INNER JOIN DW.DimActivity
+          ON FactAttendance.ActivityID = dimActivity.ActivityID
+          AND FactAttendance.TenantID = DimActivity.TenantID
+          INNER JOIN DW.DimAttendanceType
+          ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+          AND FactAttendance.TenantID = DimAttendanceType.TenantID
+          WHERE
+          DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100)
+          AND DimAttendanceType.Category = 'Attendee'
+          AND CASE WHEN DimActivity.Name LIKE '%Worship%' THEN 'Worship Attendance - Adults'
+          ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' THEN 'Worship Attenance - Children' END
+          END IS NOT NULL
+          GROUP BY
+          DimDate.CalendarYear
+          , DimDate.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , CASE WHEN DimActivity.Name LIKE '%Worship%' THEN 'Worship Attendance - Adults'
+          ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' THEN 'Worship Attenance - Children' END
+          END
+          , FactAttendance.CampusID
+          , DimCampus.Code
+          , DimMinistry.CampusID
+
+          ), FilledSrc AS (
+          SELECT DISTINCT
+          Calendar.CalendarYear
+          , Calendar.CalendarMonth
+          , Calendar.CalendarMonthAbbreviation
+          , Attendance.AttendanceCategory
+          , Campus.CampusID
+          , Campus.Code
+          , 0 AS AttendanceCount
+          FROM (SELECT 'Worship Attendance - Adults' AS AttendanceCategory UNION
+          SELECT 'Worship Attenance - Children' AS AttendanceCategory) Attendance
+          , (SELECT DISTINCT Name AS LifeEventTypeName FROM DW.DimLifeEventType WHERE LifeEventTypeID &gt; 0 UNION
+          SELECT 'FTV Children') LifeEventType
+          , (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID &gt; 0)Campus
+          , (SELECT DISTINCT CalendarYear,CalendarMonth, CalendarMonthAbbreviation
+          FROM DW.DimDate
+          WHERE DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100)) Calendar
+          UNION
+          SELECT
+          CalendarYear
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , AttendanceCategory
+          , CampusID
+          , Code
+          , AttendanceCount
+          FROM src
+          )
+          SELECT
+          CalendarYear
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , AttendanceCategory
+          , CampusID
+          , Code
+          , SUM(AttendanceCount) AS AttendanceCount
+          FROM FilledSrc
+WHERE CampusID = @CampusID
+          GROUP BY
+          CalendarYear
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , AttendanceCategory
+          , CampusID
+          , Code
+          ORDER BY
+          1,2</CommandText>
       </Query>
       <Fields>
         <Field Name="CalendarYear">
@@ -147,29 +197,64 @@ FROM DW.DimCampus</CommandText>
           </QueryParameter>
         </QueryParameters>
         <CommandText>
-SELECT  
-	  FactStewardshipGiving.CalendarYear
-	, FactStewardshipGiving.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, FactStewardshipGiving.CampusID
-	, DimCampus.Code
-	, SUM(FactStewardshipGiving.StewardshipGivingAmount) AS StewardshipGivingAmount
-FROM DW.FactStewardshipGiving
-INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
-	ON FactStewardshipGiving.CalendarMonth = DimDate.CalendarMonth
-INNER JOIN DW.DimCampus
-	ON FactStewardshipGiving.CampusID = DimCampus.CampusID
-	AND FactStewardshipGiving.TenantID = DimCampus.TenantID
-WHERE
-	FactStewardshipGiving.CalendarYear = @CalendarYear -1
-	OR (FactStewardshipGiving.CalendarYear = @CalendarYear AND FactStewardshipGiving.CalendarMonth &lt;= @CalendarMonth)
-	AND FactStewardshipGiving.CampusID = @CampusID
-GROUP BY
-	FactStewardshipGiving.CalendarYear
-	, FactStewardshipGiving.CalendarMonth
-	, DimDate.CalendarMonthAbbreviation
-	, FactStewardshipGiving.CampusID
-	, DimCampus.Code</CommandText>
+          WITH Src AS (
+          SELECT
+          FactStewardshipGiving.CalendarYear
+          , FactStewardshipGiving.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , FactStewardshipGiving.CampusID
+          , DimCampus.Code
+          , SUM(FactStewardshipGiving.StewardshipGivingAmount) AS StewardshipGivingAmount
+          FROM DW.FactStewardshipGiving
+          INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
+          ON FactStewardshipGiving.CalendarMonth = DimDate.CalendarMonth
+          INNER JOIN DW.DimCampus
+          ON FactStewardshipGiving.CampusID = DimCampus.CampusID
+          AND FactStewardshipGiving.TenantID = DimCampus.TenantID
+          WHERE
+          FactStewardshipGiving.CalendarYear = @CalendarYear -1
+          OR (FactStewardshipGiving.CalendarYear = @CalendarYear AND FactStewardshipGiving.CalendarMonth &lt;= @CalendarMonth)
+          GROUP BY
+          FactStewardshipGiving.CalendarYear
+          , FactStewardshipGiving.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , FactStewardshipGiving.CampusID
+          , DimCampus.Code
+          ), FilledSrc AS (
+          SELECT DISTINCT
+          Calendar.CalendarYear
+          , Calendar.CalendarMonth
+          , Calendar.CalendarMonthAbbreviation
+          , Campus.CampusID
+          , Campus.Code
+          , 0 AS StewardshipGivingAmount
+          FROM (SELECT DISTINCT Name AS LifeEventTypeName FROM DW.DimLifeEventType WHERE LifeEventTypeID &gt; 0 UNION
+          SELECT 'FTV Children') LifeEventType
+          , (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID &gt; 0)Campus
+          , (SELECT DISTINCT CalendarYear,CalendarMonth, CalendarMonthAbbreviation
+          FROM DW.DimDate
+          WHERE DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100)) Calendar
+          UNION
+          SELECT *
+          FROM src
+          )
+          SELECT
+          CalendarYear
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , CampusID
+          , Code
+          , SUM(StewardshipGivingAmount) AS StewardshipGivingAmount
+          FROM FilledSrc
+WHERE CampusID = @CampusID
+          GROUP BY
+          CalendarYear
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , CampusID
+          , Code
+          ORDER BY
+          1,2</CommandText>
       </Query>
       <Fields>
         <Field Name="CalendarYear">
@@ -212,23 +297,91 @@ GROUP BY
             <Value>=Parameters!CampusID.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>SELECT        'Budget' AS RowName, DW.FactStewardshipBudget.CalendarMonth, DimDate.CalendarMonthAbbreviation, DW.FactStewardshipBudget.CampusID, DimCampus_2.Code, 
-                         SUM(DW.FactStewardshipBudget.StewardshipBudgetAmount) AS StewardshipBudgetAmount
-FROM            DW.FactStewardshipBudget INNER JOIN
-                             (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation
-                               FROM            DW.DimDate AS DimDate_2) AS DimDate ON DW.FactStewardshipBudget.CalendarMonth = DimDate.CalendarMonth INNER JOIN
-                         DW.DimCampus AS DimCampus_2 ON DW.FactStewardshipBudget.CampusID = DimCampus_2.CampusID AND DW.FactStewardshipBudget.TenantID = DimCampus_2.TenantID
-WHERE        (DW.FactStewardshipBudget.CalendarYear = @CalendarYear) AND (DW.FactStewardshipBudget.CalendarMonth &lt;= @CalendarMonth) AND (DW.FactStewardshipBudget.CampusID = @CampusID)
-GROUP BY DW.FactStewardshipBudget.CalendarYear, DW.FactStewardshipBudget.CalendarMonth, DimDate.CalendarMonthAbbreviation, DW.FactStewardshipBudget.CampusID, DimCampus_2.Code
-UNION
-SELECT        'Actuals' AS RowName, DW.FactStewardshipGiving.CalendarMonth, DimDate_3.CalendarMonthAbbreviation, DW.FactStewardshipGiving.CampusID, DimCampus_1.Code, 
-                         SUM(DW.FactStewardshipGiving.StewardshipGivingAmount) AS StewardshipGivingAmount
-FROM            DW.FactStewardshipGiving INNER JOIN
-                             (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation
-                               FROM            DW.DimDate AS DimDate_1) AS DimDate_3 ON DW.FactStewardshipGiving.CalendarMonth = DimDate_3.CalendarMonth INNER JOIN
-                         DW.DimCampus AS DimCampus_1 ON DW.FactStewardshipGiving.CampusID = DimCampus_1.CampusID AND DW.FactStewardshipGiving.TenantID = DimCampus_1.TenantID
-WHERE        (DW.FactStewardshipGiving.CalendarYear = @CalendarYear) AND (DW.FactStewardshipGiving.CalendarMonth &lt;= @CalendarMonth) AND (DW.FactStewardshipGiving.CampusID = @CampusID)
-GROUP BY DW.FactStewardshipGiving.CalendarYear, DW.FactStewardshipGiving.CalendarMonth, DimDate_3.CalendarMonthAbbreviation, DW.FactStewardshipGiving.CampusID, DimCampus_1.Code</CommandText>
+        <CommandText>
+          WITH src AS (
+          SELECT
+          'Budget' AS RowName
+          , FactStewardshipBudget.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , FactStewardshipBudget.CampusID
+          , DimCampus.Code
+          , SUM(FactStewardshipBudget.StewardshipBudgetAmount) AS StewardshipAmount
+          FROM DW.FactStewardshipBudget
+          INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
+          ON FactStewardshipBudget.CalendarMonth = DimDate.CalendarMonth
+          INNER JOIN DW.DimCampus
+          ON FactStewardshipBudget.CampusID = DimCampus.CampusID
+          AND FactStewardshipBudget.TenantID = DimCampus.TenantID
+          WHERE
+          (FactStewardshipBudget.CalendarYear = @CalendarYear AND FactStewardshipBudget.CalendarMonth &lt;= @CalendarMonth)
+          GROUP BY
+          FactStewardshipBudget.CalendarYear
+          , FactStewardshipBudget.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , FactStewardshipBudget.CampusID
+          , DimCampus.Code
+          UNION
+          SELECT
+          'Actuals' AS RowName
+          , FactStewardshipGiving.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , FactStewardshipGiving.CampusID
+          , DimCampus.Code
+          , SUM(FactStewardshipGiving.StewardshipGivingAmount) AS StewardshipGivingAmount
+          FROM DW.FactStewardshipGiving
+          INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
+          ON FactStewardshipGiving.CalendarMonth = DimDate.CalendarMonth
+          INNER JOIN DW.DimCampus
+          ON FactStewardshipGiving.CampusID = DimCampus.CampusID
+          AND FactStewardshipGiving.TenantID = DimCampus.TenantID
+          WHERE
+          (FactStewardshipGiving.CalendarYear = @CalendarYear AND FactStewardshipGiving.CalendarMonth &lt;= @CalendarMonth)
+          GROUP BY
+          FactStewardshipGiving.CalendarYear
+          , FactStewardshipGiving.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , FactStewardshipGiving.CampusID
+          , DimCampus.Code
+          ), FilledSrc AS (
+          SELECT
+          Stewardship.RowName
+          , Calendar.CalendarMonth
+          , Calendar.CalendarMonthAbbreviation
+          , Campus.CampusID
+          , Campus.Code
+          , Stewardship.StewardshipAmount
+          FROM (SELECT 'Actuals' AS RowName, 0 AS StewardshipAmount UNION
+          SELECT 'Budget' AS RowName, 0 AS StewardshipAmount) Stewardship
+          , (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID > 0)Campus
+          , (SELECT DISTINCT CalendarYear,CalendarMonth, CalendarMonthAbbreviation
+          FROM DW.DimDate
+          WHERE CalendarYear = @CalendarYear AND CalendarMonth &lt;= @CalendarMonth ) Calendar
+          UNION
+          SELECT
+          RowName
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , CampusID
+          , Code
+          , StewardshipAmount
+          FROM Src
+          )
+          SELECT
+          RowName
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , CampusID
+          , Code
+          , SUM(StewardshipAmount) AS StewardshipAmount
+          FROM FilledSrc
+          WHERE CampusID = @CampusID
+          GROUP BY
+          RowName
+          , CalendarMonth
+          , CalendarMonthAbbreviation
+          , CampusID
+          , Code
+        </CommandText>
       </Query>
       <Fields>
         <Field Name="RowName">
@@ -251,8 +404,8 @@ GROUP BY DW.FactStewardshipGiving.CalendarYear, DW.FactStewardshipGiving.Calenda
           <DataField>Code</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="StewardshipBudgetAmount">
-          <DataField>StewardshipBudgetAmount</DataField>
+        <Field Name="StewardshipAmount">
+          <DataField>StewardshipAmount</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
       </Fields>
@@ -2747,14 +2900,14 @@ GROUP BY DW.FactStewardshipGiving.CalendarYear, DW.FactStewardshipGiving.Calenda
                       <TablixCells>
                         <TablixCell>
                           <CellContents>
-                            <Textbox Name="StewardshipBudgetAmount2">
+                            <Textbox Name="StewardshipAmount2">
                               <CanGrow>true</CanGrow>
                               <KeepTogether>true</KeepTogether>
                               <Paragraphs>
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(Fields!StewardshipBudgetAmount.Value)</Value>
+                                      <Value>=Sum(Fields!StewardshipAmount.Value)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -2763,7 +2916,7 @@ GROUP BY DW.FactStewardshipGiving.CalendarYear, DW.FactStewardshipGiving.Calenda
                                   <Style />
                                 </Paragraph>
                               </Paragraphs>
-                              <rd:DefaultName>StewardshipBudgetAmount</rd:DefaultName>
+                              <rd:DefaultName>StewardshipAmount</rd:DefaultName>
                               <Style>
                                 <Border>
                                   <Color>LightGrey</Color>
@@ -2786,7 +2939,7 @@ GROUP BY DW.FactStewardshipGiving.CalendarYear, DW.FactStewardshipGiving.Calenda
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(Fields!StewardshipBudgetAmount.Value)</Value>
+                                      <Value>=Sum(Fields!StewardshipAmount.Value)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -2823,7 +2976,7 @@ GROUP BY DW.FactStewardshipGiving.CalendarYear, DW.FactStewardshipGiving.Calenda
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Actuals", Nothing, Fields!StewardshipBudgetAmount.Value))</Value>
+                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Actuals", Nothing, Fields!StewardshipAmount.Value))</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -2856,7 +3009,7 @@ GROUP BY DW.FactStewardshipGiving.CalendarYear, DW.FactStewardshipGiving.Calenda
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Actuals", Nothing, Fields!StewardshipBudgetAmount.Value))</Value>
+                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Actuals", Nothing, Fields!StewardshipAmount.Value))</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -2894,7 +3047,7 @@ GROUP BY DW.FactStewardshipGiving.CalendarYear, DW.FactStewardshipGiving.Calenda
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value)) / Sum(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value))</Value>
+                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value)) / Sum(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value))</Value>
                                       <Style>
                                         <Format>0%</Format>
                                       </Style>
@@ -2927,7 +3080,7 @@ GROUP BY DW.FactStewardshipGiving.CalendarYear, DW.FactStewardshipGiving.Calenda
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value)) / Sum(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value))</Value>
+                                      <Value>=Sum(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value)) / Sum(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value))</Value>
                                       <Style>
                                         <Format>0%</Format>
                                       </Style>
@@ -2965,7 +3118,7 @@ GROUP BY DW.FactStewardshipGiving.CalendarYear, DW.FactStewardshipGiving.Calenda
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value), sum, Nothing)</Value>
+                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value), sum, Nothing)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -2998,7 +3151,7 @@ GROUP BY DW.FactStewardshipGiving.CalendarYear, DW.FactStewardshipGiving.Calenda
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value), sum, Nothing)</Value>
+                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value), sum, Nothing)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -3036,7 +3189,7 @@ GROUP BY DW.FactStewardshipGiving.CalendarYear, DW.FactStewardshipGiving.Calenda
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value), sum, Nothing) / RunningValue(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value), sum, Nothing)</Value>
+                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value), sum, Nothing) / RunningValue(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value), sum, Nothing)</Value>
                                       <Style>
                                         <Format>0%</Format>
                                       </Style>
@@ -3069,7 +3222,7 @@ GROUP BY DW.FactStewardshipGiving.CalendarYear, DW.FactStewardshipGiving.Calenda
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipBudgetAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value), sum, Nothing) / RunningValue(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipBudgetAmount.Value), sum, Nothing)</Value>
+                                      <Value>=RunningValue(IIF(Fields!RowName.Value = "Budget", Fields!StewardshipAmount.Value, Nothing) - IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value), sum, Nothing) / RunningValue(IIF(Fields!RowName.Value = "Budget", Nothing, Fields!StewardshipAmount.Value), sum, Nothing)</Value>
                                       <Style>
                                         <Format>0%</Format>
                                       </Style>
