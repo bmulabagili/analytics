@@ -25,96 +25,52 @@
           </QueryParameter>
         </QueryParameters>
         <CommandText>
-WITH Src AS (
-	SELECT 
-		  DimDate.CalendarYear
-		, DimDate.CalendarMonth
-		, DimDate.CalendarMonthAbbreviation
-		, CASE WHEN DimActivity.Name LIKE '%Worship%' THEN 'Worship Attendance - Adults'
-			ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' THEN 'Worship Attenance - Children' END 
-		  END AS AttendanceCategory
-		, FactAttendance.CampusID
-		, DimCampus.Code
-		, SUM(FactAttendance.AttendanceCount) AS AttendanceCount
-	FROM DW.FactAttendance
-	INNER JOIN DW.DimDate
-		ON FactAttendance.InstanceDateID = DimDate.DateID
-	INNER JOIN DW.DimCampus
-		ON FactAttendance.CampusID = DimCampus.CampusID
-		AND FactAttendance.TenantID = DimCampus.TenantID
-	INNER JOIN DW.DimMinistry
-		ON FactAttendance.MinistryID = DimMinistry.MinistryID
-		AND FactAttendance.TenantID = DimMinistry.TenantID
-	--may not have to include activity, and attendanceType
-	INNER JOIN DW.DimActivity 
-		ON FactAttendance.ActivityID = dimActivity.ActivityID
-		AND FactAttendance.TenantID = DimActivity.TenantID
-	INNER JOIN DW.DimAttendanceType
-		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
-		AND FactAttendance.TenantID = DimAttendanceType.TenantID
-	WHERE
-		DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100)
-		AND DimAttendanceType.Category = 'Attendee'
-		AND CASE WHEN DimActivity.Name LIKE '%Worship%' THEN 'Worship Attendance - Adults'
-			ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' THEN 'Worship Attenance - Children' END 
-		  END IS NOT NULL
-	    AND DimCampus.CampusID &gt; 0
-	GROUP BY
-		  DimDate.CalendarYear
-		, DimDate.CalendarMonth
-		, DimDate.CalendarMonthAbbreviation
-		, CASE WHEN DimActivity.Name LIKE '%Worship%' THEN 'Worship Attendance - Adults'
-			ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' THEN 'Worship Attenance - Children' END 
-		  END
-		, FactAttendance.CampusID
-		, DimCampus.Code
-		, DimMinistry.CampusID
-), FilledSrc AS (
-	SELECT 
-		  Calendar.CalendarYear
-		, Calendar.CalendarMonth
-		, Calendar.CalendarMonthAbbreviation
-		, AttendanceCategory.AttendanceCategory
-		, Campus.CampusID
-		, Campus.Code	
-		, 0 AS AttendanceCount
-	FROM (
-			SELECT 'Worship Attenance - Children' AS AttendanceCategory UNION
-			SELECT 'Worship Attendance - Adults' ) AttendanceCategory
-		, (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID &gt; 0)Campus
-		, (SELECT DISTINCT CalendarYear,CalendarMonth, CalendarMonthAbbreviation 
-		   FROM DW.DimDate 
-		   WHERE DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100) ) Calendar
-	UNION
-	SELECT
-		  CalendarYear
-		, CalendarMonth
-		, CalendarMonthAbbreviation
-		, AttendanceCategory
-		, CampusID
-		, Code
-		, AttendanceCount
-	FROM Src
-)
-SELECT 
-	  CalendarYear
-	, CalendarMonth
-    , CalendarMonthAbbreviation
-	, AttendanceCategory
-	, CampusID
-	, Code
-	, SUM(AttendanceCount) AS AttendanceCount
-FROM FilledSrc
-WHERE CampusID &gt; 0
-GROUP BY
-	CalendarYear
-	, CalendarMonth
-    , CalendarMonthAbbreviation
-	, AttendanceCategory
-	, CampusID
-	, Code
-ORDER BY
-	CalendarYear, CalendarMonth</CommandText>
+          SELECT
+          DimDate.CalendarYear
+          , DimDate.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , CASE WHEN DimActivity.Name LIKE '%Worship%' THEN 'Worship Attendance - Adults'
+          ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' THEN 'Worship Attenance - Children' END
+          END AS AttendanceCategory
+          , FactAttendance.CampusID
+          , DimCampus.Code
+          , SUM(FactAttendance.AttendanceCount) AS AttendanceCount
+          FROM DW.FactAttendance
+          INNER JOIN DW.DimDate
+          ON FactAttendance.InstanceDateID = DimDate.DateID
+          INNER JOIN DW.DimCampus
+          ON FactAttendance.CampusID = DimCampus.CampusID
+          AND FactAttendance.TenantID = DimCampus.TenantID
+          INNER JOIN DW.DimMinistry
+          ON FactAttendance.MinistryID = DimMinistry.MinistryID
+          AND FactAttendance.TenantID = DimMinistry.TenantID
+          --may not have to include activity, and attendanceType
+          INNER JOIN DW.DimActivity
+          ON FactAttendance.ActivityID = dimActivity.ActivityID
+          AND FactAttendance.TenantID = DimActivity.TenantID
+          --INNER JOIN DW.DimRoster -- adds too much time in this query.
+          --	ON FactAttendance.RosterID = DimRoster.RosterID
+          --	AND FactAttendance.TenantID = DimRoster.TenantID
+          INNER JOIN DW.DimAttendanceType
+          ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+          AND FactAttendance.TenantID = DimAttendanceType.TenantID
+          WHERE
+          DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100)
+          AND DimAttendanceType.Category = 'Attendee'
+          AND CASE WHEN DimActivity.Name LIKE '%Worship%' THEN 'Worship Attendance - Adults'
+          ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' THEN 'Worship Attenance - Children' END
+          END IS NOT NULL
+          GROUP BY
+          DimDate.CalendarYear
+          , DimDate.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , CASE WHEN DimActivity.Name LIKE '%Worship%' THEN 'Worship Attendance - Adults'
+          ELSE CASE WHEN DimMinistry.Name LIKE '%Harvest Kids%' THEN 'Worship Attenance - Children' END
+          END
+          , FactAttendance.CampusID
+          , DimCampus.Code
+          , DimMinistry.CampusID
+        </CommandText>
       </Query>
       <Fields>
         <Field Name="CalendarYear">
@@ -150,8 +106,10 @@ ORDER BY
     <DataSet Name="Campus">
       <Query>
         <DataSourceName>DW</DataSourceName>
-        <CommandText>SELECT CampusID, Code, Name
-FROM DW.DimCampus</CommandText>
+        <CommandText>
+          SELECT CampusID, Code, Name
+          FROM DW.DimCampus
+        </CommandText>
       </Query>
       <Fields>
         <Field Name="CampusID">
@@ -179,69 +137,31 @@ FROM DW.DimCampus</CommandText>
             <Value>=Parameters!CalendarMonth.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>WITH Src AS (
-	SELECT  
-		  FactStewardshipGiving.CalendarYear
-		, FactStewardshipGiving.CalendarMonth
-		, DimDate.CalendarMonthAbbreviation
-		, FactStewardshipGiving.CampusID
-		, DimCampus.Code
-		, SUM(FactStewardshipGiving.StewardshipGivingAmount) AS StewardshipGivingAmount
-	FROM DW.FactStewardshipGiving
-	INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
-		ON FactStewardshipGiving.CalendarMonth = DimDate.CalendarMonth
-	INNER JOIN DW.DimCampus
-		ON FactStewardshipGiving.CampusID = DimCampus.CampusID
-		AND FactStewardshipGiving.TenantID = DimCampus.TenantID
-	WHERE
-		FactStewardshipGiving.CalendarYear = @CalendarYear -1
-		OR (FactStewardshipGiving.CalendarYear = @CalendarYear AND FactStewardshipGiving.CalendarMonth &lt;= @CalendarMonth)
-	
-	GROUP BY
-		FactStewardshipGiving.CalendarYear
-		, FactStewardshipGiving.CalendarMonth
-		, DimDate.CalendarMonthAbbreviation
-		, FactStewardshipGiving.CampusID
-		, DimCampus.Code
-), FilledSrc AS (
-	SELECT 
-		  Calendar.CalendarYear
-		, Calendar.CalendarMonth
-		, Calendar.CalendarMonthAbbreviation
-		, Campus.CampusID
-		, Campus.Code	
-		, 0 AS StewardshipGivingAmount
-	FROM (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID &gt; 0)Campus
-		, (SELECT DISTINCT CalendarYear,CalendarMonth, CalendarMonthAbbreviation 
-		   FROM DW.DimDate 
-		   WHERE DimDate.DateID BETWEEN ((@CalendarYear - 1) * 10000) + 101 AND ((@CalendarYear) * 10000) + ((@CalendarMonth + 1) * 100) ) Calendar
-	UNION
-	SELECT
-		  CalendarYear
-		, CalendarMonth
-		, CalendarMonthAbbreviation
-		, CampusID
-		, Code
-		, StewardshipGivingAmount
-	FROM Src
-)
-SELECT 
-	  CalendarYear
-	, CalendarMonth
-    , CalendarMonthAbbreviation
-	, CampusID
-	, Code
-	, SUM(StewardshipGivingAmount) AS StewardshipGivingAmount
-FROM FilledSrc
-WHERE CampusID &gt; 0
-GROUP BY
-	CalendarYear
-	, CalendarMonth
-    , CalendarMonthAbbreviation
-	, CampusID
-	, Code
-ORDER BY
-	1,2</CommandText>
+        <CommandText>
+          SELECT
+          FactStewardshipGiving.CalendarYear
+          , FactStewardshipGiving.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , FactStewardshipGiving.CampusID
+          , DimCampus.Code
+          , SUM(FactStewardshipGiving.StewardshipGivingAmount) AS StewardshipGivingAmount
+          FROM DW.FactStewardshipGiving
+          INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
+          ON FactStewardshipGiving.CalendarMonth = DimDate.CalendarMonth
+          INNER JOIN DW.DimCampus
+          ON FactStewardshipGiving.CampusID = DimCampus.CampusID
+          AND FactStewardshipGiving.TenantID = DimCampus.TenantID
+          WHERE
+          FactStewardshipGiving.CalendarYear = @CalendarYear -1
+          OR (FactStewardshipGiving.CalendarYear = @CalendarYear AND FactStewardshipGiving.CalendarMonth &lt;= @CalendarMonth)
+
+          GROUP BY
+          FactStewardshipGiving.CalendarYear
+          , FactStewardshipGiving.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , FactStewardshipGiving.CampusID
+          , DimCampus.Code
+        </CommandText>
       </Query>
       <Fields>
         <Field Name="CalendarYear">
@@ -278,92 +198,56 @@ ORDER BY
             <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
           <QueryParameter Name="@CalendarMonth">
-            <Value>=Parameters!CalendarMonth.Value</Value>
+            <Value>=Parameters!CalendarYear.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>WITH src AS (
-	SELECT  
-		  'Budget' AS RowName
-		, FactStewardshipBudget.CalendarMonth
-		, DimDate.CalendarMonthAbbreviation
-		, FactStewardshipBudget.CampusID
-		, DimCampus.Code
-		, SUM(FactStewardshipBudget.StewardshipBudgetAmount) AS StewardshipAmount
-	FROM DW.FactStewardshipBudget
-	INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
-		ON FactStewardshipBudget.CalendarMonth = DimDate.CalendarMonth
-	INNER JOIN DW.DimCampus
-		ON FactStewardshipBudget.CampusID = DimCampus.CampusID
-		AND FactStewardshipBudget.TenantID = DimCampus.TenantID
-	WHERE
-		(FactStewardshipBudget.CalendarYear = @CalendarYear AND FactStewardshipBudget.CalendarMonth &lt;= @CalendarMonth)
-	GROUP BY
-		FactStewardshipBudget.CalendarYear
-		, FactStewardshipBudget.CalendarMonth
-		, DimDate.CalendarMonthAbbreviation
-		, FactStewardshipBudget.CampusID
-		, DimCampus.Code
-	UNION
-	SELECT  
-		  'Actuals' AS RowName
-		, FactStewardshipGiving.CalendarMonth
-		, DimDate.CalendarMonthAbbreviation
-		, FactStewardshipGiving.CampusID
-		, DimCampus.Code
-		, SUM(FactStewardshipGiving.StewardshipGivingAmount) AS StewardshipGivingAmount
-	FROM DW.FactStewardshipGiving
-	INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
-		ON FactStewardshipGiving.CalendarMonth = DimDate.CalendarMonth
-	INNER JOIN DW.DimCampus
-		ON FactStewardshipGiving.CampusID = DimCampus.CampusID
-		AND FactStewardshipGiving.TenantID = DimCampus.TenantID
-	WHERE
-		 (FactStewardshipGiving.CalendarYear = @CalendarYear AND FactStewardshipGiving.CalendarMonth &lt;= @CalendarMonth)
-	GROUP BY
-		FactStewardshipGiving.CalendarYear
-		, FactStewardshipGiving.CalendarMonth
-		, DimDate.CalendarMonthAbbreviation
-		, FactStewardshipGiving.CampusID
-		, DimCampus.Code
-), FilledSrc AS (
-	SELECT 
-		  Stewardship.RowName
-		, Calendar.CalendarMonth
-		, Calendar.CalendarMonthAbbreviation
-		, Campus.CampusID
-		, Campus.Code	
-		, Stewardship.StewardShipAmount
-	FROM (SELECT 'Actuals' AS RowName, 0 AS StewardShipAmount UNION
-		  SELECT 'Budget' AS RowName, 0 AS StewardShipAmount) Stewardship
-		, (SELECT DISTINCT CampusID, Code FROM DW.DimCampus WHERE CampusID &gt; 0)Campus
-		, (SELECT DISTINCT CalendarYear,CalendarMonth, CalendarMonthAbbreviation 
-		   FROM DW.DimDate 
-		   WHERE CalendarYear = @CalendarYear AND CalendarMonth &lt;= @CalendarMonth ) Calendar
-	UNION
-	SELECT
-		  RowName
-		, CalendarMonth
-		, CalendarMonthAbbreviation
-		, CampusID
-		, Code
-		, StewardShipAmount
-	FROM Src
-)
-SELECT 
-	  RowName
-	, CalendarMonth
-    , CalendarMonthAbbreviation
-	, CampusID
-	, Code
-	, SUM(StewardShipAmount) AS StewardShipAmount
-FROM FilledSrc
-WHERE CampusID &gt; 0 AND 1=0
-GROUP BY
-	  RowName
-	, CalendarMonth
-    , CalendarMonthAbbreviation
-	, CampusID
-	, Code</CommandText>
+        <CommandText>
+          SELECT
+          'Budget' AS RowName
+          , FactStewardshipBudget.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , FactStewardshipBudget.CampusID
+          , DimCampus.Code
+          , SUM(FactStewardshipBudget.StewardshipBudgetAmount) AS StewardshipBudgetAmount
+          FROM DW.FactStewardshipBudget
+          INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
+          ON FactStewardshipBudget.CalendarMonth = DimDate.CalendarMonth
+          INNER JOIN DW.DimCampus
+          ON FactStewardshipBudget.CampusID = DimCampus.CampusID
+          AND FactStewardshipBudget.TenantID = DimCampus.TenantID
+          WHERE
+          (FactStewardshipBudget.CalendarYear = @CalendarYear AND FactStewardshipBudget.CalendarMonth &lt;= @CalendarMonth)
+          --AND FactStewardshipBudget.CampusID = @campusID
+          GROUP BY
+          FactStewardshipBudget.CalendarYear
+          , FactStewardshipBudget.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , FactStewardshipBudget.CampusID
+          , DimCampus.Code
+          UNION
+          SELECT
+          'Actuals' AS RowName
+          , FactStewardshipGiving.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , FactStewardshipGiving.CampusID
+          , DimCampus.Code
+          , SUM(FactStewardshipGiving.StewardshipGivingAmount) AS StewardshipGivingAmount
+          FROM DW.FactStewardshipGiving
+          INNER JOIN (SELECT DISTINCT CalendarMonth, CalendarMonthAbbreviation FROM DW.DimDate) DimDate
+          ON FactStewardshipGiving.CalendarMonth = DimDate.CalendarMonth
+          INNER JOIN DW.DimCampus
+          ON FactStewardshipGiving.CampusID = DimCampus.CampusID
+          AND FactStewardshipGiving.TenantID = DimCampus.TenantID
+          WHERE
+          (FactStewardshipGiving.CalendarYear = @CalendarYear AND FactStewardshipGiving.CalendarMonth &lt;= @CalendarMonth)
+          --AND FactStewardshipBudget.CampusID = @campusID
+          GROUP BY
+          FactStewardshipGiving.CalendarYear
+          , FactStewardshipGiving.CalendarMonth
+          , DimDate.CalendarMonthAbbreviation
+          , FactStewardshipGiving.CampusID
+          , DimCampus.Code
+        </CommandText>
       </Query>
       <Fields>
         <Field Name="RowName">
@@ -386,8 +270,8 @@ GROUP BY
           <DataField>Code</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="StewardShipAmount">
-          <DataField>StewardShipAmount</DataField>
+        <Field Name="StewardshipBudgetAmount">
+          <DataField>StewardshipBudgetAmount</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
       </Fields>
@@ -4327,9 +4211,7 @@ GROUP BY
                                   <TextRuns>
                                     <TextRun>
                                       <Value>=Sum(Fields!AttendanceCount.Value)</Value>
-                                      <Style>
-                                        <Format>#,0;(#,0)</Format>
-                                      </Style>
+                                      <Style />
                                     </TextRun>
                                   </TextRuns>
                                   <Style />
@@ -4340,6 +4222,18 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
@@ -4358,9 +4252,7 @@ GROUP BY
                                   <TextRuns>
                                     <TextRun>
                                       <Value>=Sum(Fields!AttendanceCount.Value)</Value>
-                                      <Style>
-                                        <Format>#,0;(#,0)</Format>
-                                      </Style>
+                                      <Style />
                                     </TextRun>
                                   </TextRuns>
                                   <Style />
@@ -4371,6 +4263,18 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
@@ -4408,6 +4312,18 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
                                 <BackgroundColor>LightBlue</BackgroundColor>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
@@ -4708,12 +4624,12 @@ GROUP BY
                     <TablixMember>
                       <Group Name="CalendarMonth4">
                         <GroupExpressions>
-                          <GroupExpression>=Fields!Code.Value</GroupExpression>
+                          <GroupExpression>=Fields!CalendarMonth.Value</GroupExpression>
                         </GroupExpressions>
                       </Group>
                       <SortExpressions>
                         <SortExpression>
-                          <Value>=Fields!Code.Value</Value>
+                          <Value>=Fields!CalendarMonth.Value</Value>
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
@@ -5153,9 +5069,7 @@ GROUP BY
                                   <TextRuns>
                                     <TextRun>
                                       <Value>=Sum(Fields!AttendanceCount.Value)</Value>
-                                      <Style>
-                                        <Format>#,0;(#,0)</Format>
-                                      </Style>
+                                      <Style />
                                     </TextRun>
                                   </TextRuns>
                                   <Style />
@@ -5166,6 +5080,18 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
@@ -5184,9 +5110,7 @@ GROUP BY
                                   <TextRuns>
                                     <TextRun>
                                       <Value>=Sum(Fields!AttendanceCount.Value)</Value>
-                                      <Style>
-                                        <Format>#,0;(#,0)</Format>
-                                      </Style>
+                                      <Style />
                                     </TextRun>
                                   </TextRuns>
                                   <Style />
@@ -5197,6 +5121,18 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
@@ -5546,12 +5482,12 @@ GROUP BY
                     <TablixMember>
                       <Group Name="CalendarMonth5">
                         <GroupExpressions>
-                          <GroupExpression>=Fields!Code.Value</GroupExpression>
+                          <GroupExpression>=Fields!CalendarMonth.Value</GroupExpression>
                         </GroupExpressions>
                       </Group>
                       <SortExpressions>
                         <SortExpression>
-                          <Value>=Fields!Code.Value</Value>
+                          <Value>=Fields!CalendarMonth.Value</Value>
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
@@ -5902,9 +5838,7 @@ GROUP BY
                                   <TextRuns>
                                     <TextRun>
                                       <Value>=Sum(Fields!AttendanceCount.Value)</Value>
-                                      <Style>
-                                        <Format>#,0;(#,0)</Format>
-                                      </Style>
+                                      <Style />
                                     </TextRun>
                                   </TextRuns>
                                   <Style />
@@ -5915,6 +5849,18 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
@@ -5933,9 +5879,7 @@ GROUP BY
                                   <TextRuns>
                                     <TextRun>
                                       <Value>=Sum(Fields!AttendanceCount.Value)</Value>
-                                      <Style>
-                                        <Format>#,0;(#,0)</Format>
-                                      </Style>
+                                      <Style />
                                     </TextRun>
                                   </TextRuns>
                                   <Style />
@@ -5946,6 +5890,18 @@ GROUP BY
                                 <Border>
                                   <Style>Solid</Style>
                                 </Border>
+                                <TopBorder>
+                                  <Color>Black</Color>
+                                </TopBorder>
+                                <BottomBorder>
+                                  <Color>Black</Color>
+                                </BottomBorder>
+                                <LeftBorder>
+                                  <Color>Black</Color>
+                                </LeftBorder>
+                                <RightBorder>
+                                  <Color>Black</Color>
+                                </RightBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
@@ -6295,12 +6251,12 @@ GROUP BY
                     <TablixMember>
                       <Group Name="CalendarMonth6">
                         <GroupExpressions>
-                          <GroupExpression>=Fields!Code.Value</GroupExpression>
+                          <GroupExpression>=Fields!CalendarMonth.Value</GroupExpression>
                         </GroupExpressions>
                       </Group>
                       <SortExpressions>
                         <SortExpression>
-                          <Value>=Fields!Code.Value</Value>
+                          <Value>=Fields!CalendarMonth.Value</Value>
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
@@ -6707,9 +6663,7 @@ GROUP BY
                                   <TextRuns>
                                     <TextRun>
                                       <Value>=Sum(Fields!StewardshipGivingAmount.Value)</Value>
-                                      <Style>
-                                        <Format>#,0;(#,0)</Format>
-                                      </Style>
+                                      <Style />
                                     </TextRun>
                                   </TextRuns>
                                   <Style />
@@ -6739,9 +6693,7 @@ GROUP BY
                                   <TextRuns>
                                     <TextRun>
                                       <Value>=Sum(Fields!StewardshipGivingAmount.Value)</Value>
-                                      <Style>
-                                        <Format>#,0;(#,0)</Format>
-                                      </Style>
+                                      <Style />
                                     </TextRun>
                                   </TextRuns>
                                   <Style />
