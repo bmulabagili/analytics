@@ -140,7 +140,7 @@ AS
 			 , DATEPART(WEEKDAY, @CurrentDate) AS FiscalDayOfWeek            
 			 , DATEPART(DAY, @CurrentDate) AS FiscalDayOfMonth           
 			 , NULL AS FiscalDayOfYear            
-			 ,  CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 6 THEN DATEPART(MONTH, @CurrentDate) + 6 ELSE DATEPART(MONTH, @CurrentDate) - 6 END AS FiscalMonth                
+			 , CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(MONTH, @CurrentDate) + 5 ELSE DATEPART(MONTH, @CurrentDate) - 7 END AS FiscalMonth  
 			 , LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3) AS FiscalMonthAbbreviation    
 			 , DATENAME(MONTH, @currentDate) AS FiscalMonthLabel           
 			 , NULL AS FiscalQuarter              
@@ -148,8 +148,8 @@ AS
 			 , NULL AS FiscalWeek                 
 			 , NULL AS FiscalWeekStartLabel       
 			 , NULL AS FiscalWeekEndLabel         
-			 , CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 6 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS FiscalYear                 
-			 , CONVERT(VARCHAR(4), CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 6 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS FiscalYearLabel            
+			 , CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS FiscalYear               
+			 , CONVERT(VARCHAR(4), CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS FiscalYearLabel            
 			 , NULL AS HolidayFlag                
 			 , CASE WHEN DATEPART(WEEKDAY, @CurrentDate) IN (1,7) THEN 1 ELSE 0 END AS WeekendFlag                
 			 , -1 AS ExecutionID
@@ -303,3 +303,4 @@ AS
 		 AND ActualDate BETWEEN @StartDate AND @EndDate;
      
      RETURN 0;
+GO
