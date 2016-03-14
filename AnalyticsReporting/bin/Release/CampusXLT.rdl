@@ -37,22 +37,28 @@
 		DimCampus.Code NOT IN ('--','WW','SP')
 		AND DimAttendanceType.Category = 'Attendee'
 		AND FactAttendance.Age &gt;= 18
-		AND CalendarYear IN (@BudgetYear) -- had to use previous year until we get 2016 attendance data
+		AND CalendarYear IN (@BudgetYear)
 	GROUP BY
 		FactAttendance.CampusID, DimCampus.Code
-  UNION
+	UNION
 	SELECT CampusID, Code, 0 AS AttendanceCount 
 	FROM dw.DimCampus
-	WHERE DimCampus.Code NOT IN ('--','WW','SP')  
+	WHERE DimCampus.Code NOT IN ('--','WW','SP')
 ), AttendanceTotal AS (
 	SELECT SUM(AttendanceCount) AS AttendanceCount
 	FROM Attendance
-), CampusAllocation AS (
+) , CampusAllocationCalculation AS (
 	SELECT 
 		CampusID, Code
 		--, Attendance.AttendanceCount, (SELECT AttendanceCount FROM AttendanceTotal)
 		, (Attendance.AttendanceCount * 1.0) / (SELECT AttendanceCount FROM AttendanceTotal) AS CampusPercent
 	FROM Attendance
+), CampusAllocation AS (
+	SELECT
+		CampusID, Code, MAX(CampusPercent) AS CampusPercent
+	FROM  CampusAllocationCalculation
+	GROUP BY 
+		CampusID, Code
 )
 
 SELECT
@@ -123,13 +129,13 @@ SELECT DISTINCT
           <DataField>CampusCode</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Amount">
-          <DataField>Amount</DataField>
-          <rd:TypeName>System.Decimal</rd:TypeName>
-        </Field>
         <Field Name="BudgetYear">
           <DataField>BudgetYear</DataField>
           <rd:TypeName>System.Object</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
       </Fields>
     </DataSet>
@@ -160,19 +166,25 @@ SELECT DISTINCT
 		AND CalendarYear IN (@BudgetYear)
 	GROUP BY
 		FactAttendance.CampusID, DimCampus.Code
-  UNION
+	UNION
 	SELECT CampusID, Code, 0 AS AttendanceCount 
 	FROM dw.DimCampus
 	WHERE DimCampus.Code NOT IN ('--','WW','SP')
 ), AttendanceTotal AS (
 	SELECT SUM(AttendanceCount) AS AttendanceCount
 	FROM Attendance
-), CampusAllocation AS (
+) , CampusAllocationCalculation AS (
 	SELECT 
 		CampusID, Code
 		--, Attendance.AttendanceCount, (SELECT AttendanceCount FROM AttendanceTotal)
 		, (Attendance.AttendanceCount * 1.0) / (SELECT AttendanceCount FROM AttendanceTotal) AS CampusPercent
 	FROM Attendance
+), CampusAllocation AS (
+	SELECT
+		CampusID, Code, MAX(CampusPercent) AS CampusPercent
+	FROM  CampusAllocationCalculation
+	GROUP BY 
+		CampusID, Code
 )
 SELECT
 	  CampusXLTReportGroup.CampusXLTReportGroupID
@@ -277,22 +289,28 @@ SELECT DISTINCT
 		DimCampus.Code NOT IN ('--','WW','SP')
 		AND DimAttendanceType.Category = 'Attendee'
 		AND FactAttendance.Age &gt;= 18
-		AND CalendarYear IN (@BudgetYear) -- had to use previous year until we get 2016 attendance data
+		AND CalendarYear IN (@BudgetYear)
 	GROUP BY
 		FactAttendance.CampusID, DimCampus.Code
-  UNION
+	UNION
 	SELECT CampusID, Code, 0 AS AttendanceCount 
 	FROM dw.DimCampus
-	WHERE DimCampus.Code NOT IN ('--','WW','SP')  
+	WHERE DimCampus.Code NOT IN ('--','WW','SP')
 ), AttendanceTotal AS (
 	SELECT SUM(AttendanceCount) AS AttendanceCount
 	FROM Attendance
-), CampusAllocation AS (
+) , CampusAllocationCalculation AS (
 	SELECT 
 		CampusID, Code
 		--, Attendance.AttendanceCount, (SELECT AttendanceCount FROM AttendanceTotal)
 		, (Attendance.AttendanceCount * 1.0) / (SELECT AttendanceCount FROM AttendanceTotal) AS CampusPercent
 	FROM Attendance
+), CampusAllocation AS (
+	SELECT
+		CampusID, Code, MAX(CampusPercent) AS CampusPercent
+	FROM  CampusAllocationCalculation
+	GROUP BY 
+		CampusID, Code
 ), CompleteBudgetExpense AS (
 	SELECT
 		  CampusXLTReportGroup.CampusXLTReportGroupID
@@ -825,8 +843,7 @@ GROUP BY
             <Value>=Parameters!BudgetMonth.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
-WITH Attendance AS(
+        <CommandText>WITH Attendance AS(
 	SELECT FactAttendance.CampusID, DimCampus.Code, SUM(AttendanceCount) AttendanceCount
 	FROM dw.FactAttendance
 	INNER JOIN DW.DimAttendanceType
@@ -1074,8 +1091,7 @@ FROM ActualRevenue
 INNER JOIN ActualExpense
 	ON ActualRevenue.CampusCode = ActualExpense.CampusCode
 GROUP BY
-	ActualRevenue.CampusCode
-</CommandText>
+	ActualRevenue.CampusCode</CommandText>
       </Query>
       <Fields>
         <Field Name="CampusCode">
@@ -1298,8 +1314,7 @@ FROM ActualNetIncome
 INNER JOIN BudgetNetIncome
 	ON ActualNetIncome.CampusCode = BudgetNetIncome.CampusCode
 GROUP BY
-	ActualNetIncome.CampusCode
-</CommandText>
+	ActualNetIncome.CampusCode</CommandText>
       </Query>
       <Fields>
         <Field Name="CampusCode">
@@ -15562,7 +15577,6 @@ GROUP BY
                               <PaddingBottom>2pt</PaddingBottom>
                             </Style>
                           </Textbox>
-                          <rd:Selected>true</rd:Selected>
                         </CellContents>
                       </TablixHeader>
                     </TablixMember>
