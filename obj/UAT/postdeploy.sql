@@ -363,7 +363,7 @@ USING (
 	SELECT 
 		  ROW_NUMBER() OVER (ORDER BY src.CampusID) + 1 AS MinistryID
 		, 3 AS TenantID
-		, 'CS - Worship  & Production' AS Name
+		, 'CS - Worship & Production' AS Name
 		, CampusID
 		, '1/1/1900' AS StartDateTime
 		, NULL AS EndDateTime

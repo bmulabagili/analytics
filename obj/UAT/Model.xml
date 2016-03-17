@@ -12,7 +12,7 @@
 		</CustomData>
 		<CustomData Category="Reference" Type="Assembly">
 			<Metadata Name="LogicalName" Value="Analytics.dll" />
-			<Metadata Name="FileName" Value="E:\REPOSITORIES\ANALYTICS\OBJ\UAT\ANALYTICS.DLL" />
+			<Metadata Name="FileName" Value="C:\REPOSITORIES\ANALYTICS\OBJ\UAT\ANALYTICS.DLL" />
 			<Metadata Name="AssemblyName" Value="Analytics" />
 			<Metadata Name="PermissionSet" Value="SAFE" />
 			<Metadata Name="Owner" Value="" />
@@ -20,7 +20,7 @@
 			<Metadata Name="IsVisible" Value="True" />
 			<Metadata Name="IsModelAware" Value="True" />
 			<Metadata Name="SkipCreationIfEmpty" Value="True" />
-			<Metadata Name="AssemblySymbolsName" Value="E:\Repositories\analytics\obj\UAT\Analytics.pdb" />
+			<Metadata Name="AssemblySymbolsName" Value="C:\Repositories\analytics\obj\UAT\Analytics.pdb" />
 		</CustomData>
 		<CustomData Category="SqlCmdVariables" Type="SqlCmdVariable" />
 	</Header>
@@ -12393,6 +12393,133 @@
 			</Relationship>
 			<AttachedAnnotation Disambiguator="219" />
 		</Element>
+		<Element Type="SqlProcedure" Name="[DW].[usp_Dashboard-56weekAttendance]">
+			<Property Name="BodyScript">
+				<Value><![CDATA[
+
+IF OBJECT_ID('tempdb..#Attendance') is not null
+DROP TABLE #Attendance;
+
+SELECT 
+	  CalendarYear
+	, CalendarWeek
+	, MIN(ActualDate) AS WeekStartDate
+	, MAX(ActualDate) AS WeekEndDate
+	, SUM(AttendanceCount) AS AttendanceCount
+INTO #Attendance
+FROM DW.FactAttendance 
+INNER JOIN DW.DimDate
+	ON FactAttendance.InstanceDateID = DimDate.DateID
+WHERE
+	ActualDate >= DATEADD(WEEK, -56, GETDATE())
+GROUP BY
+	  CalendarYear
+	, CalendarWeek;
+
+SELECT AVG(AttendanceCount) AS AttendanceAverage
+FROM #Attendance
+
+SELECT 
+	  CalendarYear 
+	, CalendarWeek
+	, WeekStartDate
+	, WeekEndDate
+	, AttendanceCount
+FROM #Attendance
+ORDER BY 1,2;]]></Value>
+			</Property>
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="BodyDependencies">
+				<Entry>
+					<References Name="[DW].[usp_Dashboard-56weekAttendance].[#Attendance]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactAttendance]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactAttendance].[InstanceDateID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[DateID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[CalendarYear]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[CalendarWeek]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[ActualDate]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactAttendance].[AttendanceCount]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[usp_Dashboard-56weekAttendance].[#Attendance].[AttendanceCount]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[usp_Dashboard-56weekAttendance].[#Attendance].[CalendarYear]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[usp_Dashboard-56weekAttendance].[#Attendance].[CalendarWeek]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[usp_Dashboard-56weekAttendance].[#Attendance].[WeekStartDate]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[usp_Dashboard-56weekAttendance].[#Attendance].[WeekEndDate]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="DynamicObjects">
+				<Entry>
+					<Element Type="SqlDynamicColumnSource" Name="[DW].[usp_Dashboard-56weekAttendance].[#Attendance]">
+						<Relationship Name="Columns">
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-56weekAttendance].[#Attendance].[CalendarYear]">
+									<Relationship Name="ExpressionDependencies">
+										<Entry>
+											<References Name="[DW].[DimDate].[CalendarYear]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-56weekAttendance].[#Attendance].[CalendarWeek]">
+									<Relationship Name="ExpressionDependencies">
+										<Entry>
+											<References Name="[DW].[DimDate].[CalendarWeek]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-56weekAttendance].[#Attendance].[WeekStartDate]" />
+							</Entry>
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-56weekAttendance].[#Attendance].[WeekEndDate]" />
+							</Entry>
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-56weekAttendance].[#Attendance].[AttendanceCount]" />
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[DW]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SysCommentsObjectAnnotation">
+				<Property Name="Length" Value="714" />
+				<Property Name="StartLine" Value="1" />
+				<Property Name="StartColumn" Value="1" />
+				<Property Name="HeaderContents" Value="CREATE PROCEDURE [DW].[usp_Dashboard-56weekAttendance]&#xD;&#xA;AS" />
+			</Annotation>
+		</Element>
 		<Element Type="SqlProcedure" Name="[DW].[usp_Dashboard-ActualRevenueVActualExpense]">
 			<Property Name="BodyScript">
 				<Value><![CDATA[
@@ -14116,6 +14243,246 @@ ORDER BY
 				<Property Name="HeaderContents" Value="CREATE PROCEDURE [DW].[usp_Dashboard-Contributions]&#xD;&#xA;&#x9;  @StartCalendarMonth INT  &#xD;&#xA;&#x9;, @StartCalendarYear INT &#xD;&#xA;&#x9;, @NumberOfMonths INT &#xD;&#xA;&#x9;, @EntityCSVList NVARCHAR(20) &#xD;&#xA;AS" />
 			</Annotation>
 		</Element>
+		<Element Type="SqlProcedure" Name="[DW].[usp_Dashboard-ContributionsAttendancePercent]">
+			<Property Name="BodyScript">
+				<Value><![CDATA[
+	
+WITH Contributions AS (
+	SELECT 
+		  DimFinancialCategory.CampusCode
+		, SUM(Amount) AS Amount
+	FROM dw.FactRevenue
+	INNER JOIN dw.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+	INNER JOIN dw.DimDate
+		ON FactRevenue.DateID = DimDate.DateID
+	WHERE
+		DimFinancialCategory.EntityCode = 'HBC'
+		AND GLName IN ('CN Income-General Of')
+		AND CalendarYear = @CalendarYear
+	GROUP BY
+		  DimFinancialCategory.CampusCode
+), Attendance AS (
+	SELECT 
+		  DimCampus.Name
+		, DimCampus.Code
+		, SUM(AttendanceCount) AS AttendanceCount
+	FROM DW.FactAttendance 
+	INNER JOIN DW.DimDate
+		ON FactAttendance.InstanceDateID = DimDate.DateID
+	INNER JOIN DW.DimCampus
+		ON FactAttendance.CampusID = DimCampus.CampusID
+	WHERE
+		CalendarYear = @CalendarYear
+		AND FactAttendance.CampusID > 0
+	GROUP BY
+		  DimCampus.Name
+		, DimCampus.Code
+), TotalContributions AS (
+	SELECT SUM(Amount) AS Amount
+	FROM Contributions
+), TotalAttendance AS (
+	SELECT SUM(AttendanceCount) AS AttendanceCount 
+	FROM Attendance
+)
+SELECT
+	  Contributions.CampusCode
+    , Attendance.Name
+	, Contributions.Amount
+	, TotalContributions.Amount AS TotalContributions
+	, CONVERT(DECIMAL(9,4), (Contributions.Amount / TotalContributions.Amount)) AS ContributionPercent
+	, Attendance.AttendanceCount
+	, TotalAttendance.AttendanceCount AS TotalAttendance
+	, CONVERT(DECIMAL(9,4), (Attendance.AttendanceCount * 1.0) / (TotalAttendance.AttendanceCount * 1.0)) AS AttendancePercent
+FROM Contributions
+INNER JOIN Attendance
+	ON Contributions.CampusCode = Attendance.Code
+INNER JOIN TotalContributions 
+	ON 1=1
+INNER JOIN TotalAttendance
+	ON 1=1]]></Value>
+			</Property>
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="BodyDependencies">
+				<Entry>
+					<References Name="[DW].[FactRevenue]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimFinancialCategory]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactRevenue].[FinancialCategoryID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimFinancialCategory].[FinancialCategoryID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactRevenue].[DateID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[DateID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimFinancialCategory].[CampusCode]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactRevenue].[Amount]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimFinancialCategory].[EntityCode]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimFinancialCategory].[GLName]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[CalendarYear]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[usp_Dashboard-ContributionsAttendancePercent].[@CalendarYear]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactAttendance]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactAttendance].[InstanceDateID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[DateID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimCampus]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactAttendance].[CampusID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimCampus].[CampusID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimCampus].[Name]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimCampus].[Code]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactAttendance].[AttendanceCount]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[CalendarYear]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimFinancialCategory].[CampusCode]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimCampus].[Code]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimCampus].[Name]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[decimal]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[decimal]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="DynamicObjects">
+				<Entry>
+					<Element Type="SqlDynamicColumnSource" Name="[DW].[usp_Dashboard-ContributionsAttendancePercent].[CTE1].[Contributions]">
+						<Relationship Name="Columns">
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-ContributionsAttendancePercent].[CTE1].[Contributions].[CampusCode]">
+									<Relationship Name="ExpressionDependencies">
+										<Entry>
+											<References Name="[DW].[DimFinancialCategory].[CampusCode]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-ContributionsAttendancePercent].[CTE1].[Contributions].[Amount]" />
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlDynamicColumnSource" Name="[DW].[usp_Dashboard-ContributionsAttendancePercent].[CTE1].[Attendance]">
+						<Relationship Name="Columns">
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-ContributionsAttendancePercent].[CTE1].[Attendance].[Name]">
+									<Relationship Name="ExpressionDependencies">
+										<Entry>
+											<References Name="[DW].[DimCampus].[Name]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-ContributionsAttendancePercent].[CTE1].[Attendance].[Code]">
+									<Relationship Name="ExpressionDependencies">
+										<Entry>
+											<References Name="[DW].[DimCampus].[Code]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-ContributionsAttendancePercent].[CTE1].[Attendance].[AttendanceCount]" />
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlDynamicColumnSource" Name="[DW].[usp_Dashboard-ContributionsAttendancePercent].[CTE1].[TotalContributions]">
+						<Relationship Name="Columns">
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-ContributionsAttendancePercent].[CTE1].[TotalContributions].[Amount]" />
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+				<Entry>
+					<Element Type="SqlDynamicColumnSource" Name="[DW].[usp_Dashboard-ContributionsAttendancePercent].[CTE1].[TotalAttendance]">
+						<Relationship Name="Columns">
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-ContributionsAttendancePercent].[CTE1].[TotalAttendance].[AttendanceCount]" />
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Parameters">
+				<Entry>
+					<Element Type="SqlSubroutineParameter" Name="[DW].[usp_Dashboard-ContributionsAttendancePercent].[@CalendarYear]">
+						<Relationship Name="Type">
+							<Entry>
+								<Element Type="SqlTypeSpecifier">
+									<Relationship Name="Type">
+										<Entry>
+											<References ExternalSource="BuiltIns" Name="[int]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[DW]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SysCommentsObjectAnnotation">
+				<Property Name="Length" Value="1793" />
+				<Property Name="StartLine" Value="1" />
+				<Property Name="StartColumn" Value="1" />
+				<Property Name="HeaderContents" Value="CREATE PROCEDURE [DW].[usp_Dashboard-ContributionsAttendancePercent]&#xD;&#xA;&#x9;@CalendarYear INT &#xD;&#xA;AS" />
+			</Annotation>
+		</Element>
 		<Element Type="SqlProcedure" Name="[DW].[usp_Dashboard-HBFChurchPlants]">
 			<Property Name="BodyScript">
 				<Value><![CDATA[
@@ -14365,6 +14732,174 @@ ORDER BY
 				<Property Name="HeaderContents" Value="CREATE PROCEDURE [DW].[usp_Dashboard-HCAEnrollment]&#xD;&#xA;AS" />
 			</Annotation>
 		</Element>
+		<Element Type="SqlProcedure" Name="[DW].[usp_Dashboard-MonthAverageAttendance]">
+			<Property Name="BodyScript">
+				<Value><![CDATA[
+
+IF OBJECT_ID('tempdb..#Attendance') is not null
+DROP TABLE #Attendance;
+
+SELECT 
+	  CalendarYear
+	, CalendarMonth
+	, CalendarMonthAbbreviation
+	, CalendarMonthLabel
+	, CalendarWeek
+	, SUM(AttendanceCount) AS AttendanceCount
+INTO #Attendance
+FROM DW.FactAttendance 
+INNER JOIN DW.DimDate
+	ON FactAttendance.InstanceDateID = DimDate.DateID
+WHERE
+	ActualDate >= DATEADD(YEAR, -3, GETDATE())
+GROUP BY
+	  CalendarYear
+	, CalendarMonth
+	, CalendarMonthAbbreviation
+	, CalendarMonthLabel
+	, CalendarWeek
+ORDER BY 
+	1, 2, 5;
+
+SELECT * FROM #Attendance ORDER BY 	1, 2, 5;
+
+SELECT
+	  CalendarYear
+	, CalendarMonth
+	, CalendarMonthAbbreviation
+	, CalendarMonthLabel
+	, AVG(AttendanceCount) AS AttendanceCount
+FROM #Attendance
+GROUP BY
+	  CalendarYear
+	, CalendarMonth
+	, CalendarMonthAbbreviation
+	, CalendarMonthLabel
+ORDER BY
+	1, 2;]]></Value>
+			</Property>
+			<Property Name="IsAnsiNullsOn" Value="True" />
+			<Relationship Name="BodyDependencies">
+				<Entry>
+					<References Name="[DW].[usp_Dashboard-MonthAverageAttendance].[#Attendance]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactAttendance]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactAttendance].[InstanceDateID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[DateID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[CalendarYear]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[CalendarMonth]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[CalendarMonthAbbreviation]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[CalendarMonthLabel]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[CalendarWeek]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactAttendance].[AttendanceCount]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimDate].[ActualDate]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[usp_Dashboard-MonthAverageAttendance].[#Attendance].[CalendarYear]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[usp_Dashboard-MonthAverageAttendance].[#Attendance].[CalendarMonth]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[usp_Dashboard-MonthAverageAttendance].[#Attendance].[CalendarMonthAbbreviation]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[usp_Dashboard-MonthAverageAttendance].[#Attendance].[CalendarMonthLabel]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[usp_Dashboard-MonthAverageAttendance].[#Attendance].[AttendanceCount]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="DynamicObjects">
+				<Entry>
+					<Element Type="SqlDynamicColumnSource" Name="[DW].[usp_Dashboard-MonthAverageAttendance].[#Attendance]">
+						<Relationship Name="Columns">
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-MonthAverageAttendance].[#Attendance].[CalendarYear]">
+									<Relationship Name="ExpressionDependencies">
+										<Entry>
+											<References Name="[DW].[DimDate].[CalendarYear]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-MonthAverageAttendance].[#Attendance].[CalendarMonth]">
+									<Relationship Name="ExpressionDependencies">
+										<Entry>
+											<References Name="[DW].[DimDate].[CalendarMonth]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-MonthAverageAttendance].[#Attendance].[CalendarMonthAbbreviation]">
+									<Relationship Name="ExpressionDependencies">
+										<Entry>
+											<References Name="[DW].[DimDate].[CalendarMonthAbbreviation]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-MonthAverageAttendance].[#Attendance].[CalendarMonthLabel]">
+									<Relationship Name="ExpressionDependencies">
+										<Entry>
+											<References Name="[DW].[DimDate].[CalendarMonthLabel]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-MonthAverageAttendance].[#Attendance].[CalendarWeek]">
+									<Relationship Name="ExpressionDependencies">
+										<Entry>
+											<References Name="[DW].[DimDate].[CalendarWeek]" />
+										</Entry>
+									</Relationship>
+								</Element>
+							</Entry>
+							<Entry>
+								<Element Type="SqlComputedColumn" Name="[DW].[usp_Dashboard-MonthAverageAttendance].[#Attendance].[AttendanceCount]" />
+							</Entry>
+						</Relationship>
+					</Element>
+				</Entry>
+			</Relationship>
+			<Relationship Name="Schema">
+				<Entry>
+					<References Name="[DW]" />
+				</Entry>
+			</Relationship>
+			<Annotation Type="SysCommentsObjectAnnotation">
+				<Property Name="Length" Value="931" />
+				<Property Name="StartLine" Value="1" />
+				<Property Name="StartColumn" Value="1" />
+				<Property Name="HeaderContents" Value="CREATE PROCEDURE [DW].[usp_Dashboard-MonthAverageAttendance]&#xD;&#xA;AS" />
+			</Annotation>
+		</Element>
 		<Element Type="SqlProcedure" Name="[DW].[usp_UpsertDimDate]">
 			<Property Name="BodyScript">
 				<Value><![CDATA[
@@ -14507,7 +15042,7 @@ ORDER BY
 			 , DATEPART(WEEKDAY, @CurrentDate) AS FiscalDayOfWeek            
 			 , DATEPART(DAY, @CurrentDate) AS FiscalDayOfMonth           
 			 , NULL AS FiscalDayOfYear            
-			 ,  CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 6 THEN DATEPART(MONTH, @CurrentDate) + 6 ELSE DATEPART(MONTH, @CurrentDate) - 6 END AS FiscalMonth                
+			 , CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(MONTH, @CurrentDate) + 5 ELSE DATEPART(MONTH, @CurrentDate) - 7 END AS FiscalMonth  
 			 , LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3) AS FiscalMonthAbbreviation    
 			 , DATENAME(MONTH, @currentDate) AS FiscalMonthLabel           
 			 , NULL AS FiscalQuarter              
@@ -14515,8 +15050,8 @@ ORDER BY
 			 , NULL AS FiscalWeek                 
 			 , NULL AS FiscalWeekStartLabel       
 			 , NULL AS FiscalWeekEndLabel         
-			 , CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 6 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS FiscalYear                 
-			 , CONVERT(VARCHAR(4), CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 6 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS FiscalYearLabel            
+			 , CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS FiscalYear               
+			 , CONVERT(VARCHAR(4), CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS FiscalYearLabel            
 			 , NULL AS HolidayFlag                
 			 , CASE WHEN DATEPART(WEEKDAY, @CurrentDate) IN (1,7) THEN 1 ELSE 0 END AS WeekendFlag                
 			 , -1 AS ExecutionID
@@ -14930,7 +15465,7 @@ ORDER BY
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="Length" Value="11508" />
+				<Property Name="Length" Value="11491" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
 				<Property Name="HeaderContents" Value="CREATE PROCEDURE [DW].[usp_UpsertDimDate] @StartDate DATE,&#xD;&#xA;                                          @EndDate   DATE&#xD;&#xA;AS" />
