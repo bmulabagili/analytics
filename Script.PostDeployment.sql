@@ -69,9 +69,9 @@ BEGIN
 	  , (6, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=HMP;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HMP', -1, GETUTCDATE(), GETUTCDATE(), '')
 	  , (7, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=WITW;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-WITW', -1, GETUTCDATE(), GETUTCDATE(), '')
 	  --for some reason the infinite campus data was named harvest on 219
-	  , (8 , N'Data Source=192.168.240.219;User ID=Proj3ct$;Password=C4lr1ss14n;Initial Catalog=harvest;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
-	  , (9 , N'Data Source=192.168.240.219;User ID=Proj3ct$;Password=C4lr1ss14n;Initial Catalog=MPXWIWU;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
-	  , (10, N'Data Source=192.168.240.219;User ID=Proj3ct$;Password=C4lr1ss14n;Initial Catalog=MPXWIWC;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (8 , N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=harvest;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (9 , N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=MPXWIWU;Provider=SQLNCLI11.1;Auto Translate=False;', 'MPX', -1, GETUTCDATE(), GETUTCDATE(), '')
+	  , (10, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=MPXWIWC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MPX', -1, GETUTCDATE(), GETUTCDATE(), '')
 	)
 	AS Source (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 	ON Target.ConnectionStringID = Source.ConnectionStringID
