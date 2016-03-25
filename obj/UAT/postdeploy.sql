@@ -808,7 +808,7 @@ SELECT 9 , 'Facilities'      ,'Utilities'									, 'Dean' UNION
 SELECT 10, 'Facilities'      ,'Service Support'								, 'Dean' UNION
 SELECT 11, 'Facilities'      ,'Mortgage'									, 'XLT' UNION
 
-SELECT 12, 'Camp Operations' ,'Camp Operating Expense'						, 'Dean' UNION
+SELECT 12, 'Camp Operations' ,'Operating Expense'							, 'Dean' UNION
 
 SELECT 13, 'Ministries'      ,'Ministry Expansion and Development'          , 'XLT' UNION
 SELECT 14, 'Ministries'      ,'Special Events'								, 'Luke' UNION
@@ -837,10 +837,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '5038'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 --2. Office Equipment –Expenses with the department code 5058
 INSERT INTO CampusXLTReportGroupMap
 SELECT FinancialCategoryID, 2
@@ -848,10 +844,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '5058'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 --3. Technology
 INSERT INTO CampusXLTReportGroupMap
 SELECT FinancialCategoryID, 3
@@ -859,10 +851,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '5178'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 --4. Printing – Expenses with the department code 5078
 INSERT INTO CampusXLTReportGroupMap
 SELECT FinancialCategoryID, 4
@@ -870,10 +858,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '5078'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 --5. Banking, Legal, Audit, Professional Fees
 INSERT INTO CampusXLTReportGroupMap
 SELECT FinancialCategoryID, 5
@@ -881,11 +865,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND GLCode IN ('49099', '52011', '52060', '52045')
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-	AND (CONVERT(INT, DepartmentCode) < 7005 OR CONVERT(INT, DepartmentCode) > 8992)
-
 --6. Payroll Processing Fees
 INSERT INTO CampusXLTReportGroupMap
 SELECT FinancialCategoryID, 6
@@ -893,10 +872,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND GLCode IN ('49011')
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 --7. Insurance
 INSERT INTO CampusXLTReportGroupMap
 SELECT FinancialCategoryID, 7
@@ -904,10 +879,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '5098'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 --8.Facilities & Grounds Maintenance
 INSERT INTO CampusXLTReportGroupMap
 SELECT FinancialCategoryID, 8
@@ -915,10 +886,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode IN ('6017', '6037', '6057', '6065', '6117', '6157', '6177')
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 --9.Utilities
 INSERT INTO CampusXLTReportGroupMap
 SELECT FinancialCategoryID, 9
@@ -926,10 +893,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '6097'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 
 --10.Service Support – department 6197
 INSERT INTO CampusXLTReportGroupMap
@@ -938,10 +901,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '6197'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 
 --11.Mortgage
 INSERT INTO CampusXLTReportGroupMap
@@ -950,10 +909,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND GLCode IN ('24225', '24230', '24233', '24235', '24272','90122', '90123', '90125', '90128', '90172')
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 
 --12.Operating Expense (under camp operations, also called camp  operating expense on xlt management report tab) – all expenses under fund 058
 INSERT INTO CampusXLTReportGroupMap
@@ -964,7 +919,6 @@ WHERE
 	AND FundCode = '025'
 	AND CampusCode = 'LH'
 
-
 --13.Ministry Expansion and Development
 INSERT INTO CampusXLTReportGroupMap
 SELECT FinancialCategoryID, 13
@@ -972,10 +926,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '7240'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 
 --14.Special Events
 INSERT INTO CampusXLTReportGroupMap
@@ -984,10 +934,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '5162'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 
 --15.Online Services – All expenses with department 5164
 INSERT INTO CampusXLTReportGroupMap
@@ -996,10 +942,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '5164'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 
 --16.Adult
 INSERT INTO CampusXLTReportGroupMap
@@ -1007,18 +949,18 @@ SELECT FinancialCategoryID, 16
 FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
-	AND Departmentcode IN ('7005', '7007', '7011', '7014', '7041', '7047', '7050', '7059', '7066', '7071', '7073', '7075', '7076','7079', '7084', '7086', '7089', '7111', '7176')
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
+	AND Departmentcode IN ('7005', '7011', '7014', '7047', '7050', '7059', '7066', '7071', '7073', '7075', '7079', '7084', '7086', '7089', '7111', '7176')
 
 --17.Single Parent – all expenses with department code 7059
 --REMOVED PER Kelly on 20160217
 
 --18.Biblical Soul Care – all expenses with fund 055
---removed per alan on 20160325
-
+INSERT INTO CampusXLTReportGroupMap
+SELECT FinancialCategoryID, 18
+FROM DW.DimFinancialCategory
+WHERE
+	EntityCode = 'HBC'
+	AND FundCode = '055'
 
 --19.Family 
 INSERT INTO CampusXLTReportGroupMap
@@ -1026,11 +968,7 @@ SELECT FinancialCategoryID, 19
 FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
-	AND Departmentcode IN ('7125', '7128', '7131', '7135', '7139', '7143', '7147', '7151')
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
+	AND Departmentcode IN ('7125', '7128', '7131', '7135', '7139', '7151')
 --20.Student
 INSERT INTO CampusXLTReportGroupMap
 SELECT FinancialCategoryID, 20
@@ -1038,10 +976,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode IN ('7165', '7166', '7170', '7171')
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 --21.Worship
 INSERT INTO CampusXLTReportGroupMap
 SELECT FinancialCategoryID, 21
@@ -1049,10 +983,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode ='7290'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 
 --22.Stewardship – all expenses with department code 7280
 INSERT INTO CampusXLTReportGroupMap
@@ -1061,10 +991,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '7280'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 --23.Missions & Outreach & Church Plant
 INSERT INTO CampusXLTReportGroupMap
 SELECT FinancialCategoryID, 23
@@ -1072,10 +998,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode IN ('7208', '7210', '7250')
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 --24.Congregation/FOCIS
 INSERT INTO CampusXLTReportGroupMap
 SELECT FinancialCategoryID, 24
@@ -1083,10 +1005,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode IN ('7017', '7023', '7035')
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 
 --25.Production – all expenses with department 5160
 INSERT INTO CampusXLTReportGroupMap
@@ -1095,10 +1013,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '5160'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 
 --26.Creative Services, Video Prod, Media – all expenses in department codes 5158, 5159, or 6137
 INSERT INTO CampusXLTReportGroupMap
@@ -1107,10 +1021,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode IN ('5158','5159','6137')
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 
 --27.Food Ministry
 INSERT INTO CampusXLTReportGroupMap
@@ -1119,10 +1029,6 @@ FROM DW.DimFinancialCategory
 WHERE
 	EntityCode = 'HBC'
 	AND Departmentcode = '6147'
-	AND Fundcode = '025'
-	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
-
 --28.Harvest Studio production – all expenses with fund 069
 --INSERT INTO CampusXLTReportGroupMap
 --SELECT FinancialCategoryID, 28
@@ -1130,3 +1036,4 @@ WHERE
 --WHERE
 --	EntityCode = 'HBC'
 --	AND FundCode = '095'
+GO

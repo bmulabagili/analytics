@@ -62,9 +62,9 @@
 )
 
 SELECT
-	  CampusXLTReportGroup.CampusXLTReportGroupID
-	, CampusXLTReportGroup.Heading
-	, CampusXLTReportGroup.Detail
+	  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27) AS CampusXLTReportGroupID
+	, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') AS Heading
+	, ISNULL(CampusXLTReportGroup.Detail, 'Other') AS Detail
 	, CampusXLTReportGroup.Manager
 	, CampusAllocation.Code AS CampusCode
 	, FactBudgetExpense.BudgetYear
@@ -76,9 +76,9 @@ INNER JOIN dw.DimEntity
 INNER JOIN dw.DimFinancialCategory
 	ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 	AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
-INNER JOIN CampusXLTReportGroupMap 
+LEFT JOIN CampusXLTReportGroupMap 
 	ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
-INNER JOIN CampusXLTReportGroup
+LEFT JOIN CampusXLTReportGroup
 	ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
 INNER JOIN CampusAllocation
 	ON 1=1
@@ -86,10 +86,13 @@ WHERE
 	DimEntity.Code = 'HBC'
 	AND BudgetYear = @BudgetYear
 	AND BudgetMonth &lt;= @BudgetMonth
+	AND DimFinancialCategory.FundCode = '025'
+	AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+	AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
 GROUP BY
-	  CampusXLTReportGroup.CampusXLTReportGroupID
-	, CampusXLTReportGroup.Heading
-	, CampusXLTReportGroup.Detail
+	 ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
+	, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
+	, ISNULL(CampusXLTReportGroup.Detail, 'Other')
 	, CampusXLTReportGroup.Manager
 	, CampusAllocation.Code
 	, FactBudgetExpense.BudgetYear
@@ -187,9 +190,9 @@ SELECT DISTINCT
 		CampusID, Code
 )
 SELECT
-	  CampusXLTReportGroup.CampusXLTReportGroupID
-	, CampusXLTReportGroup.Heading
-	, CampusXLTReportGroup.Detail
+	  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27) AS CampusXLTReportGroupID
+	, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') AS Heading
+	, ISNULL(CampusXLTReportGroup.Detail, 'Other') AS Detail
 	, CampusXLTReportGroup.Manager
 	, CampusAllocation.Code AS CampusCode
 	, DimDate.CalendarYear
@@ -203,19 +206,22 @@ INNER JOIN dw.DimEntity
 INNER JOIN dw.DimFinancialCategory
 	ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 	AND FactExpense.TenantID = DimFinancialCategory.TenantID
-INNER JOIN CampusXLTReportGroupMap 
+LEFT JOIN CampusXLTReportGroupMap 
 	ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
-INNER JOIN CampusXLTReportGroup
+LEFT JOIN CampusXLTReportGroup
 	ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
 INNER JOIN CampusAllocation
 	ON 1=1
 WHERE
 	DimEntity.Code = 'HBC'
 	AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+	AND DimFinancialCategory.FundCode = '025'
+	AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+	AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
 GROUP BY
-	  CampusXLTReportGroup.CampusXLTReportGroupID
-	, CampusXLTReportGroup.Heading
-	, CampusXLTReportGroup.Detail
+	  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
+	, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
+	, ISNULL(CampusXLTReportGroup.Detail, 'Other')
 	, CampusXLTReportGroup.Manager
 	, CampusAllocation.Code
 	, DimDate.CalendarYear
@@ -313,9 +319,9 @@ SELECT DISTINCT
 		CampusID, Code
 ), CompleteBudgetExpense AS (
 	SELECT
-		  CampusXLTReportGroup.CampusXLTReportGroupID
-		, CampusXLTReportGroup.Heading
-		, CampusXLTReportGroup.Detail
+		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27) AS CampusXLTReportGroupID
+		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') AS Heading
+		, ISNULL(CampusXLTReportGroup.Detail, 'Other') AS Detail
 		, CampusXLTReportGroup.Manager
 		, CampusAllocation.Code AS CampusCode
 		, FactBudgetExpense.BudgetYear
@@ -327,9 +333,9 @@ SELECT DISTINCT
 	INNER JOIN dw.DimFinancialCategory
 		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
-	INNER JOIN CampusXLTReportGroupMap 
+	LEFT JOIN CampusXLTReportGroupMap 
 		ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
-	INNER JOIN CampusXLTReportGroup
+	LEFT JOIN CampusXLTReportGroup
 		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
 	INNER JOIN CampusAllocation
 		ON 1=1
@@ -337,10 +343,13 @@ SELECT DISTINCT
 		DimEntity.Code = 'HBC'
 		AND BudgetYear = @BudgetYear
 		AND BudgetMonth &lt;= @BudgetMonth
+		AND DimFinancialCategory.FundCode = '025'
+		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
 	GROUP BY
-		  CampusXLTReportGroup.CampusXLTReportGroupID
-		, CampusXLTReportGroup.Heading
-		, CampusXLTReportGroup.Detail
+		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
+		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
+		, ISNULL(CampusXLTReportGroup.Detail, 'Other')
 		, CampusXLTReportGroup.Manager
 		, CampusAllocation.Code
 		, FactBudgetExpense.BudgetYear
@@ -375,9 +384,9 @@ SELECT DISTINCT
 		, CampusCode
 ), CompleteActualExpense AS (
 	SELECT
-		  CampusXLTReportGroup.CampusXLTReportGroupID
-		, CampusXLTReportGroup.Heading
-		, CampusXLTReportGroup.Detail
+		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27) AS CampusXLTReportGroupID
+		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') AS Heading
+		, ISNULL(CampusXLTReportGroup.Detail, 'Other') AS Detail
 		, CampusXLTReportGroup.Manager
 		, CampusAllocation.Code AS CampusCode
 		, DimDate.CalendarYear
@@ -391,19 +400,22 @@ SELECT DISTINCT
 	INNER JOIN dw.DimFinancialCategory
 		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactExpense.TenantID = DimFinancialCategory.TenantID
-	INNER JOIN CampusXLTReportGroupMap 
+	LEFT JOIN CampusXLTReportGroupMap 
 		ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
-	INNER JOIN CampusXLTReportGroup
+	LEFT JOIN CampusXLTReportGroup
 		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
 	INNER JOIN CampusAllocation
 		ON 1=1
 	WHERE
 		DimEntity.Code = 'HBC'
 		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+		AND DimFinancialCategory.FundCode = '025'
+		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
 	GROUP BY
-		  CampusXLTReportGroup.CampusXLTReportGroupID
-		, CampusXLTReportGroup.Heading
-		, CampusXLTReportGroup.Detail
+		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
+		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
+		, ISNULL(CampusXLTReportGroup.Detail, 'Other')
 		, CampusXLTReportGroup.Manager
 		, CampusAllocation.Code
 		, DimDate.CalendarYear
@@ -908,16 +920,19 @@ GROUP BY
 	INNER JOIN dw.DimFinancialCategory
 		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
-	INNER JOIN CampusXLTReportGroupMap 
+	LEFT JOIN CampusXLTReportGroupMap 
 		ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
-	INNER JOIN CampusXLTReportGroup
+	LEFT JOIN CampusXLTReportGroup
 		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
 	INNER JOIN CampusAllocation
 		ON 1=1
 	WHERE
 		DimEntity.Code = 'HBC'
-		 AND BudgetYear  = @BudgetYear
-		 AND FactBudgetExpense.BudgetMonth &lt;= @BudgetMonth
+		AND BudgetYear  = @BudgetYear
+		AND FactBudgetExpense.BudgetMonth &lt;= @BudgetMonth
+		AND DimFinancialCategory.FundCode = '025'
+		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
 	GROUP BY
 		  CampusAllocation.Code
 		UNION
@@ -1054,15 +1069,18 @@ GROUP BY
 	INNER JOIN dw.DimFinancialCategory
 		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactExpense.TenantID = DimFinancialCategory.TenantID
-	INNER JOIN CampusXLTReportGroupMap 
+	LEFT JOIN CampusXLTReportGroupMap 
 		ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
-	INNER JOIN CampusXLTReportGroup
+	LEFT JOIN CampusXLTReportGroup
 		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
 	INNER JOIN CampusAllocation
 		ON 1=1
 	WHERE
 		DimEntity.Code = 'HBC'
 		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+		AND DimFinancialCategory.FundCode = '025'
+		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
 	GROUP BY
 		CampusAllocation.Code
 	UNION
@@ -1202,15 +1220,18 @@ GROUP BY
 	INNER JOIN dw.DimFinancialCategory
 		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactExpense.TenantID = DimFinancialCategory.TenantID
-	INNER JOIN CampusXLTReportGroupMap 
+	LEFT JOIN CampusXLTReportGroupMap 
 		ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
-	INNER JOIN CampusXLTReportGroup
+	LEFT JOIN CampusXLTReportGroup
 		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
 	INNER JOIN CampusAllocation
 		ON 1=1
 	WHERE
 		DimEntity.Code = 'HBC'
 		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+		AND DimFinancialCategory.FundCode = '025'
+		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
 	GROUP BY
 		CampusAllocation.Code
 	UNION
@@ -1268,9 +1289,9 @@ GROUP BY
 	INNER JOIN dw.DimFinancialCategory
 		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
-	INNER JOIN CampusXLTReportGroupMap 
+	LEFT JOIN CampusXLTReportGroupMap 
 		ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
-	INNER JOIN CampusXLTReportGroup
+	LEFT JOIN CampusXLTReportGroup
 		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
 	INNER JOIN CampusAllocation
 		ON 1=1
@@ -1278,6 +1299,9 @@ GROUP BY
 		DimEntity.Code = 'HBC'
 		 AND BudgetYear  = @BudgetYear
 		 AND FactBudgetExpense.BudgetMonth &lt;= @BudgetMonth
+		 AND DimFinancialCategory.FundCode = '025'
+		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
 	GROUP BY
 		  CampusAllocation.Code
 		UNION
