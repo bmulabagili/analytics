@@ -65,7 +65,7 @@ SELECT
 	  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27) AS CampusXLTReportGroupID
 	, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') AS Heading
 	, ISNULL(CampusXLTReportGroup.Detail, 'Other') AS Detail
-	, CampusXLTReportGroup.Manager
+	, ISNULL(CampusXLTReportGroup.Manager,'') AS Manager
 	, CampusAllocation.Code AS CampusCode
 	, FactBudgetExpense.BudgetYear
 	, SUM(Amount * CampusAllocation.CampusPercent) AS Amount 
@@ -93,7 +93,7 @@ GROUP BY
 	 ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
 	, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
 	, ISNULL(CampusXLTReportGroup.Detail, 'Other')
-	, CampusXLTReportGroup.Manager
+	, ISNULL(CampusXLTReportGroup.Manager,'')
 	, CampusAllocation.Code
 	, FactBudgetExpense.BudgetYear
 	UNION
@@ -628,11 +628,16 @@ INNER JOIN DW.DimDate
 INNER JOIN dw.DimEntity
 	ON FactRevenue.EntityID = DimEntity.EntityID
 	AND FactRevenue.TenantID = DimEntity.TenantID
+INNER JOIN dw.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 INNER JOIN CampusAllocation
 	ON 1=1
 WHERE
-	 FactRevenue.EntityID = 3
-	 AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+	DimEntity.Code = 'HBC'
+	AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+	AND DimFinancialCategory.FundCode = '025'
+	AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+	AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
 GROUP BY
 	  CampusAllocation.Code
 UNION
@@ -797,12 +802,16 @@ INNER JOIN DW.DimDate
 INNER JOIN dw.DimEntity
 	ON FactRevenue.EntityID = DimEntity.EntityID
 	AND FactRevenue.TenantID = DimEntity.TenantID
+INNER join dw.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 INNER JOIN CampusAllocation
 	ON 1=1
 WHERE
-	 DimEntity.Code = 'HBC'
-	 AND 
-	 DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+	DimEntity.Code = 'HBC'
+	AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+	AND DimFinancialCategory.FundCode = '025'
+	AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+	AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
 GROUP BY
 	  CampusAllocation.Code
 	, DimDate.CalendarYear
@@ -1359,6 +1368,1184 @@ GROUP BY
         </Field>
       </Fields>
     </DataSet>
+    <DataSet Name="ActualExpense_Ministry">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@BudgetYear">
+            <Value>=Parameters!BudgetYear.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@BudgetMonth">
+            <Value>=Parameters!BudgetMonth.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>WITH Attendance AS(
+	SELECT FactAttendance.CampusID, DimCampus.Code, SUM(AttendanceCount) AttendanceCount
+	FROM dw.FactAttendance
+	INNER JOIN DW.DimAttendanceType
+		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+	INNER JOIN dw.DimDate
+		ON FactAttendance.InstanceDateID = DimDate.DateID
+	INNER JOIN DW.DimCampus
+		ON FactAttendance.CampusID = DimCampus.CampusID
+	WHERE
+		DimCampus.Code NOT IN ('--','WW','SP')
+		AND DimAttendanceType.Category = 'Attendee'
+		AND FactAttendance.Age &gt;= 18
+		AND CalendarYear IN (@BudgetYear)
+	GROUP BY
+		FactAttendance.CampusID, DimCampus.Code
+	UNION
+	SELECT CampusID, Code, 0 AS AttendanceCount 
+	FROM dw.DimCampus
+	WHERE DimCampus.Code NOT IN ('--','WW','SP')
+), AttendanceTotal AS (
+	SELECT SUM(AttendanceCount) AS AttendanceCount
+	FROM Attendance
+) , CampusAllocationCalculation AS (
+	SELECT 
+		CampusID, Code
+		--, Attendance.AttendanceCount, (SELECT AttendanceCount FROM AttendanceTotal)
+		, (Attendance.AttendanceCount * 1.0) / (SELECT AttendanceCount FROM AttendanceTotal) AS CampusPercent
+	FROM Attendance
+), CampusAllocation AS (
+	SELECT
+		CampusID, Code, MAX(CampusPercent) AS CampusPercent
+	FROM  CampusAllocationCalculation
+	GROUP BY 
+		CampusID, Code
+), CompleteActualRevenue AS (
+	SELECT
+		  CampusXLTReportGroup.CampusXLTReportGroupID
+		, CampusXLTReportGroup.Heading
+		, CampusAllocation.Code AS CampusCode
+		, SUM(ISNULL(Amount,0) * CampusAllocation.CampusPercent) AS Amount 
+	FROM dw.FactRevenue
+	INNER JOIN DW.DimDate
+		ON FactRevenue.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactRevenue.EntityID = DimEntity.EntityID
+		AND FactRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+	LEFT JOIN CampusXLTReportGroupMap 
+			ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+	LEFT JOIN CampusXLTReportGroup
+		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+	INNER JOIN CampusAllocation
+		ON 1=1
+	WHERE
+		DimEntity.Code = 'HBC'
+		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+		AND DimFinancialCategory.FundCode = '025'
+		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+	GROUP BY
+		  CampusXLTReportGroup.CampusXLTReportGroupID
+		, CampusXLTReportGroup.Heading
+		, CampusAllocation.Code
+	UNION
+	SELECT DISTINCT 
+		  CampusXLTReportGroupMap.CampusXLTReportGroupID
+		, CampusXLTReportGroup.Heading
+		, CampusAllocation.Code AS CampusCode
+		, 0 AS Amount
+	FROM CampusXLTReportGroupMap 
+	INNER JOIN CampusXLTReportGroup
+		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+	INNER JOIN CampusAllocation
+		ON 1=1
+), ActualRevenue AS (
+	SELECT CampusXLTReportGroupID, Heading, CampusCode, SUM(Amount) AS Amount
+	FROM CompleteActualRevenue
+	GROUP BY
+		CampusXLTReportGroupID, Heading, CampusCode
+), CompleteActualExpense AS (
+	SELECT
+			  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27) AS CampusXLTReportGroupID
+			, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') AS Heading
+			, ISNULL(CampusXLTReportGroup.Detail, 'Other') AS Detail
+			, ISNULL(CampusXLTReportGroup.Manager,'') AS Manager
+			, CampusAllocation.Code AS CampusCode
+			, SUM(ISNULL(Amount,0) * CampusAllocation.CampusPercent) AS Amount 
+		FROM dw.FactExpense
+		INNER JOIN DW.DimDate
+			ON FactExpense.DateID = DimDate.DateID
+		INNER JOIN dw.DimEntity
+			ON FactExpense.EntityID = DimEntity.EntityID
+			AND FactExpense.TenantID = DimEntity.TenantID
+		INNER JOIN dw.DimFinancialCategory
+			ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+			AND FactExpense.TenantID = DimFinancialCategory.TenantID
+		LEFT JOIN CampusXLTReportGroupMap 
+			ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+		LEFT JOIN CampusXLTReportGroup
+			ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+		INNER JOIN CampusAllocation
+			ON 1=1
+		WHERE
+			DimEntity.Code = 'HBC'
+			AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+			AND DimFinancialCategory.FundCode = '025'
+			AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+			AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		GROUP BY
+			  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
+			, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
+			, ISNULL(CampusXLTReportGroup.Detail, 'Other')
+			, ISNULL(CampusXLTReportGroup.Manager,'')
+			, CampusAllocation.Code
+		UNION
+		SELECT DISTINCT 
+				  CampusXLTReportGroup.CampusXLTReportGroupID
+				, CampusXLTReportGroup.Heading
+				, CampusXLTReportGroup.Detail
+				, CampusXLTReportGroup.Manager
+				, CampusAllocation.Code AS CampusCode
+				, 0 AS Amount
+			FROM CampusXLTReportGroupMap 
+			INNER JOIN CampusXLTReportGroup
+				ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+			INNER JOIN CampusAllocation
+				ON 1=1
+), dedupedExpense AS (
+	SELECT CampusXLTReportGroupID, Heading, CampusCode, SUM(Amount) AS Amount
+	FROM CompleteActualExpense
+	GROUP BY
+		CampusXLTReportGroupID, Heading, CampusCode
+), ActualExpense AS (
+	SELECT 
+		  dedupedExpense.CampusXLTReportGroupID
+		, dedupedExpense.Heading
+		, dedupedExpense.CampusCode
+		--, SUM(ISNULL(dedupedExpense.Amount,0))  AS ExpenseAmount
+		--, SUM(ISNULL(ActualRevenue.Amount, 0)) AS RevenueAmount
+		, SUM(ISNULL(dedupedExpense.Amount,0) 
+			- CASE WHEN ISNULL(ActualRevenue.Heading,'') = 'Ministries' THEN ISNULL(ActualRevenue.Amount, 0) ELSE 0 END) AS Amount
+	FROM dedupedExpense
+	LEFT JOIN ActualRevenue
+		ON dedupedExpense.CampusXLTReportGroupID = ActualRevenue.CampusXLTReportGroupID
+		AND dedupedExpense.CampusCode = ActualRevenue.CampusCode
+	GROUP BY
+		  dedupedExpense.CampusXLTReportGroupID
+		, dedupedExpense.Heading
+		, dedupedExpense.CampusCode
+) 
+SELECT 
+	  ActualRevenue.CampusXLTReportGroupID
+	, CampusXLTReportGroup.Heading
+	, CampusXLTReportGroup.Detail
+	, ActualRevenue.CampusCode
+	, SUM(ActualExpense.Amount) AS Amount
+FROM ActualExpense
+LEFT JOIN ActualRevenue
+	ON ActualRevenue.CampusXLTReportGroupID = ActualExpense.CampusXLTReportGroupID
+	AND ActualRevenue.Heading = ActualExpense.Heading
+	AND ActualRevenue.CampusCode = ActualExpense.CampusCode
+left join CampusXLTReportGroup
+on ActualExpense.CampusXLTReportGroupID=CampusXLTReportGroup.CampusXLTReportGroupID
+GROUP BY
+	  ActualRevenue.CampusXLTReportGroupID
+	, CampusXLTReportGroup.Heading
+	, CampusXLTReportGroup.Detail
+	, ActualRevenue.CampusCode</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="CampusXLTReportGroupID">
+          <DataField>CampusXLTReportGroupID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Heading">
+          <DataField>Heading</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Detail">
+          <DataField>Detail</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CampusCode">
+          <DataField>CampusCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="VarianceExpense_Ministry">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@BudgetYear">
+            <Value>=Parameters!BudgetYear.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@BudgetMonth">
+            <Value>=Parameters!BudgetMonth.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>WITH Attendance AS(
+	SELECT FactAttendance.CampusID, DimCampus.Code, SUM(AttendanceCount) AttendanceCount
+	FROM dw.FactAttendance
+	INNER JOIN DW.DimAttendanceType
+		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+	INNER JOIN dw.DimDate
+		ON FactAttendance.InstanceDateID = DimDate.DateID
+	INNER JOIN DW.DimCampus
+		ON FactAttendance.CampusID = DimCampus.CampusID
+	WHERE
+		DimCampus.Code NOT IN ('--','WW','SP')
+		AND DimAttendanceType.Category = 'Attendee'
+		AND FactAttendance.Age &gt;= 18
+		AND CalendarYear IN (@BudgetYear)
+	GROUP BY
+		FactAttendance.CampusID, DimCampus.Code
+	UNION
+	SELECT CampusID, Code, 0 AS AttendanceCount 
+	FROM dw.DimCampus
+	WHERE DimCampus.Code NOT IN ('--','WW','SP')
+), AttendanceTotal AS (
+	SELECT SUM(AttendanceCount) AS AttendanceCount
+	FROM Attendance
+) , CampusAllocationCalculation AS (
+	SELECT 
+		CampusID, Code
+		--, Attendance.AttendanceCount, (SELECT AttendanceCount FROM AttendanceTotal)
+		, (Attendance.AttendanceCount * 1.0) / (SELECT AttendanceCount FROM AttendanceTotal) AS CampusPercent
+	FROM Attendance
+), CampusAllocation AS (
+	SELECT
+		CampusID, Code, MAX(CampusPercent) AS CampusPercent
+	FROM  CampusAllocationCalculation
+	GROUP BY 
+		CampusID, Code
+), FullActualExpense AS (
+	SELECT
+		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27) AS CampusXLTReportGroupID
+		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') AS Heading
+		, ISNULL(CampusXLTReportGroup.Detail, 'Other') AS Detail
+		, ISNULL(CampusXLTReportGroup.Manager,'') AS Manager
+		, CampusAllocation.Code AS CampusCode
+		, DimDate.CalendarYear
+		, SUM(Amount * CampusAllocation.CampusPercent) AS Amount 
+	FROM dw.FactExpense
+	INNER JOIN DW.DimDate
+		ON FactExpense.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactExpense.EntityID = DimEntity.EntityID
+		AND FactExpense.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactExpense.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN CampusXLTReportGroupMap 
+		ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+	LEFT JOIN CampusXLTReportGroup
+		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+	INNER JOIN CampusAllocation
+		ON 1=1
+	WHERE
+		DimEntity.Code = 'HBC'
+		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+		AND DimFinancialCategory.FundCode = '025'
+		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		--AND ISNULL(CampusXLTReportGroup.Heading, 'Ministries') = 'Ministries'
+	GROUP BY
+		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
+		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
+		, ISNULL(CampusXLTReportGroup.Detail, 'Other')
+		, ISNULL(CampusXLTReportGroup.Manager,'')
+		, CampusAllocation.Code
+		, DimDate.CalendarYear
+	UNION
+	SELECT DISTINCT 
+			  CampusXLTReportGroup.CampusXLTReportGroupID
+			, CampusXLTReportGroup.Heading
+			, CampusXLTReportGroup.Detail
+			, CampusXLTReportGroup.Manager
+			, CampusAllocation.Code AS CampusCode
+			, @BudgetYear AS BudgetYear
+			, 0 AS Amount
+		FROM CampusXLTReportGroupMap 
+		INNER JOIN CampusXLTReportGroup
+			ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+		INNER JOIN CampusAllocation
+			ON 1=1
+		--WHERE
+		--	CampusXLTReportGroup.Heading = 'Ministries'
+), ActualExpense AS (
+	SELECT 
+		  CampusXLTReportGroupID
+		, Heading
+		, Detail
+		, Manager
+		, CampusCode
+		, CalendarYear
+		, MAX(Amount) AS Amount
+	FROM FullActualExpense
+	GROUP BY
+		CampusXLTReportGroupID
+		, Heading
+		, Detail
+		, Manager
+		, CampusCode
+		, CalendarYear
+), ActualRevenue AS (
+	SELECT 
+		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27) AS CampusXLTReportGroupID
+		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') AS Heading
+		, ISNULL(CampusXLTReportGroup.Detail, 'Other') AS Detail
+		, ISNULL(CampusXLTReportGroup.Manager,'') AS Manager
+		, CampusAllocation.Code AS CampusCode
+		, DimDate.CalendarYear
+		, SUM(Amount * CampusAllocation.CampusPercent) AS Amount 
+
+	FROM dw.FactRevenue
+	INNER JOIN DW.DimDate
+		ON FactRevenue.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactRevenue.EntityID = DimEntity.EntityID
+		AND FactRevenue.TenantID = DimEntity.TenantID
+	INNER join dw.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+	INNER JOIN CampusXLTReportGroupMap 
+		ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+	INNER JOIN CampusXLTReportGroup
+		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+	INNER JOIN CampusAllocation
+			ON 1=1
+	WHERE
+		DimEntity.Code = 'HBC'
+		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+		AND DimFinancialCategory.FundCode = '025'
+		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		AND ISNULL(CampusXLTReportGroup.Heading, 'Ministries') = 'Ministries'
+	GROUP BY
+		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
+		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
+		, ISNULL(CampusXLTReportGroup.Detail, 'Other')
+		, ISNULL(CampusXLTReportGroup.Manager,'')
+		, CampusAllocation.Code
+		, DimDate.CalendarYear
+), CompleteBudgetExpense AS (
+	SELECT
+		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27) AS CampusXLTReportGroupID
+		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') AS Heading
+		, ISNULL(CampusXLTReportGroup.Detail, 'Other') AS Detail
+		, ISNULL(CampusXLTReportGroup.Manager,'') AS Manager
+		, CampusAllocation.Code AS CampusCode
+		, FactBudgetExpense.BudgetYear
+		, SUM(Amount * CampusAllocation.CampusPercent) AS Amount 
+	FROM dw.FactBudgetExpense
+	INNER JOIN dw.DimEntity
+		ON FactBudgetExpense.EntityID = DimEntity.EntityID
+		AND FactBudgetExpense.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN CampusXLTReportGroupMap 
+		ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+	LEFT JOIN CampusXLTReportGroup
+		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+	INNER JOIN CampusAllocation
+		ON 1=1
+	WHERE
+		DimEntity.Code = 'HBC'
+		AND BudgetYear = @BudgetYear
+		AND BudgetMonth &lt;= @BudgetMonth
+		AND DimFinancialCategory.FundCode = '025'
+		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+	GROUP BY
+		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
+		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
+		, ISNULL(CampusXLTReportGroup.Detail, 'Other')
+		, ISNULL(CampusXLTReportGroup.Manager,'')
+		, CampusAllocation.Code
+		, FactBudgetExpense.BudgetYear
+		UNION
+	SELECT DISTINCT 
+			  CampusXLTReportGroup.CampusXLTReportGroupID
+			, CampusXLTReportGroup.Heading
+			, CampusXLTReportGroup.Detail
+			, CampusXLTReportGroup.Manager
+			, CampusAllocation.Code AS CampusCode
+			, @BudgetYear AS BudgetYear
+			, 0 AS Amount
+		FROM CampusXLTReportGroupMap 
+		INNER JOIN CampusXLTReportGroup
+			ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+		INNER JOIN CampusAllocation
+			ON 1=1
+), BudgetExpense AS (
+	SELECT 
+		  CampusXLTReportGroupID
+		, Heading
+		, Detail
+		, Manager
+		, CampusCode
+		, SUM(Amount) AS Amount
+	FROM CompleteBudgetExpense
+	GROUP BY
+		  CampusXLTReportGroupID
+		, Heading
+		, Detail
+		, Manager
+		, CampusCode
+), ActualExpenses AS (
+	SELECT 
+		  ActualExpense.CampusXLTReportGroupID
+		, ActualExpense.Heading
+		, ActualExpense.Detail
+		, ActualExpense.Manager
+		, ActualExpense.CampusCode
+		, ActualExpense.CalendarYear
+		, ISNULL(ActualExpense.Amount,0) - ISNULL(ActualRevenue.Amount, 0) AS Amount
+	FROM ActualExpense
+	LEFT JOIN ActualRevenue
+		ON ActualExpense.CampusXLTReportGroupID = ActualRevenue.CampusXLTReportGroupID
+		AND ActualExpense.CampusCode = ActualRevenue.CampusCode
+)
+
+SELECT 	
+	  BudgetExpense.CampusXLTReportGroupID
+	, BudgetExpense.Heading
+	, BudgetExpense.Detail
+	, BudgetExpense.Manager
+	, BudgetExpense.CampusCode
+	, SUM(BudgetExpense.Amount) AS BudgetAmount
+	, SUM(ActualExpenses.Amount) AS ActualAmount
+	, SUM(BudgetExpense.Amount - ActualExpenses.Amount) AS Amount
+FROM BudgetExpense
+INNER JOIN ActualExpenses	
+	ON  BudgetExpense.CampusXLTReportGroupID = ActualExpenses.CampusXLTReportGroupID
+	AND BudgetExpense.Heading						 = ActualExpenses.Heading
+	AND BudgetExpense.Detail						 = ActualExpenses.Detail
+	AND BudgetExpense.Manager						 = ActualExpenses.Manager
+	AND BudgetExpense.CampusCode					 = ActualExpenses.CampusCode
+GROUP BY 
+	BudgetExpense.CampusXLTReportGroupID
+	, BudgetExpense.Heading
+	, BudgetExpense.Detail
+	, BudgetExpense.Manager
+	, BudgetExpense.CampusCode
+ORDER BY Heading
+
+</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="CampusXLTReportGroupID">
+          <DataField>CampusXLTReportGroupID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Heading">
+          <DataField>Heading</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Detail">
+          <DataField>Detail</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Manager">
+          <DataField>Manager</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CampusCode">
+          <DataField>CampusCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="BudgetAmount">
+          <DataField>BudgetAmount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="ActualAmount">
+          <DataField>ActualAmount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="ActualRevenue_Ministry">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@BudgetYear">
+            <Value>=Parameters!BudgetYear.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@BudgetMonth">
+            <Value>=Parameters!BudgetMonth.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>WITH Attendance AS(
+	SELECT FactAttendance.CampusID, DimCampus.Code, SUM(AttendanceCount) AttendanceCount
+	FROM dw.FactAttendance
+	INNER JOIN DW.DimAttendanceType
+		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+	INNER JOIN dw.DimDate
+		ON FactAttendance.InstanceDateID = DimDate.DateID
+	INNER JOIN DW.DimCampus
+		ON FactAttendance.CampusID = DimCampus.CampusID
+	WHERE
+		DimCampus.Code NOT IN ('--','WW','SP')
+		AND DimAttendanceType.Category = 'Attendee'
+		AND FactAttendance.Age &gt;= 18
+		AND CalendarYear IN (@BudgetYear)
+	GROUP BY
+		FactAttendance.CampusID, DimCampus.Code
+	UNION
+	SELECT CampusID, Code, 0 AS AttendanceCount 
+	FROM dw.DimCampus
+	WHERE DimCampus.Code NOT IN ('--','WW','SP')
+), AttendanceTotal AS (
+	SELECT SUM(AttendanceCount) AS AttendanceCount
+	FROM Attendance
+) , CampusAllocationCalculation AS (
+	SELECT 
+		CampusID, Code
+		--, Attendance.AttendanceCount, (SELECT AttendanceCount FROM AttendanceTotal)
+		, (Attendance.AttendanceCount * 1.0) / (SELECT AttendanceCount FROM AttendanceTotal) AS CampusPercent
+	FROM Attendance
+), CampusAllocation AS (
+	SELECT
+		CampusID, Code, MAX(CampusPercent) AS CampusPercent
+	FROM  CampusAllocationCalculation
+	GROUP BY 
+		CampusID, Code
+)
+SELECT
+	  CampusAllocation.Code AS CampusCode
+	, SUM(ISNULL(Amount,0) * CampusAllocation.CampusPercent) AS Amount 
+FROM dw.FactRevenue
+INNER JOIN DW.DimDate
+	ON FactRevenue.DateID = DimDate.DateID
+INNER JOIN dw.DimEntity
+	ON FactRevenue.EntityID = DimEntity.EntityID
+	AND FactRevenue.TenantID = DimEntity.TenantID
+INNER JOIN dw.DimFinancialCategory
+	ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+LEFT JOIN CampusXLTReportGroupMap 
+		ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+LEFT JOIN CampusXLTReportGroup
+	ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+INNER JOIN CampusAllocation
+	ON 1=1
+WHERE
+	DimEntity.Code = 'HBC'
+	AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+	AND DimFinancialCategory.FundCode = '025'
+	AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+	AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+	AND ISNULL(CampusXLTReportGroup.Heading, '') &lt;&gt; 'Ministries'
+GROUP BY
+	  CampusAllocation.Code
+UNION
+SELECT DISTINCT 
+		CampusAllocation.Code AS CampusCode
+	, 0 AS Amount
+FROM CampusXLTReportGroupMap 
+INNER JOIN CampusXLTReportGroup
+	ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+INNER JOIN CampusAllocation
+	ON 1=1</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="CampusCode">
+          <DataField>CampusCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="VarianceRevenue_Ministry">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@BudgetYear">
+            <Value>=Parameters!BudgetYear.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@BudgetMonth">
+            <Value>=Parameters!BudgetMonth.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>WITH Attendance AS(
+	SELECT FactAttendance.CampusID, DimCampus.Code, SUM(AttendanceCount) AttendanceCount
+	FROM dw.FactAttendance
+	INNER JOIN DW.DimAttendanceType
+		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+	INNER JOIN dw.DimDate
+		ON FactAttendance.InstanceDateID = DimDate.DateID
+	INNER JOIN DW.DimCampus
+		ON FactAttendance.CampusID = DimCampus.CampusID
+	WHERE
+		DimCampus.Code NOT IN ('--','WW','SP')
+		AND DimAttendanceType.Category = 'Attendee'
+		AND FactAttendance.Age &gt;= 18
+		AND CalendarYear IN (@BudgetYear)
+	GROUP BY
+		FactAttendance.CampusID, DimCampus.Code
+	UNION
+	SELECT CampusID, Code, 0 AS AttendanceCount 
+	FROM dw.DimCampus
+	WHERE DimCampus.Code NOT IN ('--','WW','SP')
+), AttendanceTotal AS (
+	SELECT SUM(AttendanceCount) AS AttendanceCount
+	FROM Attendance
+) , CampusAllocationCalculation AS (
+	SELECT 
+		CampusID, Code
+		--, Attendance.AttendanceCount, (SELECT AttendanceCount FROM AttendanceTotal)
+		, (Attendance.AttendanceCount * 1.0) / (SELECT AttendanceCount FROM AttendanceTotal) AS CampusPercent
+	FROM Attendance
+), CampusAllocation AS (
+	SELECT
+		CampusID, Code, MAX(CampusPercent) AS CampusPercent
+	FROM  CampusAllocationCalculation
+	GROUP BY 
+		CampusID, Code
+), ActualRevenue AS (
+SELECT
+	  CampusAllocation.Code AS CampusCode
+	, DimDate.CalendarYear
+	, SUM(Amount * CampusAllocation.CampusPercent) AS Amount 
+FROM dw.FactRevenue
+INNER JOIN DW.DimDate
+	ON FactRevenue.DateID = DimDate.DateID
+INNER JOIN dw.DimEntity
+	ON FactRevenue.EntityID = DimEntity.EntityID
+	AND FactRevenue.TenantID = DimEntity.TenantID
+INNER join dw.DimFinancialCategory
+	ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+LEFT JOIN CampusXLTReportGroupMap 
+	ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+LEFT JOIN CampusXLTReportGroup
+	ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+INNER JOIN CampusAllocation
+	ON 1=1
+WHERE
+	DimEntity.Code = 'HBC'
+	AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+	AND DimFinancialCategory.FundCode = '025'
+	AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+	AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+	AND ISNULL(CampusXLTReportGroup.Heading, '') &lt;&gt; 'Ministries'
+GROUP BY
+	  CampusAllocation.Code
+	, DimDate.CalendarYear
+), BudgetRevenue AS (
+	SELECT
+		  CampusAllocation.Code AS CampusCode
+		, FactBudgetRevenue.BudgetYear
+		, SUM(Amount * CampusAllocation.CampusPercent) AS Amount 
+	FROM dw.FactBudgetRevenue
+	INNER JOIN dw.DimEntity
+		ON FactBudgetRevenue.EntityID = DimEntity.EntityID
+		AND FactBudgetRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN CampusAllocation
+		ON 1=1
+	WHERE
+		 DimEntity.Code = 'HBC'
+		 AND FactBudgetRevenue.BudgetYear = @BudgetYear AND FactBudgetRevenue.BudgetMonth &lt;= @BudgetMonth
+	GROUP BY
+		  CampusAllocation.Code
+		, FactBudgetRevenue.BudgetYear
+)
+SELECT
+	  BudgetRevenue.CampusCode
+	, SUM(ActualRevenue.Amount - BudgetRevenue.Amount) AS Amount
+FROM BudgetRevenue
+INNER JOIN ActualRevenue
+	ON BudgetRevenue.CampusCode = ActualRevenue.CampusCode
+GROUP BY
+	BudgetRevenue.CampusCode</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="CampusCode">
+          <DataField>CampusCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="ActualNetIncome_Ministry">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@BudgetYear">
+            <Value>=Parameters!BudgetYear.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@BudgetMonth">
+            <Value>=Parameters!BudgetMonth.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>WITH Attendance AS(
+	SELECT FactAttendance.CampusID, DimCampus.Code, SUM(AttendanceCount) AttendanceCount
+	FROM dw.FactAttendance
+	INNER JOIN DW.DimAttendanceType
+		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+	INNER JOIN dw.DimDate
+		ON FactAttendance.InstanceDateID = DimDate.DateID
+	INNER JOIN DW.DimCampus
+		ON FactAttendance.CampusID = DimCampus.CampusID
+	WHERE
+		DimCampus.Code NOT IN ('--','WW','SP')
+		AND DimAttendanceType.Category = 'Attendee'
+		AND FactAttendance.Age &gt;= 18
+		AND CalendarYear IN (@BudgetYear)
+	GROUP BY
+		FactAttendance.CampusID, DimCampus.Code
+	UNION
+	SELECT CampusID, Code, 0 AS AttendanceCount 
+	FROM dw.DimCampus
+	WHERE DimCampus.Code NOT IN ('--','WW','SP')
+), AttendanceTotal AS (
+	SELECT SUM(AttendanceCount) AS AttendanceCount
+	FROM Attendance
+) , CampusAllocationCalculation AS (
+	SELECT 
+		CampusID, Code
+		--, Attendance.AttendanceCount, (SELECT AttendanceCount FROM AttendanceTotal)
+		, (Attendance.AttendanceCount * 1.0) / (SELECT AttendanceCount FROM AttendanceTotal) AS CampusPercent
+	FROM Attendance
+), CampusAllocation AS (
+	SELECT
+		CampusID, Code, MAX(CampusPercent) AS CampusPercent
+	FROM  CampusAllocationCalculation
+	GROUP BY 
+		CampusID, Code
+), CompleteActualRevenue AS (
+	SELECT
+		  CampusXLTReportGroup.CampusXLTReportGroupID
+		, CampusXLTReportGroup.Heading
+		, CampusAllocation.Code AS CampusCode
+		, SUM(ISNULL(Amount,0) * CampusAllocation.CampusPercent) AS Amount 
+	FROM dw.FactRevenue
+	INNER JOIN DW.DimDate
+		ON FactRevenue.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactRevenue.EntityID = DimEntity.EntityID
+		AND FactRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+	LEFT JOIN CampusXLTReportGroupMap 
+			ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+	LEFT JOIN CampusXLTReportGroup
+		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+	INNER JOIN CampusAllocation
+		ON 1=1
+	WHERE
+		DimEntity.Code = 'HBC'
+		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+		AND DimFinancialCategory.FundCode = '025'
+		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+	GROUP BY
+		  CampusXLTReportGroup.CampusXLTReportGroupID
+		, CampusXLTReportGroup.Heading
+		, CampusAllocation.Code
+	UNION
+	SELECT DISTINCT 
+		  CampusXLTReportGroupMap.CampusXLTReportGroupID
+		, CampusXLTReportGroup.Heading
+		, CampusAllocation.Code AS CampusCode
+		, 0 AS Amount
+	FROM CampusXLTReportGroupMap 
+	INNER JOIN CampusXLTReportGroup
+		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+	INNER JOIN CampusAllocation
+		ON 1=1
+), ActualRevenue AS (
+	SELECT CampusXLTReportGroupID, Heading, CampusCode, SUM(Amount) AS Amount
+	FROM CompleteActualRevenue
+	GROUP BY
+		CampusXLTReportGroupID, Heading, CampusCode
+), CompleteActualExpense AS (
+	SELECT
+			  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27) AS CampusXLTReportGroupID
+			, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') AS Heading
+			, ISNULL(CampusXLTReportGroup.Detail, 'Other') AS Detail
+			, ISNULL(CampusXLTReportGroup.Manager,'') AS Manager
+			, CampusAllocation.Code AS CampusCode
+			, SUM(ISNULL(Amount,0) * CampusAllocation.CampusPercent) AS Amount 
+		FROM dw.FactExpense
+		INNER JOIN DW.DimDate
+			ON FactExpense.DateID = DimDate.DateID
+		INNER JOIN dw.DimEntity
+			ON FactExpense.EntityID = DimEntity.EntityID
+			AND FactExpense.TenantID = DimEntity.TenantID
+		INNER JOIN dw.DimFinancialCategory
+			ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+			AND FactExpense.TenantID = DimFinancialCategory.TenantID
+		LEFT JOIN CampusXLTReportGroupMap 
+			ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+		LEFT JOIN CampusXLTReportGroup
+			ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+		INNER JOIN CampusAllocation
+			ON 1=1
+		WHERE
+			DimEntity.Code = 'HBC'
+			AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+			AND DimFinancialCategory.FundCode = '025'
+			AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+			AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		GROUP BY
+			  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
+			, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
+			, ISNULL(CampusXLTReportGroup.Detail, 'Other')
+			, ISNULL(CampusXLTReportGroup.Manager,'')
+			, CampusAllocation.Code
+		UNION
+		SELECT DISTINCT 
+				  CampusXLTReportGroup.CampusXLTReportGroupID
+				, CampusXLTReportGroup.Heading
+				, CampusXLTReportGroup.Detail
+				, CampusXLTReportGroup.Manager
+				, CampusAllocation.Code AS CampusCode
+				, 0 AS Amount
+			FROM CampusXLTReportGroupMap 
+			INNER JOIN CampusXLTReportGroup
+				ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+			INNER JOIN CampusAllocation
+				ON 1=1
+), dedupedExpense AS (
+	SELECT CampusXLTReportGroupID, Heading, CampusCode, SUM(Amount) AS Amount
+	FROM CompleteActualExpense
+	GROUP BY
+		CampusXLTReportGroupID, Heading, CampusCode
+), ActualExpense AS (
+	SELECT 
+		  dedupedExpense.CampusXLTReportGroupID
+		, dedupedExpense.Heading
+		, dedupedExpense.CampusCode
+		--, SUM(ISNULL(dedupedExpense.Amount,0))  AS ExpenseAmount
+		--, SUM(ISNULL(ActualRevenue.Amount, 0)) AS RevenueAmount
+		, SUM(ISNULL(dedupedExpense.Amount,0) 
+			- CASE WHEN ISNULL(ActualRevenue.Heading,'') = 'Ministries' THEN ISNULL(ActualRevenue.Amount, 0) ELSE 0 END) AS Amount
+	FROM dedupedExpense
+	LEFT JOIN ActualRevenue
+		ON dedupedExpense.CampusXLTReportGroupID = ActualRevenue.CampusXLTReportGroupID
+		AND dedupedExpense.CampusCode = ActualRevenue.CampusCode
+	GROUP BY
+		  dedupedExpense.CampusXLTReportGroupID
+		, dedupedExpense.Heading
+		, dedupedExpense.CampusCode
+) 
+SELECT 
+	CampusCode
+	, SUM(Amount) AS Amount
+FROM (
+	SELECT 
+		  ActualRevenue.CampusCode
+		, SUM(ActualRevenue.Amount) AS Amount 
+	FROM ActualRevenue
+	WHERE
+		ISNULL(Heading, '') &lt;&gt; 'Ministries'
+	GROUP BY 
+		ActualRevenue.CampusCode
+	UNION
+	SELECT 
+		  ActualExpense.CampusCode
+		, SUM(ActualExpense.Amount * -1) AS Amount
+	FROM ActualExpense
+	GROUP BY 
+		ActualExpense.CampusCode) x
+GROUP BY
+	CampusCode</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="CampusCode">
+          <DataField>CampusCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="VarianceNetIncome_Ministry">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@BudgetYear">
+            <Value>=Parameters!BudgetYear.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@BudgetMonth">
+            <Value>=Parameters!BudgetMonth.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>WITH Attendance AS(
+	SELECT FactAttendance.CampusID, DimCampus.Code, SUM(AttendanceCount) AttendanceCount
+	FROM dw.FactAttendance
+	INNER JOIN DW.DimAttendanceType
+		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+	INNER JOIN dw.DimDate
+		ON FactAttendance.InstanceDateID = DimDate.DateID
+	INNER JOIN DW.DimCampus
+		ON FactAttendance.CampusID = DimCampus.CampusID
+	WHERE
+		DimCampus.Code NOT IN ('--','WW','SP')
+		AND DimAttendanceType.Category = 'Attendee'
+		AND FactAttendance.Age &gt;= 18
+		AND CalendarYear IN (@BudgetYear)
+	GROUP BY
+		FactAttendance.CampusID, DimCampus.Code
+	UNION
+	SELECT CampusID, Code, 0 AS AttendanceCount 
+	FROM dw.DimCampus
+	WHERE DimCampus.Code NOT IN ('--','WW','SP')
+), AttendanceTotal AS (
+	SELECT SUM(AttendanceCount) AS AttendanceCount
+	FROM Attendance
+) , CampusAllocationCalculation AS (
+	SELECT 
+		CampusID, Code
+		--, Attendance.AttendanceCount, (SELECT AttendanceCount FROM AttendanceTotal)
+		, (Attendance.AttendanceCount * 1.0) / (SELECT AttendanceCount FROM AttendanceTotal) AS CampusPercent
+	FROM Attendance
+), CampusAllocation AS (
+	SELECT
+		CampusID, Code, MAX(CampusPercent) AS CampusPercent
+	FROM  CampusAllocationCalculation
+	GROUP BY 
+		CampusID, Code
+), CompleteActualRevenue AS (
+	SELECT
+		  CampusXLTReportGroup.CampusXLTReportGroupID
+		, CampusXLTReportGroup.Heading
+		, CampusAllocation.Code AS CampusCode
+		, SUM(ISNULL(Amount,0) * CampusAllocation.CampusPercent) AS Amount 
+	FROM dw.FactRevenue
+	INNER JOIN DW.DimDate
+		ON FactRevenue.DateID = DimDate.DateID
+	INNER JOIN dw.DimEntity
+		ON FactRevenue.EntityID = DimEntity.EntityID
+		AND FactRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+	LEFT JOIN CampusXLTReportGroupMap 
+			ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+	LEFT JOIN CampusXLTReportGroup
+		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+	INNER JOIN CampusAllocation
+		ON 1=1
+	WHERE
+		DimEntity.Code = 'HBC'
+		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+		AND DimFinancialCategory.FundCode = '025'
+		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+	GROUP BY
+		  CampusXLTReportGroup.CampusXLTReportGroupID
+		, CampusXLTReportGroup.Heading
+		, CampusAllocation.Code
+	UNION
+	SELECT DISTINCT 
+		  CampusXLTReportGroupMap.CampusXLTReportGroupID
+		, CampusXLTReportGroup.Heading
+		, CampusAllocation.Code AS CampusCode
+		, 0 AS Amount
+	FROM CampusXLTReportGroupMap 
+	INNER JOIN CampusXLTReportGroup
+		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+	INNER JOIN CampusAllocation
+		ON 1=1
+), ActualRevenue AS (
+	SELECT CampusXLTReportGroupID, Heading, CampusCode, SUM(Amount) AS Amount
+	FROM CompleteActualRevenue
+	GROUP BY
+		CampusXLTReportGroupID, Heading, CampusCode
+), CompleteActualExpense AS (
+	SELECT
+			  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27) AS CampusXLTReportGroupID
+			, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') AS Heading
+			, ISNULL(CampusXLTReportGroup.Detail, 'Other') AS Detail
+			, ISNULL(CampusXLTReportGroup.Manager,'') AS Manager
+			, CampusAllocation.Code AS CampusCode
+			, SUM(ISNULL(Amount,0) * CampusAllocation.CampusPercent) AS Amount 
+		FROM dw.FactExpense
+		INNER JOIN DW.DimDate
+			ON FactExpense.DateID = DimDate.DateID
+		INNER JOIN dw.DimEntity
+			ON FactExpense.EntityID = DimEntity.EntityID
+			AND FactExpense.TenantID = DimEntity.TenantID
+		INNER JOIN dw.DimFinancialCategory
+			ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+			AND FactExpense.TenantID = DimFinancialCategory.TenantID
+		LEFT JOIN CampusXLTReportGroupMap 
+			ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+		LEFT JOIN CampusXLTReportGroup
+			ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+		INNER JOIN CampusAllocation
+			ON 1=1
+		WHERE
+			DimEntity.Code = 'HBC'
+			AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+			AND DimFinancialCategory.FundCode = '025'
+			AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+			AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		GROUP BY
+			  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
+			, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
+			, ISNULL(CampusXLTReportGroup.Detail, 'Other')
+			, ISNULL(CampusXLTReportGroup.Manager,'')
+			, CampusAllocation.Code
+		UNION
+		SELECT DISTINCT 
+				  CampusXLTReportGroup.CampusXLTReportGroupID
+				, CampusXLTReportGroup.Heading
+				, CampusXLTReportGroup.Detail
+				, CampusXLTReportGroup.Manager
+				, CampusAllocation.Code AS CampusCode
+				, 0 AS Amount
+			FROM CampusXLTReportGroupMap 
+			INNER JOIN CampusXLTReportGroup
+				ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+			INNER JOIN CampusAllocation
+				ON 1=1
+), dedupedExpense AS (
+	SELECT CampusXLTReportGroupID, Heading, CampusCode, SUM(Amount) AS Amount
+	FROM CompleteActualExpense
+	GROUP BY
+		CampusXLTReportGroupID, Heading, CampusCode
+), ActualExpense AS (
+	SELECT 
+		  dedupedExpense.CampusXLTReportGroupID
+		, dedupedExpense.Heading
+		, dedupedExpense.CampusCode
+		--, SUM(ISNULL(dedupedExpense.Amount,0))  AS ExpenseAmount
+		--, SUM(ISNULL(ActualRevenue.Amount, 0)) AS RevenueAmount
+		, SUM(ISNULL(dedupedExpense.Amount,0) 
+			- CASE WHEN ISNULL(ActualRevenue.Heading,'') = 'Ministries' THEN ISNULL(ActualRevenue.Amount, 0) ELSE 0 END) AS Amount
+	FROM dedupedExpense
+	LEFT JOIN ActualRevenue
+		ON dedupedExpense.CampusXLTReportGroupID = ActualRevenue.CampusXLTReportGroupID
+		AND dedupedExpense.CampusCode = ActualRevenue.CampusCode
+	GROUP BY
+		  dedupedExpense.CampusXLTReportGroupID
+		, dedupedExpense.Heading
+		, dedupedExpense.CampusCode
+), ActualNetIncome AS (
+	SELECT 
+		CampusCode
+		, SUM(Amount) AS Amount
+	FROM (
+		SELECT 
+			  ActualRevenue.CampusCode
+			, SUM(ActualRevenue.Amount) AS Amount 
+		FROM ActualRevenue
+		WHERE
+			ISNULL(Heading, '') &lt;&gt; 'Ministries'
+		GROUP BY 
+			ActualRevenue.CampusCode
+		UNION
+		SELECT 
+			  ActualExpense.CampusCode
+			, SUM(ActualExpense.Amount * -1) AS Amount
+		FROM ActualExpense
+		GROUP BY 
+			ActualExpense.CampusCode) x
+	GROUP BY
+		CampusCode
+), CompleteBudgetRevenue AS (
+	SELECT
+		  CampusAllocation.Code AS CampusCode
+		, SUM(Amount * CampusAllocation.CampusPercent) AS Amount 
+	FROM dw.FactBudgetRevenue
+	INNER JOIN dw.DimEntity
+		ON FactBudgetRevenue.EntityID = DimEntity.EntityID
+		AND FactBudgetRevenue.TenantID = DimEntity.TenantID
+	INNER JOIN CampusAllocation
+		ON 1=1
+	WHERE
+		 DimEntity.Code = 'HBC'
+		 AND FactBudgetRevenue.BudgetYear = @BudgetYear AND FactBudgetRevenue.BudgetMonth &lt;= @BudgetMonth
+	GROUP BY
+		  CampusAllocation.Code
+), BudgetRevenue AS (
+	SELECT CampusCode, SUM(Amount) AS Amount
+	FROM CompleteBudgetRevenue
+	GROUP BY CampusCode
+), CompleteBudgetExpense AS (
+	SELECT
+		  CampusAllocation.Code AS CampusCode
+		, SUM(Amount * CampusAllocation.CampusPercent) AS Amount 
+	FROM dw.FactBudgetExpense
+	INNER JOIN dw.DimEntity
+		ON FactBudgetExpense.EntityID = DimEntity.EntityID
+		AND FactBudgetExpense.TenantID = DimEntity.TenantID
+	INNER JOIN dw.DimFinancialCategory
+		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
+	LEFT JOIN CampusXLTReportGroupMap 
+		ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+	LEFT JOIN CampusXLTReportGroup
+		ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+	INNER JOIN CampusAllocation
+		ON 1=1
+	WHERE
+		DimEntity.Code = 'HBC'
+		AND BudgetYear  = @BudgetYear
+		AND FactBudgetExpense.BudgetMonth &lt;= @BudgetMonth
+		AND DimFinancialCategory.FundCode = '025'
+		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
+		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+	GROUP BY
+		  CampusAllocation.Code
+		UNION
+	SELECT DISTINCT 
+			  CampusAllocation.Code AS CampusCode
+			, 0 AS Amount
+		FROM CampusXLTReportGroupMap 
+		INNER JOIN CampusXLTReportGroup
+			ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+		INNER JOIN CampusAllocation
+			ON 1=1
+), BudgetExpense AS (
+	SELECT CampusCode, SUM(Amount) AS Amount
+	FROM CompleteBudgetExpense
+	GROUP BY CampusCode
+), BudgetNetIncome AS (
+SELECT 
+	BudgetRevenue.CampusCode
+	, SUM(BudgetRevenue.Amount) as Revenue
+	, SUM(BudgetExpense.Amount) AS Expense
+	, SUM(BudgetRevenue.Amount - BudgetExpense.Amount) AS Amount
+FROM BudgetRevenue
+INNER JOIN BudgetExpense
+	ON BudgetRevenue.CampusCode = BudgetExpense.CampusCode
+GROUP BY
+	BudgetRevenue.CampusCode
+)
+SELECT
+	  BudgetNetIncome.CampusCode
+	, SUM(BudgetNetIncome.Amount - ActualNetIncome.Amount) AS Amount
+FROM BudgetNetIncome
+INNER JOIN ActualNetIncome
+	ON BudgetNetIncome.CampusCode = ActualNetIncome.CampusCode
+GROUP BY
+	BudgetNetIncome.CampusCode</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="CampusCode">
+          <DataField>CampusCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
   </DataSets>
   <ReportSections>
     <ReportSection>
@@ -1673,7 +2860,7 @@ GROUP BY
                     <TablixMember />
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>ActualRevenue</DataSetName>
+                <DataSetName>ActualRevenue_Ministry</DataSetName>
                 <Top>1.0875in</Top>
                 <Left>4.79375in</Left>
                 <Height>0.2in</Height>
@@ -1858,7 +3045,7 @@ GROUP BY
                     <TablixMember />
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>ActualRevenue</DataSetName>
+                <DataSetName>ActualRevenue_Ministry</DataSetName>
                 <Top>0.8875in</Top>
                 <Left>6.075in</Left>
                 <Height>0.4in</Height>
@@ -2540,7 +3727,7 @@ GROUP BY
                     <TablixMember />
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>VarianceRevenue</DataSetName>
+                <DataSetName>VarianceRevenue_Ministry</DataSetName>
                 <Top>1.0875in</Top>
                 <Left>11.55695in</Left>
                 <Height>0.2in</Height>
@@ -2732,7 +3919,7 @@ GROUP BY
                     </TablixMember>
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>VarianceRevenue</DataSetName>
+                <DataSetName>VarianceRevenue_Ministry</DataSetName>
                 <Top>0.8875in</Top>
                 <Left>12.55695in</Left>
                 <Height>0.4in</Height>
@@ -3614,13 +4801,6 @@ GROUP BY
                       <FilterValue DataType="Integer">1</FilterValue>
                     </FilterValues>
                   </Filter>
-                  <Filter>
-                    <FilterExpression>=CInt(Fields!CalendarYear.Value)</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue DataType="Integer">= CInt(Parameters!BudgetYear.Value)</FilterValue>
-                    </FilterValues>
-                  </Filter>
                 </Filters>
                 <Top>4.5in</Top>
                 <Left>6.075in</Left>
@@ -3904,13 +5084,6 @@ GROUP BY
                     <Operator>Equal</Operator>
                     <FilterValues>
                       <FilterValue DataType="Integer">1</FilterValue>
-                    </FilterValues>
-                  </Filter>
-                  <Filter>
-                    <FilterExpression>=Cint(Fields!BudgetYear.Value)</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue>= CInt(Parameters!BudgetYear.Value)</FilterValue>
                     </FilterValues>
                   </Filter>
                 </Filters>
@@ -4820,13 +5993,6 @@ GROUP BY
                       <FilterValue DataType="Integer">1</FilterValue>
                     </FilterValues>
                   </Filter>
-                  <Filter>
-                    <FilterExpression>=CInt(Fields!CalendarYear.Value)</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue DataType="Integer">= CInt(Parameters!BudgetYear.Value)</FilterValue>
-                    </FilterValues>
-                  </Filter>
                 </Filters>
                 <Top>4.5in</Top>
                 <Left>4.79375in</Left>
@@ -5280,13 +6446,6 @@ GROUP BY
                       <FilterValue DataType="Integer">1</FilterValue>
                     </FilterValues>
                   </Filter>
-                  <Filter>
-                    <FilterExpression>=CInt(Fields!CalendarYear.Value)</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue DataType="Integer">= CInt(Parameters!BudgetYear.Value)</FilterValue>
-                    </FilterValues>
-                  </Filter>
                 </Filters>
                 <Top>5.325in</Top>
                 <Left>6.075in</Left>
@@ -5570,13 +6729,6 @@ GROUP BY
                     <Operator>Equal</Operator>
                     <FilterValues>
                       <FilterValue DataType="Integer">1</FilterValue>
-                    </FilterValues>
-                  </Filter>
-                  <Filter>
-                    <FilterExpression>=Cint(Fields!BudgetYear.Value)</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue>= CInt(Parameters!BudgetYear.Value)</FilterValue>
                     </FilterValues>
                   </Filter>
                 </Filters>
@@ -6486,13 +7638,6 @@ GROUP BY
                       <FilterValue DataType="Integer">1</FilterValue>
                     </FilterValues>
                   </Filter>
-                  <Filter>
-                    <FilterExpression>=CInt(Fields!CalendarYear.Value)</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue DataType="Integer">= CInt(Parameters!BudgetYear.Value)</FilterValue>
-                    </FilterValues>
-                  </Filter>
                 </Filters>
                 <Top>5.325in</Top>
                 <Left>4.79375in</Left>
@@ -6946,13 +8091,6 @@ GROUP BY
                       <FilterValue DataType="Integer">1</FilterValue>
                     </FilterValues>
                   </Filter>
-                  <Filter>
-                    <FilterExpression>=CInt(Fields!CalendarYear.Value)</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue DataType="Integer">= CInt(Parameters!BudgetYear.Value)</FilterValue>
-                    </FilterValues>
-                  </Filter>
                 </Filters>
                 <Top>6.11823in</Top>
                 <Left>6.075in</Left>
@@ -7236,13 +8374,6 @@ GROUP BY
                     <Operator>Equal</Operator>
                     <FilterValues>
                       <FilterValue DataType="Integer">1</FilterValue>
-                    </FilterValues>
-                  </Filter>
-                  <Filter>
-                    <FilterExpression>=Cint(Fields!BudgetYear.Value)</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue>= CInt(Parameters!BudgetYear.Value)</FilterValue>
                     </FilterValues>
                   </Filter>
                 </Filters>
@@ -8152,13 +9283,6 @@ GROUP BY
                       <FilterValue DataType="Integer">1</FilterValue>
                     </FilterValues>
                   </Filter>
-                  <Filter>
-                    <FilterExpression>=CInt(Fields!CalendarYear.Value)</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue DataType="Integer">= CInt(Parameters!BudgetYear.Value)</FilterValue>
-                    </FilterValues>
-                  </Filter>
                 </Filters>
                 <Top>6.11823in</Top>
                 <Left>4.79375in</Left>
@@ -8747,20 +9871,13 @@ GROUP BY
                     </TablixMember>
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>ActualExpense</DataSetName>
+                <DataSetName>ActualExpense_Ministry</DataSetName>
                 <Filters>
                   <Filter>
                     <FilterExpression>=IIF(Microsoft.VisualBasic.Strings.InStr(Fields!Heading.Value, "Ministries"), 1, 0)</FilterExpression>
                     <Operator>Equal</Operator>
                     <FilterValues>
                       <FilterValue DataType="Integer">1</FilterValue>
-                    </FilterValues>
-                  </Filter>
-                  <Filter>
-                    <FilterExpression>=CInt(Fields!CalendarYear.Value)</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue DataType="Integer">= CInt(Parameters!BudgetYear.Value)</FilterValue>
                     </FilterValues>
                   </Filter>
                 </Filters>
@@ -9192,13 +10309,6 @@ GROUP BY
                       <FilterValue DataType="Integer">1</FilterValue>
                     </FilterValues>
                   </Filter>
-                  <Filter>
-                    <FilterExpression>=Cint(Fields!BudgetYear.Value)</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue>= CInt(Parameters!BudgetYear.Value)</FilterValue>
-                    </FilterValues>
-                  </Filter>
                 </Filters>
                 <Top>6.98281in</Top>
                 <Left>9.3in</Left>
@@ -9618,7 +10728,7 @@ GROUP BY
                     </TablixMember>
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>VarianceExpense</DataSetName>
+                <DataSetName>VarianceExpense_Ministry</DataSetName>
                 <Filters>
                   <Filter>
                     <FilterExpression>=IIF(Microsoft.VisualBasic.Strings.InStr(Fields!Heading.Value, "Ministries"), 1, 0)</FilterExpression>
@@ -10563,20 +11673,13 @@ GROUP BY
                     </TablixMember>
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>ActualExpense</DataSetName>
+                <DataSetName>ActualExpense_Ministry</DataSetName>
                 <Filters>
                   <Filter>
                     <FilterExpression>=IIF(Microsoft.VisualBasic.Strings.InStr(Fields!Heading.Value, "Ministries"), 1, 0)</FilterExpression>
                     <Operator>Equal</Operator>
                     <FilterValues>
                       <FilterValue DataType="Integer">1</FilterValue>
-                    </FilterValues>
-                  </Filter>
-                  <Filter>
-                    <FilterExpression>=CInt(Fields!CalendarYear.Value)</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue DataType="Integer">= CInt(Parameters!BudgetYear.Value)</FilterValue>
                     </FilterValues>
                   </Filter>
                 </Filters>
@@ -10819,7 +11922,7 @@ GROUP BY
                     </TablixMember>
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>VarianceExpense</DataSetName>
+                <DataSetName>VarianceExpense_Ministry</DataSetName>
                 <Filters>
                   <Filter>
                     <FilterExpression>=IIF(Microsoft.VisualBasic.Strings.InStr(Fields!Heading.Value, "Ministries"), 1, 0)</FilterExpression>
@@ -11191,7 +12294,7 @@ GROUP BY
                     <TablixMember />
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>VarianceExpense</DataSetName>
+                <DataSetName>VarianceExpense_Ministry</DataSetName>
                 <Top>8.83906in</Top>
                 <Left>12.55695in</Left>
                 <Height>0.2in</Height>
@@ -11465,16 +12568,7 @@ GROUP BY
                     <TablixMember />
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>ActualExpense</DataSetName>
-                <Filters>
-                  <Filter>
-                    <FilterExpression>=CInt(Fields!CalendarYear.Value)</FilterExpression>
-                    <Operator>Equal</Operator>
-                    <FilterValues>
-                      <FilterValue DataType="Integer">= CInt(Parameters!BudgetYear.Value)</FilterValue>
-                    </FilterValues>
-                  </Filter>
-                </Filters>
+                <DataSetName>ActualExpense_Ministry</DataSetName>
                 <Top>8.83906in</Top>
                 <Left>4.79375in</Left>
                 <Height>0.2in</Height>
@@ -11547,7 +12641,7 @@ GROUP BY
                     <TablixMember />
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>VarianceExpense</DataSetName>
+                <DataSetName>VarianceExpense_Ministry</DataSetName>
                 <Top>8.83906in</Top>
                 <Left>11.55695in</Left>
                 <Height>0.2in</Height>
@@ -11616,7 +12710,7 @@ GROUP BY
                     <TablixMember />
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>ActualNetIncome</DataSetName>
+                <DataSetName>ActualNetIncome_Ministry</DataSetName>
                 <Top>8.42583in</Top>
                 <Left>4.79375in</Left>
                 <Height>0.2in</Height>
@@ -11733,7 +12827,7 @@ GROUP BY
                     </TablixMember>
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>ActualNetIncome</DataSetName>
+                <DataSetName>ActualNetIncome_Ministry</DataSetName>
                 <Top>8.42583in</Top>
                 <Left>6.075in</Left>
                 <Height>0.2in</Height>
@@ -11856,7 +12950,7 @@ GROUP BY
                     </TablixMember>
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>ActualExpense</DataSetName>
+                <DataSetName>ActualExpense_Ministry</DataSetName>
                 <Top>8.83906in</Top>
                 <Left>6.075in</Left>
                 <Height>0.2in</Height>
@@ -12111,7 +13205,7 @@ GROUP BY
                     <TablixMember />
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>VarianceNetIncome</DataSetName>
+                <DataSetName>VarianceNetIncome_Ministry</DataSetName>
                 <Top>8.42583in</Top>
                 <Left>11.55695in</Left>
                 <Height>0.2in</Height>
@@ -12228,7 +13322,7 @@ GROUP BY
                     </TablixMember>
                   </TablixMembers>
                 </TablixRowHierarchy>
-                <DataSetName>VarianceNetIncome</DataSetName>
+                <DataSetName>VarianceNetIncome_Ministry</DataSetName>
                 <Top>8.42583in</Top>
                 <Left>12.55695in</Left>
                 <Height>0.2in</Height>
