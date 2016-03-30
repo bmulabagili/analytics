@@ -88,7 +88,8 @@ WHERE
 	AND BudgetMonth &lt;= @BudgetMonth
 	AND DimFinancialCategory.FundCode = '025'
 	AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-	AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+	AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 GROUP BY
 	 ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
 	, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
@@ -217,7 +218,8 @@ WHERE
 	AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 	AND DimFinancialCategory.FundCode = '025'
 	AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-	AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+	AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 GROUP BY
 	  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
 	, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
@@ -345,7 +347,8 @@ SELECT DISTINCT
 		AND BudgetMonth &lt;= @BudgetMonth
 		AND DimFinancialCategory.FundCode = '025'
 		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 	GROUP BY
 		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
 		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
@@ -411,7 +414,8 @@ SELECT DISTINCT
 		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 		AND DimFinancialCategory.FundCode = '025'
 		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 	GROUP BY
 		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
 		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
@@ -629,7 +633,12 @@ INNER JOIN dw.DimEntity
 	ON FactRevenue.EntityID = DimEntity.EntityID
 	AND FactRevenue.TenantID = DimEntity.TenantID
 INNER JOIN dw.DimFinancialCategory
-		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+	ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+LEFT JOIN CampusXLTReportGroupMap 
+	ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+LEFT JOIN CampusXLTReportGroup
+	ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
+
 INNER JOIN CampusAllocation
 	ON 1=1
 WHERE
@@ -637,7 +646,8 @@ WHERE
 	AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 	AND DimFinancialCategory.FundCode = '025'
 	AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-	AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+	AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 GROUP BY
 	  CampusAllocation.Code
 UNION
@@ -804,6 +814,10 @@ INNER JOIN dw.DimEntity
 	AND FactRevenue.TenantID = DimEntity.TenantID
 INNER join dw.DimFinancialCategory
 		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+LEFT JOIN CampusXLTReportGroupMap 
+	ON DimFinancialCategory.FinancialCategoryID = CampusXLTReportGroupMap.FinancialCategoryID
+LEFT JOIN CampusXLTReportGroup
+	ON  CampusXLTReportGroupMap.CampusXLTReportGroupID = CampusXLTReportGroup.CampusXLTReportGroupID
 INNER JOIN CampusAllocation
 	ON 1=1
 WHERE
@@ -811,7 +825,8 @@ WHERE
 	AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 	AND DimFinancialCategory.FundCode = '025'
 	AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-	AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+	AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 GROUP BY
 	  CampusAllocation.Code
 	, DimDate.CalendarYear
@@ -941,7 +956,8 @@ GROUP BY
 		AND FactBudgetExpense.BudgetMonth &lt;= @BudgetMonth
 		AND DimFinancialCategory.FundCode = '025'
 		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 	GROUP BY
 		  CampusAllocation.Code
 		UNION
@@ -1089,7 +1105,8 @@ GROUP BY
 		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 		AND DimFinancialCategory.FundCode = '025'
 		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+			AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 	GROUP BY
 		CampusAllocation.Code
 	UNION
@@ -1240,7 +1257,8 @@ GROUP BY
 		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 		AND DimFinancialCategory.FundCode = '025'
 		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 	GROUP BY
 		CampusAllocation.Code
 	UNION
@@ -1306,11 +1324,12 @@ GROUP BY
 		ON 1=1
 	WHERE
 		DimEntity.Code = 'HBC'
-		 AND BudgetYear  = @BudgetYear
-		 AND FactBudgetExpense.BudgetMonth &lt;= @BudgetMonth
-		 AND DimFinancialCategory.FundCode = '025'
+		AND BudgetYear  = @BudgetYear
+		AND FactBudgetExpense.BudgetMonth &lt;= @BudgetMonth
+		AND DimFinancialCategory.FundCode = '025'
 		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 	GROUP BY
 		  CampusAllocation.Code
 		UNION
@@ -1439,7 +1458,8 @@ GROUP BY
 		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 		AND DimFinancialCategory.FundCode = '025'
 		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 	GROUP BY
 		  CampusXLTReportGroup.CampusXLTReportGroupID
 		, CampusXLTReportGroup.Heading
@@ -1488,7 +1508,8 @@ GROUP BY
 			AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 			AND DimFinancialCategory.FundCode = '025'
 			AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-			AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+			AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+				OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 		GROUP BY
 			  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
 			, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
@@ -1648,8 +1669,9 @@ GROUP BY
 		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 		AND DimFinancialCategory.FundCode = '025'
 		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
-		--AND ISNULL(CampusXLTReportGroup.Heading, 'Ministries') = 'Ministries'
+		AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
+		
 	GROUP BY
 		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
 		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
@@ -1719,7 +1741,8 @@ GROUP BY
 		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 		AND DimFinancialCategory.FundCode = '025'
 		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 		AND ISNULL(CampusXLTReportGroup.Heading, 'Ministries') = 'Ministries'
 	GROUP BY
 		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
@@ -1756,7 +1779,8 @@ GROUP BY
 		AND BudgetMonth &lt;= @BudgetMonth
 		AND DimFinancialCategory.FundCode = '025'
 		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 	GROUP BY
 		  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
 		, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
@@ -1831,7 +1855,6 @@ GROUP BY
 	, BudgetExpense.Manager
 	, BudgetExpense.CampusCode
 ORDER BY Heading
-
 </CommandText>
       </Query>
       <Fields>
@@ -1938,7 +1961,8 @@ WHERE
 	AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 	AND DimFinancialCategory.FundCode = '025'
 	AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-	AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+	AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 	AND ISNULL(CampusXLTReportGroup.Heading, '') &lt;&gt; 'Ministries'
 GROUP BY
 	  CampusAllocation.Code
@@ -2033,7 +2057,8 @@ WHERE
 	AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 	AND DimFinancialCategory.FundCode = '025'
 	AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-	AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+	AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 	AND ISNULL(CampusXLTReportGroup.Heading, '') &lt;&gt; 'Ministries'
 GROUP BY
 	  CampusAllocation.Code
@@ -2147,7 +2172,8 @@ GROUP BY
 		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 		AND DimFinancialCategory.FundCode = '025'
 		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 	GROUP BY
 		  CampusXLTReportGroup.CampusXLTReportGroupID
 		, CampusXLTReportGroup.Heading
@@ -2196,7 +2222,8 @@ GROUP BY
 			AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 			AND DimFinancialCategory.FundCode = '025'
 			AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-			AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+			AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+				OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 		GROUP BY
 			  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
 			, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
@@ -2343,7 +2370,8 @@ GROUP BY
 		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 		AND DimFinancialCategory.FundCode = '025'
 		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 	GROUP BY
 		  CampusXLTReportGroup.CampusXLTReportGroupID
 		, CampusXLTReportGroup.Heading
@@ -2392,7 +2420,8 @@ GROUP BY
 			AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
 			AND DimFinancialCategory.FundCode = '025'
 			AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-			AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+			AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+				OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 		GROUP BY
 			  ISNULL(CampusXLTReportGroup.CampusXLTReportGroupID, 27)
 			, ISNULL(CampusXLTReportGroup.Heading, 'Ministries') 
@@ -2498,7 +2527,8 @@ GROUP BY
 		AND FactBudgetExpense.BudgetMonth &lt;= @BudgetMonth
 		AND DimFinancialCategory.FundCode = '025'
 		AND DimFinancialCategory.CategoryCode &lt;&gt; 'PER1'
-		AND DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+		AND (DimFinancialCategory.CampusCode NOT IN ('LH','CH')
+			OR CampusXLTReportGroup.Detail = 'Camp Operating Expense')
 	GROUP BY
 		  CampusAllocation.Code
 		UNION
@@ -9538,6 +9568,7 @@ GROUP BY
                                 <PaddingBottom>2pt</PaddingBottom>
                               </Style>
                             </Textbox>
+                            <rd:Selected>true</rd:Selected>
                           </CellContents>
                         </TablixCell>
                       </TablixCells>
