@@ -840,6 +840,8 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
+	AND GLCode <> '30010'
+
 
 --2. Office Equipment –Expenses with the department code 5058
 INSERT INTO CampusXLTReportGroupMap
@@ -850,7 +852,8 @@ WHERE
 	AND Departmentcode = '5058'
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
-	AND CampusCode NOT IN ('LH','CH') 
+	AND CampusCode NOT IN ('LH','CH')
+	AND GLCode <> '30010' 
 
 --3. Technology
 INSERT INTO CampusXLTReportGroupMap
@@ -862,6 +865,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
+	AND GLCode <> '30010'
 
 --4. Printing – Expenses with the department code 5078
 INSERT INTO CampusXLTReportGroupMap
@@ -873,6 +877,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
+	AND GLCode <> '30010'
 
 --5. Banking, Legal, Audit, Professional Fees
 INSERT INTO CampusXLTReportGroupMap
@@ -885,6 +890,7 @@ WHERE
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
 	AND (CONVERT(INT, DepartmentCode) < 7005 OR CONVERT(INT, DepartmentCode) > 8992)
+	AND GLCode <> '30010'
 
 --6. Payroll Processing Fees
 INSERT INTO CampusXLTReportGroupMap
@@ -896,6 +902,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
+	AND GLCode <> '30010'
 
 --7. Insurance
 INSERT INTO CampusXLTReportGroupMap
@@ -907,6 +914,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
+	AND GLCode <> '30010'
 
 --8.Facilities & Grounds Maintenance
 INSERT INTO CampusXLTReportGroupMap
@@ -918,6 +926,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
+	AND GLCode <> '30010'
 
 --9.Utilities
 INSERT INTO CampusXLTReportGroupMap
@@ -929,7 +938,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
-
+	AND GLCode <> '30010'
 
 --10.Service Support – department 6197
 INSERT INTO CampusXLTReportGroupMap
@@ -941,7 +950,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
-
+	AND GLCode <> '30010'
 
 --11.Mortgage
 INSERT INTO CampusXLTReportGroupMap
@@ -953,7 +962,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
-
+	AND GLCode <> '30010'
 
 --12.Operating Expense (under camp operations, also called camp  operating expense on xlt management report tab) – all expenses under fund 058
 INSERT INTO CampusXLTReportGroupMap
@@ -963,7 +972,7 @@ WHERE
 	EntityCode = 'HBC'
 	AND FundCode = '025'
 	AND CampusCode = 'LH'
-
+	AND GLCode <> '30010'
 
 --13.Ministry Expansion and Development
 INSERT INTO CampusXLTReportGroupMap
@@ -975,7 +984,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
-
+	AND GLCode <> '30010'
 
 --14.Special Events
 INSERT INTO CampusXLTReportGroupMap
@@ -987,7 +996,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
-
+	AND GLCode <> '30010'
 
 --15.Online Services – All expenses with department 5164
 INSERT INTO CampusXLTReportGroupMap
@@ -999,7 +1008,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
-
+	AND GLCode <> '30010'
 
 --16.Adult
 INSERT INTO CampusXLTReportGroupMap
@@ -1011,7 +1020,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
-
+	AND GLCode <> '30010'
 
 --17.Single Parent – all expenses with department code 7059
 --REMOVED PER Kelly on 20160217
@@ -1030,6 +1039,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
+	AND GLCode <> '30010'
 
 --20.Student
 INSERT INTO CampusXLTReportGroupMap
@@ -1041,6 +1051,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
+	AND GLCode <> '30010'
 
 --21.Worship
 INSERT INTO CampusXLTReportGroupMap
@@ -1052,7 +1063,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
-
+	AND GLCode <> '30010'
 
 --22.Stewardship – all expenses with department code 7280
 INSERT INTO CampusXLTReportGroupMap
@@ -1064,6 +1075,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
+	AND GLCode <> '30010'
 
 --23.Missions & Outreach & Church Plant
 INSERT INTO CampusXLTReportGroupMap
@@ -1075,6 +1087,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
+	AND GLCode <> '30010'
 
 --24.Congregation/FOCIS
 INSERT INTO CampusXLTReportGroupMap
@@ -1086,7 +1099,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
-
+	AND GLCode <> '30010'
 
 --25.Production – all expenses with department 5160
 INSERT INTO CampusXLTReportGroupMap
@@ -1098,7 +1111,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
-
+	AND GLCode <> '30010'
 
 --26.Creative Services, Video Prod, Media – all expenses in department codes 5158, 5159, or 6137
 INSERT INTO CampusXLTReportGroupMap
@@ -1110,7 +1123,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
-
+	AND GLCode <> '30010'
 
 --27.Food Ministry
 INSERT INTO CampusXLTReportGroupMap
@@ -1122,6 +1135,7 @@ WHERE
 	AND Fundcode = '025'
 	AND CategoryCode <> 'PER1' 
 	AND CampusCode NOT IN ('LH','CH') 
+	AND GLCode <> '30010'
 
 --28.Harvest Studio production – all expenses with fund 069
 --INSERT INTO CampusXLTReportGroupMap
