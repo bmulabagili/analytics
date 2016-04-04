@@ -2,16 +2,28 @@
                                           @EndDate   DATE
 AS
     --based on http://www.codeproject.com/Articles/647950/Create-and-Populate-Date-Dimension-for-Data-Wareho
+
+	--Set first day of week to sunday, or none of the following works!
+	SET DATEFIRST 7; -- Sunday is the first day of the week.
+
+	--Calendar Year: 1/1/yyyy - 12/31/yyyy
+	--Fiscal   Year: 7/1/yyyy - 6/30/yyyy
+	--Ministry Year: 8/1/yyyy - 7/31/yyyy
+		--HBC weekend services (Friday, Saturday, Sunday) are reported together in Summary for KPI Reports
+		--When a weekend is split over 2 calendar months, the Sunday date determines which month the KPI report data gets calculated into.
+		--weekly data is defined starting Monday 12:00 AM through Sunday 11:59 PM
+	--School   Year: 8/1/yyyy - 7/31/yyyy
+
      --REMOVE existing rows	
 	DELETE FROM DW.DimDate 
 	WHERE
 	   ActualDate BETWEEN @StartDate AND @EndDate;
 
      --Temporary Variables To Hold the Values During Processing of Each Date of Year
-     DECLARE @DayOfWeekInMonth INT, @DayOfWeekInYear INT, @DayOfQuarter INT, @WeekOfMonth INT, @CurrentYear INT, @CurrentMonth INT, @CurrentQuarter INT;
+     DECLARE @DayOfWeekInMonth INT, @DayOfWeekInYear INT, @DayOfQuarter INT, @WeekOfMonth INT, @CurrentYear INT, @CurrentMonth INT
+		, @CurrentQuarter INT, @MinistryMonth INT;
 
      /*Table Data type to store the day of week count for the month and year*/
-
      DECLARE @DayOfWeek TABLE(
 	     DayOWeek          INT
 	   , MonthCount   INT
@@ -41,10 +53,25 @@ AS
     SET @CurrentYear = DATEPART(YY, @CurrentDate);
     SET @CurrentQuarter = DATEPART(QQ, @CurrentDate);
 
+	
+
     --Proceed only if Start Date(Current date ) is less than End date you specified above
     WHILE @CurrentDate < @EndDate
          BEGIN
- 
+			--Special Handling for Ministry Month
+			SET @MinistryMonth = CASE WHEN 
+				( DATENAME(WEEKDAY, @CurrentDate) = 'Friday' AND DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) > DATEPART(MM, @CurrentDate) ) 
+				OR
+				( DATENAME(WEEKDAY, @CurrentDate) = 'Saturday' AND DATEPART(MM, DATEADD(DAY, 1, @CurrentDate)) > DATEPART(MM, @CurrentDate) ) 
+			  THEN	
+				CASE WHEN DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) BETWEEN 1 AND 7 THEN DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) + 5 ELSE DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) - 7 END
+			  ELSE
+	   			CASE WHEN DATEPART(MM, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(MM, @CurrentDate) + 5 ELSE DATEPART(MM, @CurrentDate) - 7 END	
+			  END
+
+		   
+
+
              --Begin day of week logic
 
 		  /*Check for Change in Month of the Current date if Month changed then 
@@ -100,7 +127,30 @@ AS
              /* Populate Your Dimension Table with values*/
 
              INSERT INTO DW.DimDate
-             --(DateID, ActualDateLabel, ActualDate, CalendarDayOfMonth  )
+             (DateID, ActualDateLabel, ActualDate, CalendarDayOfMonth, CalendarDayOfYear
+			 , CalendarLastDayOfMonthFlag, CalendarMonth, CalendarMonthAbbreviation, CalendarMonthLabel
+			 , CalendarQuarter, CalendarQuarterLabel, CalendarWeek, CalendarWeekStartLabel
+			 , CalendarWeekEndLabel, CalendarYear, CalendarYearLabel, DateDescription, CalendarDayOfWeek
+			 , CalendarDayOfWeekAbbreviation, CalendarDayOfWeekLabel
+			 --Fiscal dates
+			 , FiscalWeek, FiscalWeekStartLabel, FiscalWeekEndLabel, FiscalDayOfWeek, FiscalDayOfWeekLabel		
+			 , FiscalDayOfWeekAbbreviation, FiscalMonth, FiscalMonthAbbreviation, FiscalMonthLabel
+			 , FiscalDayOfMonth, FiscalLastDayOfMonthFlag, FiscalQuarter, FiscalQuarterLabel, FiscalYear					
+			 , FiscalYearLabel, FiscalDayOfYear			
+			 --MinistryDates
+			 , MinistryWeek, MinistryWeekStartLabel, MinistryWeekEndLabel, MinistryDayOfWeek, MinistryDayOfWeekLabel		
+			 , MinistryDayOfWeekAbbreviation, MinistryMonth, MinistryMonthAbbreviation, MinistryMonthLabel
+			 , MinistryDayOfMonth, MinistryLastDayOfMonthFlag, MinistryQuarter, MinistryQuarterLabel, MinistryYear					
+			 , MinistryYearLabel, MinistryDayOfYear		
+			 --School Dates
+			 , SchoolWeek, SchoolWeekStartLabel, SchoolWeekEndLabel, SchoolDayOfWeek, SchoolDayOfWeekLabel		
+			 , SchoolDayOfWeekAbbreviation, SchoolMonth, SchoolMonthAbbreviation, SchoolMonthLabel
+			 , SchoolDayOfMonth, SchoolLastDayOfMonthFlag, SchoolQuarter, SchoolQuarterLabel, SchoolYear					
+			 , SchoolYearLabel, SchoolDayOfYear		
+
+
+			 , HolidayFlag, WeekendFlag, ExecutionID, InsertedDateTime, UpdatedDateTime
+			 , HashValue  )
             SELECT 
 			   CONVERT(  CHAR(8), @CurrentDate, 112) AS DateID
                 , CONVERT(  CHAR(10), @CurrentDate, 101) AS ActualDateLabel
@@ -110,7 +160,7 @@ AS
 			 , CASE WHEN @currentDate = CONVERT(  DATETIME, CONVERT(DATE, DATEADD(DD, -(DATEPART(DD, (DATEADD(MM, 1, @CurrentDate)))), DATEADD(MM, 1, @CurrentDate))))
 				THEN 1
 				ELSE 0 END AS CalendarLastDayOfMonthFlag
-			 , DATEPART(MONTH, @CurrentDate) AS CalendarMonth
+			 , @CurrentMonth AS CalendarMonth
 			 , LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3) AS CalendarMonthAbbreviation
 			 , DATENAME(MONTH, @currentDate) AS CalendarMonthLabel
 			 , DATEPART(QQ, @CurrentDate)  AS CalendarQuarter
@@ -125,7 +175,7 @@ AS
 			 , CONVERT(VARCHAR(4), DATEPART(YEAR, @CurrentDate)) CalendarYearLabel	
 			 -- not sure what to store in DateDescription
 			 , NULL AS DateDescription
-			 , DATEPART(WEEKDAY, @CurrentDate) AS [DayOfWeek]
+			 , DATEPART(WEEKDAY, @CurrentDate) AS CalendarDayOfWeek
 			 , CASE DATEPART(WEEKDAY, @CurrentDate)
 				WHEN 1 THEN 'Sun'
 				WHEN 2 THEN 'Mon'
@@ -134,22 +184,95 @@ AS
 				WHEN 5 THEN 'Thu'
 			 	WHEN 6 THEN 'Fri'
 				WHEN 7 THEN 'Sat'
-			   END AS DayOfWeekAbbreviation
-			 , DATENAME(WEEKDAY, @CurrentDate) AS DayOfWeekLabel
-			 --come back to Fiscal stuff later
-			 , DATEPART(WEEKDAY, @CurrentDate) AS FiscalDayOfWeek            
-			 , DATEPART(DAY, @CurrentDate) AS FiscalDayOfMonth           
-			 , NULL AS FiscalDayOfYear            
-			 , CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(MONTH, @CurrentDate) + 5 ELSE DATEPART(MONTH, @CurrentDate) - 7 END AS FiscalMonth  
-			 , LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3) AS FiscalMonthAbbreviation    
-			 , DATENAME(MONTH, @currentDate) AS FiscalMonthLabel           
-			 , NULL AS FiscalQuarter              
-			 , NULL AS FiscalQuarterLabel         
-			 , NULL AS FiscalWeek                 
+			   END AS CalendarDayOfWeekAbbreviation
+			 , DATENAME(WEEKDAY, @CurrentDate) AS CalendarDayOfWeekLabel
+
+			 --Fiscal dates
+			 , NULL AS FiscalWeek     
 			 , NULL AS FiscalWeekStartLabel       
 			 , NULL AS FiscalWeekEndLabel         
-			 , CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS FiscalYear               
-			 , CONVERT(VARCHAR(4), CASE WHEN DATEPART(MONTH, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS FiscalYearLabel            
+			 , DATEPART(WEEKDAY, @CurrentDate) AS FiscalDayOfWeek  
+			 , DATENAME(WEEKDAY, @CurrentDate) AS FiscalDayOfWeekLabel
+			 , CASE DATEPART(WEEKDAY, @CurrentDate)
+				WHEN 1 THEN 'Sun'
+				WHEN 2 THEN 'Mon'
+				WHEN 3 THEN 'Tue'
+				WHEN 4 THEN 'Wed'
+				WHEN 5 THEN 'Thu'
+			 	WHEN 6 THEN 'Fri'
+				WHEN 7 THEN 'Sat'
+			   END AS FiscalDayOfWeekAbbreviation      
+			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 6 THEN @CurrentMonth + 6 ELSE @CurrentMonth - 6 END AS FiscalMonth  
+			 , LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3) AS FiscalMonthAbbreviation    
+			 , DATENAME(MONTH, @currentDate) AS FiscalMonthLabel           
+			 , DATEPART(DAY, @CurrentDate) AS FiscalDayOfMonth           
+			 , CASE WHEN @currentDate = CONVERT(  DATETIME, CONVERT(DATE, DATEADD(DD, -(DATEPART(DD, (DATEADD(MM, 1, @CurrentDate)))), DATEADD(MM, 1, @CurrentDate))))
+				THEN 1
+				ELSE 0 END AS FiscalLastDayOfMonthFlag
+			 , NULL AS FiscalQuarter  
+			 , NULL AS FiscalQuarterLabel         
+			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 6 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS FiscalYear   
+			 , CONVERT(VARCHAR(4), CASE WHEN @CurrentMonth BETWEEN 1 AND 6 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS FiscalYearLabel   
+			 , NULL AS FiscalDayOfYear            
+			             
+			-- Ministry Dates
+			 , NULL AS MinistryWeek     
+			 , NULL AS MinistryWeekStartLabel       
+			 , NULL AS MinistryWeekEndLabel         
+			 --shift all day of week - 1 (from first day of week sunday, to first day of week is monday)
+			 , CASE WHEN DATEPART(WEEKDAY, @CurrentDate) BETWEEN 2 AND 7 THEN DATEPART(WEEKDAY, @CurrentDate) - 1 ELSE 7 END AS MinistryDayOfWeek
+			 , DATENAME(WEEKDAY, @CurrentDate) AS MinistryDayOfWeekLabel
+			 , CASE DATEPART(WEEKDAY, @CurrentDate)
+				WHEN 1 THEN 'Sun'
+				WHEN 2 THEN 'Mon'
+				WHEN 3 THEN 'Tue'
+				WHEN 4 THEN 'Wed'
+				WHEN 5 THEN 'Thu'
+			 	WHEN 6 THEN 'Fri'
+				WHEN 7 THEN 'Sat'
+			   END AS MinistryDayOfWeekAbbreviation      
+			 , @MinistryMonth AS MinistryMonth  
+			 , LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3) AS MinistryMonthAbbreviation    
+			 , DATENAME(MONTH, @currentDate) AS MinistryMonthLabel  
+			 --The ministry Day of month won't always be right, correct it later         
+			 , NULL AS MinistryDayOfMonth           
+			 , CASE WHEN @currentDate = CONVERT(  DATETIME, CONVERT(DATE, DATEADD(DD, -(DATEPART(DD, (DATEADD(MM, 1, @CurrentDate)))), DATEADD(MM, 1, @CurrentDate))))
+				THEN 1
+				ELSE 0 END AS MinistryLastDayOfMonthFlag
+			 , NULL AS MinistryQuarter  
+			 , NULL AS MinistryQuarterLabel         
+			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS MinistryYear   
+			 , CONVERT(VARCHAR(4), CASE WHEN @CurrentMonth BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS MinistryYearLabel   
+			 , NULL AS MinistryDayOfYear     
+			--School Dates
+			 , NULL AS SchoolWeek     
+			 , NULL AS SchoolWeekStartLabel       
+			 , NULL AS SchoolWeekEndLabel         
+			 , DATEPART(WEEKDAY, @CurrentDate) AS SchoolDayOfWeek  
+			 , DATENAME(WEEKDAY, @CurrentDate) AS SchoolDayOfWeekLabel
+			 , CASE DATEPART(WEEKDAY, @CurrentDate)
+				WHEN 1 THEN 'Sun'
+				WHEN 2 THEN 'Mon'
+				WHEN 3 THEN 'Tue'
+				WHEN 4 THEN 'Wed'
+				WHEN 5 THEN 'Thu'
+			 	WHEN 6 THEN 'Fri'
+				WHEN 7 THEN 'Sat'
+			   END AS SchoolDayOfWeekAbbreviation      
+			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 7 THEN @CurrentMonth + 5 ELSE @CurrentMonth - 7 END AS SchoolMonth  
+			 , LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3) AS SchoolMonthAbbreviation    
+			 , DATENAME(MONTH, @currentDate) AS SchoolMonthLabel           
+			 , DATEPART(DAY, @CurrentDate) AS SchoolDayOfMonth           
+			 , CASE WHEN @currentDate = CONVERT(  DATETIME, CONVERT(DATE, DATEADD(DD, -(DATEPART(DD, (DATEADD(MM, 1, @CurrentDate)))), DATEADD(MM, 1, @CurrentDate))))
+				THEN 1
+				ELSE 0 END AS SchoolLastDayOfMonthFlag
+			 , NULL AS SchoolQuarter  
+			 , NULL AS SchoolQuarterLabel         
+			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS SchoolYear   
+			 , CONVERT(VARCHAR(4), CASE WHEN @CurrentMonth BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS SchoolYearLabel   
+			 , NULL AS SchoolDayOfYear     
+			
+			          
 			 , NULL AS HolidayFlag                
 			 , CASE WHEN DATEPART(WEEKDAY, @CurrentDate) IN (1,7) THEN 1 ELSE 0 END AS WeekendFlag                
 			 , -1 AS ExecutionID
@@ -159,8 +282,17 @@ AS
          
              SET @CurrentDate = DATEADD(DD, 1, @CurrentDate);
          END;
-
-    
+	--Correct MinistryDayOfMonth
+    ;WITH MinistryDaysInMonth AS (
+		SELECT DateID, MinistryMonth, MinistryYear
+		, ROW_NUMBER() OVER(PARTITION BY MinistryMonth, MinistryYear ORDER BY DateID ) AS MinistryDayOfMonth
+		FROM DW.DimDate
+	)UPDATE DimDate SET DimDate.MinistryDayOfMonth = MinistryDaysInMonth.MinistryDayOfMonth
+	FROM DW.DimDate
+	INNER JOIN MinistryDaysInMonth
+		ON DimDate.DateID = MinistryDaysInMonth.DateID
+		
+			 
 	
      /*THANKSGIVING - Fourth THURSDAY in November*/
 
@@ -168,7 +300,7 @@ AS
        SET
            HolidayFlag = 1 --'Thanksgiving Day'
      WHERE CalendarMonth = 11
-           AND DayOfWeekLabel = 'Thursday'
+           AND CalendarDayOfWeekLabel = 'Thursday'
            --need to calculate this AND DayOfWeekInMonth = 4;
 		 AND (DATEPART(WEEK, ActualDate) - DATEPART(WEEK, CONVERT(DATE, '11/1/' + CONVERT(VARCHAR(4), CalendarYear) )) ) + 1 = 4
 		 AND ActualDate BETWEEN @StartDate AND @EndDate;
@@ -211,7 +343,7 @@ AS
          SELECT MAX(DateID)
          FROM DW.DimDate
          WHERE CalendarMonthLabel = 'May'
-               AND DayOfWeekLabel = 'Monday'
+               AND CalendarDayOfWeekLabel = 'Monday'
 			AND ActualDate BETWEEN @StartDate AND @EndDate
          GROUP BY CalendarYear
                 , CalendarMonth
@@ -228,7 +360,7 @@ AS
          SELECT MIN(DateID)
          FROM DW.DimDate
          WHERE CalendarMonthLabel = 'September'
-               AND DayOfWeekLabel = 'Monday'
+               AND CalendarDayOfWeekLabel = 'Monday'
 			AND ActualDate BETWEEN @StartDate AND @EndDate
          GROUP BY CalendarYear
                 , CalendarMonth
@@ -258,7 +390,7 @@ AS
        SET
            HolidayFlag = 1 --'Martin Luthor King Jr Day'
      WHERE CalendarMonth = 1
-           AND DayOfWeekLabel = 'Monday'
+           AND CalendarDayOfWeekLabel = 'Monday'
            AND CalendarYear >= 1983
             AND (DATEPART(WEEK, ActualDate) - DATEPART(WEEK, CONVERT(DATE, '11/1/' + CONVERT(VARCHAR(4), CalendarYear) )) ) + 1 = 3
 		 AND ActualDate BETWEEN @StartDate AND @EndDate;
@@ -269,7 +401,7 @@ AS
        SET
            HolidayFlag = 1 --'President''s Day'
      WHERE CalendarMonth = 2
-           AND DayOfWeekLabel = 'Monday'
+           AND CalendarDayOfWeekLabel = 'Monday'
             AND (DATEPART(WEEK, ActualDate) - DATEPART(WEEK, CONVERT(DATE, '11/1/' + CONVERT(VARCHAR(4), CalendarYear) )) ) + 1 = 3
 		 AND ActualDate BETWEEN @StartDate AND @EndDate;
 
@@ -279,7 +411,7 @@ AS
        SET
            HolidayFlag = 1 --'Mother''s Day'
      WHERE CalendarMonth = 5
-           AND DayOfWeekLabel = 'Sunday'
+           AND CalendarDayOfWeekLabel = 'Sunday'
             AND (DATEPART(WEEK, ActualDate) - DATEPART(WEEK, CONVERT(DATE, '11/1/' + CONVERT(VARCHAR(4), CalendarYear) )) ) + 1 = 2
 		 AND ActualDate BETWEEN @StartDate AND @EndDate;
 
@@ -289,7 +421,7 @@ AS
        SET
            HolidayFlag = 1 --'Father''s Day'
      WHERE CalendarMonth = 6
-           AND DayOfWeekLabel = 'Sunday'
+           AND CalendarDayOfWeekLabel = 'Sunday'
             AND (DATEPART(WEEK, ActualDate) - DATEPART(WEEK, CONVERT(DATE, '11/1/' + CONVERT(VARCHAR(4), CalendarYear) )) ) + 1 = 3
 		 AND ActualDate BETWEEN @StartDate AND @EndDate;
 
