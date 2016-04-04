@@ -220,6 +220,7 @@ AS
 			 , NULL AS FiscalDayOfYear            
 			             
 			-- Ministry Dates
+			---fix ministry week in an update
 			 , NULL AS MinistryWeek     
 			 , NULL AS MinistryWeekStartLabel       
 			 , NULL AS MinistryWeekEndLabel         
@@ -290,11 +291,27 @@ AS
 		SELECT DateID, MinistryMonth, MinistryYear
 		, ROW_NUMBER() OVER(PARTITION BY MinistryMonth, MinistryYear ORDER BY DateID ) AS MinistryDayOfMonth
 		FROM DW.DimDate
-	)UPDATE DimDate SET DimDate.MinistryDayOfMonth = MinistryDaysInMonth.MinistryDayOfMonth
+	)
+	UPDATE DimDate SET DimDate.MinistryDayOfMonth = MinistryDaysInMonth.MinistryDayOfMonth
 	FROM DW.DimDate
 	INNER JOIN MinistryDaysInMonth
-		ON DimDate.DateID = MinistryDaysInMonth.DateID
-		
+		ON DimDate.DateID = MinistryDaysInMonth.DateID;
+
+	--Correct MinsitryWeek
+	;WITH MinistryWeek AS (
+		SELECT
+		  DateID, CalendarWeek, CalendarMonth
+		, MinistryYear
+		, MinistryMonth
+		, MinistryDayOfWeek
+		, DENSE_RANK() OVER (PARTITION BY MinistryYear, MinistryDayOfWeek ORDER BY MinistryMonth, MinistryDayOfMonth) AS MinistryWeek
+	FROM DW.DimDate
+	)
+	UPDATE DimDate SET DimDate.MinistryWeek = MinistryWeek.MinistryWeek
+	FROM DW.DimDate
+	INNER JOIN MinistryWeek
+		ON DimDate.DateID = MinistryWeek.DateID
+	;	
 			 
 	
      /*THANKSGIVING - Fourth THURSDAY in November*/
