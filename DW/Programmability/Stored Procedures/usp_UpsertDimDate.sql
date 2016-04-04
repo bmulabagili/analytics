@@ -1,8 +1,9 @@
 ﻿CREATE PROCEDURE [DW].[usp_UpsertDimDate] @StartDate DATE,
                                           @EndDate   DATE
 AS
+	SET NOCOUNT ON;
     --based on http://www.codeproject.com/Articles/647950/Create-and-Populate-Date-Dimension-for-Data-Wareho
-
+	
 	--Set first day of week to sunday, or none of the following works!
 	SET DATEFIRST 7; -- Sunday is the first day of the week.
 
@@ -248,7 +249,9 @@ AS
 			 , NULL AS MinistryQuarterLabel         
 			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS MinistryYear   
 			 , CONVERT(VARCHAR(4), CASE WHEN @CurrentMonth BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS MinistryYearLabel   
+			 --the ministrydayofyear will be corrected via update
 			 , NULL AS MinistryDayOfYear     
+
 			--School Dates
 			 , NULL AS SchoolWeek     
 			 , NULL AS SchoolWeekStartLabel       
@@ -311,6 +314,22 @@ AS
 	FROM DW.DimDate
 	INNER JOIN MinistryWeek
 		ON DimDate.DateID = MinistryWeek.DateID
+	;	
+
+	--Correct MinistryDayOfYear
+	;WITH MinistryDayOfYear AS (
+		SELECT
+		  DateID, CalendarWeek, CalendarMonth
+		, MinistryYear
+		, MinistryMonth
+		, MinistryDayOfWeek
+		, DENSE_RANK() OVER (PARTITION BY MinistryYear ORDER BY DateID) AS MinistryDayOfYear
+	FROM DW.DimDate
+	)
+	UPDATE DimDate SET DimDate.MinistryDayOfYear = MinistryDayOfYear.MinistryDayOfYear
+	FROM DW.DimDate
+	INNER JOIN MinistryDayOfYear
+		ON DimDate.DateID = MinistryDayOfYear.DateID
 	;	
 			 
 	
