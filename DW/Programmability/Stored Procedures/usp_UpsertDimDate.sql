@@ -127,11 +127,15 @@ AS
              /* Populate Your Dimension Table with values*/
 
              INSERT INTO DW.DimDate
-             (DateID, ActualDateLabel, ActualDate, CalendarDayOfMonth, CalendarDayOfYear
-			 , CalendarLastDayOfMonthFlag, CalendarMonth, CalendarMonthAbbreviation, CalendarMonthLabel
-			 , CalendarQuarter, CalendarQuarterLabel, CalendarWeek, CalendarWeekStartLabel
-			 , CalendarWeekEndLabel, CalendarYear, CalendarYearLabel, DateDescription, CalendarDayOfWeek
-			 , CalendarDayOfWeekAbbreviation, CalendarDayOfWeekLabel
+             (DateID, ActualDateLabel, ActualDate
+			 --Calendar Dates
+			 , CalendarWeek, CalendarWeekStartLabel, CalendarWeekEndLabel, CalendarDayOfWeek, CalendarDayOfWeekLabel
+			 , CalendarDayOfWeekAbbreviation, CalendarMonth, CalendarMonthAbbreviation, CalendarMonthLabel
+			 , CalendarDayOfMonth, CalendarLastDayOfMonthFlag, CalendarQuarter, CalendarQuarterLabel, CalendarYear
+			 , CalendarYearLabel, CalendarDayOfYear
+			 
+			 --special calendar dates
+			 , DateDescription, HolidayFlag, WeekendFlag
 			 --Fiscal dates
 			 , FiscalWeek, FiscalWeekStartLabel, FiscalWeekEndLabel, FiscalDayOfWeek, FiscalDayOfWeekLabel		
 			 , FiscalDayOfWeekAbbreviation, FiscalMonth, FiscalMonthAbbreviation, FiscalMonthLabel
@@ -147,46 +151,46 @@ AS
 			 , SchoolDayOfWeekAbbreviation, SchoolMonth, SchoolMonthAbbreviation, SchoolMonthLabel
 			 , SchoolDayOfMonth, SchoolLastDayOfMonthFlag, SchoolQuarter, SchoolQuarterLabel, SchoolYear					
 			 , SchoolYearLabel, SchoolDayOfYear		
-
-
-			 , HolidayFlag, WeekendFlag, ExecutionID, InsertedDateTime, UpdatedDateTime
-			 , HashValue  )
+			 --etl columns
+			 , ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue  )
             SELECT 
-			   CONVERT(  CHAR(8), @CurrentDate, 112) AS DateID
+				  CONVERT(  CHAR(8), @CurrentDate, 112) AS DateID
                 , CONVERT(  CHAR(10), @CurrentDate, 101) AS ActualDateLabel
                 , @CurrentDate AS ActualDate
-                , DATEPART(DAY, @CurrentDate) AS CalendarDayofmonth
-                , DATEPART(DAYOFYEAR, @CurrentDate) AS CalendarDayOfYear
-			 , CASE WHEN @currentDate = CONVERT(  DATETIME, CONVERT(DATE, DATEADD(DD, -(DATEPART(DD, (DATEADD(MM, 1, @CurrentDate)))), DATEADD(MM, 1, @CurrentDate))))
-				THEN 1
-				ELSE 0 END AS CalendarLastDayOfMonthFlag
-			 , @CurrentMonth AS CalendarMonth
-			 , LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3) AS CalendarMonthAbbreviation
-			 , DATENAME(MONTH, @currentDate) AS CalendarMonthLabel
-			 , DATEPART(QQ, @CurrentDate)  AS CalendarQuarter
-			 , 'Q' + CONVERT(CHAR(1), DATEPART(QQ, @CurrentDate)) + '-'
-				+ CONVERT(VARCHAR(4), DATEPART(YEAR, @CurrentDate)) AS CalendarQuarterLabel
-			 , DATEPART(WEEK, @currentDate) AS CalendarWeek
-			 --come back later to add CalendarWeekStartLabel
-			 , NULL AS CalendarWeekStartLabel
-			 --come back later to add CalendarWeekEndLabel
-			 , NULL AS CalendarWeekEndLabel
-			 , DATEPART(YEAR, @CurrentDate) AS CalendarYear
-			 , CONVERT(VARCHAR(4), DATEPART(YEAR, @CurrentDate)) CalendarYearLabel	
-			 -- not sure what to store in DateDescription
-			 , NULL AS DateDescription
-			 , DATEPART(WEEKDAY, @CurrentDate) AS CalendarDayOfWeek
-			 , CASE DATEPART(WEEKDAY, @CurrentDate)
-				WHEN 1 THEN 'Sun'
-				WHEN 2 THEN 'Mon'
-				WHEN 3 THEN 'Tue'
-				WHEN 4 THEN 'Wed'
-				WHEN 5 THEN 'Thu'
-			 	WHEN 6 THEN 'Fri'
-				WHEN 7 THEN 'Sat'
-			   END AS CalendarDayOfWeekAbbreviation
-			 , DATENAME(WEEKDAY, @CurrentDate) AS CalendarDayOfWeekLabel
-
+                --Calendar Dates
+				, DATEPART(WEEK, @currentDate) AS CalendarWeek
+				, NULL AS CalendarWeekStartLabel
+				, NULL AS CalendarWeekEndLabel
+				, DATEPART(WEEKDAY, @CurrentDate) AS CalendarDayOfWeek
+				, DATENAME(WEEKDAY, @CurrentDate) AS CalendarDayOfWeekLabel
+				, CASE DATEPART(WEEKDAY, @CurrentDate)
+					WHEN 1 THEN 'Sun'
+					WHEN 2 THEN 'Mon'
+					WHEN 3 THEN 'Tue'
+					WHEN 4 THEN 'Wed'
+					WHEN 5 THEN 'Thu'
+			 		WHEN 6 THEN 'Fri'
+					WHEN 7 THEN 'Sat'
+				  END AS CalendarDayOfWeekAbbreviation
+				, @CurrentMonth AS CalendarMonth
+				, LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3) AS CalendarMonthAbbreviation
+				, DATENAME(MONTH, @currentDate) AS CalendarMonthLabel
+				, DATEPART(DAY, @CurrentDate) AS CalendarDayofmonth
+				, CASE WHEN @currentDate = CONVERT(  DATETIME, CONVERT(DATE, DATEADD(DD, -(DATEPART(DD, (DATEADD(MM, 1, @CurrentDate)))), DATEADD(MM, 1, @CurrentDate))))
+				  THEN 1
+				  ELSE 0 END AS CalendarLastDayOfMonthFlag
+				, DATEPART(QQ, @CurrentDate)  AS CalendarQuarter
+				, 'Q' + CONVERT(CHAR(1), DATEPART(QQ, @CurrentDate)) + '-'
+					+ CONVERT(VARCHAR(4), DATEPART(YEAR, @CurrentDate)) AS CalendarQuarterLabel
+				, DATEPART(YEAR, @CurrentDate) AS CalendarYear	
+				, CONVERT(VARCHAR(4), DATEPART(YEAR, @CurrentDate)) CalendarYearLabel	
+				, DATEPART(DAYOFYEAR, @CurrentDate) AS CalendarDayOfYear
+			 
+				-- not sure what to store in DateDescription
+				, NULL AS DateDescription
+				, NULL AS HolidayFlag                
+				, CASE WHEN DATEPART(WEEKDAY, @CurrentDate) IN (1,7) THEN 1 ELSE 0 END AS WeekendFlag 
+			 
 			 --Fiscal dates
 			 , NULL AS FiscalWeek     
 			 , NULL AS FiscalWeekStartLabel       
@@ -273,8 +277,7 @@ AS
 			 , NULL AS SchoolDayOfYear     
 			
 			          
-			 , NULL AS HolidayFlag                
-			 , CASE WHEN DATEPART(WEEKDAY, @CurrentDate) IN (1,7) THEN 1 ELSE 0 END AS WeekendFlag                
+			                
 			 , -1 AS ExecutionID
 			 , GETUTCDATE() AS InsertedDateTime
 			 , GETUTCDATE() AS UpdatedDateTime
