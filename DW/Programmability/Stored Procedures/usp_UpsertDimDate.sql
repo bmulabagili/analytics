@@ -22,7 +22,7 @@ AS
 
      --Temporary Variables To Hold the Values During Processing of Each Date of Year
      DECLARE @DayOfWeekInMonth INT, @DayOfWeekInYear INT, @DayOfQuarter INT, @WeekOfMonth INT, @CurrentYear INT, @CurrentMonth INT
-		, @CurrentQuarter INT, @MinistryMonth INT;
+		, @CurrentQuarter INT, @MinistryMonth INT, @MinistryMonthAbbreviation NVARCHAR(255), @MinistryMonthLabel NVARCHAR(255);
 
      /*Table Data type to store the day of week count for the month and year*/
      DECLARE @DayOfWeek TABLE(
@@ -69,8 +69,20 @@ AS
 			  ELSE
 	   			CASE WHEN DATEPART(MM, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(MM, @CurrentDate) + 5 ELSE DATEPART(MM, @CurrentDate) - 7 END	
 			  END
-
-		   
+			--special handling for ministry month name
+		    IF 
+				( DATENAME(WEEKDAY, @CurrentDate) = 'Friday' AND DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) > DATEPART(MM, @CurrentDate) ) 
+				OR
+				( DATENAME(WEEKDAY, @CurrentDate) = 'Saturday' AND DATEPART(MM, DATEADD(DAY, 1, @CurrentDate)) > DATEPART(MM, @CurrentDate) ) 
+			BEGIN
+				 SET @MinistryMonthAbbreviation = LEFT(CONVERT(VARCHAR(20), DATEADD(DAY, 2, @CurrentDate) , 107), 3)
+				 SET @MinistryMonthLabel = DATENAME(MONTH, DATEADD(DAY, 2, @CurrentDate)) 
+			END
+			ELSE
+			BEGIN
+				SET @MinistryMonthAbbreviation = LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3)
+				SET @MinistryMonthLabel = DATENAME(MONTH, @currentDate) 
+			END
 
 
              --Begin day of week logic
@@ -222,7 +234,8 @@ AS
 			             
 			-- Ministry Dates
 			---fix ministry week in an update
-			 , NULL AS MinistryWeek     
+			 , NULL AS MinistryWeek  
+			 --add week start and end labels later   
 			 , NULL AS MinistryWeekStartLabel       
 			 , NULL AS MinistryWeekEndLabel         
 			 --shift all day of week - 1 (from first day of week sunday, to first day of week is monday)
@@ -238,8 +251,8 @@ AS
 				WHEN 7 THEN 'Sat'
 			   END AS MinistryDayOfWeekAbbreviation      
 			 , @MinistryMonth AS MinistryMonth  
-			 , LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3) AS MinistryMonthAbbreviation    
-			 , DATENAME(MONTH, @currentDate) AS MinistryMonthLabel  
+			 , @MinistryMonthAbbreviation AS MinistryMonthAbbreviation    
+			 , @MinistryMonthLabel AS MinistryMonthLabel
 			 --The ministry Day of month won't always be right, correct it later         
 			 , NULL AS MinistryDayOfMonth           
 			 , CASE WHEN @currentDate = CONVERT(  DATETIME, CONVERT(DATE, DATEADD(DD, -(DATEPART(DD, (DATEADD(MM, 1, @CurrentDate)))), DATEADD(MM, 1, @CurrentDate))))
