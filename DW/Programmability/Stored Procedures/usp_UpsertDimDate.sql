@@ -13,7 +13,7 @@ AS
 		--HBC weekend services (Friday, Saturday, Sunday) are reported together in Summary for KPI Reports
 		--When a weekend is split over 2 calendar months, the Sunday date determines which month the KPI report data gets calculated into.
 		--weekly data is defined starting Monday 12:00 AM through Sunday 11:59 PM
-	--School   Year: 8/1/yyyy - 7/31/yyyy
+	--School   Year: 6/1/yyyy - 5/31/yyyy
 
      --REMOVE existing rows	
 	DELETE FROM DW.DimDate 
@@ -280,7 +280,7 @@ AS
 			 	WHEN 6 THEN 'Fri'
 				WHEN 7 THEN 'Sat'
 			   END AS SchoolDayOfWeekAbbreviation      
-			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 7 THEN @CurrentMonth + 5 ELSE @CurrentMonth - 7 END AS SchoolMonth  
+			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 5 THEN @CurrentMonth + 7 ELSE @CurrentMonth - 5 END AS SchoolMonth  
 			 , LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3) AS SchoolMonthAbbreviation    
 			 , DATENAME(MONTH, @currentDate) AS SchoolMonthLabel           
 			 , DATEPART(DAY, @CurrentDate) AS SchoolDayOfMonth           
@@ -289,11 +289,9 @@ AS
 				ELSE 0 END AS SchoolLastDayOfMonthFlag
 			 , NULL AS SchoolQuarter  
 			 , NULL AS SchoolQuarterLabel         
-			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS SchoolYear   
-			 , CONVERT(VARCHAR(4), CASE WHEN @CurrentMonth BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS SchoolYearLabel   
-			 , NULL AS SchoolDayOfYear     
-			
-			          
+			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 5 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS SchoolYear   
+			 , CONVERT(VARCHAR(4), CASE WHEN @CurrentMonth BETWEEN 1 AND 5 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS SchoolYearLabel   
+			 , NULL AS SchoolDayOfYear 
 			                
 			 , -1 AS ExecutionID
 			 , GETUTCDATE() AS InsertedDateTime
