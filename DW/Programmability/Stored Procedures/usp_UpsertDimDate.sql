@@ -10,8 +10,9 @@ AS
 	--Calendar Year: 1/1/yyyy - 12/31/yyyy
 	--Fiscal   Year: 7/1/yyyy - 6/30/yyyy
 	--Ministry Year: 8/1/yyyy - 7/31/yyyy
-		--HBC weekend services (Friday, Saturday, Sunday) are reported together in Summary for KPI Reports
-		--When a weekend is split over 2 calendar months, the Sunday date determines which month the KPI report data gets calculated into.
+		--HBC minsitry weeks (Monday - Sunday) are reported together in Summary for KPI Reports
+		--When a week is split over 2 calendar months, the Sunday date determines which month the KPI report data gets calculated into.
+		--UNLESS that would cause days to move into the next calendar year (from july - august)
 		--weekly data is defined starting Monday 12:00 AM through Sunday 11:59 PM
 	--School   Year: 6/1/yyyy - 5/31/yyyy
 
@@ -59,31 +60,54 @@ AS
     --Proceed only if Start Date(Current date ) is less than End date you specified above
     WHILE @CurrentDate < @EndDate
          BEGIN
-			--Special Handling for Ministry Month
-			SET @MinistryMonth = CASE WHEN 
-				( DATENAME(WEEKDAY, @CurrentDate) = 'Friday' AND DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) > DATEPART(MM, @CurrentDate) ) 
-				OR
-				( DATENAME(WEEKDAY, @CurrentDate) = 'Saturday' AND DATEPART(MM, DATEADD(DAY, 1, @CurrentDate)) > DATEPART(MM, @CurrentDate) ) 
-			  THEN	
-				CASE WHEN DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) BETWEEN 1 AND 7 THEN DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) + 5 ELSE DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) - 7 END
-			  ELSE
-	   			CASE WHEN DATEPART(MM, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(MM, @CurrentDate) + 5 ELSE DATEPART(MM, @CurrentDate) - 7 END	
-			  END
-			--special handling for ministry month name
-		    IF 
-				( DATENAME(WEEKDAY, @CurrentDate) = 'Friday' AND DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) > DATEPART(MM, @CurrentDate) ) 
-				OR
-				( DATENAME(WEEKDAY, @CurrentDate) = 'Saturday' AND DATEPART(MM, DATEADD(DAY, 1, @CurrentDate)) > DATEPART(MM, @CurrentDate) ) 
+			--default Ministry Month Handler:
+			SET @MinistryMonth = CASE WHEN DATEPART(MM, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(MM, @CurrentDate) + 5 ELSE DATEPART(MM, @CurrentDate) - 7 END
+			--default handling for Ministry Month Abbreviation and label
+			SET @MinistryMonthAbbreviation = LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3)
+			SET @MinistryMonthLabel = DATENAME(MONTH, @currentDate) 
+
+			--Special Handling for Ministry Month, Abbreviation and Label
+			IF DATENAME(WEEKDAY, @CurrentDate) = 'Monday'    AND (DATEPART(MM, DATEADD(DAY, 6, @CurrentDate)) > DATEPART(MM, @CurrentDate) OR DATEPART(MM, DATEADD(DAY, 6, @CurrentDate)) = 1) AND DATEPART(MM, DATEADD(DAY, 6, @CurrentDate)) <> 8
 			BEGIN
-				 SET @MinistryMonthAbbreviation = LEFT(CONVERT(VARCHAR(20), DATEADD(DAY, 2, @CurrentDate) , 107), 3)
-				 SET @MinistryMonthLabel = DATENAME(MONTH, DATEADD(DAY, 2, @CurrentDate)) 
-			END
-			ELSE
-			BEGIN
-				SET @MinistryMonthAbbreviation = LEFT(CONVERT(VARCHAR(20), CONVERT(DATE, @CurrentDate) , 107), 3)
-				SET @MinistryMonthLabel = DATENAME(MONTH, @currentDate) 
+				SET @MinistryMonth = CASE WHEN DATEPART(MM, DATEADD(DAY, 6, @CurrentDate)) BETWEEN 1 AND 7 THEN DATEPART(MM, DATEADD(DAY, 6, @CurrentDate)) + 5 ELSE DATEPART(MM, DATEADD(DAY, 6, @CurrentDate)) - 7 END
+				SET @MinistryMonthAbbreviation = LEFT(CONVERT(VARCHAR(20), DATEADD(DAY, 6, @CurrentDate) , 107), 3)
+				SET @MinistryMonthLabel = DATENAME(MONTH, DATEADD(DAY, 6, @CurrentDate)) 
 			END
 
+			IF DATENAME(WEEKDAY, @CurrentDate) = 'Tuesday'   AND (DATEPART(MM, DATEADD(DAY, 5, @CurrentDate)) > DATEPART(MM, @CurrentDate) OR DATEPART(MM, DATEADD(DAY, 5, @CurrentDate)) = 1) AND DATEPART(MM, DATEADD(DAY, 6, @CurrentDate)) <> 8
+			BEGIN
+				SET @MinistryMonth = CASE WHEN DATEPART(MM, DATEADD(DAY, 5, @CurrentDate)) BETWEEN 1 AND 7 THEN DATEPART(MM, DATEADD(DAY, 5, @CurrentDate)) + 5 ELSE DATEPART(MM, DATEADD(DAY, 5, @CurrentDate)) - 7 END
+				SET @MinistryMonthAbbreviation = LEFT(CONVERT(VARCHAR(20), DATEADD(DAY, 5, @CurrentDate) , 107), 3)
+				SET @MinistryMonthLabel = DATENAME(MONTH, DATEADD(DAY, 5, @CurrentDate)) 
+			END
+
+			IF DATENAME(WEEKDAY, @CurrentDate) = 'Wednesday' AND (DATEPART(MM, DATEADD(DAY, 4, @CurrentDate)) > DATEPART(MM, @CurrentDate) OR DATEPART(MM, DATEADD(DAY, 4, @CurrentDate)) = 1) AND DATEPART(MM, DATEADD(DAY, 6, @CurrentDate)) <> 8
+			BEGIN
+				SET @MinistryMonth = CASE WHEN DATEPART(MM, DATEADD(DAY, 4, @CurrentDate)) BETWEEN 1 AND 7 THEN DATEPART(MM, DATEADD(DAY, 4, @CurrentDate)) + 5 ELSE DATEPART(MM, DATEADD(DAY, 4, @CurrentDate)) - 7 END
+				SET @MinistryMonthAbbreviation = LEFT(CONVERT(VARCHAR(20), DATEADD(DAY, 4, @CurrentDate) , 107), 3)
+				SET @MinistryMonthLabel = DATENAME(MONTH, DATEADD(DAY, 4, @CurrentDate)) 
+			END
+
+			IF DATENAME(WEEKDAY, @CurrentDate) = 'Thursday'  AND (DATEPART(MM, DATEADD(DAY, 3, @CurrentDate)) > DATEPART(MM, @CurrentDate) OR DATEPART(MM, DATEADD(DAY, 3, @CurrentDate)) = 1) AND DATEPART(MM, DATEADD(DAY, 6, @CurrentDate)) <> 8
+			BEGIN
+				SET @MinistryMonth = CASE WHEN DATEPART(MM, DATEADD(DAY, 3, @CurrentDate)) BETWEEN 1 AND 7 THEN DATEPART(MM, DATEADD(DAY, 3, @CurrentDate)) + 5 ELSE DATEPART(MM, DATEADD(DAY, 3, @CurrentDate)) - 7 END
+				SET @MinistryMonthAbbreviation = LEFT(CONVERT(VARCHAR(20), DATEADD(DAY, 3, @CurrentDate) , 107), 3)
+				SET @MinistryMonthLabel = DATENAME(MONTH, DATEADD(DAY, 3, @CurrentDate)) 
+			END
+
+			IF DATENAME(WEEKDAY, @CurrentDate) = 'Friday'    AND (DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) > DATEPART(MM, @CurrentDate) OR DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) = 1) AND DATEPART(MM, DATEADD(DAY, 6, @CurrentDate)) <> 8
+			BEGIN
+				SET @MinistryMonth = CASE WHEN DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) BETWEEN 1 AND 7 THEN DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) + 5 ELSE DATEPART(MM, DATEADD(DAY, 2, @CurrentDate)) - 7 END
+				SET @MinistryMonthAbbreviation = LEFT(CONVERT(VARCHAR(20), DATEADD(DAY, 2, @CurrentDate) , 107), 3)
+				SET @MinistryMonthLabel = DATENAME(MONTH, DATEADD(DAY, 2, @CurrentDate)) 
+			END
+
+			IF DATENAME(WEEKDAY, @CurrentDate) = 'Saturday'  AND (DATEPART(MM, DATEADD(DAY, 1, @CurrentDate)) > DATEPART(MM, @CurrentDate) OR DATEPART(MM, DATEADD(DAY, 1, @CurrentDate)) = 1) AND DATEPART(MM, DATEADD(DAY, 6, @CurrentDate)) <> 8
+			BEGIN
+				SET @MinistryMonth = CASE WHEN DATEPART(MM, DATEADD(DAY, 1, @CurrentDate)) BETWEEN 1 AND 7 THEN DATEPART(MM, DATEADD(DAY, 1, @CurrentDate)) + 5 ELSE DATEPART(MM, DATEADD(DAY, 1, @CurrentDate)) - 7 END
+				SET @MinistryMonthAbbreviation = LEFT(CONVERT(VARCHAR(20), DATEADD(DAY, 1, @CurrentDate) , 107), 3)
+				SET @MinistryMonthLabel = DATENAME(MONTH, DATEADD(DAY, 1, @CurrentDate)) 
+			END
 
              --Begin day of week logic
 
