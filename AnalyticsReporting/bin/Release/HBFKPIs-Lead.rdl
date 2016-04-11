@@ -26,17 +26,8 @@
         </QueryParameters>
         <CommandText>;WITH FullHBFMinistryYear AS (
 	SELECT
-		  ISNULL(SectionName, 'New Plants') AS SectionName
-		, CASE WHEN MetricName LIKE 'Survival%' OR MetricName LIKE 'Interest%' OR MetricName = 'New Plants - North America' THEN 1 ELSE
-			CASE WHEN MetricName LIKE 'Foundational%' OR MetricName LIKE 'Assessment%' OR MetricName = 'New Plants - International' THEN 2 ELSE	
-				CASE WHEN MetricName LIKE 'Acceleration%' OR MetricName LIKE 'Selection%' THEN 3 ELSE	
-					CASE WHEN MetricName LIKE 'Replication%' OR MetricName LIKE 'Training%'  THEN 4 ELSE	
-						CASE WHEN MetricName LIKE 'Maturation%' OR MetricName LIKE 'Core Group Dev%' THEN 5 END
-					END
-				END
-			END
-		  END AS SortOrder
-		, MetricName
+		  SectionName
+		, MetricName	
 		, DimDate.MinistryYear
 		, DimDate.MinistryMonth
 		, DimDate.CalendarMonthAbbreviation
@@ -54,33 +45,15 @@
 		ON FactHBFMetric.CalendarMonth = DimDate.CalendarMonth
 		AND FactHBFMetric.CalendarYear = DimDate.CalendarYear
 	GROUP BY
-		  ISNULL(SectionName, 'New Plants')
-		, CASE WHEN MetricName LIKE 'Survival%' OR MetricName LIKE 'Interest%' OR MetricName = 'New Plants - North America' THEN 1 ELSE
-			CASE WHEN MetricName LIKE 'Foundational%' OR MetricName LIKE 'Assessment%' OR MetricName = 'New Plants - International' THEN 2 ELSE	
-				CASE WHEN MetricName LIKE 'Acceleration%' OR MetricName LIKE 'Selection%' THEN 3 ELSE	
-					CASE WHEN MetricName LIKE 'Replication%' OR MetricName LIKE 'Training%'  THEN 4 ELSE	
-						CASE WHEN MetricName LIKE 'Maturation%' OR MetricName LIKE 'Core Group Dev%' THEN 5 END
-					END
-				END
-			END
-		  END
-		, MetricName
+		  SectionName
+		, MetricName 
 		, DimDate.MinistryYear
 		, DimDate.MinistryMonth
 		, DimDate.CalendarMonthAbbreviation
 	UNION
 	--pull in the "0"s too
 	SELECT DISTINCT 
-		ISNULL(SectionName, 'New Plants') AS SectionName
-		, CASE WHEN MetricName LIKE 'Survival%' OR MetricName LIKE 'Interest%' OR MetricName = 'New Plants - North America' THEN 1 ELSE
-			CASE WHEN MetricName LIKE 'Foundational%' OR MetricName LIKE 'Assessment%' OR MetricName = 'New Plants - International' THEN 2 ELSE	
-				CASE WHEN MetricName LIKE 'Acceleration%' OR MetricName LIKE 'Selection%' THEN 3 ELSE	
-					CASE WHEN MetricName LIKE 'Replication%' OR MetricName LIKE 'Training%'  THEN 4 ELSE	
-						CASE WHEN MetricName LIKE 'Maturation%' OR MetricName LIKE 'Core Group Dev%' THEN 5 END
-					END
-				END
-			END
-		  END AS SortOrder
+		  SectionName
 		, MetricName
 		, DimDate.MinistryYear
 		, DimDate.MinistryMonth
@@ -96,18 +69,59 @@
 			AND DimDate.MinistryYear = @MinistryYear) DimDate
 )
 SELECT 
-	  SectionName
-	, SortOrder
-	, MetricName
+	  ISNULL(SectionName, 'New Plants') AS SectionName
+	, CASE WHEN MetricName LIKE 'Survival%' OR MetricName LIKE 'Interest%' OR MetricName = 'North America' THEN 1 ELSE
+			CASE WHEN MetricName LIKE 'Foundational%' OR MetricName LIKE 'Assessment%'  OR MetricName LIKE 'Assesment' OR MetricName = 'International' THEN 2 ELSE	
+				CASE WHEN MetricName LIKE 'Acceleration%' OR MetricName LIKE 'Selection%' THEN 3 ELSE	
+					CASE WHEN MetricName LIKE 'Replication%' OR MetricName LIKE 'Training%'  THEN 4 ELSE	
+						CASE WHEN MetricName LIKE 'Maturation%' OR MetricName LIKE 'Core Group Dev%' THEN 5 END
+					END
+				END
+			END
+		  END AS SortOrder
+	, CASE WHEN SectionName = 'International Stages' THEN
+		CASE WHEN MetricName like 'survival%' THEN 'Survival (Rented Bldg)' ELSE
+			CASE WHEN MetricName LIKE 'Foundational%' THEN 'Foundational (Elders)' ELSE
+				CASE WHEN MetricName LIKE 'Acceleration%' THEN 'Acceleration (Add Staff)' ELSE	
+					CASE WHEN MetricName LIKE 'Replication%' THEN 'Replication (Policies)' ELSE	
+						CASE WHEN MetricName LIKE 'Maturation%' THEN 'Maturation (Planting)' ELSE 
+							MetricName
+						END 
+					END 
+				END 
+			END 
+		END ELSE
+	  REPLACE(MetricName ,'Assesment' , 'Assessment') END AS MetricName
 	, MinistryYear
 	, MinistryMonth
 	, CalendarMonthAbbreviation
 	, SUM(HBFMetricAmount) AS HBFMetricAmount
 FROM FullHBFMinistryYear
+--where SectionName = 'International Stages'
 GROUP BY
-	  SectionName
-	, SortOrder
-	, MetricName
+	  ISNULL(SectionName, 'New Plants')
+	, CASE WHEN MetricName LIKE 'Survival%' OR MetricName LIKE 'Interest%' OR MetricName = 'North America' THEN 1 ELSE
+			CASE WHEN MetricName LIKE 'Foundational%' OR MetricName LIKE 'Assessment%'  OR MetricName LIKE 'Assesment' OR MetricName = 'International' THEN 2 ELSE	
+				CASE WHEN MetricName LIKE 'Acceleration%' OR MetricName LIKE 'Selection%' THEN 3 ELSE	
+					CASE WHEN MetricName LIKE 'Replication%' OR MetricName LIKE 'Training%'  THEN 4 ELSE	
+						CASE WHEN MetricName LIKE 'Maturation%' OR MetricName LIKE 'Core Group Dev%' THEN 5 END
+					END
+				END
+			END
+		  END 
+	, CASE WHEN SectionName = 'International Stages' THEN
+	CASE WHEN MetricName like 'survival%' THEN 'Survival (Rented Bldg)' ELSE
+		CASE WHEN MetricName LIKE 'Foundational%' THEN 'Foundational (Elders)' ELSE
+			CASE WHEN MetricName LIKE 'Acceleration%' THEN 'Acceleration (Add Staff)' ELSE	
+				CASE WHEN MetricName LIKE 'Replication%' THEN 'Replication (Policies)' ELSE	
+					CASE WHEN MetricName LIKE 'Maturation%' THEN 'Maturation (Planting)' ELSE 
+						MetricName
+					END 
+				END 
+			END 
+		END 
+	END ELSE
+  REPLACE(MetricName ,'Assesment' , 'Assessment') END
 	, MinistryYear
 	, MinistryMonth
 	, CalendarMonthAbbreviation
