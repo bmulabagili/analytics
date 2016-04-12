@@ -313,8 +313,12 @@ AS
 				ELSE 0 END AS SchoolLastDayOfMonthFlag
 			 , NULL AS SchoolQuarter  
 			 , NULL AS SchoolQuarterLabel         
-			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 5 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS SchoolYear   
-			 , CONVERT(VARCHAR(4), CASE WHEN @CurrentMonth BETWEEN 1 AND 5 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS SchoolYearLabel   
+			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 5 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, DATEADD(YEAR, 1, @currentdate)) END AS SchoolYear   
+			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 5 THEN 
+					CONVERT(VARCHAR(4), DATEPART(YEAR, DATEADD(YEAR, -1, @CurrentDate))) + '/' + RIGHT(CONVERT(VARCHAR(4), DATEPART(YEAR, @CurrentDate)), 2)
+			   ELSE 
+					CONVERT(VARCHAR(4), DATEPART(YEAR, @CurrentDate)) + '/' + RIGHT(CONVERT(VARCHAR(4), DATEPART(YEAR, DATEADD(YEAR, 1, @CurrentDate))), 2)
+			   END AS SchoolYearLabel   
 			 , NULL AS SchoolDayOfYear 
 			                
 			 , -1 AS ExecutionID
