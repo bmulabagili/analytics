@@ -5,45 +5,45 @@ AS
 WITH Actuals AS (
 	SELECT 
 		SUM(FactExpense.Amount) AS Amount
-	FROM dw.FactExpense
-	INNER JOIN dw.DimDate
+	FROM DW.FactExpense
+	INNER JOIN DW.DimDate
 		ON FactExpense.DateID = DimDate.DateID
-	INNER JOIN dw.DimEntity
+	INNER JOIN DW.DimEntity
 		ON FactExpense.EntityID = DimEntity.EntityID
 		AND FactExpense.TenantID = DimEntity.TenantID
-	INNER JOIN dw.DimFinancialCategory
+	INNER JOIN DW.DimFinancialCategory
 		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactExpense.TenantID = DimFinancialCategory.TenantID
 	WHERE
 		DimEntity.Code = 'HBC' 
 		AND DimFinancialCategory.FundCode = '025'
-		AND DimDate.Calendaryear = YEAR(GETDATE())
+		AND DimDate.CalendarYear = YEAR(GETDATE())
 ), CurrentMonthActuals AS (
 	SELECT 
 		SUM(FactExpense.Amount) AS Amount
-	FROM dw.FactExpense
-	INNER JOIN dw.DimDate
+	FROM DW.FactExpense
+	INNER JOIN DW.DimDate
 		ON FactExpense.DateID = DimDate.DateID
-	INNER JOIN dw.DimEntity
+	INNER JOIN DW.DimEntity
 		ON FactExpense.EntityID = DimEntity.EntityID
 		AND FactExpense.TenantID = DimEntity.TenantID
-	INNER JOIN dw.DimFinancialCategory
+	INNER JOIN DW.DimFinancialCategory
 		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactExpense.TenantID = DimFinancialCategory.TenantID
 	WHERE
 		DimEntity.Code = 'HBC' 
 		AND DimFinancialCategory.FundCode = '025'
-		AND DimDate.Calendaryear = YEAR(GETDATE())
+		AND DimDate.CalendarYear = YEAR(GETDATE())
 		AND DimDate.CalendarMonth = MONTH(GETDATE())
 	) 
 	, Budgeted AS (
 	SELECT 
 		SUM(FactBudgetExpense.Amount) AS Amount
-	FROM dw.FactBudgetExpense
-	INNER JOIN dw.DimEntity
+	FROM DW.FactBudgetExpense
+	INNER JOIN DW.DimEntity
 		ON FactBudgetExpense.EntityID = DimEntity.EntityID
 		AND FactBudgetExpense.TenantID = DimEntity.TenantID
-	INNER JOIN dw.DimFinancialCategory
+	INNER JOIN DW.DimFinancialCategory
 		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
 	WHERE

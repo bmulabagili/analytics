@@ -189,7 +189,7 @@ AS
 			 , SchoolDayOfMonth, SchoolLastDayOfMonthFlag, SchoolQuarter, SchoolQuarterLabel, SchoolYear					
 			 , SchoolYearLabel, SchoolDayOfYear		
 			 --etl columns
-			 , ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue  )
+			 , ExecutionID, InsertedDateTime, UpdatedDateTime, Hashvalue  )
             SELECT 
 				  CONVERT(  CHAR(8), @CurrentDate, 112) AS DateID
                 , CONVERT(  CHAR(10), @CurrentDate, 101) AS ActualDateLabel
@@ -324,7 +324,7 @@ AS
 			 , -1 AS ExecutionID
 			 , GETUTCDATE() AS InsertedDateTime
 			 , GETUTCDATE() AS UpdatedDateTime
-			 , '' AS HashValue
+			 , '' AS Hashvalue
          
              SET @CurrentDate = DATEADD(DD, 1, @CurrentDate);
          END;

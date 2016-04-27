@@ -18,13 +18,13 @@ AS
 			, DimDate.CalendarMonth
 			, DimEntity.Code AS EntityCode
 			, SUM(FactExpense.Amount) AS Amount
-		FROM dw.FactExpense
-		INNER JOIN dw.DimDate
+		FROM DW.FactExpense
+		INNER JOIN DW.DimDate
 			ON FactExpense.DateID = DimDate.DateID
-		INNER JOIN dw.DimEntity
+		INNER JOIN DW.DimEntity
 			ON FactExpense.EntityID = DimEntity.EntityID
 			AND FactExpense.TenantID = DimEntity.TenantID
-		INNER JOIN dw.DimFinancialCategory
+		INNER JOIN DW.DimFinancialCategory
 			ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 			AND FactExpense.TenantID = DimFinancialCategory.TenantID
 		INNER JOIN Calendar
@@ -52,11 +52,11 @@ AS
 			, FactBudgetExpense.BudgetMonth AS CalendarMonth
 			, DimEntity.Code AS EntityCode
 			, SUM(FactBudgetExpense.Amount) AS Amount
-		FROM dw.FactBudgetExpense
-		INNER JOIN dw.DimEntity
+		FROM DW.FactBudgetExpense
+		INNER JOIN DW.DimEntity
 			ON FactBudgetExpense.EntityID = DimEntity.EntityID
 			AND FactBudgetExpense.TenantID = DimEntity.TenantID
-		INNER JOIN dw.DimFinancialCategory
+		INNER JOIN DW.DimFinancialCategory
 			ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 			AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
 		INNER JOIN Calendar

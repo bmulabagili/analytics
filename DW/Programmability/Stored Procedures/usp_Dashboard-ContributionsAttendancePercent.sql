@@ -6,10 +6,10 @@ WITH Contributions AS (
 	SELECT 
 		  DimFinancialCategory.CampusCode
 		, SUM(Amount) AS Amount
-	FROM dw.FactRevenue
-	INNER JOIN dw.DimFinancialCategory
+	FROM DW.FactRevenue
+	INNER JOIN DW.DimFinancialCategory
 		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
-	INNER JOIN dw.DimDate
+	INNER JOIN DW.DimDate
 		ON FactRevenue.DateID = DimDate.DateID
 	WHERE
 		DimFinancialCategory.EntityCode = 'HBC'
