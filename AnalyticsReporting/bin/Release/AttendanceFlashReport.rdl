@@ -2922,7 +2922,9 @@
                                     </Style>
                                   </TextRun>
                                 </TextRuns>
-                                <Style />
+                                <Style>
+                                  <TextAlign>Right</TextAlign>
+                                </Style>
                               </Paragraph>
                             </Paragraphs>
                             <rd:DefaultName>Textbox35</rd:DefaultName>
@@ -3094,7 +3096,8 @@ ORDER BY ActualDate DESC</CommandText>
 		  LastTwoWeekends.SectionName
 		, LastTwoWeekends.ActualDate AS WeekendDate
 		--, DimCampus.Code
-		, CASE WHEN DimCampus.Code = '--' AND DimMinistry.Name IN ('Camp','Other') THEN 'Camp / Other' ELSE DimCampus.Code END AS Campus
+		, CASE WHEN DimCampus.Code = '--' AND DimMinistry.Name IN ('Camp','Other') THEN 'Camp / Other' ELSE 
+			CASE WHEN DimCampus.Code  = '--' THEN Campus2.Code ELSE DimCampus.Code END END AS Campus
 		, DimMinistry.Name AS MinistryName
 		, CASE WHEN DimMinistry.Name IN (
 			  'AU - Churchwide Services'
@@ -3115,6 +3118,8 @@ ORDER BY ActualDate DESC</CommandText>
 		ON FactAttendance.MinistryID = DimMinistry.MinistryID
 	LEFT JOIN DW.DimCampus
 		ON FactAttendance.CampusID = DimCampus.CampusID
+	LEFT JOIN DW.DimCampus campus2
+		ON DimMinistry.CampusID = campus2.CampusID
 	WHERE
 		DimMinistry.Name IN (
 			  'AU - Churchwide Services'
@@ -3139,6 +3144,15 @@ ORDER BY ActualDate DESC</CommandText>
 		, (SELECT 'ADULTS'AS Name UNION SELECT 'KIDS' AS Name) AttendanceCategory
 	WHERE
 		DimCampus.Code IN ('RM','EL','CL','NI','CC','AU','DR')
+	UNION
+	SELECT 
+		  LastTwoWeekends.SectionName
+		, LastTwoWeekends.ActualDate AS WeekendDate
+		, 'Camp / Other' AS CampusCode
+		, ''
+		, 'ADULTS' 
+		, 0 AS AttendanceCount
+	FROM LastTwoWeekends
 )
 SELECT
 	SectionName, WeekendDate
@@ -3165,7 +3179,8 @@ GROUP BY
 		WHEN 'DR' THEN 8
 		WHEN 'Camp / Other' THEN 9 END
 	, Campus, MinistryName, AttendanceCategory
-ORDER BY 1,2,3,4</CommandText>
+ORDER BY 1,2,3,4
+</CommandText>
       </Query>
       <Fields>
         <Field Name="SectionName">
