@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[CampusXLTReportGroup__XLTTab]
+﻿CREATE TABLE [dbo].[CampusXLTReportGroup_XLTTab]
 (
 	  CampusXLTReportGroupID INT NOT NULL 
 	--for the xlt tab
