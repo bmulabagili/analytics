@@ -85,9 +85,9 @@ AS
 	TRUNCATE TABLE CampusXLTReportGroup_CampusTabMap
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 1 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 1 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -97,9 +97,9 @@ AS
 		AND AccountingCode9 = '8009'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 2 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 2 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -109,9 +109,9 @@ AS
 		AND AccountingCode9 = '8004'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 3 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 3 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -121,9 +121,9 @@ AS
 		AND AccountingCode9 = '8032'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 4 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 4 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -133,9 +133,9 @@ AS
 		AND AccountingCode9 = '8037'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 5 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 5 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -145,9 +145,9 @@ AS
 		AND AccountingCode9 IN ('8005', '8006', '8007', '8008')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 6 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 6 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -158,9 +158,9 @@ AS
 
 	
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 7 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 7 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -170,9 +170,9 @@ AS
 		AND AccountingCode9 IN ('8010', '8011', '8012', '8013')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 8 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 8 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -182,9 +182,9 @@ AS
 		AND AccountingCode9 IN ('8014', '8015')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 9 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 9 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -194,9 +194,9 @@ AS
 		AND AccountingCode9 IN ('8021', '8022', '8023')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 10 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 10 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -206,9 +206,9 @@ AS
 		AND AccountingCode9 IN ('8017', '8018', '8019', '8020')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 11 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 11 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -218,9 +218,9 @@ AS
 		AND AccountingCode9 IN ('8024')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 13 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 13 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -230,9 +230,9 @@ AS
 		AND AccountingCode9 IN ('8031', '8038', '8040')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 14 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 14 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -242,9 +242,9 @@ AS
 		AND AccountingCode9 IN ('8047', '8036')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 15 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 15 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -254,9 +254,9 @@ AS
 		AND AccountingCode9 IN ('8030', '8033', '8034', '8035')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 16 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 16 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -266,9 +266,9 @@ AS
 		AND AccountingCode9 IN ('8029')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 17 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 17 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -280,9 +280,9 @@ AS
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 18 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 18 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -294,9 +294,9 @@ AS
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 19 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 19 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -307,9 +307,9 @@ AS
 	
 	
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 20 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 20 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -319,9 +319,9 @@ AS
 		AND AccountingCode9 IN ('8049')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 20 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 20 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -331,9 +331,9 @@ AS
 		AND AccountingCode9 IN ('8050')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 22 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 22 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -343,9 +343,9 @@ AS
 		AND DepartmentCode = '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 23 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 23 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -357,9 +357,9 @@ AS
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 24 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 24 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -371,9 +371,9 @@ AS
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 25 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 25 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -385,9 +385,9 @@ AS
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 26 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 26 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -399,9 +399,9 @@ AS
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 27 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 27 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -413,9 +413,9 @@ AS
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 28 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 28 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -427,9 +427,9 @@ AS
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 29 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 29 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -441,9 +441,9 @@ AS
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 30 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 30 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -455,9 +455,9 @@ AS
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 31 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 31 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -469,9 +469,9 @@ AS
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 32 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 32 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -483,9 +483,9 @@ AS
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 33 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 33 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -497,25 +497,25 @@ AS
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
-		DimFinancialCategory.FinancialCategoryID, 32 AS CampusReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 32 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	LEFT JOIN [dbo].[CampusXLTReportGroup_CampusTabMap] dest
-		ON DimFinancialCategory.FinancialCategoryID = dest.CampusReportGroupID 
+		ON DimFinancialCategory.FinancialCategoryID = dest.CampusXLTReportGroupID 
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
-		AND Dest.CampusReportGroupID IS NULL
+		AND Dest.CampusXLTReportGroupID IS NULL
 
 
 
 	--Then load the map values
 	--1. General Office
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 35
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -525,7 +525,7 @@ AS
 
 	--2. Office Equipment –Expenses with the department code 5058
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 36
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -535,7 +535,7 @@ AS
 		
 	--3. Technology
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 37
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -545,7 +545,7 @@ AS
 
 	--4. Printing – Expenses with the department code 5078
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 38
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -555,7 +555,7 @@ AS
 
 	--5. Banking, Legal, Audit, Professional Fees
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 39
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -565,7 +565,7 @@ AS
 
 	--6. Payroll Processing Fees
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 40
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -575,7 +575,7 @@ AS
 
 	--7. Insurance
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 41
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -585,7 +585,7 @@ AS
 
 	--8.Facilities & Grounds Maintenance
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 42
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -595,7 +595,7 @@ AS
 
 	--9.Utilities
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 43
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -608,7 +608,7 @@ AS
 
 	--11.Mortgage
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 45
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -618,7 +618,7 @@ AS
 
 	--12.Operating Expense (under camp operations, also called camp  operating expense on xlt management report tab) – all expenses under fund 058
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 46
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -628,7 +628,7 @@ AS
 
 	--13.Ministry Expansion and Development
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 47
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -638,7 +638,7 @@ AS
 
 	--14.Special Events
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 48
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -648,7 +648,7 @@ AS
 
 	--15.Online Services – All expenses with department 5164
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 49
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -658,7 +658,7 @@ AS
 
 	--16.Adult
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 50
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -671,7 +671,7 @@ AS
 
 	--19.Family 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 53
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -681,7 +681,7 @@ AS
 
 	--20.Student
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 54
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -691,7 +691,7 @@ AS
 
 	--21.Worship
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 55
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -701,7 +701,7 @@ AS
 
 	--22.Stewardship – all expenses with department code 7280
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 56
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -711,7 +711,7 @@ AS
 
 	--23.Missions & Outreach & Church Plant
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 57
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -721,7 +721,7 @@ AS
 
 	--24.Congregation/FOCIS
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 58
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -734,7 +734,7 @@ AS
 
 	--26.Creative Services, Video Prod, Media – all expenses in department codes 5158, 5159, or 6137
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT FinancialCategoryID, 60
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -744,7 +744,7 @@ AS
 
 	--other
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DimFinancialCategory.FinancialCategoryID, 61
 	FROM DW.DimFinancialCategory
 	LEFT JOIN [dbo].[CampusXLTReportGroup_CampusTabMap] dest
@@ -752,6 +752,6 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Dest.CampusReportGroupID IS NULL
+		AND Dest.CampusXLTReportGroupID IS NULL
 
 RETURN 0
