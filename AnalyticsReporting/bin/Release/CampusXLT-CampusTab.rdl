@@ -286,6 +286,124 @@ FROM (
         </Field>
       </Fields>
     </DataSet>
+    <DataSet Name="ActualRevenue">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@BudgetYear">
+            <Value>=Parameters!BudgetYear.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@BudgetMonth">
+            <Value>=Parameters!BudgetMonth.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>--revenues should exclude minitry income
+WITH Attendance AS(
+	SELECT FactAttendance.CampusID, DimCampus.Code, SUM(AttendanceCount) AttendanceCount
+	FROM dw.FactAttendance
+	INNER JOIN DW.DimAttendanceType
+		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+	INNER JOIN dw.DimDate
+		ON FactAttendance.InstanceDateID = DimDate.DateID
+	INNER JOIN DW.DimCampus
+		ON FactAttendance.CampusID = DimCampus.CampusID
+	WHERE
+		DimCampus.Code NOT IN ('--','WW','SP')
+		AND DimAttendanceType.Category = 'Attendee'
+		AND FactAttendance.Age &gt;= 18
+		AND CalendarYear IN (@BudgetYear)
+	GROUP BY
+		FactAttendance.CampusID, DimCampus.Code
+	UNION
+	SELECT CampusID, Code, 0 AS AttendanceCount 
+	FROM dw.DimCampus
+	WHERE DimCampus.Code NOT IN ('--','WW','SP')
+	UNION
+	SELECT -1, 'Initiatives/BB',0
+
+), AttendanceTotal AS (
+	SELECT SUM(AttendanceCount) AS AttendanceCount
+	FROM Attendance
+) , CampusAllocationCalculation AS (
+	SELECT 
+		CampusID, Code
+		, (Attendance.AttendanceCount * 1.0) / (SELECT AttendanceCount FROM AttendanceTotal) AS CampusPercent
+	FROM Attendance
+), CampusAllocation AS (
+	SELECT
+		CampusID, Code, MAX(CampusPercent) AS CampusPercent
+	FROM  CampusAllocationCalculation
+	GROUP BY 
+		CampusID, Code
+)
+SELECT
+	  ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) AS CampusCode
+	, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
+		WHEN 'Initiatives/BB' THEN 1
+		WHEN 'EL' THEN 2
+		WHEN 'RM' THEN 3
+		WHEN 'NI' THEN 4
+		WHEN 'CL' THEN 5
+		WHEN 'CC' THEN 6
+		WHEN 'AU' THEN 7
+		WHEN 'DR' THEN 8 END AS CampusCodeSortOrder
+	, DimDate.CalendarYear
+	, SUM(CASE WHEN CampusXLTReportGroup_CampusTab.AllocateByAttendancePercentage = 0 THEN 
+			CASE WHEN ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) = CampusXLTReportGroup_CampusTab.CampusCode THEN Amount ELSE 0 END
+		  ELSE Amount * CampusAllocation.CampusPercent END) AS Amount 
+FROM dw.FactRevenue
+INNER JOIN DW.DimDate
+	ON FactRevenue.DateID = DimDate.DateID
+INNER JOIN dw.DimEntity
+	ON FactRevenue.EntityID = DimEntity.EntityID
+	AND FactRevenue.TenantID = DimEntity.TenantID
+INNER JOIN dw.DimFinancialCategory
+	ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+	AND FactRevenue.TenantID = DimFinancialCategory.TenantID
+LEFT JOIN CampusXLTReportGroup_CampusTabMap 
+	ON CampusXLTReportGroup_CampusTabMap.FinancialCategoryID = FactRevenue.FinancialCategoryID
+LEFT JOIN CampusXLTReportGroup_CampusTab
+	ON  CampusXLTReportGroup_CampusTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
+INNER JOIN CampusAllocation
+	ON 1=1
+WHERE
+	DimEntity.Code = 'HBC'
+	AND DimFinancialCategory.FundCode = '025'
+	AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth &lt;= @BudgetMonth
+	AND ISNULL(CampusHeading,'') &lt;&gt; 'Ministries' -- Exclude Minsitries income
+GROUP BY
+	  ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
+	, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
+		WHEN 'Initiatives/BB' THEN 1
+		WHEN 'EL' THEN 2
+		WHEN 'RM' THEN 3
+		WHEN 'NI' THEN 4
+		WHEN 'CL' THEN 5
+		WHEN 'CC' THEN 6
+		WHEN 'AU' THEN 7
+		WHEN 'DR' THEN 8 END
+	, DimDate.CalendarYear
+ORDER BY 2</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="CampusCode">
+          <DataField>CampusCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CampusCodeSortOrder">
+          <DataField>CampusCodeSortOrder</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="CalendarYear">
+          <DataField>CalendarYear</DataField>
+          <rd:TypeName>System.Int16</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
   </DataSets>
   <ReportSections>
     <ReportSection>
@@ -1138,7 +1256,7 @@ FROM (
                 <TablixBody>
                   <TablixColumns>
                     <TablixColumn>
-                      <Width>1in</Width>
+                      <Width>1.00347in</Width>
                     </TablixColumn>
                   </TablixColumns>
                   <TablixRows>
@@ -1295,7 +1413,7 @@ FROM (
                 <Top>1.45708in</Top>
                 <Left>4.91668in</Left>
                 <Height>0.6in</Height>
-                <Width>1in</Width>
+                <Width>1.00347in</Width>
                 <ZIndex>17</ZIndex>
                 <Style>
                   <Border>
@@ -1776,7 +1894,7 @@ FROM (
                 <TablixBody>
                   <TablixColumns>
                     <TablixColumn>
-                      <Width>1in</Width>
+                      <Width>1.00347in</Width>
                     </TablixColumn>
                   </TablixColumns>
                   <TablixRows>
@@ -1933,7 +2051,7 @@ FROM (
                 <Top>2.2in</Top>
                 <Left>4.91668in</Left>
                 <Height>0.6in</Height>
-                <Width>1in</Width>
+                <Width>1.00347in</Width>
                 <ZIndex>20</ZIndex>
                 <Style>
                   <Border>
@@ -2402,7 +2520,7 @@ FROM (
                 <TablixBody>
                   <TablixColumns>
                     <TablixColumn>
-                      <Width>1in</Width>
+                      <Width>1.00347in</Width>
                     </TablixColumn>
                   </TablixColumns>
                   <TablixRows>
@@ -2559,7 +2677,7 @@ FROM (
                 <Top>2.95738in</Top>
                 <Left>4.91668in</Left>
                 <Height>0.6in</Height>
-                <Width>1in</Width>
+                <Width>1.00347in</Width>
                 <ZIndex>23</ZIndex>
                 <Style>
                   <Border>
@@ -3028,7 +3146,7 @@ FROM (
                 <TablixBody>
                   <TablixColumns>
                     <TablixColumn>
-                      <Width>1in</Width>
+                      <Width>1.00347in</Width>
                     </TablixColumn>
                   </TablixColumns>
                   <TablixRows>
@@ -3185,7 +3303,7 @@ FROM (
                 <Top>3.74905in</Top>
                 <Left>4.91668in</Left>
                 <Height>0.6in</Height>
-                <Width>1in</Width>
+                <Width>1.00347in</Width>
                 <ZIndex>26</ZIndex>
                 <Style>
                   <Border>
@@ -3361,6 +3479,184 @@ FROM (
                 <Height>0.6in</Height>
                 <Width>1in</Width>
                 <ZIndex>27</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Tablix>
+              <Tablix Name="Tablix2">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>1in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.2in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Amount">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!Amount.Value)</Value>
+                                      <Style />
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Amount</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Color>LightGrey</Color>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>ActualRevenue</DataSetName>
+                <Top>1.0875in</Top>
+                <Left>4.91668in</Left>
+                <Height>0.2in</Height>
+                <Width>1in</Width>
+                <ZIndex>28</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Tablix>
+              <Tablix Name="Tablix3">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>1in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.2in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Amount1">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!Amount.Value)</Value>
+                                      <Style />
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Amount1</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Color>LightGrey</Color>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="CampusCode">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!CampusCode.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!CampusCodeSortOrder.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                      <TablixHeader>
+                        <Size>0.2in</Size>
+                        <CellContents>
+                          <Textbox Name="CampusCode1">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>=Fields!CampusCode.Value</Value>
+                                    <Style>
+                                      <FontWeight>Bold</FontWeight>
+                                    </Style>
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>CampusCode1</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Color>LightGrey</Color>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>ActualRevenue</DataSetName>
+                <Top>0.88889in</Top>
+                <Left>6.19793in</Left>
+                <Height>0.4in</Height>
+                <Width>1in</Width>
+                <ZIndex>29</ZIndex>
                 <Style>
                   <Border>
                     <Style>None</Style>
