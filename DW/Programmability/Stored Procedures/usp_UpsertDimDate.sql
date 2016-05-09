@@ -322,8 +322,8 @@ AS
 			 , NULL AS SchoolDayOfYear 
 			                
 			 , -1 AS ExecutionID
-			 , GETUTCDATE() AS InsertedDateTime
-			 , GETUTCDATE() AS UpdatedDateTime
+			 , GETDATE() AS InsertedDateTime
+			 , GETDATE() AS UpdatedDateTime
 			 , '' AS Hashvalue
          
              SET @CurrentDate = DATEADD(DD, 1, @CurrentDate);

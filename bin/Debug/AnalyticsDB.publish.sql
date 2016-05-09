@@ -1364,7 +1364,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimDate]...';
 
 GO
 ALTER TABLE [DW].[DimDate]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1373,7 +1373,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimDate]...';
 
 GO
 ALTER TABLE [DW].[DimDate]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1382,7 +1382,7 @@ PRINT N'Creating unnamed constraint on [DW].[FactLifeEvent]...';
 
 GO
 ALTER TABLE [DW].[FactLifeEvent]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1391,7 +1391,7 @@ PRINT N'Creating unnamed constraint on [DW].[FactLifeEvent]...';
 
 GO
 ALTER TABLE [DW].[FactLifeEvent]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1400,7 +1400,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimLifeEventType]...';
 
 GO
 ALTER TABLE [DW].[DimLifeEventType]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1409,7 +1409,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimLifeEventType]...';
 
 GO
 ALTER TABLE [DW].[DimLifeEventType]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1418,7 +1418,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimIndividualStatus]...';
 
 GO
 ALTER TABLE [DW].[DimIndividualStatus]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1427,7 +1427,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimIndividualStatus]...';
 
 GO
 ALTER TABLE [DW].[DimIndividualStatus]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1436,7 +1436,7 @@ PRINT N'Creating unnamed constraint on [DW].[FactAttendance]...';
 
 GO
 ALTER TABLE [DW].[FactAttendance]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1445,7 +1445,7 @@ PRINT N'Creating unnamed constraint on [DW].[FactAttendance]...';
 
 GO
 ALTER TABLE [DW].[FactAttendance]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1454,7 +1454,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimActivity]...';
 
 GO
 ALTER TABLE [DW].[DimActivity]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1463,7 +1463,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimActivity]...';
 
 GO
 ALTER TABLE [DW].[DimActivity]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1472,7 +1472,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimMaritalStatus]...';
 
 GO
 ALTER TABLE [DW].[DimMaritalStatus]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1481,7 +1481,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimMaritalStatus]...';
 
 GO
 ALTER TABLE [DW].[DimMaritalStatus]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1490,7 +1490,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimAttendanceType]...';
 
 GO
 ALTER TABLE [DW].[DimAttendanceType]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1499,7 +1499,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimAttendanceType]...';
 
 GO
 ALTER TABLE [DW].[DimAttendanceType]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1508,7 +1508,7 @@ PRINT N'Creating unnamed constraint on [DW].[FactSmallGroup]...';
 
 GO
 ALTER TABLE [DW].[FactSmallGroup]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1517,7 +1517,7 @@ PRINT N'Creating unnamed constraint on [DW].[FactSmallGroup]...';
 
 GO
 ALTER TABLE [DW].[FactSmallGroup]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1526,7 +1526,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimCampus]...';
 
 GO
 ALTER TABLE [DW].[DimCampus]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1535,7 +1535,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimCampus]...';
 
 GO
 ALTER TABLE [DW].[DimCampus]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1544,7 +1544,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimMinistry]...';
 
 GO
 ALTER TABLE [DW].[DimMinistry]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1553,7 +1553,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimMinistry]...';
 
 GO
 ALTER TABLE [DW].[DimMinistry]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1562,7 +1562,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimRoster]...';
 
 GO
 ALTER TABLE [DW].[DimRoster]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1571,7 +1571,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimRoster]...';
 
 GO
 ALTER TABLE [DW].[DimRoster]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1580,7 +1580,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimSmallGroupDetail]...';
 
 GO
 ALTER TABLE [DW].[DimSmallGroupDetail]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1589,7 +1589,7 @@ PRINT N'Creating unnamed constraint on [DW].[DimSmallGroupDetail]...';
 
 GO
 ALTER TABLE [DW].[DimSmallGroupDetail]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1598,7 +1598,7 @@ PRINT N'Creating unnamed constraint on [Extract].[FellowshipOne_Attendance]...';
 
 GO
 ALTER TABLE [Extract].[FellowshipOne_Attendance]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1607,7 +1607,7 @@ PRINT N'Creating unnamed constraint on [Extract].[FellowshipOne_PersonSubStatus]
 
 GO
 ALTER TABLE [Extract].[FellowshipOne_PersonSubStatus]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1616,7 +1616,7 @@ PRINT N'Creating unnamed constraint on [Extract].[TransactionalTenant]...';
 
 GO
 ALTER TABLE [Extract].[TransactionalTenant]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1625,7 +1625,7 @@ PRINT N'Creating unnamed constraint on [Extract].[TransactionalConnectionString]
 
 GO
 ALTER TABLE [Extract].[TransactionalConnectionString]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1634,7 +1634,7 @@ PRINT N'Creating unnamed constraint on [Extract].[FellowshipOne_SubFund]...';
 
 GO
 ALTER TABLE [Extract].[FellowshipOne_SubFund]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1643,7 +1643,7 @@ PRINT N'Creating unnamed constraint on [Extract].[FellowshipOne_PledgeDrive]...'
 
 GO
 ALTER TABLE [Extract].[FellowshipOne_PledgeDrive]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1652,7 +1652,7 @@ PRINT N'Creating unnamed constraint on [Extract].[FellowshipOne_PersonStatus]...
 
 GO
 ALTER TABLE [Extract].[FellowshipOne_PersonStatus]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1661,7 +1661,7 @@ PRINT N'Creating unnamed constraint on [Extract].[FellowshipOne_Fund]...';
 
 GO
 ALTER TABLE [Extract].[FellowshipOne_Fund]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1670,7 +1670,7 @@ PRINT N'Creating unnamed constraint on [Extract].[FellowshipOne_ContributionType
 
 GO
 ALTER TABLE [Extract].[FellowshipOne_ContributionType]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1679,7 +1679,7 @@ PRINT N'Creating unnamed constraint on [Extract].[FellowshipOne_ContributionSubT
 
 GO
 ALTER TABLE [Extract].[FellowshipOne_ContributionSubType]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1688,7 +1688,7 @@ PRINT N'Creating unnamed constraint on [Extract].[Transactional_HeadCount]...';
 
 GO
 ALTER TABLE [Extract].[Transactional_HeadCount]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1697,7 +1697,7 @@ PRINT N'Creating unnamed constraint on [Extract].[FellowshipOne_AssimilationStep
 
 GO
 ALTER TABLE [Extract].[FellowshipOne_AssimilationSteps]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1706,7 +1706,7 @@ PRINT N'Creating unnamed constraint on [Extract].[FellowshipOne_FTVChurchwideSer
 
 GO
 ALTER TABLE [Extract].[FellowshipOne_FTVChurchwideService]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1715,7 +1715,7 @@ PRINT N'Creating unnamed constraint on [Extract].[FellowshipOne_SmallGroupStatus
 
 GO
 ALTER TABLE [Extract].[FellowshipOne_SmallGroupStatus]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1733,7 +1733,7 @@ PRINT N'Creating unnamed constraint on [Transform].[Tenant]...';
 
 GO
 ALTER TABLE [Transform].[Tenant]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1742,7 +1742,7 @@ PRINT N'Creating unnamed constraint on [Transform].[Tenant]...';
 
 GO
 ALTER TABLE [Transform].[Tenant]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1751,7 +1751,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimLifeEventType]...';
 
 GO
 ALTER TABLE [Transform].[DimLifeEventType]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1760,7 +1760,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimLifeEventType]...';
 
 GO
 ALTER TABLE [Transform].[DimLifeEventType]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1769,7 +1769,7 @@ PRINT N'Creating unnamed constraint on [Transform].[FactLifeEvent]...';
 
 GO
 ALTER TABLE [Transform].[FactLifeEvent]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1778,7 +1778,7 @@ PRINT N'Creating unnamed constraint on [Transform].[FactLifeEvent]...';
 
 GO
 ALTER TABLE [Transform].[FactLifeEvent]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1787,7 +1787,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimAttendanceType]...';
 
 GO
 ALTER TABLE [Transform].[DimAttendanceType]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1796,7 +1796,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimAttendanceType]...';
 
 GO
 ALTER TABLE [Transform].[DimAttendanceType]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1805,7 +1805,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimIndividualStatus]...';
 
 GO
 ALTER TABLE [Transform].[DimIndividualStatus]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1814,7 +1814,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimIndividualStatus]...';
 
 GO
 ALTER TABLE [Transform].[DimIndividualStatus]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1823,7 +1823,7 @@ PRINT N'Creating unnamed constraint on [Transform].[FactAttendance]...';
 
 GO
 ALTER TABLE [Transform].[FactAttendance]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1832,7 +1832,7 @@ PRINT N'Creating unnamed constraint on [Transform].[FactAttendance]...';
 
 GO
 ALTER TABLE [Transform].[FactAttendance]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1841,7 +1841,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimActivity]...';
 
 GO
 ALTER TABLE [Transform].[DimActivity]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1850,7 +1850,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimActivity]...';
 
 GO
 ALTER TABLE [Transform].[DimActivity]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1859,7 +1859,7 @@ PRINT N'Creating unnamed constraint on [Transform].[ConnectionString]...';
 
 GO
 ALTER TABLE [Transform].[ConnectionString]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1868,7 +1868,7 @@ PRINT N'Creating unnamed constraint on [Transform].[ConnectionString]...';
 
 GO
 ALTER TABLE [Transform].[ConnectionString]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1877,7 +1877,7 @@ PRINT N'Creating unnamed constraint on [Transform].[FactSmallGroup]...';
 
 GO
 ALTER TABLE [Transform].[FactSmallGroup]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1886,7 +1886,7 @@ PRINT N'Creating unnamed constraint on [Transform].[FactSmallGroup]...';
 
 GO
 ALTER TABLE [Transform].[FactSmallGroup]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1895,7 +1895,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimCampus]...';
 
 GO
 ALTER TABLE [Transform].[DimCampus]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1904,7 +1904,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimCampus]...';
 
 GO
 ALTER TABLE [Transform].[DimCampus]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1913,7 +1913,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimMinistry]...';
 
 GO
 ALTER TABLE [Transform].[DimMinistry]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1922,7 +1922,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimMinistry]...';
 
 GO
 ALTER TABLE [Transform].[DimMinistry]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1931,7 +1931,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimRoster]...';
 
 GO
 ALTER TABLE [Transform].[DimRoster]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1940,7 +1940,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimRoster]...';
 
 GO
 ALTER TABLE [Transform].[DimRoster]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1949,7 +1949,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimSmallGroupDetail]...';
 
 GO
 ALTER TABLE [Transform].[DimSmallGroupDetail]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1958,7 +1958,7 @@ PRINT N'Creating unnamed constraint on [Transform].[DimSmallGroupDetail]...';
 
 GO
 ALTER TABLE [Transform].[DimSmallGroupDetail]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1967,7 +1967,7 @@ PRINT N'Creating unnamed constraint on [dbo].[ConnectionString]...';
 
 GO
 ALTER TABLE [dbo].[ConnectionString]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -1976,7 +1976,7 @@ PRINT N'Creating unnamed constraint on [dbo].[ConnectionString]...';
 
 GO
 ALTER TABLE [dbo].[ConnectionString]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -1994,7 +1994,7 @@ PRINT N'Creating unnamed constraint on [dbo].[Tenant]...';
 
 GO
 ALTER TABLE [dbo].[Tenant]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -2003,7 +2003,7 @@ PRINT N'Creating unnamed constraint on [dbo].[Tenant]...';
 
 GO
 ALTER TABLE [dbo].[Tenant]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -2427,8 +2427,8 @@ AS
 			 , NULL AS HolidayFlag                
 			 , CASE WHEN DATEPART(WEEKDAY, @CurrentDate) IN (1,7) THEN 1 ELSE 0 END AS WeekendFlag                
 			 , -1 AS ExecutionID
-			 , GETUTCDATE() AS InsertedDateTime
-			 , GETUTCDATE() AS UpdatedDateTime
+			 , GETDATE() AS InsertedDateTime
+			 , GETDATE() AS UpdatedDateTime
 			 , '' AS HashValue
          
              SET @CurrentDate = DATEADD(DD, 1, @CurrentDate);
@@ -2641,7 +2641,7 @@ WHERE
 --base connectionstrings
 MERGE INTO dbo.ConnectionString AS Target
 USING (VALUES
-	(1, N'Data Source=devharvestbible.database.windows.net;Persist Security Info=True;Initial Catalog=HarvestBible;packet size=4096', 'Harvest bible connection string.', -1, GETUTCDATE(), GETUTCDATE(), '')
+	(1, N'Data Source=devharvestbible.database.windows.net;Persist Security Info=True;Initial Catalog=HarvestBible;packet size=4096', 'Harvest bible connection string.', -1, GETDATE(), GETDATE(), '')
 )
 AS Source (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 ON Target.ConnectionStringID = Source.ConnectionStringID
@@ -2661,10 +2661,10 @@ VALUES (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, Updat
 --base tenants (including HBC
 MERGE INTO Tenant AS Target
 USING (VALUES
-	  (0, 'Global'				, 1, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-	, (1, '52projects Church'	, 1, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-	, (2, 'Integration Church'	, 1, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-	, (3, 'Harvest Bible Chapel'  , 1, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+	  (0, 'Global'				, 1, 1, -1, GETDATE(), GETDATE(), '')
+	, (1, '52projects Church'	, 1, 1, -1, GETDATE(), GETDATE(), '')
+	, (2, 'Integration Church'	, 1, 1, -1, GETDATE(), GETDATE(), '')
+	, (3, 'Harvest Bible Chapel'  , 1, 1, -1, GETDATE(), GETDATE(), '')
 )
 AS Source (TenantID, TenantName, IsActive, ConnectionStringID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 	ON Target.TenantID = Source.TenantID
@@ -2687,7 +2687,7 @@ VALUES (TenantID, TenantName, IsActive, ConnectionStringID, ExecutionID, Inserte
 --DimAttendanceType
 MERGE INTO DW.DimAttendanceType AS Target
 USING ( VALUES
-      ( -1, 3, 'Unknown'    , ''                   , ''                                  , -1, GETUTCDATE(), GETUTCDATE(), '')
+      ( -1, 3, 'Unknown'    , ''                   , ''                                  , -1, GETDATE(), GETDATE(), '')
    
 ) AS Source
 (AttendanceTypeID, TenantID, Category, Job, VolStaffSchedule, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
@@ -2710,16 +2710,16 @@ UPDATE SET
 --DimCampus -- hardcoded until we find an authoritative source
 MERGE INTO DW.DimCampus AS Target
 USING ( VALUES
-      (-1, 3, '--', 'Unknown'             , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (1 , 3, 'AU', 'Aurora'		       , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (2 , 3, 'CC', 'Chicago Cathedral'   , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (3 , 3, 'CL', 'Crystal Lake'        , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (4 , 3, 'EL', 'Elgin'               , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (5 , 3, 'NI', 'Niles'               , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (6 , 3, 'NS', 'Deerfield Rd'        , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (7 , 3, 'RM', 'Rolling Meadows'     , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (8 , 3, 'SP', 'Elgin Campus Spanish', '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (9 , 3, 'WW', 'Online Church'       , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+      (-1, 3, '--', 'Unknown'             , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (1 , 3, 'AU', 'Aurora'		       , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (2 , 3, 'CC', 'Chicago Cathedral'   , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (3 , 3, 'CL', 'Crystal Lake'        , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (4 , 3, 'EL', 'Elgin'               , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (5 , 3, 'NI', 'Niles'               , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (6 , 3, 'NS', 'Deerfield Rd'        , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (7 , 3, 'RM', 'Rolling Meadows'     , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (8 , 3, 'SP', 'Elgin Campus Spanish', '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (9 , 3, 'WW', 'Online Church'       , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
 
 ) AS Source
 (CampusID, TenantID, Code, Name, StartDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
@@ -2742,8 +2742,8 @@ UPDATE SET
 
 --DimDate Load at least the next five years and the previous five years
 DECLARE @FiveYearsAgo DATE, @FiveYearsFromNow DATE
-SET @FiveYearsAgo = '1/1/' + CONVERT(VARCHAR(4), YEAR(GETUTCDATE()) - 5)
-SET @FiveYearsFromNow = '12/31/' + CONVERT(VARCHAR(4), YEAR(GETUTCDATE()) + 5)
+SET @FiveYearsAgo = '1/1/' + CONVERT(VARCHAR(4), YEAR(GETDATE()) - 5)
+SET @FiveYearsFromNow = '12/31/' + CONVERT(VARCHAR(4), YEAR(GETDATE()) + 5)
 
 EXEC DW.usp_UpsertDimDate @FiveYearsAgo, @FiveYearsFromNow
 
@@ -2751,7 +2751,7 @@ EXEC DW.usp_UpsertDimDate @FiveYearsAgo, @FiveYearsFromNow
 
 MERGE INTO DW.DimIndividualStatus AS Target
 USING ( VALUES
-    (-1, 3, 'Unknown','Unknown', -1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    (-1, 3, 'Unknown','Unknown', -1, -1, GETDATE(), GETDATE(), '')
 )AS Source
 (IndividualStatusID, TenantID, [Status], SubStatus, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
    ON Target.IndividualStatusID = Source.IndividualStatusID
@@ -2772,12 +2772,12 @@ UPDATE SET
 --DimLifeEventType
 MERGE INTO DW.DimLifeEventType AS Target
 USING ( VALUES
-        (-1, 3, 'Unknown'                      , -1, GETUTCDATE(), GETUTCDATE(), '')
-	 , (1 , 3, 'FTV'                          , -1, GETUTCDATE(), GETUTCDATE(), '')
-	 , (2 , 3, 'Step 1: Meet'                 , -1, GETUTCDATE(), GETUTCDATE(), '')
-      , (3 , 3, 'Step 2: Connect'              , -1, GETUTCDATE(), GETUTCDATE(), '')
-      , (4 , 3, 'Baptized'                     , -1, GETUTCDATE(), GETUTCDATE(), '')  	
-	 , (5 , 3, 'Membership Confirmation Sent' , -1, GETUTCDATE(), GETUTCDATE(), '')  	
+        (-1, 3, 'Unknown'                      , -1, GETDATE(), GETDATE(), '')
+	 , (1 , 3, 'FTV'                          , -1, GETDATE(), GETDATE(), '')
+	 , (2 , 3, 'Step 1: Meet'                 , -1, GETDATE(), GETDATE(), '')
+      , (3 , 3, 'Step 2: Connect'              , -1, GETDATE(), GETDATE(), '')
+      , (4 , 3, 'Baptized'                     , -1, GETDATE(), GETDATE(), '')  	
+	 , (5 , 3, 'Membership Confirmation Sent' , -1, GETDATE(), GETDATE(), '')  	
 ) AS Source
 (LifeEventTypeID, TenantID, Name, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
     ON Target.LifeEventTypeID = Source.LifeEventTypeID
@@ -2799,14 +2799,14 @@ UPDATE SET
 --DimMaritalStatus
 MERGE INTO DW.DimMaritalStatus AS Target
 USING ( VALUES
-      (-1, 3, 'Unknown'  , -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 1, 3, 'Child/Yth', -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 2, 3, 'Divorced'	, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 3, 3, 'Married'	, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 4, 3, 'Separated', -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 5, 3, 'Single'	, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 6, 3, 'Widow'	, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 7, 3, 'Widower'	, -1, GETUTCDATE(), GETUTCDATE(), '')
+      (-1, 3, 'Unknown'  , -1, GETDATE(), GETDATE(), '')
+    , ( 1, 3, 'Child/Yth', -1, GETDATE(), GETDATE(), '')
+    , ( 2, 3, 'Divorced'	, -1, GETDATE(), GETDATE(), '')
+    , ( 3, 3, 'Married'	, -1, GETDATE(), GETDATE(), '')
+    , ( 4, 3, 'Separated', -1, GETDATE(), GETDATE(), '')
+    , ( 5, 3, 'Single'	, -1, GETDATE(), GETDATE(), '')
+    , ( 6, 3, 'Widow'	, -1, GETDATE(), GETDATE(), '')
+    , ( 7, 3, 'Widower'	, -1, GETDATE(), GETDATE(), '')
 ) AS Source
 (MaritalStatusID, TenantID, Name, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
     ON Target.MaritalStatusID = Source.MaritalStatusID
@@ -2826,7 +2826,7 @@ UPDATE SET
 --DimMinistry
 MERGE INTO DW.DimMinistry AS Target
 USING ( VALUES
-    (-1, 3, 'Undefined', -1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    (-1, 3, 'Undefined', -1, -1, GETDATE(), GETDATE(), '')
 ) AS Source
 (MinistryID, TenantID, Name, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
  ON Target.MinistryID = Source.MinistryID
@@ -2851,8 +2851,8 @@ SELECT
     , 'CS - Worship  & Production' AS Name
     , CampusID
     , -1 AS ExecutionID
-    , GETUTCDATE() AS InsertedDateTime
-    , GETUTCDATE() AS UpdatedDateTime
+    , GETDATE() AS InsertedDateTime
+    , GETDATE() AS UpdatedDateTime
     , '' AS HashValue
 FROM DW.DimCampus
 ;
@@ -2863,7 +2863,7 @@ FROM DW.DimCampus
 --DimActivity
 MERGE INTO DW.DimActivity AS Target
 USING ( VALUES
-    (-1, 3, 'Undefined', -1, -1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    (-1, 3, 'Undefined', -1, -1, -1, GETDATE(), GETDATE(), '')
 ) AS Source
 (ActivityID, TenantID, Name, MinistryID, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
  ON Target.ActivityID = Source.ActivityID
@@ -2885,7 +2885,7 @@ UPDATE SET
 --DimRoster
 MERGE INTO DW.DimRoster AS Target
 USING ( VALUES
-    (-1, 3, 'Undefined', 'Undefined', 'Undefined', -1, GETUTCDATE(), GETUTCDATE(), '')
+    (-1, 3, 'Undefined', 'Undefined', 'Undefined', -1, GETDATE(), GETDATE(), '')
 ) AS Source
 (RosterID, TenantID, RosterFolder, Roster, BreakoutGroup, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
  ON Target.RosterID = Source.RosterID

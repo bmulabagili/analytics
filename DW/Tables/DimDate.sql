@@ -92,8 +92,8 @@
 
  --ETL Specific Columns
  ExecutionID                VARCHAR(50) NULL,
- InsertedDateTime           DATETIME DEFAULT(GETUTCDATE()) NULL,
- UpdatedDateTime            DATETIME DEFAULT(GETUTCDATE()) NULL,
+ InsertedDateTime           DATETIME DEFAULT(GETDATE()) NULL,
+ UpdatedDateTime            DATETIME DEFAULT(GETDATE()) NULL,
  Hashvalue                  NVARCHAR(64) NULL,
  CONSTRAINT PK_DWDimDate__DateID PRIMARY KEY CLUSTERED(DateID ASC)
 );

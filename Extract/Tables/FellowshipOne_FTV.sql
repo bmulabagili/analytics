@@ -31,7 +31,7 @@
 
   , TenantID            INT NOT NULL
   , [ExecutionID]       VARCHAR(50) NOT NULL
-  , [InsertedDateTime]  DATETIME DEFAULT(GETUTCDATE())
+  , [InsertedDateTime]  DATETIME DEFAULT(GETDATE())
                                  NULL
 );
 GO

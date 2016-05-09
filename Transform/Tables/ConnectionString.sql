@@ -8,8 +8,8 @@
     --ETL Specific Columns
     , ExecutionID VARCHAR (50)   NOT NULL
     , ETLActionID INT NOT NULL
-    , InsertedDateTime DATETIME DEFAULT(GETUTCDATE())
-    , UpdatedDateTime DATETIME DEFAULT(GETUTCDATE())
+    , InsertedDateTime DATETIME DEFAULT(GETDATE())
+    , UpdatedDateTime DATETIME DEFAULT(GETDATE())
     , Hashvalue NVARCHAR(64) NOT NULL
     --Keys should get enforced at this point.
 

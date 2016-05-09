@@ -7,8 +7,8 @@
     --ETL Specific Columns
     , ExecutionID VARCHAR (50)   NOT NULL
     --ETLActionID Not needed at this point
-    , InsertedDateTime DATETIME DEFAULT(GETUTCDATE())
-    , UpdatedDateTime DATETIME DEFAULT(GETUTCDATE())
+    , InsertedDateTime DATETIME DEFAULT(GETDATE())
+    , UpdatedDateTime DATETIME DEFAULT(GETDATE())
     , Hashvalue NVARCHAR(64) NOT NULL
 
 	,CONSTRAINT PK_ConnectionString__ConnectionStringID 

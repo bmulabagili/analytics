@@ -677,7 +677,7 @@ PRINT N'Creating unnamed constraint on [Extract].[f1_SubFund]...';
 
 GO
 ALTER TABLE [Extract].[f1_SubFund]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -686,7 +686,7 @@ PRINT N'Creating unnamed constraint on [Extract].[f1_PledgeDrive]...';
 
 GO
 ALTER TABLE [Extract].[f1_PledgeDrive]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -695,7 +695,7 @@ PRINT N'Creating unnamed constraint on [Extract].[f1_PersonStatus]...';
 
 GO
 ALTER TABLE [Extract].[f1_PersonStatus]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -704,7 +704,7 @@ PRINT N'Creating unnamed constraint on [Extract].[f1_Fund]...';
 
 GO
 ALTER TABLE [Extract].[f1_Fund]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -713,7 +713,7 @@ PRINT N'Creating unnamed constraint on [Extract].[f1_ContributionType]...';
 
 GO
 ALTER TABLE [Extract].[f1_ContributionType]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -722,7 +722,7 @@ PRINT N'Creating unnamed constraint on [Extract].[f1_ContributionSubType]...';
 
 GO
 ALTER TABLE [Extract].[f1_ContributionSubType]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -731,7 +731,7 @@ PRINT N'Creating unnamed constraint on [Extract].[f1_PersonSubStatus]...';
 
 GO
 ALTER TABLE [Extract].[f1_PersonSubStatus]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -740,7 +740,7 @@ PRINT N'Creating unnamed constraint on [Extract].[TransactionalTenant]...';
 
 GO
 ALTER TABLE [Extract].[TransactionalTenant]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -749,7 +749,7 @@ PRINT N'Creating unnamed constraint on [Extract].[TransactionalConnectionString]
 
 GO
 ALTER TABLE [Extract].[TransactionalConnectionString]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -767,7 +767,7 @@ PRINT N'Creating unnamed constraint on [Transform].[Tenant]...';
 
 GO
 ALTER TABLE [Transform].[Tenant]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -776,7 +776,7 @@ PRINT N'Creating unnamed constraint on [Transform].[Tenant]...';
 
 GO
 ALTER TABLE [Transform].[Tenant]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -794,7 +794,7 @@ PRINT N'Creating unnamed constraint on [Transform].[PersonPerson]...';
 
 GO
 ALTER TABLE [Transform].[PersonPerson]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -803,7 +803,7 @@ PRINT N'Creating unnamed constraint on [Transform].[ConnectionString]...';
 
 GO
 ALTER TABLE [Transform].[ConnectionString]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -812,7 +812,7 @@ PRINT N'Creating unnamed constraint on [Transform].[ConnectionString]...';
 
 GO
 ALTER TABLE [Transform].[ConnectionString]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -821,7 +821,7 @@ PRINT N'Creating unnamed constraint on [dbo].[ConnectionString]...';
 
 GO
 ALTER TABLE [dbo].[ConnectionString]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -830,7 +830,7 @@ PRINT N'Creating unnamed constraint on [dbo].[ConnectionString]...';
 
 GO
 ALTER TABLE [dbo].[ConnectionString]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -848,7 +848,7 @@ PRINT N'Creating unnamed constraint on [dbo].[Tenant]...';
 
 GO
 ALTER TABLE [dbo].[Tenant]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -857,7 +857,7 @@ PRINT N'Creating unnamed constraint on [dbo].[Tenant]...';
 
 GO
 ALTER TABLE [dbo].[Tenant]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO

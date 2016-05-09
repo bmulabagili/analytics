@@ -8,8 +8,8 @@
     --ETL Specific Columns
   , ExecutionID        VARCHAR(50) NOT NULL
     --, ETLActionID INT NOT NULL -- not needed
-  , InsertedDateTime   DATETIME DEFAULT(GETUTCDATE())
---, UpdatedDateTime DATETIME DEFAULT(GETUTCDATE()) -- not needed
+  , InsertedDateTime   DATETIME DEFAULT(GETDATE())
+--, UpdatedDateTime DATETIME DEFAULT(GETDATE()) -- not needed
 --, Hashvalue VNVARCHAR(64) NOT NULL --not needed
 
 );

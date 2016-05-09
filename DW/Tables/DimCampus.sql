@@ -12,8 +12,8 @@
   , Active           BIT NOT NULL
    --ETL Specific Columns
   , [ExecutionID]      VARCHAR(50) NOT NULL
-  , [InsertedDateTime] DATETIME DEFAULT(GETUTCDATE()) NULL
-  , [UpdatedDateTime]  DATETIME DEFAULT(GETUTCDATE()) NULL
+  , [InsertedDateTime] DATETIME DEFAULT(GETDATE()) NULL
+  , [UpdatedDateTime]  DATETIME DEFAULT(GETDATE()) NULL
   , [Hashvalue]        NVARCHAR(64) NOT NULL
   , CONSTRAINT [pk_DWDimCampus__CampusID_TenantID] PRIMARY KEY CLUSTERED([CampusID], TenantID)
   , CONSTRAINT [FK_DWDimCampus_Tenant__TenantID] FOREIGN KEY([TenantID]) REFERENCES [dbo].[Tenant](

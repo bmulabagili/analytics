@@ -183,7 +183,7 @@ PRINT N'Creating unnamed constraint on [DW].[FactMPXActivity]...';
 
 GO
 ALTER TABLE [DW].[FactMPXActivity]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -192,7 +192,7 @@ PRINT N'Creating unnamed constraint on [DW].[FactMPXActivity]...';
 
 GO
 ALTER TABLE [DW].[FactMPXActivity]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -201,7 +201,7 @@ PRINT N'Creating unnamed constraint on [Extract].[MPX_Activity]...';
 
 GO
 ALTER TABLE [Extract].[MPX_Activity]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -210,7 +210,7 @@ PRINT N'Creating unnamed constraint on [Transform].[FactMPXActivity]...';
 
 GO
 ALTER TABLE [Transform].[FactMPXActivity]
-    ADD DEFAULT (GETUTCDATE()) FOR [InsertedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [InsertedDateTime];
 
 
 GO
@@ -219,7 +219,7 @@ PRINT N'Creating unnamed constraint on [Transform].[FactMPXActivity]...';
 
 GO
 ALTER TABLE [Transform].[FactMPXActivity]
-    ADD DEFAULT (GETUTCDATE()) FOR [UpdatedDateTime];
+    ADD DEFAULT (GETDATE()) FOR [UpdatedDateTime];
 
 
 GO
@@ -301,18 +301,18 @@ UPDATE SET
 --base connectionstrings
 MERGE INTO dbo.ConnectionString AS Target
 USING (VALUES
-    (0, N'FlatFileSource', N'FlatFileSource', -1, GETUTCDATE(), GETUTCDATE(), '')
-  ,	(1, N'Data Source=devharvestbible.database.windows.net;Persist Security Info=True;Initial Catalog=HarvestBible;packet size=4096', 'Harvest bible connection string.', -1, GETUTCDATE(), GETUTCDATE(), '')
+    (0, N'FlatFileSource', N'FlatFileSource', -1, GETDATE(), GETDATE(), '')
+  ,	(1, N'Data Source=devharvestbible.database.windows.net;Persist Security Info=True;Initial Catalog=HarvestBible;packet size=4096', 'Harvest bible connection string.', -1, GETDATE(), GETDATE(), '')
         --Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=52projectsMIP;Password=Proj3ct$;Initial Catalog=CHC;Provider=SQLNCLI11.1;Auto Translate=False;
-  , (2, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=CHC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-CHC', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (3, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HBC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBC', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (4, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HBF;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBF', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (5, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HCA;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HCA', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (6, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HMP;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HMP', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (7, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=WITW;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-WITW', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (8, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=IC;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (9, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=MPXWIWU;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (10, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=MPXWIWC;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETUTCDATE(), GETUTCDATE(), '')
+  , (2, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=CHC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-CHC', -1, GETDATE(), GETDATE(), '')
+  , (3, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HBC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBC', -1, GETDATE(), GETDATE(), '')
+  , (4, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HBF;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBF', -1, GETDATE(), GETDATE(), '')
+  , (5, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HCA;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HCA', -1, GETDATE(), GETDATE(), '')
+  , (6, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=HMP;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HMP', -1, GETDATE(), GETDATE(), '')
+  , (7, N'Data Source=hbcrmmip.harvestbible.org\mipdbase;User ID=HBCMIPServices01;Password=S3rv!ce$;Initial Catalog=WITW;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-WITW', -1, GETDATE(), GETDATE(), '')
+  , (8, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=IC;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETDATE(), GETDATE(), '')
+  , (9, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=MPXWIWU;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETDATE(), GETDATE(), '')
+  , (10, N'Data Source=localhost;User ID=sa;Password=C4lr1ss14n;Initial Catalog=MPXWIWC;Provider=SQLNCLI11.1;Auto Translate=False;', 'InfiniteCampus', -1, GETDATE(), GETDATE(), '')
 )
 AS Source (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 ON Target.ConnectionStringID = Source.ConnectionStringID
@@ -332,7 +332,7 @@ VALUES (ConnectionStringID, [Source], Note, ExecutionID, InsertedDateTime, Updat
 --define HBC Tenant
 MERGE INTO Tenant AS Target
  USING (VALUES
-	(3, 'HBC',1, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+	(3, 'HBC',1, 1, -1, GETDATE(), GETDATE(), '')
 ) AS Source ( TenantID, TenantName, IsActive, ConnectionStringID, ExecutionID, InsertedDateTime, UpdatedDateTime, Hashvalue)
 ON Target.TenantID = Source.TenantID
 WHEN MATCHED THEN 
@@ -383,10 +383,10 @@ VALUES
 --base tenants (including HBC
 MERGE INTO Tenant AS Target
 USING (VALUES
-	  (0, 'Global'				, 1, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-	, (1, '52projects Church'	, 1, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-	, (2, 'Integration Church'	, 1, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-	, (3, 'Harvest Bible Chapel'  , 1, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+	  (0, 'Global'				, 1, 1, -1, GETDATE(), GETDATE(), '')
+	, (1, '52projects Church'	, 1, 1, -1, GETDATE(), GETDATE(), '')
+	, (2, 'Integration Church'	, 1, 1, -1, GETDATE(), GETDATE(), '')
+	, (3, 'Harvest Bible Chapel'  , 1, 1, -1, GETDATE(), GETDATE(), '')
 )
 AS Source (TenantID, TenantName, IsActive, ConnectionStringID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
 	ON Target.TenantID = Source.TenantID
@@ -409,7 +409,7 @@ VALUES (TenantID, TenantName, IsActive, ConnectionStringID, ExecutionID, Inserte
 --DimAttendanceType
 MERGE INTO DW.DimAttendanceType AS Target
 USING ( VALUES
-      ( -1, 3, 'Unknown'    , ''                   , ''                                  , -1, GETUTCDATE(), GETUTCDATE(), '')
+      ( -1, 3, 'Unknown'    , ''                   , ''                                  , -1, GETDATE(), GETDATE(), '')
    
 ) AS Source
 (AttendanceTypeID, TenantID, Category, Job, VolStaffSchedule, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
@@ -432,16 +432,16 @@ UPDATE SET
 --DimCampus -- hardcoded until we find an authoritative source
 MERGE INTO DW.DimCampus AS Target
 USING ( VALUES
-      (-1, 3, '--', 'Unknown'             , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (1 , 3, 'AU', 'Aurora'		       , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (2 , 3, 'CC', 'Chicago Cathedral'   , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (3 , 3, 'CL', 'Crystal Lake'        , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (4 , 3, 'EL', 'Elgin'               , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (5 , 3, 'NI', 'Niles'               , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (6 , 3, 'NS', 'Deerfield Rd'        , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (7 , 3, 'RM', 'Rolling Meadows'     , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (8 , 3, 'SP', 'Elgin Campus Spanish', '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , (9 , 3, 'WW', 'Online Church'       , '1/1/1900', 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+      (-1, 3, '--', 'Unknown'             , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (1 , 3, 'AU', 'Aurora'		       , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (2 , 3, 'CC', 'Chicago Cathedral'   , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (3 , 3, 'CL', 'Crystal Lake'        , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (4 , 3, 'EL', 'Elgin'               , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (5 , 3, 'NI', 'Niles'               , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (6 , 3, 'NS', 'Deerfield Rd'        , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (7 , 3, 'RM', 'Rolling Meadows'     , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (8 , 3, 'SP', 'Elgin Campus Spanish', '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
+    , (9 , 3, 'WW', 'Online Church'       , '1/1/1900', 1, -1, GETDATE(), GETDATE(), '')
 
 ) AS Source
 (CampusID, TenantID, Code, Name, StartDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
@@ -464,8 +464,8 @@ UPDATE SET
 
 --DimDate Load at least the next five years and the previous five years
 DECLARE @FiveYearsAgo DATE, @FiveYearsFromNow DATE
-SET @FiveYearsAgo = '1/1/' + CONVERT(VARCHAR(4), YEAR(GETUTCDATE()) - 5)
-SET @FiveYearsFromNow = '12/31/' + CONVERT(VARCHAR(4), YEAR(GETUTCDATE()) + 5)
+SET @FiveYearsAgo = '1/1/' + CONVERT(VARCHAR(4), YEAR(GETDATE()) - 5)
+SET @FiveYearsFromNow = '12/31/' + CONVERT(VARCHAR(4), YEAR(GETDATE()) + 5)
 
 EXEC DW.usp_UpsertDimDate @FiveYearsAgo, @FiveYearsFromNow
 
@@ -473,7 +473,7 @@ EXEC DW.usp_UpsertDimDate @FiveYearsAgo, @FiveYearsFromNow
 
 MERGE INTO DW.DimIndividualStatus AS Target
 USING ( VALUES
-    (-1, 3, 'Unknown','Unknown', -1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    (-1, 3, 'Unknown','Unknown', -1, -1, GETDATE(), GETDATE(), '')
 )AS Source
 (IndividualStatusID, TenantID, [Status], SubStatus, CampusID, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
    ON Target.IndividualStatusID = Source.IndividualStatusID
@@ -494,12 +494,12 @@ UPDATE SET
 --DimLifeEventType
 MERGE INTO DW.DimLifeEventType AS Target
 USING ( VALUES
-        (-1, 3, 'Unknown'                      , -1, GETUTCDATE(), GETUTCDATE(), '')
-	 , (1 , 3, 'FTV'                          , -1, GETUTCDATE(), GETUTCDATE(), '')
-	 , (2 , 3, 'Step 1: Meet'                 , -1, GETUTCDATE(), GETUTCDATE(), '')
-      , (3 , 3, 'Step 2: Connect'              , -1, GETUTCDATE(), GETUTCDATE(), '')
-      , (4 , 3, 'Baptized'                     , -1, GETUTCDATE(), GETUTCDATE(), '')  	
-	 , (5 , 3, 'Membership Confirmation Sent' , -1, GETUTCDATE(), GETUTCDATE(), '')  	
+        (-1, 3, 'Unknown'                      , -1, GETDATE(), GETDATE(), '')
+	 , (1 , 3, 'FTV'                          , -1, GETDATE(), GETDATE(), '')
+	 , (2 , 3, 'Step 1: Meet'                 , -1, GETDATE(), GETDATE(), '')
+      , (3 , 3, 'Step 2: Connect'              , -1, GETDATE(), GETDATE(), '')
+      , (4 , 3, 'Baptized'                     , -1, GETDATE(), GETDATE(), '')  	
+	 , (5 , 3, 'Membership Confirmation Sent' , -1, GETDATE(), GETDATE(), '')  	
 ) AS Source
 (LifeEventTypeID, TenantID, Name, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
     ON Target.LifeEventTypeID = Source.LifeEventTypeID
@@ -521,14 +521,14 @@ UPDATE SET
 --DimMaritalStatus
 MERGE INTO DW.DimMaritalStatus AS Target
 USING ( VALUES
-      (-1, 3, 'Unknown'  , -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 1, 3, 'Child/Yth', -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 2, 3, 'Divorced'	, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 3, 3, 'Married'	, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 4, 3, 'Separated', -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 5, 3, 'Single'	, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 6, 3, 'Widow'	, -1, GETUTCDATE(), GETUTCDATE(), '')
-    , ( 7, 3, 'Widower'	, -1, GETUTCDATE(), GETUTCDATE(), '')
+      (-1, 3, 'Unknown'  , -1, GETDATE(), GETDATE(), '')
+    , ( 1, 3, 'Child/Yth', -1, GETDATE(), GETDATE(), '')
+    , ( 2, 3, 'Divorced'	, -1, GETDATE(), GETDATE(), '')
+    , ( 3, 3, 'Married'	, -1, GETDATE(), GETDATE(), '')
+    , ( 4, 3, 'Separated', -1, GETDATE(), GETDATE(), '')
+    , ( 5, 3, 'Single'	, -1, GETDATE(), GETDATE(), '')
+    , ( 6, 3, 'Widow'	, -1, GETDATE(), GETDATE(), '')
+    , ( 7, 3, 'Widower'	, -1, GETDATE(), GETDATE(), '')
 ) AS Source
 (MaritalStatusID, TenantID, Name, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
     ON Target.MaritalStatusID = Source.MaritalStatusID
@@ -548,7 +548,7 @@ UPDATE SET
 --DimMinistry
 MERGE INTO DW.DimMinistry AS Target
 USING ( VALUES
-    (-1, 3, 'Undefined', -1, '1/1/1900', NULL, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    (-1, 3, 'Undefined', -1, '1/1/1900', NULL, 1, -1, GETDATE(), GETDATE(), '')
 ) AS Source
     (MinistryID, TenantID, Name, CampusID, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
  ON Target.MinistryID = Source.MinistryID
@@ -577,8 +577,8 @@ USING (
 		, NULL AS EndDateTime
 		, 1  AS Active
 		, -1 AS ExecutionID
-		, GETUTCDATE() AS InsertedDateTime
-		, GETUTCDATE() AS UpdatedDateTime
+		, GETDATE() AS InsertedDateTime
+		, GETDATE() AS UpdatedDateTime
 		, '' AS HashValue
 	FROM DW.DimCampus src) AS Source
 	ON source.MinistryID = Target.MinistryID
@@ -601,7 +601,7 @@ UPDATE SET
 --DimActivity
 MERGE INTO DW.DimActivity AS Target
 USING ( VALUES
-    (-1, 3, 'Undefined', -1, -1, '1/1/1900', NULL, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    (-1, 3, 'Undefined', -1, -1, '1/1/1900', NULL, 1, -1, GETDATE(), GETDATE(), '')
 ) AS Source
 (ActivityID, TenantID, Name, MinistryID, CampusID, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
  ON Target.ActivityID = Source.ActivityID
@@ -623,7 +623,7 @@ UPDATE SET
 --DimRoster
 MERGE INTO DW.DimRoster AS Target
 USING ( VALUES
-    (-1, 3, 'Undefined', 'Undefined', 'Undefined', '1/1/1900', NULL, 1, -1, GETUTCDATE(), GETUTCDATE(), '')
+    (-1, 3, 'Undefined', 'Undefined', 'Undefined', '1/1/1900', NULL, 1, -1, GETDATE(), GETDATE(), '')
 ) AS Source
 (RosterID, TenantID, RosterFolder, Roster, BreakoutGroup, StartDateTime, EndDateTime, Active, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
  ON Target.RosterID = Source.RosterID
@@ -645,11 +645,11 @@ UPDATE SET
 --DimEntity
 MERGE INTO DW.DimEntity AS Target
 USING ( VALUES
-    (-1, 3, ''    , 'Undefined'                ,  -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (1 , 3, 'HBF' , 'Harvest Bible Fellowship' ,  -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (2 , 3, 'HCA' , 'Harvest Christian Academy',  -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (3 , 3, 'HBC' , 'Harvest Bible Chapel'     ,  -1, GETUTCDATE(), GETUTCDATE(), '')
-  , (4 , 3, 'WITW', 'Walk in the Word'         ,  -1, GETUTCDATE(), GETUTCDATE(), '')
+    (-1, 3, ''    , 'Undefined'                ,  -1, GETDATE(), GETDATE(), '')
+  , (1 , 3, 'HBF' , 'Harvest Bible Fellowship' ,  -1, GETDATE(), GETDATE(), '')
+  , (2 , 3, 'HCA' , 'Harvest Christian Academy',  -1, GETDATE(), GETDATE(), '')
+  , (3 , 3, 'HBC' , 'Harvest Bible Chapel'     ,  -1, GETDATE(), GETDATE(), '')
+  , (4 , 3, 'WITW', 'Walk in the Word'         ,  -1, GETDATE(), GETDATE(), '')
 ) AS Source
 (EntityID, TenantID, Code, Name, ExecutionID, InsertedDateTime, UpdatedDateTime, HashValue)
  ON Target.EntityID = Source.EntityID

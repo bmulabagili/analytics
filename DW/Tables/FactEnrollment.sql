@@ -12,8 +12,8 @@
 
   --ETL Specific Columns
   , [ExecutionID]      VARCHAR(50) NOT NULL
-  , [InsertedDateTime] DATETIME DEFAULT(GETUTCDATE()) NULL
-  , [UpdatedDateTime]  DATETIME DEFAULT(GETUTCDATE()) NULL
+  , [InsertedDateTime] DATETIME DEFAULT(GETDATE()) NULL
+  , [UpdatedDateTime]  DATETIME DEFAULT(GETDATE()) NULL
   , [Hashvalue]        NVARCHAR(64) NOT NULL
   , CONSTRAINT [pk_DWFactEnrollment__EnrollmentID_TenantID] 
 	   PRIMARY KEY CLUSTERED(EnrollmentID, TenantID)
