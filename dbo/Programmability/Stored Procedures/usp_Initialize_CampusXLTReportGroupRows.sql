@@ -1314,6 +1314,246 @@ AS
 		AND CampusCode = 'CS'
 		AND dest.XLTReportGroupID IS NULL
 
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 44 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode = '5038'
 
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 45 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode = '5058'
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 46 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode = '5178'
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 47 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode = '5078'
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 48 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode = '5098'
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 49 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '6017', '6037', '6057', '6065', '6117', '6157', '6177')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 50 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode = '6097'
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 51 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode = '6197'
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 52 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CampusCode = 'LH'
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 53 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '7165', '7166', '7170', '7171')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 54 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '5018', '5138', '9020')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 55 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '9025')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 56 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '9015', '9017')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 59 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '7208', '7210', '7250')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 60 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '7280')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 67 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '7005', '7007', '7011', '7014', '7041', '7047', '7050', '7059', '7066', '7071', '7073', '7075', '7076', '7079', '7084', '7086', '7089', '7111', '7176')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 69 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '7125', '7128', '7131', '7135', '7139', '7143', '7147', '7151' )
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 70 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '7017', '7023', '7035')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 71 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '5162')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 72 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '5164')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 73 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '7290')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 74 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '5160')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 75 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '5158', '5159', '6137')
+
+
+	--other ?? why not the remainder as in the other tab?
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, XLTReportGroupID )
+	SELECT
+		DimFinancialCategory.FinancialCategoryID, 76 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '6147')
 
 RETURN 0
