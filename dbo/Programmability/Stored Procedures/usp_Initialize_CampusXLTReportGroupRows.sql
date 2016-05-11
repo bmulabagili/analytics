@@ -761,82 +761,82 @@ AS
 	INSERT INTO dbo.CampusXLTReportGroup_XLTTab
 	(CampusXLTReportGroupID	, XLTHeading		, XLTDetail										, XLTDetailSortOrder, Manager	, ManagerSortOrder)
 	SELECT 1				, 'Compensation'	, 'Pastoral Staff'								, 1					,'Scott'	, 1		UNION
-	SELECT 2				, 'Compensation'	, 'HCA Pastoral Billback' 						, 2					,'Scott'	, 2		UNION
-	SELECT 3				, 'Compensation'	, 'HBF Pastoral Billback' 						, 3					,'Scott'	, 3		UNION
-	SELECT 4				, 'Compensation'	, 'WITW Pastoral Billback' 						, 4					,'Scott'	, 4		UNION
-	SELECT 5				, 'Compensation'	, 'Executive Support' 							, 5					,'Scott'	, 5		UNION
-	SELECT 6				, 'Compensation'	, 'Accounting' 									, 6					,'Fred'		, 6		UNION
-	SELECT 7				, 'Compensation'	, 'Film (self funding)' 						, 7					,'Fred'		, 7		UNION
-	SELECT 8				, 'Compensation'	, 'Development (self funding)' 					, 8					,'Fred'		, 8		UNION
-	SELECT 9				, 'Compensation'	, 'IT'											, 9					,'Dean'		, 9		UNION
-	SELECT 10				, 'Compensation'	, 'Direct RM Ops' 								, 10				,'Dean'		, 10	UNION
-	SELECT 11				, 'Compensation'	, 'Direct EL Ops' 								, 11				,'Dean'		, 11	UNION
-	SELECT 12				, 'Compensation'	, 'Indirect - Central Ops' 						, 12				,'Dean'		, 12	UNION
-	SELECT 13				, 'Compensation'	, 'Ministry Staff-RM  Total' 					, 13				,'Jeff'		, 13	UNION
-	SELECT 14				, 'Compensation'	, 'Ministry Admin-RM Total' 					, 14				,NULL 		, 14	UNION
-	SELECT 15				, 'Compensation'	, 'Ministry Staff-EL Total' 					, 15				,'Jeff'		, 15	UNION
-	SELECT 16				, 'Compensation'	, 'Ministry Admin-EL Total' 					, 16				,NULL		, 16	UNION
-	SELECT 17				, 'Compensation'	, 'Ministry Staff-NI Total' 					, 17				,'Jeff'		, 17	UNION
-	SELECT 18				, 'Compensation'	, 'Ministry Staff-CL Total' 					, 18				,'Dean'		, 18	UNION
-	SELECT 19				, 'Compensation'	, 'Ministry Staff-CL Total' 					, 18				,'Jeff'		, 19	UNION
-	SELECT 20				, 'Compensation'	, 'Ministry Staff-CC Total' 					, 19 				,'Jeff'		, 20	UNION
-	SELECT 21				, 'Compensation'	, 'Ministry Staff-AU Total' 					, 20				,'Jeff'		, 21	UNION
-	SELECT 22				, 'Compensation'	, 'Ministry Staff-DR Total' 					, 21				,'Jeff'		, 22	UNION
-	SELECT 23				, 'Compensation'	, 'Ministry Staff Hispanic-EL' 					, 22				,NULL		, 23	UNION
-	SELECT 24				, 'Compensation'	, 'Misc Ministries Interns' 					, 23				,NULL		, 24	UNION
-	SELECT 25				, 'Compensation'	, 'HR' 											, 24				,'Luke'		, 25	UNION
-	SELECT 26				, 'Compensation'	, 'Communications' 								, 25				,'Luke'		, 26	UNION
-	SELECT 27				, 'Compensation'	, 'Production' 									, 26				,'Luke'		, 27	UNION
-	SELECT 28				, 'Compensation'	, 'Worship' 									, 27				,'Luke'		, 28	UNION
-	SELECT 29				, 'Compensation'	, 'BSC (self funding)' 							, 28				,'XLT'		, 29	UNION
-	SELECT 30				, 'Compensation'	, 'Health Insurance' 							, 29				,'XLT'		, 30	UNION
-	SELECT 31				, 'Compensation'	, 'Expense Sharing'								, 30				,'XLT'		, 31	UNION
-	SELECT 32				, 'Compensation'	, 'Personal Accounts'							, 31				,'XLT'		, 32	UNION
-	SELECT 33				, 'Compensation'	, 'Cell Phones'									, 32				,'XLT'		, 33	UNION
-	SELECT 34				, 'Compensation'	, 'Scholarships'								, 33				,'XLT'		, 34	UNION
-	SELECT 35				, 'Compensation'	, 'All Staff Meetings'							, 34				,'XLT'		, 35	UNION
-	SELECT 36				, 'Compensation'	, 'Retreats'									, 35				,'XLT'		, 36	UNION
-	SELECT 37				, 'Compensation'	, 'Awards'										, 36				,'XLT'		, 37	UNION
-	SELECT 38				, 'Compensation'	, 'Pulpit Supply'								, 37				,'XLT'		, 38	UNION
-	SELECT 39				, 'Compensation'	, 'LTD/Life'									, 38				,'XLT'		, 39	UNION
-	SELECT 40				, 'Compensation'	, 'Workers Comp'								, 39				,'XLT'		, 40	UNION
-	SELECT 41				, 'Compensation'	, 'Paycor Fees'									, 40				,'XLT'		, 41	UNION
-	SELECT 42				, 'Compensation'	, 'Passthrough Billbacks'						, 41				,'XLT'		, 42	UNION
-	SELECT 43				, 'Compensation'	, 'Other'										, 42				,'XLT'		, 43	UNION
+	SELECT 2				, 'Compensation'	, 'HCA Pastoral Billback' 						, 2					,'Scott'	, 1		UNION
+	SELECT 3				, 'Compensation'	, 'HBF Pastoral Billback' 						, 3					,'Scott'	, 1		UNION
+	SELECT 4				, 'Compensation'	, 'WITW Pastoral Billback' 						, 4					,'Scott'	, 1		UNION
+	SELECT 5				, 'Compensation'	, 'Executive Support' 							, 5					,'Scott'	, 1		UNION
+	SELECT 6				, 'Compensation'	, 'Accounting' 									, 6					,'Fred'		, 2		UNION
+	SELECT 7				, 'Compensation'	, 'Film (self funding)' 						, 7					,'Fred'		, 2		UNION
+	SELECT 8				, 'Compensation'	, 'Development (self funding)' 					, 8					,'Fred'		, 2		UNION
+	SELECT 9				, 'Compensation'	, 'IT'											, 9					,'Dean'		, 3		UNION
+	SELECT 10				, 'Compensation'	, 'Direct RM Ops' 								, 10				,'Dean'		, 3		UNION
+	SELECT 11				, 'Compensation'	, 'Direct EL Ops' 								, 11				,'Dean'		, 3		UNION
+	SELECT 12				, 'Compensation'	, 'Indirect - Central Ops' 						, 12				,'Dean'		, 3 	UNION
+	SELECT 13				, 'Compensation'	, 'Ministry Staff-RM  Total' 					, 13				,'Jeff'		, 4 	UNION
+	SELECT 14				, 'Compensation'	, 'Ministry Admin-RM Total' 					, 14				,NULL 		, NULL	UNION
+	SELECT 15				, 'Compensation'	, 'Ministry Staff-EL Total' 					, 15				,'Jeff'		, 4		UNION
+	SELECT 16				, 'Compensation'	, 'Ministry Admin-EL Total' 					, 16				,NULL		, NULL	UNION
+	SELECT 17				, 'Compensation'	, 'Ministry Staff-NI Total' 					, 17				,'Jeff'		, 4		UNION
+	SELECT 18				, 'Compensation'	, 'Ministry Staff-CL Total' 					, 18				,'Dean'		, 3		UNION
+	SELECT 19				, 'Compensation'	, 'Ministry Staff-CL Total' 					, 18				,'Jeff'		, 4		UNION
+	SELECT 20				, 'Compensation'	, 'Ministry Staff-CC Total' 					, 19 				,'Jeff'		, 4		UNION
+	SELECT 21				, 'Compensation'	, 'Ministry Staff-AU Total' 					, 20				,'Jeff'		, 4		UNION
+	SELECT 22				, 'Compensation'	, 'Ministry Staff-DR Total' 					, 21				,'Jeff'		, 4		UNION
+	SELECT 23				, 'Compensation'	, 'Ministry Staff Hispanic-EL' 					, 22				,NULL		, NULL	UNION
+	SELECT 24				, 'Compensation'	, 'Misc Ministries Interns' 					, 23				,NULL		, NULL	UNION
+	SELECT 25				, 'Compensation'	, 'HR' 											, 24				,'Luke'		, 5		UNION
+	SELECT 26				, 'Compensation'	, 'Communications' 								, 25				,'Luke'		, 5		UNION
+	SELECT 27				, 'Compensation'	, 'Production' 									, 26				,'Luke'		, 5		UNION
+	SELECT 28				, 'Compensation'	, 'Worship' 									, 27				,'Luke'		, 5		UNION
+	SELECT 29				, 'Compensation'	, 'BSC (self funding)' 							, 28				,'XLT'		, 6		UNION
+	SELECT 30				, 'Compensation'	, 'Health Insurance' 							, 29				,'XLT'		, 6		UNION
+	SELECT 31				, 'Compensation'	, 'Expense Sharing'								, 30				,'XLT'		, 6		UNION
+	SELECT 32				, 'Compensation'	, 'Personal Accounts'							, 31				,'XLT'		, 6		UNION
+	SELECT 33				, 'Compensation'	, 'Cell Phones'									, 32				,'XLT'		, 6		UNION
+	SELECT 34				, 'Compensation'	, 'Scholarships'								, 33				,'XLT'		, 6		UNION
+	SELECT 35				, 'Compensation'	, 'All Staff Meetings'							, 34				,'XLT'		, 6		UNION
+	SELECT 36				, 'Compensation'	, 'Retreats'									, 35				,'XLT'		, 6		UNION
+	SELECT 37				, 'Compensation'	, 'Awards'										, 36				,'XLT'		, 6		UNION
+	SELECT 38				, 'Compensation'	, 'Pulpit Supply'								, 37				,'XLT'		, 6		UNION
+	SELECT 39				, 'Compensation'	, 'LTD/Life'									, 38				,'XLT'		, 6		UNION
+	SELECT 40				, 'Compensation'	, 'Workers Comp'								, 39				,'XLT'		, 6		UNION
+	SELECT 41				, 'Compensation'	, 'Paycor Fees'									, 40				,'XLT'		, 6		UNION
+	SELECT 42				, 'Compensation'	, 'Passthrough Billbacks'						, 41				,'XLT'		, 6		UNION
+	SELECT 43				, 'Compensation'	, 'Other'										, 42				,'XLT'		, 6		UNION
 																																		
-	SELECT 	44				, 'Expense'			, 'General Office'								, 43				, 'Dean'	, 44		UNION
-	SELECT 	45				, 'Expense'			, 'Office Equipment' 							, 44				, 'Dean'	, 45		UNION
-	SELECT 	46				, 'Expense'			, 'Technology' 									, 45				, 'Dean'	, 46		UNION
-	SELECT 	47				, 'Expense'			, 'Printing' 									, 46				, 'Dean'	, 47		UNION
-	SELECT 	48				, 'Expense'			, 'Insurance' 									, 47				, 'Dean'	, 48		UNION
-	SELECT 	49				, 'Expense'			, 'Facilities & Grounds Maintenance' 			, 48				, 'Dean'	, 49		UNION
-	SELECT 	50				, 'Expense'			, 'Utilities' 									, 49				, 'Dean'	, 50		UNION
-	SELECT 	51				, 'Expense'			, 'Service Support' 							, 50				, 'Dean'	, 51		UNION
-	SELECT 	52				, 'Expense'			, 'Camp Operating Expense' 						, 51				, 'Dean'	, 52		UNION
-	SELECT 	53				, 'Expense'			, 'Student' 									, 52				, 'Dean'	, 53		UNION
-	SELECT 	54				, 'Expense'			, 'Banking, Legal, Audit, Professional Fees' 	, 53				, 'Fred'	, 54		UNION
-	SELECT 	55				, 'Expense'			, 'Payroll Processing Fees' 					, 54				, 'Luke'	, 55		UNION
-	SELECT 	56				, 'Expense'			, 'Mortgage' 									, 55				, 'XLT'		, 56		UNION
-	SELECT 	57				, 'Expense'			, 'Ministry Expansion and Development' 			, 56				, 'XLT'		, 57		UNION
-	SELECT 	58				, 'Expense'			, 'Harvest Studio Production' 					, 57				, NULL		, 58		UNION
-	SELECT 	59				, 'Expense'			, 'Missions & Outreach & Church Plant'			, 58				, 'XLT'		, 59		UNION
-	SELECT 	60				, 'Expense'			, 'Stewardship' 								, 59				, 'Fred'	, 60		UNION
-	SELECT 	61				, 'Expense'			, 'Biblical Soul Care' 							, 60				, NULL		, 61		UNION
-	SELECT 	62				, 'Expense'			, 'Crystal Lake Campus' 						, 61				, NULL		, 62		UNION
-	SELECT 	63				, 'Expense'			, 'North Shore' 								, 62				, NULL		, 63		UNION
-	SELECT 	64				, 'Expense'			, 'Chicago Cathedral' 							, 63				, NULL		, 64		UNION
-	SELECT 	65				, 'Expense'			, 'Niles Campus'								, 64				, NULL		, 65		UNION
-	SELECT 	66				, 'Expense'			, 'Aurora' 										, 65				, NULL		, 66		UNION
-	SELECT 	67				, 'Expense'			, 'Adult' 										, 66				, 'Jeff'	, 67		UNION
-	SELECT 	68				, 'Expense'			, 'Single Parent' 								, 67				, NULL		, 68		UNION
-	SELECT 	69				, 'Expense'			, 'Family'  									, 68				, 'Jeff'	, 69		UNION
-	SELECT 	70				, 'Expense'			, 'Congregation/FOCIS' 							, 69				, 'Jeff'	, 70		UNION
-	SELECT 	71				, 'Expense'			, 'Special Events' 								, 70				, 'Luke'	, 71		UNION
-	SELECT 	72				, 'Expense'			, 'Online Services' 							, 71				, 'Luke'	, 72		UNION
-	SELECT 	73				, 'Expense'			, 'Worship' 									, 72				, 'Luke'	, 73		UNION
-	SELECT 	74				, 'Expense'			, 'Production' 									, 73				, 'Luke'	, 74		UNION
-	SELECT 	75				, 'Expense'			, 'Creative Services, Video Prod, Media' 		, 74				, 'Luke'	, 75		UNION
-	SELECT 	76				, 'Expense'			, 'Other' 										, 75				, 'Luke'	, 76
+	SELECT 	44				, 'Expense'			, 'General Office'								, 43				, 'Dean'	, 3			UNION
+	SELECT 	45				, 'Expense'			, 'Office Equipment' 							, 44				, 'Dean'	, 3			UNION
+	SELECT 	46				, 'Expense'			, 'Technology' 									, 45				, 'Dean'	, 3			UNION
+	SELECT 	47				, 'Expense'			, 'Printing' 									, 46				, 'Dean'	, 3			UNION
+	SELECT 	48				, 'Expense'			, 'Insurance' 									, 47				, 'Dean'	, 3			UNION
+	SELECT 	49				, 'Expense'			, 'Facilities & Grounds Maintenance' 			, 48				, 'Dean'	, 3			UNION
+	SELECT 	50				, 'Expense'			, 'Utilities' 									, 49				, 'Dean'	, 3			UNION
+	SELECT 	51				, 'Expense'			, 'Service Support' 							, 50				, 'Dean'	, 3			UNION
+	SELECT 	52				, 'Expense'			, 'Camp Operating Expense' 						, 51				, 'Dean'	, 3			UNION
+	SELECT 	53				, 'Expense'			, 'Student' 									, 52				, 'Dean'	, 3			UNION
+	SELECT 	54				, 'Expense'			, 'Banking, Legal, Audit, Professional Fees' 	, 53				, 'Fred'	, 2			UNION
+	SELECT 	55				, 'Expense'			, 'Payroll Processing Fees' 					, 54				, 'Luke'	, 5			UNION
+	SELECT 	56				, 'Expense'			, 'Mortgage' 									, 55				, 'XLT'		, 6			UNION
+	SELECT 	57				, 'Expense'			, 'Ministry Expansion and Development' 			, 56				, 'XLT'		, 6			UNION
+	SELECT 	58				, 'Expense'			, 'Harvest Studio Production' 					, 57				, NULL		, NULL		UNION
+	SELECT 	59				, 'Expense'			, 'Missions & Outreach & Church Plant'			, 58				, 'XLT'		, 6			UNION
+	SELECT 	60				, 'Expense'			, 'Stewardship' 								, 59				, 'Fred'	, 2			UNION
+	SELECT 	61				, 'Expense'			, 'Biblical Soul Care' 							, 60				, NULL		, NULL		UNION
+	SELECT 	62				, 'Expense'			, 'Crystal Lake Campus' 						, 61				, NULL		, NULL		UNION
+	SELECT 	63				, 'Expense'			, 'North Shore' 								, 62				, NULL		, NULL		UNION
+	SELECT 	64				, 'Expense'			, 'Chicago Cathedral' 							, 63				, NULL		, NULL		UNION
+	SELECT 	65				, 'Expense'			, 'Niles Campus'								, 64				, NULL		, NULL		UNION
+	SELECT 	66				, 'Expense'			, 'Aurora' 										, 65				, NULL		, NULL		UNION
+	SELECT 	67				, 'Expense'			, 'Adult' 										, 66				, 'Jeff'	, 4			UNION
+	SELECT 	68				, 'Expense'			, 'Single Parent' 								, 67				, NULL		, NULL		UNION
+	SELECT 	69				, 'Expense'			, 'Family'  									, 68				, 'Jeff'	, 4			UNION
+	SELECT 	70				, 'Expense'			, 'Congregation/FOCIS' 							, 69				, 'Jeff'	, 4			UNION
+	SELECT 	71				, 'Expense'			, 'Special Events' 								, 70				, 'Luke'	, 5			UNION
+	SELECT 	72				, 'Expense'			, 'Online Services' 							, 71				, 'Luke'	, 5			UNION
+	SELECT 	73				, 'Expense'			, 'Worship' 									, 72				, 'Luke'	, 5			UNION
+	SELECT 	74				, 'Expense'			, 'Production' 									, 73				, 'Luke'	, 5			UNION
+	SELECT 	75				, 'Expense'			, 'Creative Services, Video Prod, Media' 		, 74				, 'Luke'	, 5			UNION
+	SELECT 	76				, 'Expense'			, 'Other' 										, 75				, 'Luke'	, 5	
 
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -1544,15 +1544,17 @@ AS
 		AND DepartmentCode IN( '5158', '5159', '6137')
 
 
-	--other ?? why not the remainder as in the other tab?
+	--other 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 76 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
+	LEFT JOIN [CampusXLTReportGroup_XLTTabMap] dest
+		ON  DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND DepartmentCode IN( '6147')
+		AND dest.CampusXLTReportGroupID IS NULL
 
 RETURN 0
