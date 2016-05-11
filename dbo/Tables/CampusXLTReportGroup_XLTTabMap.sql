@@ -1,9 +1,9 @@
 ﻿CREATE TABLE [dbo].[CampusXLTReportGroup_XLTTabMap]
 (
 	  FinancialCategoryID INT
-	, XLTReportGroupID INT
+	, CampusXLTReportGroupID INT
 )
 GO
-CREATE CLUSTERED INDEX CampusXLTReportGroupXLTTabMap__FinancialCategoryID_XLTReportGroupID
-	ON CampusXLTReportGroup_XLTTabMap(FinancialCategoryID, XLTReportGroupID)
+CREATE CLUSTERED INDEX CampusXLTReportGroupXLTTabMap__FinancialCategoryID_CampusXLTReportGroupID
+	ON CampusXLTReportGroup_XLTTabMap(FinancialCategoryID, CampusXLTReportGroupID)
 

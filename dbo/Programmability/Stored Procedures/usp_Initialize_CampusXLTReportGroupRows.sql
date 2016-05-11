@@ -760,88 +760,87 @@ AS
 
 	INSERT INTO dbo.CampusXLTReportGroup_XLTTab
 	(CampusXLTReportGroupID	, XLTHeading		, XLTDetail										, XLTDetailSortOrder, Manager	, ManagerSortOrder)
-	SELECT 1				, 'Compensation'	, 'Pastoral Staff'								, 1					,'Scott'	, 1 
-	SELECT 2				, 'Compensation'	, 'HCA Pastoral Billback' 						, 2					,'Scott'	, 2
-	SELECT 3				, 'Compensation'	, 'HBF Pastoral Billback' 						, 3					,'Scott'	, 3
-	SELECT 4				, 'Compensation'	, 'WITW Pastoral Billback' 						, 4					,'Scott'	, 4
-	SELECT 5				, 'Compensation'	, 'Executive Support' 							, 5					,'Scott'	, 5
-	SELECT 6				, 'Compensation'	, 'Accounting' 									, 6					,'Fred'		, 6
-	SELECT 7				, 'Compensation'	, 'Film (self funding)' 						, 7					,'Fred'		, 7
-	SELECT 8				, 'Compensation'	, 'Development (self funding)' 					, 8					,'Fred'		, 8
-	SELECT 9				, 'Compensation'	, 'IT'											, 9					,'Dean'		, 9
-	SELECT 10				, 'Compensation'	, 'Direct RM Ops' 								, 10				,'Dean'		, 10
-	SELECT 11				, 'Compensation'	, 'Direct EL Ops' 								, 11				,'Dean'		, 11
-	SELECT 12				, 'Compensation'	, 'Indirect - Central Ops' 						, 12				,'Dean'		, 12
-	SELECT 13				, 'Compensation'	, 'Ministry Staff-RM  Total' 					, 13				,'Jeff'		, 13
-	SELECT 14				, 'Compensation'	, 'Ministry Admin-RM Total' 					, 14				,NULL 		, 14
-	SELECT 15				, 'Compensation'	, 'Ministry Staff-EL Total' 					, 15				,'Jeff'		, 15
-	SELECT 16				, 'Compensation'	, 'Ministry Admin-EL Total' 					, 16				,NULL		, 16
-	SELECT 17				, 'Compensation'	, 'Ministry Staff-NI Total' 					, 17				,'Jeff'		, 17
-	SELECT 18				, 'Compensation'	, 'Ministry Staff-CL Total' 					, 18				,'Dean'		, 18
-	SELECT 19				, 'Compensation'	, 'Ministry Staff-CL Total' 					, 18				,'Jeff'		, 19
-	SELECT 20				, 'Compensation'	, 'Ministry Staff-CC Total' 					, 19 				,'Jeff'		, 20
-	SELECT 21				, 'Compensation'	, 'Ministry Staff-AU Total' 					, 20				,'Jeff'		, 21
-	SELECT 22				, 'Compensation'	, 'Ministry Staff-DR Total' 					, 21				,'Jeff'		, 22
-	SELECT 23				, 'Compensation'	, 'Ministry Staff Hispanic-EL' 					, 22				,NULL		, 23
-	SELECT 24				, 'Compensation'	, 'Misc Ministries Interns' 					, 23				,NULL		, 24
-	SELECT 25				, 'Compensation'	, 'HR' 											, 24				,'Luke'		, 25
-	SELECT 26				, 'Compensation'	, 'Communications' 								, 25				,'Luke'		, 26
-	SELECT 27				, 'Compensation'	, 'Production' 									, 26				,'Luke'		, 27
-	SELECT 28				, 'Compensation'	, 'Worship' 									, 27				,'Luke'		, 28
-	SELECT 29				, 'Compensation'	, 'BSC (self funding)' 							, 28				,'XLT'		, 29
-	SELECT 30				, 'Compensation'	, 'Health Insurance' 							, 29				,'XLT'		, 30
-	SELECT 31				, 'Compensation'	, 'Expense Sharing'								, 30				,'XLT'		, 31
-	SELECT 32				, 'Compensation'	, 'Personal Accounts'							, 31				,'XLT'		, 32
-	SELECT 33				, 'Compensation'	, 'Cell Phones'									, 32				,'XLT'		, 33
-	SELECT 34				, 'Compensation'	, 'Scholarships'								, 33				,'XLT'		, 34
-	SELECT 35				, 'Compensation'	, 'All Staff Meetings'							, 34				,'XLT'		, 35
-	SELECT 36				, 'Compensation'	, 'Retreats'									, 35				,'XLT'		, 36
-	SELECT 37				, 'Compensation'	, 'Awards'										, 36				,'XLT'		, 37
-	SELECT 38				, 'Compensation'	, 'Pulpit Supply'								, 37				,'XLT'		, 38
-	SELECT 39				, 'Compensation'	, 'LTD/Life'									, 38				,'XLT'		, 39
-	SELECT 40				, 'Compensation'	, 'Workers Comp'								, 39				,'XLT'		, 40
-	SELECT 41				, 'Compensation'	, 'Paycor Fees'									, 40				,'XLT'		, 41
-	SELECT 42				, 'Compensation'	, 'Passthrough Billbacks'						, 41				,'XLT'		, 42
-	SELECT 43				, 'Compensation'	, 'Other'										, 42				,'XLT'		, 43
-
-
-	SELECT 	44				, 'Expense'			, 'General Office'								, 43				, 'Dean'
-	SELECT 	45				, 'Expense'			, 'Office Equipment' 							, 44				, 'Dean'
-	SELECT 	46				, 'Expense'			, 'Technology' 									, 45				, 'Dean'
-	SELECT 	47				, 'Expense'			, 'Printing' 									, 46				, 'Dean'
-	SELECT 	48				, 'Expense'			, 'Insurance' 									, 47				, 'Dean'
-	SELECT 	49				, 'Expense'			, 'Facilities & Grounds Maintenance' 			, 48				, 'Dean'
-	SELECT 	50				, 'Expense'			, 'Utilities' 									, 49				, 'Dean'
-	SELECT 	51				, 'Expense'			, 'Service Support' 							, 50				, 'Dean'
-	SELECT 	52				, 'Expense'			, 'Camp Operating Expense' 						, 51				, 'Dean'
-	SELECT 	53				, 'Expense'			, 'Student' 									, 52				, 'Dean'
-	SELECT 	54				, 'Expense'			, 'Banking, Legal, Audit, Professional Fees' 	, 53				, 'Fred'
-	SELECT 	55				, 'Expense'			, 'Payroll Processing Fees' 					, 54				, 'Luke'
-	SELECT 	56				, 'Expense'			, 'Mortgage' 									, 55				, 'XLT'
-	SELECT 	57				, 'Expense'			, 'Ministry Expansion and Development' 			, 56				, 'XLT'
-	SELECT 	58				, 'Expense'			, 'Harvest Studio Production' 					, 57				, NULL
-	SELECT 	59				, 'Expense'			, 'Missions & Outreach & Church Plant'			, 58				, 'XLT'
-	SELECT 	60				, 'Expense'			, 'Stewardship' 								, 59				, 'Fred'
-	SELECT 	61				, 'Expense'			, 'Biblical Soul Care' 							, 60				, NULL
-	SELECT 	62				, 'Expense'			, 'Crystal Lake Campus' 						, 61				, NULL
-	SELECT 	63				, 'Expense'			, 'North Shore' 								, 62				, NULL
-	SELECT 	64				, 'Expense'			, 'Chicago Cathedral' 							, 63				, NULL
-	SELECT 	65				, 'Expense'			, 'Niles Campus'								, 64				, NULL
-	SELECT 	66				, 'Expense'			, 'Aurora' 										, 65				, NULL
-	SELECT 	67				, 'Expense'			, 'Adult' 										, 66				, 'Jeff'
-	SELECT 	68				, 'Expense'			, 'Single Parent' 								, 67				, NULL
-	SELECT 	69				, 'Expense'			, 'Family'  									, 68				, 'Jeff'
-	SELECT 	70				, 'Expense'			, 'Congregation/FOCIS' 							, 69				, 'Jeff'
-	SELECT 	71				, 'Expense'			, 'Special Events' 								, 70				, 'Luke'
-	SELECT 	72				, 'Expense'			, 'Online Services' 							, 71				, 'Luke'
-	SELECT 	73				, 'Expense'			, 'Worship' 									, 72				, 'Luke'
-	SELECT 	74				, 'Expense'			, 'Production' 									, 73				, 'Luke'
-	SELECT 	75				, 'Expense'			, 'Creative Services, Video Prod, Media' 		, 74				, 'Luke'
-	SELECT 	76				, 'Expense'			, 'Other' 										, 75				, 'Luke'
+	SELECT 1				, 'Compensation'	, 'Pastoral Staff'								, 1					,'Scott'	, 1		UNION
+	SELECT 2				, 'Compensation'	, 'HCA Pastoral Billback' 						, 2					,'Scott'	, 2		UNION
+	SELECT 3				, 'Compensation'	, 'HBF Pastoral Billback' 						, 3					,'Scott'	, 3		UNION
+	SELECT 4				, 'Compensation'	, 'WITW Pastoral Billback' 						, 4					,'Scott'	, 4		UNION
+	SELECT 5				, 'Compensation'	, 'Executive Support' 							, 5					,'Scott'	, 5		UNION
+	SELECT 6				, 'Compensation'	, 'Accounting' 									, 6					,'Fred'		, 6		UNION
+	SELECT 7				, 'Compensation'	, 'Film (self funding)' 						, 7					,'Fred'		, 7		UNION
+	SELECT 8				, 'Compensation'	, 'Development (self funding)' 					, 8					,'Fred'		, 8		UNION
+	SELECT 9				, 'Compensation'	, 'IT'											, 9					,'Dean'		, 9		UNION
+	SELECT 10				, 'Compensation'	, 'Direct RM Ops' 								, 10				,'Dean'		, 10	UNION
+	SELECT 11				, 'Compensation'	, 'Direct EL Ops' 								, 11				,'Dean'		, 11	UNION
+	SELECT 12				, 'Compensation'	, 'Indirect - Central Ops' 						, 12				,'Dean'		, 12	UNION
+	SELECT 13				, 'Compensation'	, 'Ministry Staff-RM  Total' 					, 13				,'Jeff'		, 13	UNION
+	SELECT 14				, 'Compensation'	, 'Ministry Admin-RM Total' 					, 14				,NULL 		, 14	UNION
+	SELECT 15				, 'Compensation'	, 'Ministry Staff-EL Total' 					, 15				,'Jeff'		, 15	UNION
+	SELECT 16				, 'Compensation'	, 'Ministry Admin-EL Total' 					, 16				,NULL		, 16	UNION
+	SELECT 17				, 'Compensation'	, 'Ministry Staff-NI Total' 					, 17				,'Jeff'		, 17	UNION
+	SELECT 18				, 'Compensation'	, 'Ministry Staff-CL Total' 					, 18				,'Dean'		, 18	UNION
+	SELECT 19				, 'Compensation'	, 'Ministry Staff-CL Total' 					, 18				,'Jeff'		, 19	UNION
+	SELECT 20				, 'Compensation'	, 'Ministry Staff-CC Total' 					, 19 				,'Jeff'		, 20	UNION
+	SELECT 21				, 'Compensation'	, 'Ministry Staff-AU Total' 					, 20				,'Jeff'		, 21	UNION
+	SELECT 22				, 'Compensation'	, 'Ministry Staff-DR Total' 					, 21				,'Jeff'		, 22	UNION
+	SELECT 23				, 'Compensation'	, 'Ministry Staff Hispanic-EL' 					, 22				,NULL		, 23	UNION
+	SELECT 24				, 'Compensation'	, 'Misc Ministries Interns' 					, 23				,NULL		, 24	UNION
+	SELECT 25				, 'Compensation'	, 'HR' 											, 24				,'Luke'		, 25	UNION
+	SELECT 26				, 'Compensation'	, 'Communications' 								, 25				,'Luke'		, 26	UNION
+	SELECT 27				, 'Compensation'	, 'Production' 									, 26				,'Luke'		, 27	UNION
+	SELECT 28				, 'Compensation'	, 'Worship' 									, 27				,'Luke'		, 28	UNION
+	SELECT 29				, 'Compensation'	, 'BSC (self funding)' 							, 28				,'XLT'		, 29	UNION
+	SELECT 30				, 'Compensation'	, 'Health Insurance' 							, 29				,'XLT'		, 30	UNION
+	SELECT 31				, 'Compensation'	, 'Expense Sharing'								, 30				,'XLT'		, 31	UNION
+	SELECT 32				, 'Compensation'	, 'Personal Accounts'							, 31				,'XLT'		, 32	UNION
+	SELECT 33				, 'Compensation'	, 'Cell Phones'									, 32				,'XLT'		, 33	UNION
+	SELECT 34				, 'Compensation'	, 'Scholarships'								, 33				,'XLT'		, 34	UNION
+	SELECT 35				, 'Compensation'	, 'All Staff Meetings'							, 34				,'XLT'		, 35	UNION
+	SELECT 36				, 'Compensation'	, 'Retreats'									, 35				,'XLT'		, 36	UNION
+	SELECT 37				, 'Compensation'	, 'Awards'										, 36				,'XLT'		, 37	UNION
+	SELECT 38				, 'Compensation'	, 'Pulpit Supply'								, 37				,'XLT'		, 38	UNION
+	SELECT 39				, 'Compensation'	, 'LTD/Life'									, 38				,'XLT'		, 39	UNION
+	SELECT 40				, 'Compensation'	, 'Workers Comp'								, 39				,'XLT'		, 40	UNION
+	SELECT 41				, 'Compensation'	, 'Paycor Fees'									, 40				,'XLT'		, 41	UNION
+	SELECT 42				, 'Compensation'	, 'Passthrough Billbacks'						, 41				,'XLT'		, 42	UNION
+	SELECT 43				, 'Compensation'	, 'Other'										, 42				,'XLT'		, 43	UNION
+																																		
+	SELECT 	44				, 'Expense'			, 'General Office'								, 43				, 'Dean'	, 44		UNION
+	SELECT 	45				, 'Expense'			, 'Office Equipment' 							, 44				, 'Dean'	, 45		UNION
+	SELECT 	46				, 'Expense'			, 'Technology' 									, 45				, 'Dean'	, 46		UNION
+	SELECT 	47				, 'Expense'			, 'Printing' 									, 46				, 'Dean'	, 47		UNION
+	SELECT 	48				, 'Expense'			, 'Insurance' 									, 47				, 'Dean'	, 48		UNION
+	SELECT 	49				, 'Expense'			, 'Facilities & Grounds Maintenance' 			, 48				, 'Dean'	, 49		UNION
+	SELECT 	50				, 'Expense'			, 'Utilities' 									, 49				, 'Dean'	, 50		UNION
+	SELECT 	51				, 'Expense'			, 'Service Support' 							, 50				, 'Dean'	, 51		UNION
+	SELECT 	52				, 'Expense'			, 'Camp Operating Expense' 						, 51				, 'Dean'	, 52		UNION
+	SELECT 	53				, 'Expense'			, 'Student' 									, 52				, 'Dean'	, 53		UNION
+	SELECT 	54				, 'Expense'			, 'Banking, Legal, Audit, Professional Fees' 	, 53				, 'Fred'	, 54		UNION
+	SELECT 	55				, 'Expense'			, 'Payroll Processing Fees' 					, 54				, 'Luke'	, 55		UNION
+	SELECT 	56				, 'Expense'			, 'Mortgage' 									, 55				, 'XLT'		, 56		UNION
+	SELECT 	57				, 'Expense'			, 'Ministry Expansion and Development' 			, 56				, 'XLT'		, 57		UNION
+	SELECT 	58				, 'Expense'			, 'Harvest Studio Production' 					, 57				, NULL		, 58		UNION
+	SELECT 	59				, 'Expense'			, 'Missions & Outreach & Church Plant'			, 58				, 'XLT'		, 59		UNION
+	SELECT 	60				, 'Expense'			, 'Stewardship' 								, 59				, 'Fred'	, 60		UNION
+	SELECT 	61				, 'Expense'			, 'Biblical Soul Care' 							, 60				, NULL		, 61		UNION
+	SELECT 	62				, 'Expense'			, 'Crystal Lake Campus' 						, 61				, NULL		, 62		UNION
+	SELECT 	63				, 'Expense'			, 'North Shore' 								, 62				, NULL		, 63		UNION
+	SELECT 	64				, 'Expense'			, 'Chicago Cathedral' 							, 63				, NULL		, 64		UNION
+	SELECT 	65				, 'Expense'			, 'Niles Campus'								, 64				, NULL		, 65		UNION
+	SELECT 	66				, 'Expense'			, 'Aurora' 										, 65				, NULL		, 66		UNION
+	SELECT 	67				, 'Expense'			, 'Adult' 										, 66				, 'Jeff'	, 67		UNION
+	SELECT 	68				, 'Expense'			, 'Single Parent' 								, 67				, NULL		, 68		UNION
+	SELECT 	69				, 'Expense'			, 'Family'  									, 68				, 'Jeff'	, 69		UNION
+	SELECT 	70				, 'Expense'			, 'Congregation/FOCIS' 							, 69				, 'Jeff'	, 70		UNION
+	SELECT 	71				, 'Expense'			, 'Special Events' 								, 70				, 'Luke'	, 71		UNION
+	SELECT 	72				, 'Expense'			, 'Online Services' 							, 71				, 'Luke'	, 72		UNION
+	SELECT 	73				, 'Expense'			, 'Worship' 									, 72				, 'Luke'	, 73		UNION
+	SELECT 	74				, 'Expense'			, 'Production' 									, 73				, 'Luke'	, 74		UNION
+	SELECT 	75				, 'Expense'			, 'Creative Services, Video Prod, Media' 		, 74				, 'Luke'	, 75		UNION
+	SELECT 	76				, 'Expense'			, 'Other' 										, 75				, 'Luke'	, 76
 
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 1 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -853,7 +852,7 @@ AS
 		AND AccountingCode9 = '8047'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 2 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -865,7 +864,7 @@ AS
 		AND AccountingCode9 = '8048'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 3 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -877,7 +876,7 @@ AS
 		AND AccountingCode9 = '8049'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 4 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -889,7 +888,7 @@ AS
 		AND AccountingCode9 = '8050'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 5 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -902,7 +901,7 @@ AS
 
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 6 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -914,7 +913,7 @@ AS
 		AND AccountingCode9 = '8031'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 7 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -926,7 +925,7 @@ AS
 		AND AccountingCode9 = '8040'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 8 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -938,7 +937,7 @@ AS
 		AND AccountingCode9 = '8038'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 9 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -950,7 +949,7 @@ AS
 		AND AccountingCode9 = '8032'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 10 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -962,7 +961,7 @@ AS
 		AND AccountingCode9 = '8004'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 11 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -974,7 +973,7 @@ AS
 		AND AccountingCode9 = '8009'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 12 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -986,7 +985,7 @@ AS
 		AND AccountingCode9 = '8037'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 13 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -998,7 +997,7 @@ AS
 		AND AccountingCode9 IN( '8000','8001','8002','8003')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 15 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1010,7 +1009,7 @@ AS
 		AND AccountingCode9 IN( '8005','8006','8007','8008')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 17 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1022,7 +1021,7 @@ AS
 		AND AccountingCode9 IN( '8010','8011','8012','8013')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 18 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1034,7 +1033,7 @@ AS
 		AND AccountingCode9 IN( '8016')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 19 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1046,7 +1045,7 @@ AS
 		AND AccountingCode9 IN( '8014','8015')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 20 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1058,7 +1057,7 @@ AS
 		AND AccountingCode9 IN( '8021','8022','8023')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 21 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1070,7 +1069,7 @@ AS
 		AND AccountingCode9 IN( '8017','8018','8019','8020')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 22 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1082,7 +1081,7 @@ AS
 		AND AccountingCode9 IN( '8024')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 25 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1094,7 +1093,7 @@ AS
 		AND AccountingCode9 IN( '8030')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 26 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1106,7 +1105,7 @@ AS
 		AND AccountingCode9 IN( '8033')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 27 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1118,7 +1117,7 @@ AS
 		AND AccountingCode9 IN( '8034')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 28 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1130,7 +1129,7 @@ AS
 		AND AccountingCode9 IN( '8035')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 29 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1142,7 +1141,7 @@ AS
 		AND AccountingCode9 IN( '8029')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 30 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1154,7 +1153,7 @@ AS
 		AND GLCode IN ('41010', '41011', '41012', '41015', '41016')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 31 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1167,7 +1166,7 @@ AS
 		AND GLCode IN ('90511', '90512', '90514')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 32 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1179,7 +1178,7 @@ AS
 		AND DepartmentCode = '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 33 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1191,7 +1190,7 @@ AS
 		AND GLCode = '44090'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 34 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1203,7 +1202,7 @@ AS
 		AND GLCode = '44020'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 35 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1215,7 +1214,7 @@ AS
 		AND ProjectCode = '217'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 36 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1227,7 +1226,7 @@ AS
 		AND GLCode = '43026'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 37 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1239,7 +1238,7 @@ AS
 		AND GLCode = '44008'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 38 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1251,7 +1250,7 @@ AS
 		AND GLCode IN ('45016', '45018', '46022', '46026')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 39 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1263,7 +1262,7 @@ AS
 		AND GLCode IN ('41017', '41020', '41025', '41027')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 40 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1275,7 +1274,7 @@ AS
 		AND GLCode IN ('52519')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 41 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1287,7 +1286,7 @@ AS
 		AND GLCode IN ('60432', '53130')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 42 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1301,7 +1300,7 @@ AS
 
 	--other
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 42 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory 
@@ -1312,10 +1311,10 @@ AS
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
-		AND dest.XLTReportGroupID IS NULL
+		AND dest.CampusXLTReportGroupID IS NULL
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 44 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1325,7 +1324,7 @@ AS
 		AND DepartmentCode = '5038'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 45 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1335,7 +1334,7 @@ AS
 		AND DepartmentCode = '5058'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 46 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1345,7 +1344,7 @@ AS
 		AND DepartmentCode = '5178'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 47 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1355,7 +1354,7 @@ AS
 		AND DepartmentCode = '5078'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 48 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1365,7 +1364,7 @@ AS
 		AND DepartmentCode = '5098'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 49 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1375,7 +1374,7 @@ AS
 		AND DepartmentCode IN( '6017', '6037', '6057', '6065', '6117', '6157', '6177')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 50 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1385,7 +1384,7 @@ AS
 		AND DepartmentCode = '6097'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 51 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1395,7 +1394,7 @@ AS
 		AND DepartmentCode = '6197'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 52 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1405,7 +1404,7 @@ AS
 		AND CampusCode = 'LH'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 53 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1415,7 +1414,7 @@ AS
 		AND DepartmentCode IN( '7165', '7166', '7170', '7171')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 54 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1425,7 +1424,7 @@ AS
 		AND DepartmentCode IN( '5018', '5138', '9020')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 55 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1435,7 +1434,7 @@ AS
 		AND DepartmentCode IN( '9025')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 56 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1445,7 +1444,7 @@ AS
 		AND DepartmentCode IN( '9015', '9017')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 59 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1455,7 +1454,7 @@ AS
 		AND DepartmentCode IN( '7208', '7210', '7250')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 60 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1465,7 +1464,7 @@ AS
 		AND DepartmentCode IN( '7280')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 67 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1475,7 +1474,7 @@ AS
 		AND DepartmentCode IN( '7005', '7007', '7011', '7014', '7041', '7047', '7050', '7059', '7066', '7071', '7073', '7075', '7076', '7079', '7084', '7086', '7089', '7111', '7176')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 69 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1485,7 +1484,7 @@ AS
 		AND DepartmentCode IN( '7125', '7128', '7131', '7135', '7139', '7143', '7147', '7151' )
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 70 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1495,7 +1494,7 @@ AS
 		AND DepartmentCode IN( '7017', '7023', '7035')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 71 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1505,7 +1504,7 @@ AS
 		AND DepartmentCode IN( '5162')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 72 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1515,7 +1514,7 @@ AS
 		AND DepartmentCode IN( '5164')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 73 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1525,7 +1524,7 @@ AS
 		AND DepartmentCode IN( '7290')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 74 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1535,7 +1534,7 @@ AS
 		AND DepartmentCode IN( '5160')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 75 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
@@ -1547,7 +1546,7 @@ AS
 
 	--other ?? why not the remainder as in the other tab?
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
-	( FinancialCategoryID, XLTReportGroupID )
+	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT
 		DimFinancialCategory.FinancialCategoryID, 76 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
