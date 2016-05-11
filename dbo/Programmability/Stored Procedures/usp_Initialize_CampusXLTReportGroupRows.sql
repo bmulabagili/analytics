@@ -836,8 +836,9 @@ AS
 	SELECT 	73				, 'Expense'			, 'Worship' 									, 72				, 'Luke'	, 5			UNION
 	SELECT 	74				, 'Expense'			, 'Production' 									, 73				, 'Luke'	, 5			UNION
 	SELECT 	75				, 'Expense'			, 'Creative Services, Video Prod, Media' 		, 74				, 'Luke'	, 5			UNION
-	SELECT 	76				, 'Expense'			, 'Other' 										, 75				, 'Luke'	, 5	
-
+	SELECT 	76				, 'Expense'			, 'Other' 										, 75				, 'Luke'	, 5			UNION	
+	--scott has no expense, but we need a place holder
+	SELECT 77				, 'Expense'			, ''											, 77				, 'Scott'	, 1
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
