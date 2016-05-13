@@ -26,9 +26,9 @@ declare
 
 -- CurrentMonth
 
-	SELECT -- SUM(t1.amount) as CurrentMonth
+	SELECT -- SUM(t1.Amount) as CurrentMonth
 	@CurrMonthLoanRed = SUM(t1.Amount)
-	--[GLCode],  t1.amount
+	--[GLCode],  t1.Amount
 	FROM [DW].[FactFinancialOther] t1
 	LEFT JOIN [DW].[DimFinancialCategory] t2
 	ON t1.[FinancialCategoryID] = t2.[FinancialCategoryID]
@@ -44,9 +44,9 @@ declare
 -------------------------------------
 	SELECT @LastYear  = @CurrYear -1
 
-	SELECT  --SUM(t1.amount) as LoadRedAmount
-	@CurrYearLoanRed = SUM(t1.amount) 
-	--[GLCode],  t1.amount
+	SELECT  --SUM(t1.Amount) as LoadRedAmount
+	@CurrYearLoanRed = SUM(t1.Amount) 
+	--[GLCode],  t1.Amount
 	FROM [DW].[FactFinancialOther] t1
 	LEFT JOIN [DW].[DimFinancialCategory] t2
 	ON t1.[FinancialCategoryID] = t2.[FinancialCategoryID]
@@ -59,9 +59,9 @@ declare
 	AND t2.TenantID = 3
 
 
-	SELECT -- SUM(t1.amount) as LoadRedAmount
-	@LastYearLoanRed = SUM(t1.amount)
-	--[GLCode],  t1.amount
+	SELECT -- SUM(t1.Amount) as LoadRedAmount
+	@LastYearLoanRed = SUM(t1.Amount)
+	--[GLCode],  t1.Amount
 	FROM [DW].[FactFinancialOther] t1
 	LEFT JOIN [DW].[DimFinancialCategory] t2
 	ON t1.[FinancialCategoryID] = t2.[FinancialCategoryID]
