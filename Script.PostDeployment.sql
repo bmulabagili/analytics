@@ -795,4 +795,4 @@ SELECT 3, 29527341 AS AccountID, 'UA-29527341-2' AS WebProperty, 92087633 AS Pro
 --set up the mapping for Campus and XLT report
 EXEC [dbo].[usp_Initialize_CampusXLTReportGroupRows];
 
---GRANT EXEC ON [Schema::DW] TO HGBCReportReader
+GRANT EXEC ON Schema::DW TO HBCReportReader

@@ -382,7 +382,7 @@ AS
 		AND CampusCode = 'CS'
 		AND ProjectCode = '217'
 		AND AccountingCode9 IN ('9999') 
-		AND DepartmentCode <> '4056'
+		AND DepartmentCode = '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -485,20 +485,6 @@ AS
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
-		DimFinancialCategory.FinancialCategoryID, 33 AS CampusXLTReportGroupID
-	FROM DW.DimFinancialCategory
-	WHERE
-		EntityCode = 'HBC'
-		AND FundCode = '025'
-		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
-		AND GLCode IN ('40060')
-		AND AccountingCode9 IN ('9999') 
-		AND DepartmentCode <> '4056'
-
-	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
-	( FinancialCategoryID, CampusXLTReportGroupID )
-	SELECT DISTINCT
 		DimFinancialCategory.FinancialCategoryID, 34 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	LEFT JOIN [dbo].[CampusXLTReportGroup_CampusTabMap] dest
@@ -522,6 +508,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode = '5038'
+		AND CampusCode <> 'LH'
+		AND CategoryCode <> 'PER1'
 
 	--2. Office Equipment –Expenses with the department code 5058
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -532,7 +520,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode = '5058'
-		
+		AND CategoryCode <> 'PER1'
+
 	--3. Technology
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -542,6 +531,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode = '5178'
+		AND CategoryCode <> 'PER1'
 
 	--4. Printing – Expenses with the department code 5078
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -552,6 +542,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode = '5078'
+		AND CategoryCode <> 'PER1'
 
 	--5. Banking, Legal, Audit, Professional Fees
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -562,6 +553,9 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('5018','5138','9020')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND CategoryCode <> 'PER1'
 
 	--6. Payroll Processing Fees
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -572,6 +566,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('9025')
+		AND CategoryCode <> 'PER1'
 
 	--7. Insurance
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -582,6 +577,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('5098')
+		AND CategoryCode <> 'PER1'
 
 	--8.Facilities & Grounds Maintenance
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -592,6 +588,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('6017', '6037', '6057', '6065', '6117', '6157', '6177')
+		AND CampusCode <> 'LH'
+		AND CategoryCode <> 'PER1'
 
 	--9.Utilities
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -602,6 +600,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('6097')
+		AND CategoryCode <> 'PER1'
 
 	--10.Service Support
 	--no longer mapped
@@ -615,6 +614,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('9015','9017')
+		AND CategoryCode <> 'PER1'
 
 	--12.Operating Expense (under camp operations, also called camp  operating expense on xlt management report tab) – all expenses under fund 058
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -625,6 +625,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CampusCode = 'LH'
+		AND CategoryCode <> 'PER1'
 
 	--13.Ministry Expansion and Development
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -635,6 +636,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('7240')
+		AND CategoryCode <> 'PER1'
 
 	--14.Special Events
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -645,6 +647,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('5162')
+		AND CategoryCode <> 'PER1'
 
 	--15.Online Services – All expenses with department 5164
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -655,6 +658,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('5164')
+		AND CategoryCode <> 'PER1'
 
 	--16.Adult
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -665,6 +669,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('7005', '7007', '7011', '7014', '7041', '7047', '7050', '7059', '7066', '7071', '7073', '7075', '7076', '7079', '7084', '7086', '7089', '7111', '7176')
+		AND CategoryCode <> 'PER1'
 
 	--18.Biblical Soul Care
 	--removed per alan on 20160325
@@ -678,6 +683,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('7125', '7128', '7131', '7135', '7139', '7143', '7147', '7151')
+		AND CategoryCode <> 'PER1'
 
 	--20.Student
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -688,6 +694,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('7165', '7166', '7170', '7171')
+		AND CategoryCode <> 'PER1'
 
 	--21.Worship
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -698,6 +705,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('7290')
+		AND CategoryCode <> 'PER1'
 
 	--22.Stewardship – all expenses with department code 7280
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -708,6 +716,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('4276')
+		AND CategoryCode <> 'PER1'
 
 	--23.Missions & Outreach & Church Plant
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -718,6 +727,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('7208','7210','7250')
+		AND CategoryCode <> 'PER1'
 
 	--24.Congregation/FOCIS
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -728,6 +738,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('7017','7023','7035')
+		AND CategoryCode <> 'PER1'
 
 	--25.Production – all expenses with department 5160
 	--no longer mapped
@@ -741,6 +752,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('5158','5159','6137')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
 
 	--other
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -753,6 +766,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Dest.CampusXLTReportGroupID IS NULL
+		AND CategoryCode <> 'PER1'
 
 
 	--Now the XLT MAP
@@ -1326,6 +1340,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode = '5038'
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1336,6 +1352,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode = '5058'
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1346,6 +1364,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode = '5178'
+		AND CategoryCode <> 'PER1'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1356,6 +1375,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode = '5078'
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1366,6 +1387,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode = '5098'
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1376,6 +1399,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '6017', '6037', '6057', '6065', '6117', '6157', '6177')
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1386,6 +1411,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode = '6097'
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1396,6 +1423,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode = '6197'
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1406,6 +1435,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CampusCode = 'LH'
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1416,6 +1447,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '7165', '7166', '7170', '7171')
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1426,6 +1459,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '5018', '5138', '9020')
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1436,6 +1471,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '9025')
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1446,6 +1483,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '9015', '9017')
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1456,6 +1495,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '7208', '7210', '7250')
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1466,6 +1507,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '7280')
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1476,6 +1519,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '7005', '7007', '7011', '7014', '7041', '7047', '7050', '7059', '7066', '7071', '7073', '7075', '7076', '7079', '7084', '7086', '7089', '7111', '7176')
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1486,6 +1531,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '7125', '7128', '7131', '7135', '7139', '7143', '7147', '7151' )
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1496,6 +1543,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '7017', '7023', '7035')
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1506,6 +1555,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '5162')
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1516,6 +1567,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '5164')
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1526,6 +1579,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '7290')
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1536,6 +1591,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '5160')
+		AND CategoryCode <> 'PER1'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1546,6 +1603,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '5158', '5159', '6137')
+		AND CategoryCode <> 'PER1'
+
 
 
 	--other 
@@ -1559,6 +1618,7 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
+		AND CategoryCode <> 'PER1'
 		AND dest.CampusXLTReportGroupID IS NULL
 
 RETURN 0
