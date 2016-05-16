@@ -368,7 +368,7 @@ AS
 		AND CampusCode = 'CS'
 		AND GLCode = '40020'
 		AND AccountingCode9 IN ('9999') 
-		AND DepartmentCode <> '4056'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -452,7 +452,8 @@ AS
 		AND CampusCode = 'CS'
 		AND GLCode IN ('52519')
 		AND AccountingCode9 IN ('9999') 
-		AND DepartmentCode <> '4056'
+		AND DepartmentCode = '4106'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1242,7 +1243,7 @@ AS
 		AND CampusCode = 'CS'
 		AND GLCode = '44020'
 		AND AccountingCode9 = '9999'
-		AND DepartmentCode <> '4056'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1319,7 +1320,7 @@ AS
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
-		DimFinancialCategory.FinancialCategoryID, 40 AS CampusXLTReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 30 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
@@ -1327,8 +1328,9 @@ AS
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND GLCode IN ('52519')
-		AND AccountingCode9 = '9999'
-		AND DepartmentCode <> '4056'
+		AND AccountingCode9 IN ('9999') 
+		AND DepartmentCode = '4106'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
