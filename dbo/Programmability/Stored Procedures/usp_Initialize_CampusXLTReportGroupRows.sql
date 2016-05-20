@@ -800,8 +800,8 @@ AS
 	SELECT DISTINCT 4				, 'Compensation'	, 'WITW Pastoral Billback' 						, 4					,'Scott'	, 1		UNION
 	SELECT DISTINCT 5				, 'Compensation'	, 'Executive Support' 							, 5					,'Scott'	, 1		UNION
 	SELECT DISTINCT 6				, 'Compensation'	, 'Accounting' 									, 6					,'Fred'		, 2		UNION
-	SELECT DISTINCT 7				, 'Compensation'	, 'Film (self funding)' 						, 7					,'Fred'		, 2		UNION
-	SELECT DISTINCT 8				, 'Compensation'	, 'Development (self funding)' 					, 8					,'Fred'		, 2		UNION
+	SELECT DISTINCT 7				, 'Compensation'	, 'Film ' 										, 7					,'Fred'		, 2		UNION
+	SELECT DISTINCT 8				, 'Compensation'	, 'Development' 								, 8					,'Fred'		, 2		UNION
 	SELECT DISTINCT 9				, 'Compensation'	, 'IT'											, 9					,'Dean'		, 3		UNION
 	SELECT DISTINCT 10				, 'Compensation'	, 'Direct RM Ops' 								, 10				,'Dean'		, 3		UNION
 	SELECT DISTINCT 11				, 'Compensation'	, 'Direct EL Ops' 								, 11				,'Dean'		, 3		UNION
@@ -822,8 +822,8 @@ AS
 	SELECT DISTINCT 26				, 'Compensation'	, 'Communications' 								, 25				,'Luke'		, 5		UNION
 	SELECT DISTINCT 27				, 'Compensation'	, 'Production' 									, 26				,'Luke'		, 5		UNION
 	SELECT DISTINCT 28				, 'Compensation'	, 'Worship' 									, 27				,'Luke'		, 5		UNION
-	SELECT DISTINCT 29				, 'Compensation'	, 'BSC (self funding)' 							, 28				,'XLT'		, 6		UNION
-	SELECT DISTINCT 30				, 'Compensation'	, 'Health Insurance' 							, 29				,'XLT'		, 6		UNION
+	SELECT DISTINCT 29				, 'Compensation'	, 'BSC' 										, 28				,'XLT'		, 6		UNION
+	SELECT DISTINCT 30				, 'Compensation'	, 'Health Insurance' 							, 29				,'Scott'	, 6		UNION
 	SELECT DISTINCT 31				, 'Compensation'	, 'Expense Sharing'								, 30				,'XLT'		, 6		UNION
 	SELECT DISTINCT 32				, 'Compensation'	, 'Personal Accounts'							, 31				,'XLT'		, 6		UNION
 	SELECT DISTINCT 33				, 'Compensation'	, 'Cell Phones'									, 32				,'XLT'		, 6		UNION
@@ -1406,6 +1406,7 @@ AS
 		AND DepartmentCode = '5038'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
 		
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1430,6 +1431,7 @@ AS
 		AND DepartmentCode = '5178'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1466,6 +1468,7 @@ AS
 		AND DepartmentCode IN( '6017', '6037', '6057', '6065', '6117', '6157', '6177')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1528,9 +1531,13 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode <> 'PER1'
-		AND CONVERT(INT, DepartmentCode)  < 7005 
-		AND CONVERT(INT, DepartmentCode)  > 8992 
+		AND (
+			CONVERT(INT, DepartmentCode)  < 7005 
+			OR
+			CONVERT(INT, DepartmentCode)  > 8992 
+		)
 		AND GLCode IN ('52019', '52011', '52060', '49011', '52045')
+		AND DepartmentCode <> '9025'
 	
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -1545,6 +1552,7 @@ AS
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 
+
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
@@ -1556,6 +1564,7 @@ AS
 		AND DepartmentCode IN( '9015', '9017')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GlCode <> '90139'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1628,6 +1637,7 @@ AS
 		AND DepartmentCode IN( '5162')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
