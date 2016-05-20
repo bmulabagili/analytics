@@ -832,45 +832,47 @@ AS
 	SELECT DISTINCT 36				, 'Compensation'	, 'Retreats'									, 35				,'XLT'		, 6		UNION
 	SELECT DISTINCT 37				, 'Compensation'	, 'Awards'										, 36				,'XLT'		, 6		UNION
 	SELECT DISTINCT 38				, 'Compensation'	, 'Pulpit Supply'								, 37				,'XLT'		, 6		UNION
-	SELECT DISTINCT 39				, 'Compensation'	, 'LTD/Life'									, 38				,'XLT'		, 6		UNION
+	SELECT DISTINCT 39				, 'Compensation'	, 'Life/LTD/Retirement'									, 38				,'XLT'		, 6		UNION
 	SELECT DISTINCT 40				, 'Compensation'	, 'Workers Comp'								, 39				,'XLT'		, 6		UNION
 	SELECT DISTINCT 41				, 'Compensation'	, 'Paycor Fees'									, 40				,'XLT'		, 6		UNION
 	SELECT DISTINCT 42				, 'Compensation'	, 'Passthrough Billbacks'						, 41				,'XLT'		, 6		UNION
-	SELECT DISTINCT 43				, 'Compensation'	, 'Other'										, 42				,'XLT'		, 6		UNION
+	SELECT DISTINCT 78			    , 'Compensation'	, 'Pass Thru Billbacks Offset'					, 42			    , NULL      , NULL  UNION
+	SELECT DISTINCT 43				, 'Compensation'	, 'Other'										, 43				,'XLT'		, 6		UNION
+
 																																		
-	SELECT DISTINCT 	44				, 'Expense'			, 'General Office'								, 43				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	45				, 'Expense'			, 'Office Equipment' 							, 44				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	46				, 'Expense'			, 'Technology' 									, 45				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	47				, 'Expense'			, 'Printing' 									, 46				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	48				, 'Expense'			, 'Insurance' 									, 47				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	49				, 'Expense'			, 'Facilities & Grounds Maintenance' 			, 48				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	50				, 'Expense'			, 'Utilities' 									, 49				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	51				, 'Expense'			, 'Service Support' 							, 50				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	52				, 'Expense'			, 'Camp Operating Expense' 						, 51				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	53				, 'Expense'			, 'Student' 									, 52				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	54				, 'Expense'			, 'Banking, Legal, Audit, Professional Fees' 	, 53				, 'Fred'	, 2			UNION
-	SELECT DISTINCT 	55				, 'Expense'			, 'Payroll Processing Fees' 					, 54				, 'Luke'	, 5			UNION
-	SELECT DISTINCT 	56				, 'Expense'			, 'Mortgage' 									, 55				, 'XLT'		, 6			UNION
-	SELECT DISTINCT 	57				, 'Expense'			, 'Ministry Expansion and Development' 			, 56				, 'XLT'		, 6			UNION
-	SELECT DISTINCT 	58				, 'Expense'			, 'Harvest Studio Production' 					, 57				, NULL		, NULL		UNION
-	SELECT DISTINCT 	59				, 'Expense'			, 'Missions & Outreach & Church Plant'			, 58				, 'XLT'		, 6			UNION
-	SELECT DISTINCT 	60				, 'Expense'			, 'Stewardship' 								, 59				, 'Fred'	, 2			UNION
-	SELECT DISTINCT 	61				, 'Expense'			, 'Biblical Soul Care' 							, 60				, NULL		, NULL		UNION
-	SELECT DISTINCT 	62				, 'Expense'			, 'Crystal Lake Campus' 						, 61				, NULL		, NULL		UNION
-	SELECT DISTINCT 	63				, 'Expense'			, 'North Shore' 								, 62				, NULL		, NULL		UNION
-	SELECT DISTINCT 	64				, 'Expense'			, 'Chicago Cathedral' 							, 63				, NULL		, NULL		UNION
-	SELECT DISTINCT 	65				, 'Expense'			, 'Niles Campus'								, 64				, NULL		, NULL		UNION
-	SELECT DISTINCT 	66				, 'Expense'			, 'Aurora' 										, 65				, NULL		, NULL		UNION
-	SELECT DISTINCT 	67				, 'Expense'			, 'Adult' 										, 66				, 'Jeff'	, 4			UNION
-	SELECT DISTINCT 	68				, 'Expense'			, 'Single Parent' 								, 67				, NULL		, NULL		UNION
-	SELECT DISTINCT 	69				, 'Expense'			, 'Family'  									, 68				, 'Jeff'	, 4			UNION
-	SELECT DISTINCT 	70				, 'Expense'			, 'Congregation/FOCIS' 							, 69				, 'Jeff'	, 4			UNION
-	SELECT DISTINCT 	71				, 'Expense'			, 'Special Events' 								, 70				, 'Luke'	, 5			UNION
-	SELECT DISTINCT 	72				, 'Expense'			, 'Online Services' 							, 71				, 'Luke'	, 5			UNION
-	SELECT DISTINCT 	73				, 'Expense'			, 'Worship' 									, 72				, 'Luke'	, 5			UNION
-	SELECT DISTINCT 	74				, 'Expense'			, 'Production' 									, 73				, 'Luke'	, 5			UNION
-	SELECT DISTINCT 	75				, 'Expense'			, 'Creative Services, Video Prod, Media' 		, 74				, 'Luke'	, 5			UNION
-	SELECT DISTINCT 	76				, 'Expense'			, 'Other' 										, 75				, 'Luke'	, 5			UNION	
+	SELECT DISTINCT 	44				, 'Expense'			, 'General Office'								, 44				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	45				, 'Expense'			, 'Office Equipment' 							, 45				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	46				, 'Expense'			, 'Technology' 									, 46				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	47				, 'Expense'			, 'Printing' 									, 47				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	48				, 'Expense'			, 'Insurance' 									, 48				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	49				, 'Expense'			, 'Facilities & Grounds Maintenance' 			, 49				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	50				, 'Expense'			, 'Utilities' 									, 50				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	51				, 'Expense'			, 'Service Support' 							, 51				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	52				, 'Expense'			, 'Camp Operating Expense' 						, 52				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	53				, 'Expense'			, 'Student' 									, 53				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	54				, 'Expense'			, 'Banking, Legal, Audit, Professional Fees' 	, 54				, 'Fred'	, 2			UNION
+	SELECT DISTINCT 	55				, 'Expense'			, 'Payroll Processing Fees' 					, 55				, 'Luke'	, 5			UNION
+	SELECT DISTINCT 	56				, 'Expense'			, 'Mortgage' 									, 56				, 'XLT'		, 6			UNION
+	SELECT DISTINCT 	57				, 'Expense'			, 'Ministry Expansion and Development' 			, 57				, 'XLT'		, 6			UNION
+	SELECT DISTINCT 	58				, 'Expense'			, 'Harvest Studio Production' 					, 58				, NULL		, NULL		UNION
+	SELECT DISTINCT 	59				, 'Expense'			, 'Missions & Outreach & Church Plant'			, 59				, 'XLT'		, 6			UNION
+	SELECT DISTINCT 	60				, 'Expense'			, 'Stewardship' 								, 60				, 'Fred'	, 2			UNION
+	SELECT DISTINCT 	61				, 'Expense'			, 'Biblical Soul Care' 							, 61				, NULL		, NULL		UNION
+	SELECT DISTINCT 	62				, 'Expense'			, 'Crystal Lake Campus' 						, 62				, NULL		, NULL		UNION
+	SELECT DISTINCT 	63				, 'Expense'			, 'North Shore' 								, 63				, NULL		, NULL		UNION
+	SELECT DISTINCT 	64				, 'Expense'			, 'Chicago Cathedral' 							, 64				, NULL		, NULL		UNION
+	SELECT DISTINCT 	65				, 'Expense'			, 'Niles Campus'								, 65				, NULL		, NULL		UNION
+	SELECT DISTINCT 	66				, 'Expense'			, 'Aurora' 										, 66				, NULL		, NULL		UNION
+	SELECT DISTINCT 	67				, 'Expense'			, 'Adult' 										, 67				, 'Jeff'	, 4			UNION
+	SELECT DISTINCT 	68				, 'Expense'			, 'Single Parent' 								, 68				, NULL		, NULL		UNION
+	SELECT DISTINCT 	69				, 'Expense'			, 'Family'  									, 69				, 'Jeff'	, 4			UNION
+	SELECT DISTINCT 	70				, 'Expense'			, 'Congregation/FOCIS' 							, 70				, 'Jeff'	, 4			UNION
+	SELECT DISTINCT 	71				, 'Expense'			, 'Special Events' 								, 71				, 'Luke'	, 5			UNION
+	SELECT DISTINCT 	72				, 'Expense'			, 'Online Services' 							, 72				, 'Luke'	, 5			UNION
+	SELECT DISTINCT 	73				, 'Expense'			, 'Worship' 									, 73				, 'Luke'	, 5			UNION
+	SELECT DISTINCT 	74				, 'Expense'			, 'Production' 									, 74				, 'Luke'	, 5			UNION
+	SELECT DISTINCT 	75				, 'Expense'			, 'Creative Services, Video Prod, Media' 		, 75				, 'Luke'	, 5			UNION
+	SELECT DISTINCT 	76				, 'Expense'			, 'Other' 										, 76				, 'Luke'	, 5			UNION	
 	--scott has no expense, but we need a place holder
 	SELECT DISTINCT 77				, 'Expense'			, ''											, 77				, 'Scott'	, 1
 
@@ -959,7 +961,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN('LH','CH')
 		AND AccountingCode9 = '8040'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -971,7 +973,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN('LH','CH')
 		AND AccountingCode9 = '8038'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -1007,7 +1009,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN('LH','CH')
 		AND AccountingCode9 = '8009'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -1151,8 +1153,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
-		AND AccountingCode9 IN( '8034')
+		AND CampusCode NOT IN('LH','CH')
+		AND AccountingCode9 IN('8034')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1214,7 +1216,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN('LH','CH')
 		AND DepartmentCode = '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -1226,7 +1228,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN('LH','CH')
 		AND GLCode = '44090'
 		AND AccountingCode9 = '9999'
 		AND DepartmentCode <> '4056'
@@ -1240,10 +1242,9 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
-		AND GLCode = '44020'
-		AND AccountingCode9 = '9999'
-
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode = '40020'
+		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1298,7 +1299,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode IN ('45016', '45018', '46022', '46026')
 		AND AccountingCode9 = '9999'
 		AND DepartmentCode <> '4056'
@@ -1320,16 +1321,16 @@ AS
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
-		DimFinancialCategory.FinancialCategoryID, 30 AS CampusXLTReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 40 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode IN ('52519')
 		AND AccountingCode9 IN ('9999') 
-		AND DepartmentCode = '4106'
+		AND DepartmentCode <> '4056'
 
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -1341,7 +1342,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode IN ('60432', '53130')
 		AND AccountingCode9 = '9999'
 		AND DepartmentCode <> '4056'
@@ -1355,10 +1356,24 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode IN ('40060')
 		AND AccountingCode9 = '9999'
 		AND DepartmentCode <> '4056'
+	
+	--'Pass Thru Billbacks Offset'
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 78 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode = 'PER1'
+		AND DepartmentCode = '4106'
+		AND AccountingCode9 IN ('8025','8027','8028','8041','8042','8043','8044','8045','8046'
+			,'8075','8081','8025','8027','8028','8041','8042','8043','8044','8045','8046','8075','8081','9999')
 
 	--other
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -1388,8 +1403,7 @@ AS
 		AND DepartmentCode = '5038'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
-
-
+		
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
@@ -1483,9 +1497,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CampusCode = 'LH'
-		AND CategoryCode <> 'PER1'
-		AND CampusCode NOT IN ('LH','CH')
-
+		
+		
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
@@ -1498,6 +1511,8 @@ AS
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 
+	
+	--'Banking, Legal, Audit, Professional Fees' 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
@@ -1506,9 +1521,11 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND DepartmentCode IN( '5018', '5138', '9020')
 		AND CategoryCode <> 'PER1'
-		AND CampusCode NOT IN ('LH','CH')
+		AND CONVERT(INT, DepartmentCode)  < 7005 
+		AND CONVERT(INT, DepartmentCode)  > 8992 
+		AND GLCode IN ('52019', '52011', '52060', '49011', '52045')
+	
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1670,3 +1687,4 @@ AS
 		AND dest.CampusXLTReportGroupID IS NULL
 		
 RETURN 0
+
