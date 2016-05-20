@@ -832,7 +832,7 @@ AS
 	SELECT DISTINCT 36				, 'Compensation'	, 'Retreats'									, 35				,'XLT'		, 6		UNION
 	SELECT DISTINCT 37				, 'Compensation'	, 'Awards'										, 36				,'XLT'		, 6		UNION
 	SELECT DISTINCT 38				, 'Compensation'	, 'Pulpit Supply'								, 37				,'XLT'		, 6		UNION
-	SELECT DISTINCT 39				, 'Compensation'	, 'Life/LTD/Retirement'									, 38				,'XLT'		, 6		UNION
+	SELECT DISTINCT 39				, 'Compensation'	, 'Life/LTD/Retirement'							, 38				,'XLT'		, 6		UNION
 	SELECT DISTINCT 40				, 'Compensation'	, 'Workers Comp'								, 39				,'XLT'		, 6		UNION
 	SELECT DISTINCT 41				, 'Compensation'	, 'Paycor Fees'									, 40				,'XLT'		, 6		UNION
 	SELECT DISTINCT 42				, 'Compensation'	, 'Passthrough Billbacks'						, 41				,'XLT'		, 6		UNION
@@ -1317,7 +1317,7 @@ AS
 		AND GLCode IN ('41017', '41020', '41025', '41027')
 		AND AccountingCode9 = '9999'
 		AND DepartmentCode <> '4056'
-
+--Workers Comp
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
@@ -1327,11 +1327,11 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode NOT IN ('LH','CH')
+		AND CampusCode ='CS'
 		AND GLCode IN ('52519')
 		AND AccountingCode9 IN ('9999') 
 		AND DepartmentCode <> '4056'
-
+	
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1371,9 +1371,12 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND DepartmentCode = '4106'
-		AND AccountingCode9 IN ('8025','8027','8028','8041','8042','8043','8044','8045','8046'
-			,'8075','8081','8025','8027','8028','8041','8042','8043','8044','8045','8046','8075','8081','9999')
+		AND (
+				(DepartmentCode = '4016' AND AccountingCode9 IN ('8025','8027','8028','8041','8042','8043','8044','8045','8046'
+				,'8075','8081','8025','8027','8028','8041','8042','8043','8044','8045','8046','8075','8081') )
+				OR
+				(Departmentcode = '4106' AND AccountingCode9 = '9999' AND GLCode = '52519' AND CampusCode <> 'CS')
+			)
 
 	--other
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -1497,6 +1500,9 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CampusCode = 'LH'
+		AND Departmentcode <> '4106' 
+		AND AccountingCode9 <> '9999' 
+		AND GLCode <> '52519'
 		
 		
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
