@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[usp_Initialize_CampusXLTReportGroupRows]
+﻿ALTER PROCEDURE [dbo].[usp_Initialize_CampusXLTReportGroupRows]
 AS
 
 	--truncate the groups first
@@ -1409,6 +1409,9 @@ AS
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 		
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1421,6 +1424,9 @@ AS
 		AND DepartmentCode = '5058'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1430,10 +1436,13 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND DepartmentCode = '5178'
+		AND DepartmentCode = '5178' --possibly need to add in 6017
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1446,6 +1455,9 @@ AS
 		AND DepartmentCode = '5078'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1458,6 +1470,9 @@ AS
 		AND DepartmentCode = '5098'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1471,6 +1486,9 @@ AS
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1483,6 +1501,9 @@ AS
 		AND DepartmentCode = '6097'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1495,6 +1516,9 @@ AS
 		AND DepartmentCode = '6197'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1505,11 +1529,8 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CampusCode = 'LH'
-		AND Departmentcode <> '4106' 
-		AND AccountingCode9 <> '9999' 
-		AND GLCode <> '52519'
-		
-		
+		AND CategoryCode <> 'PER1'
+	
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
@@ -1521,6 +1542,9 @@ AS
 		AND DepartmentCode IN( '7165', '7166', '7170', '7171')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	
 	--'Banking, Legal, Audit, Professional Fees' 
@@ -1540,7 +1564,9 @@ AS
 		)
 		AND GLCode IN ('52019', '52011', '52060', '49011', '52045')
 		AND DepartmentCode <> '9025'
-	
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1553,6 +1579,9 @@ AS
 		AND DepartmentCode IN( '9025')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -1567,6 +1596,9 @@ AS
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 		AND GlCode <> '90139'
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1579,6 +1611,9 @@ AS
 		AND DepartmentCode IN( '7208', '7210', '7250')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1591,6 +1626,9 @@ AS
 		AND DepartmentCode IN( '7280')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1600,9 +1638,13 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND DepartmentCode IN( '7005', '7007', '7011', '7014', '7041', '7047', '7050', '7059', '7066', '7071', '7073', '7075', '7076', '7079', '7084', '7086', '7089', '7111', '7176')
+		AND DepartmentCode IN ( '7005', '7007', '7011', '7014', '7041', '7047', '7050', '7059'
+		, '7066', '7071', '7073', '7075', '7076', '7079', '7084', '7086', '7089', '7111', '7176')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1615,6 +1657,9 @@ AS
 		AND DepartmentCode IN( '7125', '7128', '7131', '7135', '7139', '7143', '7147', '7151' )
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1627,6 +1672,9 @@ AS
 		AND DepartmentCode IN( '7017', '7023', '7035')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1640,6 +1688,9 @@ AS
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1652,6 +1703,9 @@ AS
 		AND DepartmentCode IN( '5164')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1664,6 +1718,9 @@ AS
 		AND DepartmentCode IN( '7290')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1676,6 +1733,9 @@ AS
 		AND DepartmentCode IN( '5160')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -1688,6 +1748,9 @@ AS
 		AND DepartmentCode IN( '5158', '5159', '6137')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--other 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -1702,7 +1765,29 @@ AS
 		AND FundCode = '025'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 		AND dest.CampusXLTReportGroupID IS NULL
-		
+	--and pick up some special cases of 'CH'
+	UNION
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 76 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	LEFT JOIN [CampusXLTReportGroup_XLTTabMap] dest
+		ON  DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode = 'CH'
+		AND DepartmentCode = '7250'
+		AND CategoryCode = 'MIN1'
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
+		AND dest.CampusXLTReportGroupID IS NULL
+
+
 RETURN 0
 
