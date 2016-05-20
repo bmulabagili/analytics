@@ -854,17 +854,19 @@ AS
 	SELECT DISTINCT 	55				, 'Expense'			, 'Payroll Processing Fees' 					, 55				, 'Luke'	, 5			UNION
 	SELECT DISTINCT 	56				, 'Expense'			, 'Mortgage' 									, 56				, 'XLT'		, 6			UNION
 	SELECT DISTINCT 	57				, 'Expense'			, 'Ministry Expansion and Development' 			, 57				, 'XLT'		, 6			UNION
-	SELECT DISTINCT 	58				, 'Expense'			, 'Harvest Studio Production' 					, 58				, NULL		, NULL		UNION
+	--removed harvest studio
+	--SELECT DISTINCT 	58				, 'Expense'			, 'Harvest Studio Production' 					, 58				, NULL		, NULL		UNION
 	SELECT DISTINCT 	59				, 'Expense'			, 'Missions & Outreach & Church Plant'			, 59				, 'XLT'		, 6			UNION
 	SELECT DISTINCT 	60				, 'Expense'			, 'Stewardship' 								, 60				, 'Fred'	, 2			UNION
-	SELECT DISTINCT 	61				, 'Expense'			, 'Biblical Soul Care' 							, 61				, NULL		, NULL		UNION
-	SELECT DISTINCT 	62				, 'Expense'			, 'Crystal Lake Campus' 						, 62				, NULL		, NULL		UNION
-	SELECT DISTINCT 	63				, 'Expense'			, 'North Shore' 								, 63				, NULL		, NULL		UNION
-	SELECT DISTINCT 	64				, 'Expense'			, 'Chicago Cathedral' 							, 64				, NULL		, NULL		UNION
-	SELECT DISTINCT 	65				, 'Expense'			, 'Niles Campus'								, 65				, NULL		, NULL		UNION
-	SELECT DISTINCT 	66				, 'Expense'			, 'Aurora' 										, 66				, NULL		, NULL		UNION
+	--removed BSC, campuses and single parent
+	--SELECT DISTINCT 	61				, 'Expense'			, 'Biblical Soul Care' 							, 61				, NULL		, NULL		UNION
+	--SELECT DISTINCT 	62				, 'Expense'			, 'Crystal Lake Campus' 						, 62				, NULL		, NULL		UNION
+	--SELECT DISTINCT 	63				, 'Expense'			, 'North Shore' 								, 63				, NULL		, NULL		UNION
+	--SELECT DISTINCT 	64				, 'Expense'			, 'Chicago Cathedral' 							, 64				, NULL		, NULL		UNION
+	--SELECT DISTINCT 	65				, 'Expense'			, 'Niles Campus'								, 65				, NULL		, NULL		UNION
+	--SELECT DISTINCT 	66				, 'Expense'			, 'Aurora' 										, 66				, NULL		, NULL		UNION
 	SELECT DISTINCT 	67				, 'Expense'			, 'Adult' 										, 67				, 'Jeff'	, 4			UNION
-	SELECT DISTINCT 	68				, 'Expense'			, 'Single Parent' 								, 68				, NULL		, NULL		UNION
+	--SELECT DISTINCT 	68				, 'Expense'			, 'Single Parent' 								, 68				, NULL		, NULL		UNION
 	SELECT DISTINCT 	69				, 'Expense'			, 'Family'  									, 69				, 'Jeff'	, 4			UNION
 	SELECT DISTINCT 	70				, 'Expense'			, 'Congregation/FOCIS' 							, 70				, 'Jeff'	, 4			UNION
 	SELECT DISTINCT 	71				, 'Expense'			, 'Special Events' 								, 71				, 'Luke'	, 5			UNION
