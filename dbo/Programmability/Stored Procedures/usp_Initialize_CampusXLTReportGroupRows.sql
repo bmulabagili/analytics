@@ -1,4 +1,4 @@
-﻿ALTER PROCEDURE [dbo].[usp_Initialize_CampusXLTReportGroupRows]
+﻿CREATE PROCEDURE [dbo].[usp_Initialize_CampusXLTReportGroupRows]
 AS
 
 	--truncate the groups first
