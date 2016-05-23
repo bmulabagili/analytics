@@ -1125,6 +1125,19 @@ AS
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 24 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode = 'PER1'
+		AND CampusCode = 'CS'
+		AND AccountingCode9 IN('8082')
+
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT
 		DimFinancialCategory.FinancialCategoryID, 25 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
