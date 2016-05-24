@@ -424,6 +424,7 @@ AS
 		AND GLCode = '44008'
 		AND AccountingCode9 IN ('9999') 
 		AND DepartmentCode <> '4056'
+		AND ProjectCode <> '217'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -538,10 +539,13 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode = '5038'
-		AND CampusCode <> 'LH'
+		AND DepartmentCode = '5038'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--2. Office Equipment –Expenses with the department code 5058
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -566,6 +570,10 @@ AS
 		AND Departmentcode = '5178'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--4. Printing – Expenses with the department code 5078
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -579,7 +587,7 @@ AS
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 
-	--5. Banking, Legal, Audit, Professional Fees
+	--5. Administration
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT FinancialCategoryID, 39
@@ -632,9 +640,12 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('6017', '6037', '6057', '6065', '6117', '6157', '6177')
-		AND CampusCode <> 'LH'
-		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND CategoryCode <> 'PER1'
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--9.Utilities
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -833,7 +844,7 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND DepartmentCode IN( '7017', '7023', '7035')
+		AND DepartmentCode IN( '5160')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode NOT IN (
