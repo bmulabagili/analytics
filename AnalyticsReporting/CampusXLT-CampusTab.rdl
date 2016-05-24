@@ -202,6 +202,23 @@
 			WHEN 'CC' THEN 6
 			WHEN 'AU' THEN 7
 			WHEN 'DR' THEN 8 END
+), SubtotaledExpenses AS (
+	SELECT 
+		  CampusXLTReportGroupID
+		, Heading
+		, Detail
+		, CampusDetailSortOrder
+		, CampusCode
+		, CampusCodeSortOrder
+		, SUM(Amount) AS Amount
+	FROM Expenses
+	GROUP BY
+		  CampusXLTReportGroupID
+		, Heading
+		, Detail
+		, CampusDetailSortOrder
+		, CampusCode
+		, CampusCodeSortOrder
 ), MinistryRevenues AS (
 	SELECT
 		  ISNULL(CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID, 61) AS CampusXLTReportGroupID
@@ -258,28 +275,28 @@
 			WHEN 'DR' THEN 8 END
 )
 SELECT 
-	  Expenses.CampusXLTReportGroupID
-	, Expenses.Heading
-	, Expenses.Detail
-	, Expenses.CampusDetailSortOrder
-	, Expenses.CampusCode
-	, Expenses.CampusCodeSortOrder
-	, SUM(Expenses.Amount) AS Expenses
+	  SubtotaledExpenses.CampusXLTReportGroupID
+	, SubtotaledExpenses.Heading
+	, SubtotaledExpenses.Detail
+	, SubtotaledExpenses.CampusDetailSortOrder
+	, SubtotaledExpenses.CampusCode
+	, SubtotaledExpenses.CampusCodeSortOrder
+	, SUM(SubtotaledExpenses.Amount) AS Expenses
 	, SUM(ISNULL(MinistryRevenues.Amount, 0)) AS MinistryRevenues
-	, SUM(Expenses.Amount - ISNULL(MinistryRevenues.Amount,0)) AS Amount
-FROM Expenses
+	, SUM(SubtotaledExpenses.Amount - ISNULL(MinistryRevenues.Amount,0)) AS Amount
+FROM SubtotaledExpenses
 LEFT JOIN MinistryRevenues
-	ON expenses.CampusXLTReportGroupID = MinistryRevenues.CampusXLTReportGroupID	
+	ON SubtotaledExpenses.CampusXLTReportGroupID = MinistryRevenues.CampusXLTReportGroupID	
+	AND SubtotaledExpenses.CampusCode = MinistryRevenues.CampusCode
 GROUP BY
-	Expenses.CampusXLTReportGroupID
-	, Expenses.Heading
-	, Expenses.Detail
-	, Expenses.CampusDetailSortOrder
-	, Expenses.CampusCode
-	, Expenses.CampusCodeSortOrder
+	SubtotaledExpenses.CampusXLTReportGroupID
+	, SubtotaledExpenses.Heading
+	, SubtotaledExpenses.Detail
+	, SubtotaledExpenses.CampusDetailSortOrder
+	, SubtotaledExpenses.CampusCode
+	, SubtotaledExpenses.CampusCodeSortOrder
 ORDER BY 
-	1, 4, 6
-</CommandText>
+	1, 4, 6</CommandText>
       </Query>
       <Fields>
         <Field Name="CampusXLTReportGroupID">

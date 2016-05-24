@@ -40,7 +40,7 @@ AS
 	SELECT DISTINCT 30				, 'Compensation'	,'Workers Comp'													, 23					, 'Initiatives/BB'	, 1						, 0 UNION
 	SELECT DISTINCT 31				, 'Compensation'	,'Paycor Fees'													, 24					, 'Initiatives/BB'	, 1						, 0 UNION
 	SELECT DISTINCT 32				, 'Compensation'	,'Passthrough Billbacks'										, 25					, 'Initiatives/BB'	, 1						, 0 UNION
-	SELECT DISTINCT 33				, 'Compensation'	,'Reoccurring Billbacks' 										, 26					, 'Initiatives/BB'	, 1						, 0 UNION
+	SELECT DISTINCT 33				, 'Compensation'	,'Passthrough Billbacks Offset' 										, 26					, 'Initiatives/BB'	, 1						, 0 UNION
 	SELECT DISTINCT 34				, 'Compensation'	,'Other'														, 27					, 'Initiatives/BB'	, 1						, 0 UNION
 
 	--Administration
@@ -463,7 +463,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode ='CS'
+		AND CampusCode NOT IN ('CS','AC')
 		AND GLCode IN ('52519')
 		AND AccountingCode9 IN ('9999') 
 		AND DepartmentCode <> '4056'
@@ -506,12 +506,10 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND (
-				(DepartmentCode = '4016' AND AccountingCode9 IN ('8025','8027','8028','8041','8042','8043','8044','8045','8046'
-				,'8075','8081','8025','8027','8028','8041','8042','8043','8044','8045','8046','8075','8081') )
-				OR
-				(Departmentcode = '4106' AND AccountingCode9 = '9999' AND GLCode = '52519' AND CampusCode <> 'CS')
-			)
+		AND DepartmentCode = '4016' 
+		AND AccountingCode9 IN ('8025','8027','8028','8041','8042','8043'
+				,'8044','8045','8046','8075','8081','8025','8027','8028','8041','8042','8043','8044'
+				,'8045','8046','8075','8081') 
 
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -1430,7 +1428,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode ='CS'
+		AND CampusCode NOT IN ('CS','AC')
 		AND GLCode IN ('52519')
 		AND AccountingCode9 IN ('9999') 
 		AND DepartmentCode <> '4056'
@@ -1474,12 +1472,10 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND (
-				(DepartmentCode = '4016' AND AccountingCode9 IN ('8025','8027','8028','8041','8042','8043','8044','8045','8046'
-				,'8075','8081','8025','8027','8028','8041','8042','8043','8044','8045','8046','8075','8081') )
-				OR
-				(Departmentcode = '4106' AND AccountingCode9 = '9999' AND GLCode = '52519' AND CampusCode <> 'CS')
-			)
+		AND DepartmentCode = '4016' 
+		AND AccountingCode9 IN ('8025','8027','8028','8041','8042','8043'
+				,'8044','8045','8046','8075','8081','8025','8027','8028','8041','8042','8043','8044'
+				,'8045','8046','8075','8081') 
 
 	--other
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
