@@ -10,6 +10,7 @@ AS
 
 	SELECT DISTINCT 1				, 'Compensation'	,'Direct (Ops)'													, 1						, 'EL'				, 2						, 0	UNION
 	SELECT DISTINCT 2				, 'Compensation'	,'Direct (Ops)'													, 1						, 'RM'				, 3						, 0	UNION
+	SELECT DISTINCT 62				, 'Compensation'	,'Direct (Ops)'													, 1						, 'CL'				, 5						, 0 UNION
 	SELECT DISTINCT 3				, 'Compensation'	,'Indirect (IT)'												, 2						, NULL				, NULL					, 1	UNION
 	SELECT DISTINCT 4				, 'Compensation'	,'Indirect (Central Svcs)'										, 3						, NULL				, NULL					, 1	UNION
 	SELECT DISTINCT 5				, 'Compensation'	,'Direct (Min Staff/Admin)'										, 4						, 'EL'				, 2						, 0	UNION
@@ -68,8 +69,8 @@ AS
 	SELECT DISTINCT	48				, 'Ministries'		, 'Special Events'											, 41						, NULL				, NULL					, 1 UNION 
 	SELECT DISTINCT	49				, 'Ministries'		, 'Online Services'											, 42						, NULL				, NULL					, 1 UNION 
 	SELECT DISTINCT	50				, 'Ministries'		, 'Adult'													, 43						, NULL				, NULL					, 1 UNION 
-	SELECT DISTINCT	51				, 'Ministries'		, 'Single Parent'											, 44						, NULL				, NULL					, 1 UNION 
-	SELECT DISTINCT	52				, 'Ministries'		, 'Biblical Soul Care'										, 45						, NULL				, NULL					, 1 UNION 
+	--SELECT DISTINCT	51				, 'Ministries'		, 'Single Parent'											, 44						, NULL				, NULL					, 1 UNION 
+	--SELECT DISTINCT	52				, 'Ministries'		, 'Biblical Soul Care'										, 45						, NULL				, NULL					, 1 UNION 
 	SELECT DISTINCT	53				, 'Ministries'		, 'Family'													, 46						, NULL				, NULL					, 1 UNION 
 	SELECT DISTINCT	54				, 'Ministries'		, 'Student'													, 47						, NULL				, NULL					, 1 UNION 
 	SELECT DISTINCT	55				, 'Ministries'		, 'Worship'													, 48						, NULL				, NULL					, 1 UNION 
@@ -107,6 +108,19 @@ AS
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND AccountingCode9 = '8004'
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 62 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode = 'PER1'
+		AND CampusCode = 'CS'
+		AND AccountingCode9 = '8016'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
