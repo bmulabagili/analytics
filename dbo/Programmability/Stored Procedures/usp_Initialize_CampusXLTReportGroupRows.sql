@@ -657,8 +657,21 @@ AS
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 
-	--10.Service Support
-	--no longer mapped
+	--Service Support
+	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 44 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode = '6197'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--11.Mortgage
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -687,7 +700,7 @@ AS
 		AND CampusCode = 'LH'
 		AND CategoryCode <> 'PER1'
 
-	--13.Ministry Expansion and Development
+	--Ministry Expansion and Development
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT FinancialCategoryID, 47
@@ -804,7 +817,7 @@ AS
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
 			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
-	--23.Missions & Outreach & Church Plant
+	--Missions & Outreach & Church Plant
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT FinancialCategoryID, 57
@@ -871,9 +884,28 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Dest.CampusXLTReportGroupID IS NULL
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
+		AND dest.CampusXLTReportGroupID IS NULL
+	UNION
+	SELECT DISTINCT DimFinancialCategory.FinancialCategoryID, 61
+	FROM DW.DimFinancialCategory
+	LEFT JOIN [dbo].[CampusXLTReportGroup_CampusTabMap] dest
+		ON DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode = 'CH'
+		AND DepartmentCode = '7250'
+		AND CategoryCode = 'MIN1'
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
+		AND Dest.CampusXLTReportGroupID IS NULL
 
 	--Now the XLT MAP
 	TRUNCATE TABLE dbo.CampusXLTReportGroup_XLTTab
@@ -1696,6 +1728,18 @@ AS
 		AND GLCode NOT IN (
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
 			,'90222','90227','90232','90235','90237','90247','90252','90260')
+	--'Ministry Expansion and Development' 
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 57 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND Departmentcode IN('7240')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
