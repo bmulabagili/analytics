@@ -394,8 +394,8 @@ AS
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND ProjectCode = '217'
-		AND AccountingCode9 IN ('9999') 
-		AND DepartmentCode = '4056'
+		AND AccountingCode9 = '9999'
+		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -499,6 +499,23 @@ AS
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 33 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode = 'PER1'
+		AND (
+				(DepartmentCode = '4016' AND AccountingCode9 IN ('8025','8027','8028','8041','8042','8043','8044','8045','8046'
+				,'8075','8081','8025','8027','8028','8041','8042','8043','8044','8045','8046','8075','8081') )
+				OR
+				(Departmentcode = '4106' AND AccountingCode9 = '9999' AND GLCode = '52519' AND CampusCode <> 'CS')
+			)
+
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT
 		DimFinancialCategory.FinancialCategoryID, 34 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	LEFT JOIN [dbo].[CampusXLTReportGroup_CampusTabMap] dest
@@ -570,10 +587,17 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('5018','5138','9020')
 		AND CategoryCode <> 'PER1'
-		AND CampusCode NOT IN ('LH','CH')
-		AND CategoryCode <> 'PER1'
+		AND (
+			CONVERT(INT, DepartmentCode)  < 7005 
+			OR
+			CONVERT(INT, DepartmentCode)  > 8992 
+		)
+		AND GLCode IN ('52019', '52011', '52060', '49011', '52045')
+		AND DepartmentCode <> '9025'
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--6. Payroll Processing Fees
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -635,9 +659,13 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('9015','9017')
+		AND DepartmentCode IN( '9015', '9017')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GlCode <> '90139'
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--12.Operating Expense (under camp operations, also called camp  operating expense on xlt management report tab) – all expenses under fund 058
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -670,9 +698,13 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('5162')
+		AND DepartmentCode IN( '5162')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--15.Online Services – All expenses with department 5164
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -694,9 +726,13 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('7005', '7007', '7011', '7014', '7041', '7047', '7050', '7059', '7066', '7071', '7073', '7075', '7076', '7079', '7084', '7086', '7089', '7111', '7176')
+		AND DepartmentCode IN ( '7005', '7007', '7011', '7014', '7041', '7047', '7050', '7059'
+		, '7066', '7071', '7073', '7075', '7076', '7079', '7084', '7086', '7089', '7111', '7176')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--18.Biblical Soul Care
 	--removed per alan on 20160325
@@ -709,9 +745,12 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('7125', '7128', '7131', '7135', '7139', '7143', '7147', '7151')
+		AND DepartmentCode IN( '7125', '7128', '7131', '7135', '7139', '7143', '7147', '7151' )
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--20.Student
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -721,9 +760,13 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('7165', '7166', '7170', '7171')
+		AND DepartmentCode IN( '7165', '7166', '7170', '7171')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
+
 
 	--21.Worship
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -745,9 +788,12 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('4276')
+		AND DepartmentCode IN( '7280')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--23.Missions & Outreach & Church Plant
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -757,9 +803,12 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('7208','7210','7250')
+		AND DepartmentCode IN( '7208', '7210', '7250')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--24.Congregation/FOCIS
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -769,12 +818,27 @@ AS
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('7017','7023','7035')
+		AND DepartmentCode IN( '7017', '7023', '7035')
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
-	--25.Production – all expenses with department 5160
-	--no longer mapped
+	--Production 
+	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT FinancialCategoryID, 59
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '7017', '7023', '7035')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--26.Creative Services, Video Prod, Media – all expenses in department codes 5158, 5159, or 6137
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
