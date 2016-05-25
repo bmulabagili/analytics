@@ -303,7 +303,7 @@ AS
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND GLCode IN ('41010', '41011', '41012', '41015', '41016')
-		AND AccountingCode9 IN ('9999')
+		AND AccountingCode9 IN( '9999','')
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
