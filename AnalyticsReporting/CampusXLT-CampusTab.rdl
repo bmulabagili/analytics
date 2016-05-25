@@ -143,9 +143,9 @@
 		INNER JOIN dw.DimFinancialCategory
 			ON FactFinancialOther.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 			AND FactFinancialOther.TenantID = DimFinancialCategory.TenantID
-		LEFT JOIN CampusXLTReportGroup_CampusTabMap 
+		INNER JOIN CampusXLTReportGroup_CampusTabMap 
 			ON CampusXLTReportGroup_CampusTabMap.FinancialCategoryID = FactFinancialOther.FinancialCategoryID
-		LEFT JOIN CampusXLTReportGroup_CampusTab
+		INNER JOIN CampusXLTReportGroup_CampusTab
 			ON  CampusXLTReportGroup_CampusTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
 		INNER JOIN CampusAllocation
 			ON 1=1
@@ -556,8 +556,7 @@ ORDER BY 2</CommandText>
             <Value>=Parameters!BudgetMonth.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>--Budget Expense
-WITH Attendance AS(
+        <CommandText>WITH Attendance AS(
 	SELECT FactAttendance.CampusID, DimCampus.Code, SUM(AttendanceCount) AttendanceCount
 	FROM dw.FactAttendance
 	INNER JOIN DW.DimAttendanceType
@@ -596,10 +595,10 @@ WITH Attendance AS(
 		CampusID, Code
 ), Expenses AS (
 	SELECT
-		  ISNULL(CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID, 61) AS CampusXLTReportGroupID
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusHeading, 'Ministries') AS Heading
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusDetail, 'Other') AS Detail
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusDetailSortOrder, 54) AS CampusDetailSortOrder 
+		  CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
+		, CampusXLTReportGroup_CampusTab.CampusHeading AS Heading
+		, CampusXLTReportGroup_CampusTab.CampusDetail AS Detail
+		, CampusXLTReportGroup_CampusTab.CampusDetailSortOrder 
 		, ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) AS CampusCode
 		, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
 			WHEN 'Initiatives/BB' THEN 1
@@ -620,9 +619,9 @@ WITH Attendance AS(
 	INNER JOIN dw.DimFinancialCategory
 		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN CampusXLTReportGroup_CampusTabMap 
+	INNER JOIN CampusXLTReportGroup_CampusTabMap 
 		ON CampusXLTReportGroup_CampusTabMap.FinancialCategoryID = FactBudgetExpense.FinancialCategoryID
-	LEFT JOIN CampusXLTReportGroup_CampusTab
+	INNER JOIN CampusXLTReportGroup_CampusTab
 		ON  CampusXLTReportGroup_CampusTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
 	INNER JOIN CampusAllocation
 		ON 1=1
@@ -631,10 +630,10 @@ WITH Attendance AS(
 		AND DimFinancialCategory.FundCode = '025'
 		AND FactBudgetExpense.BudgetYear = @BudgetYear AND FactBudgetExpense.BudgetMonth = @BudgetMonth
 	GROUP BY
-		  ISNULL(CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID, 61) 
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusHeading, 'Ministries')
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusDetail, 'Other')
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusDetailSortOrder, 54)
+		  CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
+		, CampusXLTReportGroup_CampusTab.CampusHeading
+		, CampusXLTReportGroup_CampusTab.CampusDetail
+		, CampusXLTReportGroup_CampusTab.CampusDetailSortOrder 
 		, ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
 		, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
 			WHEN 'Initiatives/BB' THEN 1
@@ -649,10 +648,10 @@ WITH Attendance AS(
 		--no budgeted apo/FAO records
 		UNION 
 		SELECT
-		  ISNULL(CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID, 61) AS CampusXLTReportGroupID
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusHeading, 'Ministries') AS Heading
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusDetail, 'Other') AS Detail
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusDetailSortOrder, 54) AS CampusDetailSortOrder 
+		  CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
+		, CampusXLTReportGroup_CampusTab.CampusHeading
+		, CampusXLTReportGroup_CampusTab.CampusDetail
+		, CampusXLTReportGroup_CampusTab.CampusDetailSortOrder 
 		, ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) AS CampusCode
 		, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
 			WHEN 'Initiatives/BB' THEN 1
@@ -666,10 +665,10 @@ WITH Attendance AS(
 		, 0 AS Amount 
 	FROM CampusXLTReportGroup_CampusTab, CampusAllocation
 	GROUP BY
-		  ISNULL(CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID, 61) 
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusHeading, 'Ministries')
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusDetail, 'Other')
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusDetailSortOrder, 54)
+		  CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
+		, CampusXLTReportGroup_CampusTab.CampusHeading
+		, CampusXLTReportGroup_CampusTab.CampusDetail
+		, CampusXLTReportGroup_CampusTab.CampusDetailSortOrder 
 		, ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
 		, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
 			WHEN 'Initiatives/BB' THEN 1
@@ -682,10 +681,10 @@ WITH Attendance AS(
 			WHEN 'DR' THEN 8 END
 ), MinistryRevenues AS (
 	SELECT
-		  ISNULL(CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID, 61) AS CampusXLTReportGroupID
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusHeading, 'Ministries') AS Heading
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusDetail, 'Other') AS Detail
-		, ISNULL(CampusXLTReportGroup_CampusTab.CampusDetailSortOrder, 54) AS CampusDetailSortOrder 
+		  CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
+		, CampusXLTReportGroup_CampusTab.CampusHeading
+		, CampusXLTReportGroup_CampusTab.CampusDetail
+		, CampusXLTReportGroup_CampusTab.CampusDetailSortOrder 
 		, ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) AS CampusCode
 		, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
 			WHEN 'Initiatives/BB' THEN 1
@@ -706,9 +705,9 @@ WITH Attendance AS(
 	INNER JOIN dw.DimFinancialCategory
 		ON FactBudgetRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactBudgetRevenue.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN CampusXLTReportGroup_CampusTabMap 
+	INNER JOIN CampusXLTReportGroup_CampusTabMap 
 		ON CampusXLTReportGroup_CampusTabMap.FinancialCategoryID = FactBudgetRevenue.FinancialCategoryID
-	LEFT JOIN CampusXLTReportGroup_CampusTab
+	INNER JOIN CampusXLTReportGroup_CampusTab
 		ON  CampusXLTReportGroup_CampusTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
 	INNER JOIN CampusAllocation
 		ON 1=1
@@ -716,12 +715,12 @@ WITH Attendance AS(
 		DimEntity.Code = 'HBC'
 		AND DimFinancialCategory.FundCode = '025'
 		AND FactBudgetRevenue.BudgetYear = @BudgetYear AND FactBudgetRevenue.BudgetMonth = @BudgetMonth
-		AND ISNULL(CampusDetail,'Other') &lt;&gt; 'Other' -- Net expenses consider all but "other"
+		AND CampusXLTReportGroup_CampusTab.CampusHeading &lt;&gt; 'Compensation'
 	GROUP BY
-		  ISNULL(CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID, 61)
-	, ISNULL(CampusXLTReportGroup_CampusTab.CampusHeading, 'Ministries') 
-	, ISNULL(CampusXLTReportGroup_CampusTab.CampusDetail, 'Other') 
-	, ISNULL(CampusXLTReportGroup_CampusTab.CampusDetailSortOrder, 54)
+		  CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
+		, CampusXLTReportGroup_CampusTab.CampusHeading
+		, CampusXLTReportGroup_CampusTab.CampusDetail
+		, CampusXLTReportGroup_CampusTab.CampusDetailSortOrder 
 	, ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
 		, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
 			WHEN 'Initiatives/BB' THEN 1
@@ -4574,7 +4573,6 @@ GROUP BY
                               <PaddingBottom>2pt</PaddingBottom>
                             </Style>
                           </Textbox>
-                          <rd:Selected>true</rd:Selected>
                         </CellContents>
                       </TablixCornerCell>
                     </TablixCornerRow>
@@ -7156,7 +7154,7 @@ GROUP BY
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(Fields!Amount.Value / Parameters!WeekCount.Value)</Value>
+                                      <Value>=Sum(Fields!Amount.Value / 4.3333333333333)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -7271,7 +7269,7 @@ GROUP BY
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(Fields!Amount.Value/ Parameters!WeekCount.Value)</Value>
+                                      <Value>=Sum(Fields!Amount.Value/ 4.3333333333333)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -7343,7 +7341,7 @@ GROUP BY
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(Fields!Amount.Value/ Parameters!WeekCount.Value)</Value>
+                                      <Value>=Sum(Fields!Amount.Value/4.3333333333333)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -8567,7 +8565,7 @@ GROUP BY
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(Fields!Amount.Value / Parameters!WeekCount.Value)</Value>
+                                      <Value>=Sum(Fields!Amount.Value /4.3333333333333)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>
@@ -9891,7 +9889,7 @@ GROUP BY
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=Sum(Fields!Amount.Value / Parameters!WeekCount.Value)</Value>
+                                      <Value>=Sum(Fields!Amount.Value /4.3333333333333)</Value>
                                       <Style>
                                         <Format>#,0;(#,0)</Format>
                                       </Style>

@@ -255,15 +255,14 @@ FROM (
             <Value>=Parameters!BudgetMonth.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>--Budget Expense
-WITH Expenses AS (
+        <CommandText>WITH Expenses AS (
 	SELECT
-		  ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1) AS CampusXLTReportGroupID
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTHeading, '???') AS Heading
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetail, '???') AS Detail
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetailSortOrder, -1) AS XLTDetailSortOrder 
-		, ISNULL(CampusXLTReportGroup_XLTTab.Manager, 'XLT') AS Manager
-		, ISNULL(CampusXLTReportGroup_XLTTab.ManagerSortOrder,6) AS ManagerSortOrder
+		  CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
+		, CampusXLTReportGroup_XLTTab.XLTHeading AS Heading
+		, CampusXLTReportGroup_XLTTab.XLTDetail AS Detail
+		, CampusXLTReportGroup_XLTTab.XLTDetailSortOrder AS XLTDetailSortOrder 
+		, CampusXLTReportGroup_XLTTab.Manager AS Manager
+		, CampusXLTReportGroup_XLTTab.ManagerSortOrder 
 		, SUM(Amount) AS Amount 
 	FROM dw.FactBudgetExpense
 	INNER JOIN dw.DimEntity
@@ -272,50 +271,50 @@ WITH Expenses AS (
 	INNER JOIN dw.DimFinancialCategory
 		ON FactBudgetExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactBudgetExpense.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN CampusXLTReportGroup_XLTTabMap 
+	INNER JOIN CampusXLTReportGroup_XLTTabMap 
 		ON CampusXLTReportGroup_XLTTabMap.FinancialCategoryID = FactBudgetExpense.FinancialCategoryID
-	LEFT JOIN CampusXLTReportGroup_XLTTab
+	INNER JOIN CampusXLTReportGroup_XLTTab
 		ON  CampusXLTReportGroup_XLTTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
 	WHERE
 		DimEntity.Code = 'HBC'
 		AND DimFinancialCategory.FundCode = '025'
 		AND FactBudgetExpense.BudgetYear = @BudgetYear AND FactBudgetExpense.BudgetMonth = @BudgetMonth
 	GROUP BY
-		   ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1)
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTHeading, '???')
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetail, '???') 
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetailSortOrder, -1) 
-		, ISNULL(CampusXLTReportGroup_XLTTab.Manager, 'XLT') 
-		, ISNULL(CampusXLTReportGroup_XLTTab.ManagerSortOrder,6) 
+		  CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
+		, CampusXLTReportGroup_XLTTab.XLTHeading
+		, CampusXLTReportGroup_XLTTab.XLTDetail
+		, CampusXLTReportGroup_XLTTab.XLTDetailSortOrder 
+		, CampusXLTReportGroup_XLTTab.Manager
+		, CampusXLTReportGroup_XLTTab.ManagerSortOrder 
 
 		--don't forget APO/FAO expenses
 		--no budgeted apo/FAO records
 		UNION 
 		SELECT
-		  ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1) AS CampusXLTReportGroupID
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTHeading, '???') AS Heading
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetail, '???') AS Detail
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetailSortOrder, -1) AS XLTDetailSortOrder 
-		, ISNULL(CampusXLTReportGroup_XLTTab.Manager, 'XLT') AS Manager
-		, ISNULL(CampusXLTReportGroup_XLTTab.ManagerSortOrder,6) AS ManagerSortOrder
+		  CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
+		, CampusXLTReportGroup_XLTTab.XLTHeading
+		, CampusXLTReportGroup_XLTTab.XLTDetail
+		, CampusXLTReportGroup_XLTTab.XLTDetailSortOrder 
+		, CampusXLTReportGroup_XLTTab.Manager
+		, CampusXLTReportGroup_XLTTab.ManagerSortOrder 
 		, 0 AS Amount 
 	FROM CampusXLTReportGroup_XLTTab
 	GROUP BY
-		  ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1) 
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTHeading, '???') 
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetail, '???') 
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetailSortOrder, -1) 
-		, ISNULL(CampusXLTReportGroup_XLTTab.Manager, 'XLT') 
-		, ISNULL(CampusXLTReportGroup_XLTTab.ManagerSortOrder,6) 
+		  CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
+		, CampusXLTReportGroup_XLTTab.XLTHeading
+		, CampusXLTReportGroup_XLTTab.XLTDetail
+		, CampusXLTReportGroup_XLTTab.XLTDetailSortOrder 
+		, CampusXLTReportGroup_XLTTab.Manager
+		, CampusXLTReportGroup_XLTTab.ManagerSortOrder 
 
 ), MinistryRevenues AS (
 	SELECT
-		   ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1) AS CampusXLTReportGroupID
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTHeading, '???') AS Heading
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetail, '???') AS Detail
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetailSortOrder, -1) AS XLTDetailSortOrder 
-		, ISNULL(CampusXLTReportGroup_XLTTab.Manager, 'XLT') AS Manager
-		, ISNULL(CampusXLTReportGroup_XLTTab.ManagerSortOrder,6) AS ManagerSortOrder
+		  CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
+		, CampusXLTReportGroup_XLTTab.XLTHeading
+		, CampusXLTReportGroup_XLTTab.XLTDetail
+		, CampusXLTReportGroup_XLTTab.XLTDetailSortOrder 
+		, CampusXLTReportGroup_XLTTab.Manager
+		, CampusXLTReportGroup_XLTTab.ManagerSortOrder 
 		, SUM(Amount) AS Amount 
 	FROM dw.FactBudgetRevenue
 	INNER JOIN dw.DimEntity
@@ -324,23 +323,22 @@ WITH Expenses AS (
 	INNER JOIN dw.DimFinancialCategory
 		ON FactBudgetRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactBudgetRevenue.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN CampusXLTReportGroup_XLTTabMap 
+	INNER JOIN CampusXLTReportGroup_XLTTabMap 
 		ON CampusXLTReportGroup_XLTTabMap.FinancialCategoryID = FactBudgetRevenue.FinancialCategoryID
-	LEFT JOIN CampusXLTReportGroup_XLTTab
+	INNER JOIN CampusXLTReportGroup_XLTTab
 		ON  CampusXLTReportGroup_XLTTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
 	WHERE
 		DimEntity.Code = 'HBC'
 		AND DimFinancialCategory.FundCode = '025'
 		AND FactBudgetRevenue.BudgetYear = @BudgetYear AND FactBudgetRevenue.BudgetMonth = @BudgetMonth
-		AND CampusXLTReportGroup_XLTTab.XLTHeading = 'Expense'
-		AND CampusXLTReportGroup_XLTTab.XLTDetail &lt;&gt; 'Other'
+		AND CampusXLTReportGroup_XLTTab.XLTHeading &lt;&gt; 'Compensation'
 	GROUP BY
-		  ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1) 
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTHeading, '???') 
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetail, '???') 
-		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetailSortOrder, -1) 
-		, ISNULL(CampusXLTReportGroup_XLTTab.Manager, 'XLT') 
-		, ISNULL(CampusXLTReportGroup_XLTTab.ManagerSortOrder,6) 
+		  CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
+		, CampusXLTReportGroup_XLTTab.XLTHeading
+		, CampusXLTReportGroup_XLTTab.XLTDetail
+		, CampusXLTReportGroup_XLTTab.XLTDetailSortOrder 
+		, CampusXLTReportGroup_XLTTab.Manager
+		, CampusXLTReportGroup_XLTTab.ManagerSortOrder 
 
 )
 SELECT 
