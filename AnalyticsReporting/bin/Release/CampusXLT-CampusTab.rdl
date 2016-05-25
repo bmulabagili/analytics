@@ -443,92 +443,69 @@ FROM (
             <Value>=Parameters!BudgetMonth.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>--revenues should exclude minitry income
-WITH Attendance AS(
-	SELECT FactAttendance.CampusID, DimCampus.Code, SUM(AttendanceCount) AttendanceCount
-	FROM dw.FactAttendance
-	INNER JOIN DW.DimAttendanceType
-		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
-	INNER JOIN dw.DimDate
-		ON FactAttendance.InstanceDateID = DimDate.DateID
-	INNER JOIN DW.DimCampus
-		ON FactAttendance.CampusID = DimCampus.CampusID
-	WHERE
-		DimCampus.Code NOT IN ('--','WW','SP')
-		AND DimAttendanceType.Category = 'Attendee'
-		AND FactAttendance.Age &gt;= 18
-		AND CalendarYear IN (@BudgetYear)
-	GROUP BY
-		FactAttendance.CampusID, DimCampus.Code
-	UNION
-	SELECT CampusID, Code, 0 AS AttendanceCount 
-	FROM dw.DimCampus
-	WHERE DimCampus.Code NOT IN ('--','WW','SP')
-	UNION
-	SELECT -1, 'Initiatives/BB',0
-
-), AttendanceTotal AS (
-	SELECT SUM(AttendanceCount) AS AttendanceCount
-	FROM Attendance
-) , CampusAllocationCalculation AS (
-	SELECT 
-		CampusID, Code
-		, (Attendance.AttendanceCount * 1.0) / (SELECT AttendanceCount FROM AttendanceTotal) AS CampusPercent
-	FROM Attendance
-), CampusAllocation AS (
+        <CommandText>--new ActualRevenue
+WITH ZeroFilledRevenues AS (
 	SELECT
-		CampusID, Code, MAX(CampusPercent) AS CampusPercent
-	FROM  CampusAllocationCalculation
-	GROUP BY 
-		CampusID, Code
+		  CASE WHEN REPLACE(DimFinancialCategory.CampusCode,'NS','DR') NOT IN ('AU','CC','CL','DR','EL','NI','RM') THEN 'Initiatives/BB' 
+			ELSE REPLACE(DimFinancialCategory.CampusCode,'NS','DR') END AS CampusCode
+		, CASE  CASE WHEN REPLACE(DimFinancialCategory.CampusCode,'NS','DR') NOT IN ('AU','CC','CL','DR','EL','NI','RM') THEN 'Initiatives/BB' 
+			ELSE REPLACE(DimFinancialCategory.CampusCode,'NS','DR') END
+				WHEN 'Initiatives/BB' THEN 1
+				WHEN 'EL' THEN 2
+				WHEN 'RM' THEN 3
+				WHEN 'NI' THEN 4
+				WHEN 'CL' THEN 5
+				WHEN 'CC' THEN 6
+				WHEN 'AU' THEN 7
+				WHEN 'DR' THEN 8 END AS CampusCodeSortOrder
+		, SUM(Amount) AS Amount
+	FROM dw.FactRevenue
+	INNER JOIN DW.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+	INNER JOIN DW.DimDate
+		ON FactRevenue.DateID = DimDate.DateID
+	LEFT JOIN CampusXLTReportGroup_CampusTabMap 
+		ON CampusXLTReportGroup_CampusTabMap.FinancialCategoryID = FactRevenue.FinancialCategoryID
+	LEFT JOIN CampusXLTReportGroup_CampusTab
+		ON  CampusXLTReportGroup_CampusTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CalendarYear = @BudgetYear
+		AND CalendarMonth = @BudgetMonth
+		AND GLType = 'rev'
+		AND ISNULL(CampusDetail,'Other') = 'Other' -- only include ministries "other" since that's the default
+	GROUP BY
+		  CASE WHEN REPLACE(DimFinancialCategory.CampusCode,'NS','DR') NOT IN ('AU','CC','CL','DR','EL','NI','RM') THEN 'Initiatives/BB' 
+			ELSE REPLACE(DimFinancialCategory.CampusCode,'NS','DR') END
+		, CASE  CASE WHEN REPLACE(DimFinancialCategory.CampusCode,'NS','DR') NOT IN ('AU','CC','CL','DR','EL','NI','RM') THEN 'Initiatives/BB' 
+			ELSE REPLACE(DimFinancialCategory.CampusCode,'NS','DR') END
+			WHEN 'Initiatives/BB' THEN 1
+			WHEN 'EL' THEN 2
+			WHEN 'RM' THEN 3
+			WHEN 'NI' THEN 4
+			WHEN 'CL' THEN 5
+			WHEN 'CC' THEN 6
+			WHEN 'AU' THEN 7
+			WHEN 'DR' THEN 8 END 
+	UNION
+		SELECT 'Initiatives/BB' , 1, 0 UNION
+		SELECT 'EL'				, 2, 0 UNION
+		SELECT 'RM'				, 3, 0 UNION
+		SELECT 'NI'				, 4, 0 UNION
+		SELECT 'CL'				, 5, 0 UNION
+		SELECT 'CC'				, 6, 0 UNION
+		SELECT 'AU'				, 7, 0 UNION
+		SELECT 'DR'				, 8, 0 
 )
 SELECT
-	  ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) AS CampusCode
-	, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
-		WHEN 'Initiatives/BB' THEN 1
-		WHEN 'EL' THEN 2
-		WHEN 'RM' THEN 3
-		WHEN 'NI' THEN 4
-		WHEN 'CL' THEN 5
-		WHEN 'CC' THEN 6
-		WHEN 'AU' THEN 7
-		WHEN 'DR' THEN 8 END AS CampusCodeSortOrder
-	, SUM(CASE WHEN CampusXLTReportGroup_CampusTab.AllocateByAttendancePercentage = 0 THEN 
-			CASE WHEN ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) = CampusXLTReportGroup_CampusTab.CampusCode THEN Amount ELSE 0 END
-		  ELSE Amount * CampusAllocation.CampusPercent END) AS Amount 
-
-FROM dw.FactRevenue
-INNER JOIN DW.DimDate
-	ON FactRevenue.DateID = DimDate.DateID
-INNER JOIN dw.DimEntity
-	ON FactRevenue.EntityID = DimEntity.EntityID
-	AND FactRevenue.TenantID = DimEntity.TenantID
-INNER JOIN dw.DimFinancialCategory
-	ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
-	AND FactRevenue.TenantID = DimFinancialCategory.TenantID
-LEFT JOIN CampusXLTReportGroup_CampusTabMap 
-	ON CampusXLTReportGroup_CampusTabMap.FinancialCategoryID = FactRevenue.FinancialCategoryID
-LEFT JOIN CampusXLTReportGroup_CampusTab
-	ON  CampusXLTReportGroup_CampusTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
-INNER JOIN CampusAllocation
-	ON 1=1
-WHERE
-	DimEntity.Code = 'HBC'
-	AND DimFinancialCategory.FundCode = '025'
-	AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth = @BudgetMonth
-	AND ISNULL(CampusDetail,'Other') = 'Other' -- only include ministries "other" since that's the default
-GROUP BY
-	  ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
-	, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
-		WHEN 'Initiatives/BB' THEN 1
-		WHEN 'EL' THEN 2
-		WHEN 'RM' THEN 3
-		WHEN 'NI' THEN 4
-		WHEN 'CL' THEN 5
-		WHEN 'CC' THEN 6
-		WHEN 'AU' THEN 7
-		WHEN 'DR' THEN 8 END
-ORDER BY 2</CommandText>
+	  CampusCode
+	, CampusCodeSortOrder
+	, SUM(Amount) AS Amount
+FROM ZeroFilledRevenues
+GROUP BY 
+	CampusCode
+	, CampusCodeSortOrder</CommandText>
       </Query>
       <Fields>
         <Field Name="CampusCode">
@@ -805,90 +782,59 @@ ORDER BY
             <Value>=Parameters!BudgetMonth.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>--Budget revenues should exclude minitry income
-WITH Attendance AS(
-	SELECT FactAttendance.CampusID, DimCampus.Code, SUM(AttendanceCount) AttendanceCount
-	FROM dw.FactAttendance
-	INNER JOIN DW.DimAttendanceType
-		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
-	INNER JOIN dw.DimDate
-		ON FactAttendance.InstanceDateID = DimDate.DateID
-	INNER JOIN DW.DimCampus
-		ON FactAttendance.CampusID = DimCampus.CampusID
-	WHERE
-		DimCampus.Code NOT IN ('--','WW','SP')
-		AND DimAttendanceType.Category = 'Attendee'
-		AND FactAttendance.Age &gt;= 18
-		AND CalendarYear IN (@BudgetYear)
-	GROUP BY
-		FactAttendance.CampusID, DimCampus.Code
-	UNION
-	SELECT CampusID, Code, 0 AS AttendanceCount 
-	FROM dw.DimCampus
-	WHERE DimCampus.Code NOT IN ('--','WW','SP')
-	UNION
-	SELECT -1, 'Initiatives/BB',0
-
-), AttendanceTotal AS (
-	SELECT SUM(AttendanceCount) AS AttendanceCount
-	FROM Attendance
-) , CampusAllocationCalculation AS (
-	SELECT 
-		CampusID, Code
-		, (Attendance.AttendanceCount * 1.0) / (SELECT AttendanceCount FROM AttendanceTotal) AS CampusPercent
-	FROM Attendance
-), CampusAllocation AS (
+        <CommandText>--BudgetRevenue
+WITH ZeroFilledRevenues AS (
 	SELECT
-		CampusID, Code, MAX(CampusPercent) AS CampusPercent
-	FROM  CampusAllocationCalculation
-	GROUP BY 
-		CampusID, Code
+		REPLACE(DimFinancialCategory.CampusCode,'NS','DR') AS CampusCode
+		, CASE  REPLACE(DimFinancialCategory.CampusCode,'NS','DR')
+			WHEN 'Initiatives/BB' THEN 1
+			WHEN 'EL' THEN 2
+			WHEN 'RM' THEN 3
+			WHEN 'NI' THEN 4
+			WHEN 'CL' THEN 5
+			WHEN 'CC' THEN 6
+			WHEN 'AU' THEN 7
+			WHEN 'DR' THEN 8 END AS CampusCodeSortOrder
+		, SUM(Amount) AS Amount
+	FROM dw.FactBudgetRevenue
+	INNER JOIN DW.DimFinancialCategory
+		ON FactBudgetRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND BudgetYear = @BudgetYear
+		AND BudgetMonth = @BudgetMonth
+		AND GLType = 'rev'
+		AND REPLACE(DimFinancialCategory.CampusCode,'NS','DR') IN ('AU','CC','CL','DR','EL','NI','RM')
+	GROUP BY
+		REPLACE(DimFinancialCategory.CampusCode,'NS','DR')
+		, CASE REPLACE(DimFinancialCategory.CampusCode,'NS','DR')
+			WHEN 'Initiatives/BB' THEN 1
+			WHEN 'EL' THEN 2
+			WHEN 'RM' THEN 3
+			WHEN 'NI' THEN 4
+			WHEN 'CL' THEN 5
+			WHEN 'CC' THEN 6
+			WHEN 'AU' THEN 7
+			WHEN 'DR' THEN 8 END
+	UNION
+	SELECT 'Initiatives/BB' , 1, 0 UNION
+	SELECT 'EL'				, 2, 0 UNION
+	SELECT 'RM'				, 3, 0 UNION
+	SELECT 'NI'				, 4, 0 UNION
+	SELECT 'CL'				, 5, 0 UNION
+	SELECT 'CC'				, 6, 0 UNION
+	SELECT 'AU'				, 7, 0 UNION
+	SELECT 'DR'				, 8, 0 
 )
 SELECT
-	  ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) AS CampusCode
-	, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
-		WHEN 'Initiatives/BB' THEN 1
-		WHEN 'EL' THEN 2
-		WHEN 'RM' THEN 3
-		WHEN 'NI' THEN 4
-		WHEN 'CL' THEN 5
-		WHEN 'CC' THEN 6
-		WHEN 'AU' THEN 7
-		WHEN 'DR' THEN 8 END AS CampusCodeSortOrder
-	, SUM(CASE WHEN CampusXLTReportGroup_CampusTab.AllocateByAttendancePercentage = 0 THEN 
-			CASE WHEN ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) = CampusXLTReportGroup_CampusTab.CampusCode THEN Amount ELSE 0 END
-		  ELSE Amount * CampusAllocation.CampusPercent END) AS Amount 
-
-FROM dw.FactBudgetRevenue
-INNER JOIN dw.DimEntity
-	ON FactBudgetRevenue.EntityID = DimEntity.EntityID
-	AND FactBudgetRevenue.TenantID = DimEntity.TenantID
-INNER JOIN dw.DimFinancialCategory
-	ON FactBudgetRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
-	AND FactBudgetRevenue.TenantID = DimFinancialCategory.TenantID
-LEFT JOIN CampusXLTReportGroup_CampusTabMap 
-	ON CampusXLTReportGroup_CampusTabMap.FinancialCategoryID = FactBudgetRevenue.FinancialCategoryID
-LEFT JOIN CampusXLTReportGroup_CampusTab
-	ON  CampusXLTReportGroup_CampusTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
-INNER JOIN CampusAllocation
-	ON 1=1
-WHERE
-	DimEntity.Code = 'HBC'
-	AND DimFinancialCategory.FundCode = '025'
-	AND FactBudgetRevenue.BudgetYear = @BudgetYear AND FactBudgetRevenue.BudgetMonth = @BudgetMonth
-	AND ISNULL(CampusDetail,'Other') = 'Other' -- only include ministries "other" since that's the default
-GROUP BY
-	  ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
-	, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
-		WHEN 'Initiatives/BB' THEN 1
-		WHEN 'EL' THEN 2
-		WHEN 'RM' THEN 3
-		WHEN 'NI' THEN 4
-		WHEN 'CL' THEN 5
-		WHEN 'CC' THEN 6
-		WHEN 'AU' THEN 7
-		WHEN 'DR' THEN 8 END
-ORDER BY 2</CommandText>
+	  CampusCode
+	, CampusCodeSortOrder
+	, SUM(Amount) AS Amount
+FROM ZeroFilledRevenues
+GROUP BY 
+	CampusCode
+	, CampusCodeSortOrder</CommandText>
       </Query>
       <Fields>
         <Field Name="CampusCode">
@@ -1220,7 +1166,7 @@ GROUP BY
 			WHEN 'CC' THEN 6
 			WHEN 'AU' THEN 7
 			WHEN 'DR' THEN 8 END AS CampusCodeSortOrder
-		, SUM(CASE WHEN CampusXLTReportGroup_CampusTab.AllocateByAttendancePercentage = 0 THEN 
+		, SUM(CASE WHEN ISNULL(CampusXLTReportGroup_CampusTab.AllocateByAttendancePercentage,1) = 0 THEN 
 				CASE WHEN ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) = CampusXLTReportGroup_CampusTab.CampusCode THEN Amount ELSE 0 END
 			  ELSE Amount * CampusAllocation.CampusPercent END) AS Amount 
 
@@ -1360,7 +1306,7 @@ WITH Attendance AS(
 			WHEN 'CC' THEN 6
 			WHEN 'AU' THEN 7
 			WHEN 'DR' THEN 8 END AS CampusCodeSortOrder
-		, SUM(CASE WHEN CampusXLTReportGroup_CampusTab.AllocateByAttendancePercentage = 0 THEN 
+		, SUM(CASE WHEN ISNULL(CampusXLTReportGroup_CampusTab.AllocateByAttendancePercentage,1) = 0 THEN 
 				CASE WHEN ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) = CampusXLTReportGroup_CampusTab.CampusCode THEN Amount ELSE 0 END
 			  ELSE Amount * CampusAllocation.CampusPercent END) AS Amount 
 
@@ -1578,8 +1524,7 @@ SELECT
 	FROM SubTotal
 	GROUP BY
 		  CampusCode
-		, CampusCodeSortOrder
-</CommandText>
+		, CampusCodeSortOrder</CommandText>
       </Query>
       <Fields>
         <Field Name="CampusCode">
