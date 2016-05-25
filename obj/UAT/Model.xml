@@ -4398,6 +4398,7 @@ WITH Actuals AS (
 
 	SELECT DISTINCT 1				, 'Compensation'	,'Direct (Ops)'													, 1						, 'EL'				, 2						, 0	UNION
 	SELECT DISTINCT 2				, 'Compensation'	,'Direct (Ops)'													, 1						, 'RM'				, 3						, 0	UNION
+	SELECT DISTINCT 62				, 'Compensation'	,'Direct (Ops)'													, 1						, 'CL'				, 5						, 0 UNION
 	SELECT DISTINCT 3				, 'Compensation'	,'Indirect (IT)'												, 2						, NULL				, NULL					, 1	UNION
 	SELECT DISTINCT 4				, 'Compensation'	,'Indirect (Central Svcs)'										, 3						, NULL				, NULL					, 1	UNION
 	SELECT DISTINCT 5				, 'Compensation'	,'Direct (Min Staff/Admin)'										, 4						, 'EL'				, 2						, 0	UNION
@@ -4428,7 +4429,7 @@ WITH Actuals AS (
 	SELECT DISTINCT 30				, 'Compensation'	,'Workers Comp'													, 23					, 'Initiatives/BB'	, 1						, 0 UNION
 	SELECT DISTINCT 31				, 'Compensation'	,'Paycor Fees'													, 24					, 'Initiatives/BB'	, 1						, 0 UNION
 	SELECT DISTINCT 32				, 'Compensation'	,'Passthrough Billbacks'										, 25					, 'Initiatives/BB'	, 1						, 0 UNION
-	SELECT DISTINCT 33				, 'Compensation'	,'Reoccurring Billbacks' 										, 26					, 'Initiatives/BB'	, 1						, 0 UNION
+	SELECT DISTINCT 33				, 'Compensation'	,'Passthrough Billbacks Offset' 										, 26					, 'Initiatives/BB'	, 1						, 0 UNION
 	SELECT DISTINCT 34				, 'Compensation'	,'Other'														, 27					, 'Initiatives/BB'	, 1						, 0 UNION
 
 	--Administration
@@ -4456,8 +4457,8 @@ WITH Actuals AS (
 	SELECT DISTINCT	48				, 'Ministries'		, 'Special Events'											, 41						, NULL				, NULL					, 1 UNION 
 	SELECT DISTINCT	49				, 'Ministries'		, 'Online Services'											, 42						, NULL				, NULL					, 1 UNION 
 	SELECT DISTINCT	50				, 'Ministries'		, 'Adult'													, 43						, NULL				, NULL					, 1 UNION 
-	SELECT DISTINCT	51				, 'Ministries'		, 'Single Parent'											, 44						, NULL				, NULL					, 1 UNION 
-	SELECT DISTINCT	52				, 'Ministries'		, 'Biblical Soul Care'										, 45						, NULL				, NULL					, 1 UNION 
+	--SELECT DISTINCT	51				, 'Ministries'		, 'Single Parent'											, 44						, NULL				, NULL					, 1 UNION 
+	--SELECT DISTINCT	52				, 'Ministries'		, 'Biblical Soul Care'										, 45						, NULL				, NULL					, 1 UNION 
 	SELECT DISTINCT	53				, 'Ministries'		, 'Family'													, 46						, NULL				, NULL					, 1 UNION 
 	SELECT DISTINCT	54				, 'Ministries'		, 'Student'													, 47						, NULL				, NULL					, 1 UNION 
 	SELECT DISTINCT	55				, 'Ministries'		, 'Worship'													, 48						, NULL				, NULL					, 1 UNION 
@@ -4495,6 +4496,19 @@ WITH Actuals AS (
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND AccountingCode9 = '8004'
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 62 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode = 'PER1'
+		AND CampusCode = 'CS'
+		AND AccountingCode9 = '8016'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -4604,6 +4618,19 @@ WITH Actuals AS (
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND AccountingCode9 IN ('8024')
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 12 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode = 'PER1'
+		AND CampusCode = 'CS'
+		AND AccountingCode9 IN ('8082')
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -4727,7 +4754,7 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN('LH','CH')
 		AND DepartmentCode = '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -4756,7 +4783,7 @@ WITH Actuals AS (
 		AND CampusCode = 'CS'
 		AND GLCode = '40020'
 		AND AccountingCode9 IN ('9999') 
-		AND DepartmentCode <> '4056'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -4769,7 +4796,7 @@ WITH Actuals AS (
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND ProjectCode = '217'
-		AND AccountingCode9 IN ('9999') 
+		AND AccountingCode9 = '9999'
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -4799,6 +4826,7 @@ WITH Actuals AS (
 		AND GLCode = '44008'
 		AND AccountingCode9 IN ('9999') 
 		AND DepartmentCode <> '4056'
+		AND ProjectCode <> '217'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -4837,10 +4865,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN ('CS','AC')
 		AND GLCode IN ('52519')
 		AND AccountingCode9 IN ('9999') 
 		AND DepartmentCode <> '4056'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -4879,10 +4908,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
-		AND GLCode IN ('40060')
-		AND AccountingCode9 IN ('9999') 
-		AND DepartmentCode <> '4056'
+		AND DepartmentCode = '4016' 
+		AND AccountingCode9 IN ('8025','8027','8028','8041','8042','8043'
+				,'8044','8045','8046','8075','8081','8025','8027','8028','8041','8042','8043','8044'
+				,'8045','8046','8075','8081') 
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -4909,7 +4939,13 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode = '5038'
+		AND DepartmentCode = '5038'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--2. Office Equipment –Expenses with the department code 5058
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -4920,7 +4956,9 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode = '5058'
-		
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+
 	--3. Technology
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -4930,6 +4968,12 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode = '5178'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--4. Printing – Expenses with the department code 5078
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -4940,8 +4984,10 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode = '5078'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
 
-	--5. Banking, Legal, Audit, Professional Fees
+	--5. Administration
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT FinancialCategoryID, 39
@@ -4949,7 +4995,17 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('5018','5138','9020')
+		AND CategoryCode <> 'PER1'
+		AND (
+			CONVERT(INT, DepartmentCode)  < 7005 
+			OR
+			CONVERT(INT, DepartmentCode)  > 8992 
+		)
+		AND GLCode IN ('52019', '52011', '52060', '49011', '52045')
+		AND DepartmentCode <> '9025'
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--6. Payroll Processing Fees
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -4960,6 +5016,8 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('9025')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
 
 	--7. Insurance
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -4970,6 +5028,8 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('5098')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
 
 	--8.Facilities & Grounds Maintenance
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -4980,6 +5040,12 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('6017', '6037', '6057', '6065', '6117', '6157', '6177')
+		AND CampusCode NOT IN ('LH','CH')
+		AND CategoryCode <> 'PER1'
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--9.Utilities
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -4990,9 +5056,24 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('6097')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
 
-	--10.Service Support
-	--no longer mapped
+	--Service Support
+	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 44 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode = '6197'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--11.Mortgage
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -5002,7 +5083,13 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('9015','9017')
+		AND DepartmentCode IN( '9015', '9017')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GlCode <> '90139'
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--12.Operating Expense (under camp operations, also called camp  operating expense on xlt management report tab) – all expenses under fund 058
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -5013,8 +5100,9 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CampusCode = 'LH'
+		AND CategoryCode <> 'PER1'
 
-	--13.Ministry Expansion and Development
+	--Ministry Expansion and Development
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT FinancialCategoryID, 47
@@ -5023,6 +5111,8 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('7240')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
 
 	--14.Special Events
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -5032,7 +5122,13 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('5162')
+		AND DepartmentCode IN( '5162')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--15.Online Services – All expenses with department 5164
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -5043,6 +5139,8 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('5164')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
 
 	--16.Adult
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -5052,7 +5150,13 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('7005', '7007', '7011', '7014', '7041', '7047', '7050', '7059', '7066', '7071', '7073', '7075', '7076', '7079', '7084', '7086', '7089', '7111', '7176')
+		AND DepartmentCode IN ( '7005', '7007', '7011', '7014', '7041', '7047', '7050', '7059'
+		, '7066', '7071', '7073', '7075', '7076', '7079', '7084', '7086', '7089', '7111', '7176')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--18.Biblical Soul Care
 	--removed per alan on 20160325
@@ -5065,7 +5169,12 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('7125', '7128', '7131', '7135', '7139', '7143', '7147', '7151')
+		AND DepartmentCode IN( '7125', '7128', '7131', '7135', '7139', '7143', '7147', '7151' )
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--20.Student
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -5075,7 +5184,13 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('7165', '7166', '7170', '7171')
+		AND DepartmentCode IN( '7165', '7166', '7170', '7171')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
+
 
 	--21.Worship
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -5086,6 +5201,8 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('7290')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
 
 	--22.Stewardship – all expenses with department code 7280
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -5095,9 +5212,14 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('4276')
+		AND DepartmentCode IN( '7280')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
-	--23.Missions & Outreach & Church Plant
+	--Missions & Outreach & Church Plant
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT FinancialCategoryID, 57
@@ -5105,7 +5227,12 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('7208','7210','7250')
+		AND DepartmentCode IN( '7208', '7210', '7250')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--24.Congregation/FOCIS
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -5115,10 +5242,27 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND Departmentcode IN('7017','7023','7035')
+		AND DepartmentCode IN( '7017', '7023', '7035')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
-	--25.Production – all expenses with department 5160
-	--no longer mapped
+	--Production 
+	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT FinancialCategoryID, 59
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND DepartmentCode IN( '5160')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--26.Creative Services, Video Prod, Media – all expenses in department codes 5158, 5159, or 6137
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -5129,6 +5273,8 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND Departmentcode IN('5158','5159','6137')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
 
 	--other
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -5140,8 +5286,28 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
+		AND dest.CampusXLTReportGroupID IS NULL
+	UNION
+	SELECT DISTINCT DimFinancialCategory.FinancialCategoryID, 61
+	FROM DW.DimFinancialCategory
+	LEFT JOIN [dbo].[CampusXLTReportGroup_CampusTabMap] dest
+		ON DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode = 'CH'
+		AND DepartmentCode = '7250'
+		AND CategoryCode = 'MIN1'
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 		AND Dest.CampusXLTReportGroupID IS NULL
-
 
 	--Now the XLT MAP
 	TRUNCATE TABLE dbo.CampusXLTReportGroup_XLTTab
@@ -5154,8 +5320,8 @@ WITH Actuals AS (
 	SELECT DISTINCT 4				, 'Compensation'	, 'WITW Pastoral Billback' 						, 4					,'Scott'	, 1		UNION
 	SELECT DISTINCT 5				, 'Compensation'	, 'Executive Support' 							, 5					,'Scott'	, 1		UNION
 	SELECT DISTINCT 6				, 'Compensation'	, 'Accounting' 									, 6					,'Fred'		, 2		UNION
-	SELECT DISTINCT 7				, 'Compensation'	, 'Film (self funding)' 						, 7					,'Fred'		, 2		UNION
-	SELECT DISTINCT 8				, 'Compensation'	, 'Development (self funding)' 					, 8					,'Fred'		, 2		UNION
+	SELECT DISTINCT 7				, 'Compensation'	, 'Film ' 										, 7					,'Fred'		, 2		UNION
+	SELECT DISTINCT 8				, 'Compensation'	, 'Development' 								, 8					,'Fred'		, 2		UNION
 	SELECT DISTINCT 9				, 'Compensation'	, 'IT'											, 9					,'Dean'		, 3		UNION
 	SELECT DISTINCT 10				, 'Compensation'	, 'Direct RM Ops' 								, 10				,'Dean'		, 3		UNION
 	SELECT DISTINCT 11				, 'Compensation'	, 'Direct EL Ops' 								, 11				,'Dean'		, 3		UNION
@@ -5176,8 +5342,8 @@ WITH Actuals AS (
 	SELECT DISTINCT 26				, 'Compensation'	, 'Communications' 								, 25				,'Luke'		, 5		UNION
 	SELECT DISTINCT 27				, 'Compensation'	, 'Production' 									, 26				,'Luke'		, 5		UNION
 	SELECT DISTINCT 28				, 'Compensation'	, 'Worship' 									, 27				,'Luke'		, 5		UNION
-	SELECT DISTINCT 29				, 'Compensation'	, 'BSC (self funding)' 							, 28				,'XLT'		, 6		UNION
-	SELECT DISTINCT 30				, 'Compensation'	, 'Health Insurance' 							, 29				,'XLT'		, 6		UNION
+	SELECT DISTINCT 29				, 'Compensation'	, 'BSC' 										, 28				,'XLT'		, 6		UNION
+	SELECT DISTINCT 30				, 'Compensation'	, 'Health Insurance' 							, 29				,'Scott'	, 6		UNION
 	SELECT DISTINCT 31				, 'Compensation'	, 'Expense Sharing'								, 30				,'XLT'		, 6		UNION
 	SELECT DISTINCT 32				, 'Compensation'	, 'Personal Accounts'							, 31				,'XLT'		, 6		UNION
 	SELECT DISTINCT 33				, 'Compensation'	, 'Cell Phones'									, 32				,'XLT'		, 6		UNION
@@ -5186,45 +5352,49 @@ WITH Actuals AS (
 	SELECT DISTINCT 36				, 'Compensation'	, 'Retreats'									, 35				,'XLT'		, 6		UNION
 	SELECT DISTINCT 37				, 'Compensation'	, 'Awards'										, 36				,'XLT'		, 6		UNION
 	SELECT DISTINCT 38				, 'Compensation'	, 'Pulpit Supply'								, 37				,'XLT'		, 6		UNION
-	SELECT DISTINCT 39				, 'Compensation'	, 'LTD/Life'									, 38				,'XLT'		, 6		UNION
+	SELECT DISTINCT 39				, 'Compensation'	, 'Life/LTD/Retirement'							, 38				,'XLT'		, 6		UNION
 	SELECT DISTINCT 40				, 'Compensation'	, 'Workers Comp'								, 39				,'XLT'		, 6		UNION
 	SELECT DISTINCT 41				, 'Compensation'	, 'Paycor Fees'									, 40				,'XLT'		, 6		UNION
 	SELECT DISTINCT 42				, 'Compensation'	, 'Passthrough Billbacks'						, 41				,'XLT'		, 6		UNION
-	SELECT DISTINCT 43				, 'Compensation'	, 'Other'										, 42				,'XLT'		, 6		UNION
+	SELECT DISTINCT 78			    , 'Compensation'	, 'Pass Thru Billbacks Offset'					, 42			    , NULL      , NULL  UNION
+	SELECT DISTINCT 43				, 'Compensation'	, 'Other'										, 43				,'XLT'		, 6		UNION
+
 																																		
-	SELECT DISTINCT 	44				, 'Expense'			, 'General Office'								, 43				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	45				, 'Expense'			, 'Office Equipment' 							, 44				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	46				, 'Expense'			, 'Technology' 									, 45				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	47				, 'Expense'			, 'Printing' 									, 46				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	48				, 'Expense'			, 'Insurance' 									, 47				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	49				, 'Expense'			, 'Facilities & Grounds Maintenance' 			, 48				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	50				, 'Expense'			, 'Utilities' 									, 49				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	51				, 'Expense'			, 'Service Support' 							, 50				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	52				, 'Expense'			, 'Camp Operating Expense' 						, 51				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	53				, 'Expense'			, 'Student' 									, 52				, 'Dean'	, 3			UNION
-	SELECT DISTINCT 	54				, 'Expense'			, 'Banking, Legal, Audit, Professional Fees' 	, 53				, 'Fred'	, 2			UNION
-	SELECT DISTINCT 	55				, 'Expense'			, 'Payroll Processing Fees' 					, 54				, 'Luke'	, 5			UNION
-	SELECT DISTINCT 	56				, 'Expense'			, 'Mortgage' 									, 55				, 'XLT'		, 6			UNION
-	SELECT DISTINCT 	57				, 'Expense'			, 'Ministry Expansion and Development' 			, 56				, 'XLT'		, 6			UNION
-	SELECT DISTINCT 	58				, 'Expense'			, 'Harvest Studio Production' 					, 57				, NULL		, NULL		UNION
-	SELECT DISTINCT 	59				, 'Expense'			, 'Missions & Outreach & Church Plant'			, 58				, 'XLT'		, 6			UNION
-	SELECT DISTINCT 	60				, 'Expense'			, 'Stewardship' 								, 59				, 'Fred'	, 2			UNION
-	SELECT DISTINCT 	61				, 'Expense'			, 'Biblical Soul Care' 							, 60				, NULL		, NULL		UNION
-	SELECT DISTINCT 	62				, 'Expense'			, 'Crystal Lake Campus' 						, 61				, NULL		, NULL		UNION
-	SELECT DISTINCT 	63				, 'Expense'			, 'North Shore' 								, 62				, NULL		, NULL		UNION
-	SELECT DISTINCT 	64				, 'Expense'			, 'Chicago Cathedral' 							, 63				, NULL		, NULL		UNION
-	SELECT DISTINCT 	65				, 'Expense'			, 'Niles Campus'								, 64				, NULL		, NULL		UNION
-	SELECT DISTINCT 	66				, 'Expense'			, 'Aurora' 										, 65				, NULL		, NULL		UNION
-	SELECT DISTINCT 	67				, 'Expense'			, 'Adult' 										, 66				, 'Jeff'	, 4			UNION
-	SELECT DISTINCT 	68				, 'Expense'			, 'Single Parent' 								, 67				, NULL		, NULL		UNION
-	SELECT DISTINCT 	69				, 'Expense'			, 'Family'  									, 68				, 'Jeff'	, 4			UNION
-	SELECT DISTINCT 	70				, 'Expense'			, 'Congregation/FOCIS' 							, 69				, 'Jeff'	, 4			UNION
-	SELECT DISTINCT 	71				, 'Expense'			, 'Special Events' 								, 70				, 'Luke'	, 5			UNION
-	SELECT DISTINCT 	72				, 'Expense'			, 'Online Services' 							, 71				, 'Luke'	, 5			UNION
-	SELECT DISTINCT 	73				, 'Expense'			, 'Worship' 									, 72				, 'Luke'	, 5			UNION
-	SELECT DISTINCT 	74				, 'Expense'			, 'Production' 									, 73				, 'Luke'	, 5			UNION
-	SELECT DISTINCT 	75				, 'Expense'			, 'Creative Services, Video Prod, Media' 		, 74				, 'Luke'	, 5			UNION
-	SELECT DISTINCT 	76				, 'Expense'			, 'Other' 										, 75				, 'Luke'	, 5			UNION	
+	SELECT DISTINCT 	44				, 'Expense'			, 'General Office'								, 44				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	45				, 'Expense'			, 'Office Equipment' 							, 45				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	46				, 'Expense'			, 'Technology' 									, 46				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	47				, 'Expense'			, 'Printing' 									, 47				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	48				, 'Expense'			, 'Insurance' 									, 48				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	49				, 'Expense'			, 'Facilities & Grounds Maintenance' 			, 49				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	50				, 'Expense'			, 'Utilities' 									, 50				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	51				, 'Expense'			, 'Service Support' 							, 51				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	52				, 'Expense'			, 'Camp Operating Expense' 						, 52				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	53				, 'Expense'			, 'Student' 									, 53				, 'Dean'	, 3			UNION
+	SELECT DISTINCT 	54				, 'Expense'			, 'Banking, Legal, Audit, Professional Fees' 	, 54				, 'Fred'	, 2			UNION
+	SELECT DISTINCT 	55				, 'Expense'			, 'Payroll Processing Fees' 					, 55				, 'Luke'	, 5			UNION
+	SELECT DISTINCT 	56				, 'Expense'			, 'Mortgage' 									, 56				, 'XLT'		, 6			UNION
+	SELECT DISTINCT 	57				, 'Expense'			, 'Ministry Expansion and Development' 			, 57				, 'XLT'		, 6			UNION
+	--removed harvest studio
+	--SELECT DISTINCT 	58				, 'Expense'			, 'Harvest Studio Production' 					, 58				, NULL		, NULL		UNION
+	SELECT DISTINCT 	59				, 'Expense'			, 'Missions & Outreach & Church Plant'			, 59				, 'XLT'		, 6			UNION
+	SELECT DISTINCT 	60				, 'Expense'			, 'Stewardship' 								, 60				, 'Fred'	, 2			UNION
+	--removed BSC, campuses and single parent
+	--SELECT DISTINCT 	61				, 'Expense'			, 'Biblical Soul Care' 							, 61				, NULL		, NULL		UNION
+	--SELECT DISTINCT 	62				, 'Expense'			, 'Crystal Lake Campus' 						, 62				, NULL		, NULL		UNION
+	--SELECT DISTINCT 	63				, 'Expense'			, 'North Shore' 								, 63				, NULL		, NULL		UNION
+	--SELECT DISTINCT 	64				, 'Expense'			, 'Chicago Cathedral' 							, 64				, NULL		, NULL		UNION
+	--SELECT DISTINCT 	65				, 'Expense'			, 'Niles Campus'								, 65				, NULL		, NULL		UNION
+	--SELECT DISTINCT 	66				, 'Expense'			, 'Aurora' 										, 66				, NULL		, NULL		UNION
+	SELECT DISTINCT 	67				, 'Expense'			, 'Adult' 										, 67				, 'Jeff'	, 4			UNION
+	--SELECT DISTINCT 	68				, 'Expense'			, 'Single Parent' 								, 68				, NULL		, NULL		UNION
+	SELECT DISTINCT 	69				, 'Expense'			, 'Family'  									, 69				, 'Jeff'	, 4			UNION
+	SELECT DISTINCT 	70				, 'Expense'			, 'Congregation/FOCIS' 							, 70				, 'Jeff'	, 4			UNION
+	SELECT DISTINCT 	71				, 'Expense'			, 'Special Events' 								, 71				, 'Luke'	, 5			UNION
+	SELECT DISTINCT 	72				, 'Expense'			, 'Online Services' 							, 72				, 'Luke'	, 5			UNION
+	SELECT DISTINCT 	73				, 'Expense'			, 'Worship' 									, 73				, 'Luke'	, 5			UNION
+	SELECT DISTINCT 	74				, 'Expense'			, 'Production' 									, 74				, 'Luke'	, 5			UNION
+	SELECT DISTINCT 	75				, 'Expense'			, 'Creative Services, Video Prod, Media' 		, 75				, 'Luke'	, 5			UNION
+	SELECT DISTINCT 	76				, 'Expense'			, 'Other' 										, 76				, 'Luke'	, 5			UNION	
 	--scott has no expense, but we need a place holder
 	SELECT DISTINCT 77				, 'Expense'			, ''											, 77				, 'Scott'	, 1
 
@@ -5313,7 +5483,7 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN('LH','CH')
 		AND AccountingCode9 = '8040'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -5325,7 +5495,7 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN('LH','CH')
 		AND AccountingCode9 = '8038'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -5361,7 +5531,7 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN('LH','CH')
 		AND AccountingCode9 = '8009'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -5475,6 +5645,19 @@ WITH Actuals AS (
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 24 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode = 'PER1'
+		AND CampusCode = 'CS'
+		AND AccountingCode9 IN('8082')
+
+
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT
 		DimFinancialCategory.FinancialCategoryID, 25 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory
 	WHERE
@@ -5505,8 +5688,8 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
-		AND AccountingCode9 IN( '8034')
+		AND CampusCode NOT IN('LH','CH')
+		AND AccountingCode9 IN('8034')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5543,6 +5726,8 @@ WITH Actuals AS (
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND GLCode IN ('41010', '41011', '41012', '41015', '41016')
+		AND AccountingCode9 = '9999'
+		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5566,7 +5751,7 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN('LH','CH')
 		AND DepartmentCode = '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -5578,8 +5763,10 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN('LH','CH')
 		AND GLCode = '44090'
+		AND AccountingCode9 = '9999'
+		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5590,8 +5777,9 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
-		AND GLCode = '44020'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode = '40020'
+		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5604,6 +5792,9 @@ WITH Actuals AS (
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND ProjectCode = '217'
+		AND AccountingCode9 = '9999'
+		AND DepartmentCode <> '4056'
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5616,6 +5807,8 @@ WITH Actuals AS (
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND GLCode = '43026'
+		AND AccountingCode9 = '9999'
+		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5628,6 +5821,9 @@ WITH Actuals AS (
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND GLCode = '44008'
+		AND AccountingCode9 = '9999'
+		AND DepartmentCode <> '4056'
+		AND ProjectCode <> '217'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5638,8 +5834,10 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode IN ('45016', '45018', '46022', '46026')
+		AND AccountingCode9 = '9999'
+		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5652,7 +5850,9 @@ WITH Actuals AS (
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND GLCode IN ('41017', '41020', '41025', '41027')
-
+		AND AccountingCode9 = '9999'
+		AND DepartmentCode <> '4056'
+--Workers Comp
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
@@ -5662,8 +5862,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN ('CS','AC')
 		AND GLCode IN ('52519')
+		AND AccountingCode9 IN ('9999') 
+		AND DepartmentCode <> '4056'
+	
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5674,8 +5877,10 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode IN ('60432', '53130')
+		AND AccountingCode9 = '9999'
+		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5686,15 +5891,31 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode IN ('40060')
 		AND AccountingCode9 = '9999'
+		AND DepartmentCode <> '4056'
+	
+	--'Pass Thru Billbacks Offset'
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 78 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode = 'PER1'
+		AND DepartmentCode = '4016' 
+		AND AccountingCode9 IN ('8025','8027','8028','8041','8042','8043'
+				,'8044','8045','8046','8075','8081','8025','8027','8028','8041','8042','8043','8044'
+				,'8045','8046','8075','8081') 
 
 	--other
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
-		DimFinancialCategory.FinancialCategoryID, 42 AS CampusXLTReportGroupID
+		DimFinancialCategory.FinancialCategoryID, 43 AS CampusXLTReportGroupID
 	FROM DW.DimFinancialCategory 
 	LEFT JOIN CampusXLTReportGroup_XLTTabMap dest
 		ON DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
@@ -5703,6 +5924,8 @@ WITH Actuals AS (
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
+		AND AccountingCode9 = '9999'
+		AND DepartmentCode <> '4056'
 		AND dest.CampusXLTReportGroupID IS NULL
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -5714,7 +5937,13 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode = '5038'
-
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
+		
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
@@ -5724,6 +5953,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode = '5058'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5733,7 +5967,13 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND DepartmentCode = '5178'
+		AND DepartmentCode = '5178' --possibly need to add in 6017
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5744,6 +5984,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode = '5078'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5754,6 +5999,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode = '5098'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5764,6 +6014,12 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '6017', '6037', '6057', '6065', '6117', '6157', '6177')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5774,6 +6030,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode = '6097'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5784,6 +6045,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode = '6197'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5794,7 +6060,8 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CampusCode = 'LH'
-
+		AND CategoryCode <> 'PER1'
+	
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
@@ -5804,7 +6071,14 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '7165', '7166', '7170', '7171')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
+	
+	--'Banking, Legal, Audit, Professional Fees' 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT
@@ -5813,7 +6087,17 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND DepartmentCode IN( '5018', '5138', '9020')
+		AND CategoryCode <> 'PER1'
+		AND (
+			CONVERT(INT, DepartmentCode)  < 7005 
+			OR
+			CONVERT(INT, DepartmentCode)  > 8992 
+		)
+		AND GLCode IN ('52019', '52011', '52060', '49011', '52045')
+		AND DepartmentCode <> '9025'
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5824,6 +6108,12 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '9025')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
+
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5834,6 +6124,24 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '9015', '9017')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GlCode <> '90139'
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
+	--'Ministry Expansion and Development' 
+	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
+	( FinancialCategoryID, CampusXLTReportGroupID )
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 57 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND Departmentcode IN('7240')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5844,6 +6152,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '7208', '7210', '7250')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5854,6 +6167,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '7280')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5863,7 +6181,13 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
-		AND DepartmentCode IN( '7005', '7007', '7011', '7014', '7041', '7047', '7050', '7059', '7066', '7071', '7073', '7075', '7076', '7079', '7084', '7086', '7089', '7111', '7176')
+		AND DepartmentCode IN ( '7005', '7007', '7011', '7014', '7041', '7047', '7050', '7059'
+		, '7066', '7071', '7073', '7075', '7076', '7079', '7084', '7086', '7089', '7111', '7176')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5874,6 +6198,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '7125', '7128', '7131', '7135', '7139', '7143', '7147', '7151' )
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5884,6 +6213,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '7017', '7023', '7035')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5894,6 +6228,12 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '5162')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN ('52019', '52011', '52060', '49011', '52045')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5904,6 +6244,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '5164')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5914,6 +6259,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '7290')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5924,6 +6274,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '5160')
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -5934,7 +6289,11 @@ WITH Actuals AS (
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND DepartmentCode IN( '5158', '5159', '6137')
-
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
 	--other 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -5947,7 +6306,31 @@ WITH Actuals AS (
 	WHERE
 		EntityCode = 'HBC'
 		AND FundCode = '025'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode NOT IN ('LH','CH')
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
 		AND dest.CampusXLTReportGroupID IS NULL
+	--and pick up some special cases of 'CH'
+	UNION
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 76 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	LEFT JOIN [CampusXLTReportGroup_XLTTabMap] dest
+		ON  DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode <> 'PER1'
+		AND CampusCode = 'CH'
+		AND DepartmentCode = '7250'
+		AND CategoryCode = 'MIN1'
+		AND GLCode NOT IN (
+			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			,'90222','90227','90232','90235','90237','90247','90252','90260')
+		AND dest.CampusXLTReportGroupID IS NULL
+
 
 RETURN 0]]></Value>
 			</Property>
@@ -6041,6 +6424,21 @@ RETURN 0]]></Value>
 					<References Name="[DW].[DimFinancialCategory].[FinancialCategoryID]" />
 				</Entry>
 				<Entry>
+					<References ExternalSource="BuiltIns" Name="[int]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[int]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimFinancialCategory].[GLCode]" />
+				</Entry>
+				<Entry>
+					<References Name="[dbo].[CampusXLTReportGroup_CampusTabMap].[CampusXLTReportGroupID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimFinancialCategory].[DepartmentCode]" />
+				</Entry>
+				<Entry>
 					<References Name="[dbo].[CampusXLTReportGroup_XLTTab]" />
 				</Entry>
 				<Entry>
@@ -6089,7 +6487,22 @@ RETURN 0]]></Value>
 					<References Name="[DW].[DimFinancialCategory].[CampusCode]" />
 				</Entry>
 				<Entry>
+					<References Name="[DW].[DimFinancialCategory].[AccountingCode9]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimFinancialCategory].[DepartmentCode]" />
+				</Entry>
+				<Entry>
 					<References Name="[dbo].[CampusXLTReportGroup_XLTTabMap].[CampusXLTReportGroupID]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[int]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[int]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimFinancialCategory].[GLCode]" />
 				</Entry>
 			</Relationship>
 			<Relationship Name="Schema">
@@ -6098,7 +6511,7 @@ RETURN 0]]></Value>
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="Length" Value="59892" />
+				<Property Name="Length" Value="75631" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
 				<Property Name="HeaderContents" Value="CREATE PROCEDURE [dbo].[usp_Initialize_CampusXLTReportGroupRows]&#xD;&#xA;AS" />
@@ -18596,9 +19009,9 @@ declare
 
 -- CurrentMonth
 
-	SELECT -- SUM(t1.amount) as CurrentMonth
+	SELECT -- SUM(t1.Amount) as CurrentMonth
 	@CurrMonthLoanRed = SUM(t1.Amount)
-	--[GLCode],  t1.amount
+	--[GLCode],  t1.Amount
 	FROM [DW].[FactFinancialOther] t1
 	LEFT JOIN [DW].[DimFinancialCategory] t2
 	ON t1.[FinancialCategoryID] = t2.[FinancialCategoryID]
@@ -18614,9 +19027,9 @@ declare
 -------------------------------------
 	SELECT @LastYear  = @CurrYear -1
 
-	SELECT  --SUM(t1.amount) as LoadRedAmount
-	@CurrYearLoanRed = SUM(t1.amount) 
-	--[GLCode],  t1.amount
+	SELECT  --SUM(t1.Amount) as LoadRedAmount
+	@CurrYearLoanRed = SUM(t1.Amount) 
+	--[GLCode],  t1.Amount
 	FROM [DW].[FactFinancialOther] t1
 	LEFT JOIN [DW].[DimFinancialCategory] t2
 	ON t1.[FinancialCategoryID] = t2.[FinancialCategoryID]
@@ -18629,9 +19042,9 @@ declare
 	AND t2.TenantID = 3
 
 
-	SELECT -- SUM(t1.amount) as LoadRedAmount
-	@LastYearLoanRed = SUM(t1.amount)
-	--[GLCode],  t1.amount
+	SELECT -- SUM(t1.Amount) as LoadRedAmount
+	@LastYearLoanRed = SUM(t1.Amount)
+	--[GLCode],  t1.Amount
 	FROM [DW].[FactFinancialOther] t1
 	LEFT JOIN [DW].[DimFinancialCategory] t2
 	ON t1.[FinancialCategoryID] = t2.[FinancialCategoryID]
@@ -18703,9 +19116,6 @@ declare
 				</Entry>
 				<Entry>
 					<References Name="[DW].[DimFinancialCategory].[TenantID]" />
-				</Entry>
-				<Entry>
-					<References Name="[DW].[FactFinancialOther].[Amount]" />
 				</Entry>
 				<Entry>
 					<References Name="[DW].[DimFinancialCategory].[GLCode]" />

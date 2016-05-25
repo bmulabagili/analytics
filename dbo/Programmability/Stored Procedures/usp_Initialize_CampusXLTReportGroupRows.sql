@@ -939,17 +939,17 @@ AS
 	SELECT DISTINCT 11				, 'Compensation'	, 'Direct EL Ops' 								, 11				,'Dean'		, 3		UNION
 	SELECT DISTINCT 12				, 'Compensation'	, 'Indirect - Central Ops' 						, 12				,'Dean'		, 3 	UNION
 	SELECT DISTINCT 13				, 'Compensation'	, 'Ministry Staff-RM  Total' 					, 13				,'Jeff'		, 4 	UNION
-	SELECT DISTINCT 14				, 'Compensation'	, 'Ministry Admin-RM Total' 					, 14				,NULL 		, NULL	UNION
+	--SELECT DISTINCT 14				, 'Compensation'	, 'Ministry Admin-RM Total' 					, 14				,NULL 		, NULL	UNION
 	SELECT DISTINCT 15				, 'Compensation'	, 'Ministry Staff-EL Total' 					, 15				,'Jeff'		, 4		UNION
-	SELECT DISTINCT 16				, 'Compensation'	, 'Ministry Admin-EL Total' 					, 16				,NULL		, NULL	UNION
+	--SELECT DISTINCT 16				, 'Compensation'	, 'Ministry Admin-EL Total' 					, 16				,NULL		, NULL	UNION
 	SELECT DISTINCT 17				, 'Compensation'	, 'Ministry Staff-NI Total' 					, 17				,'Jeff'		, 4		UNION
 	SELECT DISTINCT 18				, 'Compensation'	, 'Ministry Staff-CL Total' 					, 18				,'Dean'		, 3		UNION
 	SELECT DISTINCT 19				, 'Compensation'	, 'Ministry Staff-CL Total' 					, 18				,'Jeff'		, 4		UNION
 	SELECT DISTINCT 20				, 'Compensation'	, 'Ministry Staff-CC Total' 					, 19 				,'Jeff'		, 4		UNION
 	SELECT DISTINCT 21				, 'Compensation'	, 'Ministry Staff-AU Total' 					, 20				,'Jeff'		, 4		UNION
 	SELECT DISTINCT 22				, 'Compensation'	, 'Ministry Staff-DR Total' 					, 21				,'Jeff'		, 4		UNION
-	SELECT DISTINCT 23				, 'Compensation'	, 'Ministry Staff Hispanic-EL' 					, 22				,NULL		, NULL	UNION
-	SELECT DISTINCT 24				, 'Compensation'	, 'Misc Ministries Interns' 					, 23				,NULL		, NULL	UNION
+	--SELECT DISTINCT 23				, 'Compensation'	, 'Ministry Staff Hispanic-EL' 					, 22				,NULL		, NULL	UNION
+	SELECT DISTINCT 24				, 'Compensation'	, 'Misc Ministries Interns' 					, 23				,'Jeff'		, 4		UNION
 	SELECT DISTINCT 25				, 'Compensation'	, 'HR' 											, 24				,'Luke'		, 5		UNION
 	SELECT DISTINCT 26				, 'Compensation'	, 'Communications' 								, 25				,'Luke'		, 5		UNION
 	SELECT DISTINCT 27				, 'Compensation'	, 'Production' 									, 26				,'Luke'		, 5		UNION
@@ -1338,7 +1338,7 @@ AS
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND GLCode IN ('41010', '41011', '41012', '41015', '41016')
-		AND AccountingCode9 = '9999'
+		AND AccountingCode9 IN( '9999','')
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
