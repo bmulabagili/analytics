@@ -21,7 +21,7 @@
             <Value>=Parameters!BudgetYear.Value</Value>
           </QueryParameter>
           <QueryParameter Name="@BudgetMonth">
-            <Value>=Parameters!BudgetMonth.Value</Value>
+            <Value>=JOIN(Parameters!BudgetMonth.Value,",")</Value>
           </QueryParameter>
         </QueryParameters>
         <CommandText>WITH Expenses AS (
@@ -42,14 +42,14 @@
 	INNER JOIN dw.DimFinancialCategory
 		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactExpense.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN CampusXLTReportGroup_XLTTabMap 
+	INNER JOIN CampusXLTReportGroup_XLTTabMap 
 		ON CampusXLTReportGroup_XLTTabMap.FinancialCategoryID = FactExpense.FinancialCategoryID
-	LEFT JOIN CampusXLTReportGroup_XLTTab
+	INNER JOIN CampusXLTReportGroup_XLTTab
 		ON  CampusXLTReportGroup_XLTTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
 	WHERE
 		DimEntity.Code = 'HBC'
 		AND DimFinancialCategory.FundCode = '025'
-		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth = @BudgetMonth
+		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth IN( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
 	GROUP BY
 		  ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1)
 		, ISNULL(CampusXLTReportGroup_XLTTab.XLTHeading, '???')
@@ -76,14 +76,14 @@
 		INNER JOIN dw.DimFinancialCategory
 			ON FactFinancialOther.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 			AND FactFinancialOther.TenantID = DimFinancialCategory.TenantID
-		LEFT JOIN CampusXLTReportGroup_XLTTabMap 
+		INNER JOIN CampusXLTReportGroup_XLTTabMap 
 			ON CampusXLTReportGroup_XLTTabMap.FinancialCategoryID = FactFinancialOther.FinancialCategoryID
-		LEFT JOIN CampusXLTReportGroup_XLTTab
+		INNER JOIN CampusXLTReportGroup_XLTTab
 			ON  CampusXLTReportGroup_XLTTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
 		WHERE
 			DimEntity.Code = 'HBC'
 			AND DimFinancialCategory.FundCode = '025'
-			AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth = @BudgetMonth
+			AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth IN( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
 			AND DimFinancialCategory.GLType IN ('FAO','APO')
 		GROUP BY
 			  ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1)
@@ -151,7 +151,7 @@
 	WHERE
 		DimEntity.Code = 'HBC'
 		AND DimFinancialCategory.FundCode = '025'
-		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth = @BudgetMonth
+		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth IN( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
 		AND CampusXLTReportGroup_XLTTab.XLTHeading = 'Expense'
 		
 	GROUP BY
@@ -184,8 +184,7 @@ GROUP BY
 	, SubtotaledExpenses.ManagerSortOrder
 
 ORDER BY 
-	manager
-</CommandText>
+	manager</CommandText>
       </Query>
       <Fields>
         <Field Name="CampusXLTReportGroupID">
@@ -252,7 +251,7 @@ FROM (
             <Value>=Parameters!BudgetYear.Value</Value>
           </QueryParameter>
           <QueryParameter Name="@BudgetMonth">
-            <Value>=Parameters!BudgetMonth.Value</Value>
+            <Value>=JOIN(Parameters!BudgetMonth.Value,",")</Value>
           </QueryParameter>
         </QueryParameters>
         <CommandText>WITH Expenses AS (
@@ -278,7 +277,7 @@ FROM (
 	WHERE
 		DimEntity.Code = 'HBC'
 		AND DimFinancialCategory.FundCode = '025'
-		AND FactBudgetExpense.BudgetYear = @BudgetYear AND FactBudgetExpense.BudgetMonth = @BudgetMonth
+		AND FactBudgetExpense.BudgetYear = @BudgetYear AND FactBudgetExpense.BudgetMonth IN ( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
 	GROUP BY
 		  CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
 		, CampusXLTReportGroup_XLTTab.XLTHeading
@@ -330,7 +329,7 @@ FROM (
 	WHERE
 		DimEntity.Code = 'HBC'
 		AND DimFinancialCategory.FundCode = '025'
-		AND FactBudgetRevenue.BudgetYear = @BudgetYear AND FactBudgetRevenue.BudgetMonth = @BudgetMonth
+		AND FactBudgetRevenue.BudgetYear = @BudgetYear AND FactBudgetRevenue.BudgetMonth IN ( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
 		AND CampusXLTReportGroup_XLTTab.XLTHeading &lt;&gt; 'Compensation'
 	GROUP BY
 		  CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
@@ -403,26 +402,6 @@ ORDER BY
         </Field>
       </Fields>
     </DataSet>
-    <DataSet Name="WeekCount">
-      <Query>
-        <DataSourceName>DW</DataSourceName>
-        <QueryParameters>
-          <QueryParameter Name="@BudgetMonth">
-            <Value>=Parameters!BudgetMonth.Value</Value>
-          </QueryParameter>
-          <QueryParameter Name="@BudgetYear">
-            <Value>=Parameters!BudgetYear.Value</Value>
-          </QueryParameter>
-        </QueryParameters>
-        <CommandText>SELECT count(DISTINCT CalendarWeek) WeekCount from dw.dimdate where CalendarMonth= @BudgetMonth and CalendarYear= @BudgetYear</CommandText>
-      </Query>
-      <Fields>
-        <Field Name="WeekCount">
-          <DataField>WeekCount</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
-      </Fields>
-    </DataSet>
     <DataSet Name="VarianceExpense">
       <Query>
         <DataSourceName>DW</DataSourceName>
@@ -431,7 +410,7 @@ ORDER BY
             <Value>=Parameters!BudgetYear.Value</Value>
           </QueryParameter>
           <QueryParameter Name="@BudgetMonth">
-            <Value>=Parameters!BudgetMonth.Value</Value>
+            <Value>=JOIN(Parameters!BudgetMonth.Value,",")</Value>
           </QueryParameter>
         </QueryParameters>
         <CommandText>--Expense  Variance
@@ -453,14 +432,14 @@ WITH ActualExpenses AS (
 	INNER JOIN dw.DimFinancialCategory
 		ON FactExpense.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 		AND FactExpense.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN CampusXLTReportGroup_XLTTabMap 
+	INNER JOIN CampusXLTReportGroup_XLTTabMap 
 		ON CampusXLTReportGroup_XLTTabMap.FinancialCategoryID = FactExpense.FinancialCategoryID
-	LEFT JOIN CampusXLTReportGroup_XLTTab
+	INNER JOIN CampusXLTReportGroup_XLTTab
 		ON  CampusXLTReportGroup_XLTTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
 	WHERE
 		DimEntity.Code = 'HBC'
 		AND DimFinancialCategory.FundCode = '025'
-		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth = @BudgetMonth
+		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth IN ( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
 	GROUP BY
 		  ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1)
 		, ISNULL(CampusXLTReportGroup_XLTTab.XLTHeading, '???')
@@ -487,14 +466,14 @@ WITH ActualExpenses AS (
 		INNER JOIN dw.DimFinancialCategory
 			ON FactFinancialOther.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 			AND FactFinancialOther.TenantID = DimFinancialCategory.TenantID
-		LEFT JOIN CampusXLTReportGroup_XLTTabMap 
+		INNER JOIN CampusXLTReportGroup_XLTTabMap 
 			ON CampusXLTReportGroup_XLTTabMap.FinancialCategoryID = FactFinancialOther.FinancialCategoryID
-		LEFT JOIN CampusXLTReportGroup_XLTTab
+		INNER JOIN CampusXLTReportGroup_XLTTab
 			ON  CampusXLTReportGroup_XLTTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
 		WHERE
 			DimEntity.Code = 'HBC'
 			AND DimFinancialCategory.FundCode = '025'
-			AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth = @BudgetMonth
+			AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth IN ( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
 			AND DimFinancialCategory.GLType IN ('FAO','APO')
 		GROUP BY
 			  ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1)
@@ -545,7 +524,7 @@ WITH ActualExpenses AS (
 	WHERE
 		DimEntity.Code = 'HBC'
 		AND DimFinancialCategory.FundCode = '025'
-		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth = @BudgetMonth
+		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth IN ( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
 		AND CampusXLTReportGroup_XLTTab.XLTHeading = 'Expense'
 		AND CampusXLTReportGroup_XLTTab.XLTDetail &lt;&gt; 'Other'
 	GROUP BY
@@ -599,7 +578,7 @@ WITH ActualExpenses AS (
 	WHERE
 		DimEntity.Code = 'HBC'
 		AND DimFinancialCategory.FundCode = '025'
-		AND FactBudgetExpense.BudgetYear = @BudgetYear AND FactBudgetExpense.BudgetMonth = @BudgetMonth
+		AND FactBudgetExpense.BudgetYear = @BudgetYear AND FactBudgetExpense.BudgetMonth IN ( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
 	GROUP BY
 		   ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1)
 		, ISNULL(CampusXLTReportGroup_XLTTab.XLTHeading, '???')
@@ -803,7 +782,7 @@ GROUP BY
                   <Paragraph>
                     <TextRuns>
                       <TextRun>
-                        <Value>= MonthName(Parameters!BudgetMonth.Value) + " Month " + Parameters!BudgetYear.Value</Value>
+                        <Value>= IIF(Parameters!BudgetMonth.Count = 1, MonthName(Parameters!BudgetMonth.Value(0)) + " Month " + Parameters!BudgetYear.Value, "YTD " + Parameters!BudgetYear.Value)</Value>
                         <Style>
                           <FontWeight>Bold</FontWeight>
                         </Style>
@@ -4177,7 +4156,6 @@ GROUP BY
                                 <PaddingBottom>2pt</PaddingBottom>
                               </Style>
                             </Textbox>
-                            <rd:Selected>true</rd:Selected>
                           </CellContents>
                         </TablixCell>
                       </TablixCells>
@@ -4444,7 +4422,7 @@ GROUP BY
                 </Style>
               </Tablix>
             </ReportItems>
-            <PageName>= "Campus (" + LEFT(MonthName(Parameters!BudgetMonth.Value), 3) +")"</PageName>
+            <PageName>= IIF(Parameters!BudgetMonth.Count = 1, "XLT (" + LEFT(MonthName(Parameters!BudgetMonth.Value(0)), 3) +")", "XLT YTD")</PageName>
             <KeepTogether>true</KeepTogether>
             <Height>4.8481in</Height>
             <Width>25.72468in</Width>
@@ -4489,7 +4467,7 @@ GROUP BY
       <Hidden>true</Hidden>
     </ReportParameter>
     <ReportParameter Name="BudgetMonth">
-      <DataType>Integer</DataType>
+      <DataType>String</DataType>
       <DefaultValue>
         <Values>
           <Value>=DatePart(DateInterval.Month, DateAdd(DateInterval.Month, -1, Now()))</Value>
@@ -4548,24 +4526,13 @@ GROUP BY
           </ParameterValue>
         </ParameterValues>
       </ValidValues>
+      <MultiValue>true</MultiValue>
     </ReportParameter>
     <ReportParameter Name="username">
       <DataType>String</DataType>
       <Nullable>true</Nullable>
       <AllowBlank>true</AllowBlank>
       <Prompt>username</Prompt>
-      <Hidden>true</Hidden>
-    </ReportParameter>
-    <ReportParameter Name="WeekCount">
-      <DataType>Integer</DataType>
-      <Nullable>true</Nullable>
-      <DefaultValue>
-        <DataSetReference>
-          <DataSetName>WeekCount</DataSetName>
-          <ValueField>WeekCount</ValueField>
-        </DataSetReference>
-      </DefaultValue>
-      <Prompt>WeekCount</Prompt>
       <Hidden>true</Hidden>
     </ReportParameter>
   </ReportParameters>
