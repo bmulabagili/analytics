@@ -475,6 +475,8 @@ WITH ZeroFilledRevenues AS (
 		AND CalendarMonth IN( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
 		AND GLType = 'rev'
 		AND ISNULL(CampusDetail,'Other') = 'Other' -- only include ministries "other" since that's the default
+		AND DimFinancialCategory.GLCode = '30010' 
+		AND DimFinancialCategory.DepartmentCode = '3015'
 	GROUP BY
 		  CASE WHEN REPLACE(DimFinancialCategory.CampusCode,'NS','DR') NOT IN ('AU','CC','CL','DR','EL','NI','RM') THEN 'Initiatives/BB' 
 			ELSE REPLACE(DimFinancialCategory.CampusCode,'NS','DR') END
@@ -806,6 +808,8 @@ WITH ZeroFilledRevenues AS (
 		AND BudgetMonth IN( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
 		AND GLType = 'rev'
 		AND REPLACE(DimFinancialCategory.CampusCode,'NS','DR') IN ('AU','CC','CL','DR','EL','NI','RM')
+		AND DimFinancialCategory.GLCode = '30010' 
+		AND DimFinancialCategory.DepartmentCode = '3015'
 	GROUP BY
 		REPLACE(DimFinancialCategory.CampusCode,'NS','DR')
 		, CASE REPLACE(DimFinancialCategory.CampusCode,'NS','DR')
@@ -1136,43 +1140,42 @@ GROUP BY
 	, SubtotaledExpenses.CampusCodeSortOrder
 ), ReportedRevenues AS (
 	SELECT
-		  ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) AS CampusCode
-		, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
-			WHEN 'Initiatives/BB' THEN 1
-			WHEN 'EL' THEN 2
-			WHEN 'RM' THEN 3
-			WHEN 'NI' THEN 4
-			WHEN 'CL' THEN 5
-			WHEN 'CC' THEN 6
-			WHEN 'AU' THEN 7
-			WHEN 'DR' THEN 8 END AS CampusCodeSortOrder
-		, SUM(CASE WHEN ISNULL(CampusXLTReportGroup_CampusTab.AllocateByAttendancePercentage,1) = 0 THEN 
-				CASE WHEN ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) = CampusXLTReportGroup_CampusTab.CampusCode THEN Amount ELSE 0 END
-			  ELSE Amount * CampusAllocation.CampusPercent END) AS Amount 
-
+		  CASE WHEN REPLACE(DimFinancialCategory.CampusCode,'NS','DR') NOT IN ('AU','CC','CL','DR','EL','NI','RM') THEN 'Initiatives/BB' 
+			ELSE REPLACE(DimFinancialCategory.CampusCode,'NS','DR') END AS CampusCode
+		, CASE  CASE WHEN REPLACE(DimFinancialCategory.CampusCode,'NS','DR') NOT IN ('AU','CC','CL','DR','EL','NI','RM') THEN 'Initiatives/BB' 
+			ELSE REPLACE(DimFinancialCategory.CampusCode,'NS','DR') END
+				WHEN 'Initiatives/BB' THEN 1
+				WHEN 'EL' THEN 2
+				WHEN 'RM' THEN 3
+				WHEN 'NI' THEN 4
+				WHEN 'CL' THEN 5
+				WHEN 'CC' THEN 6
+				WHEN 'AU' THEN 7
+				WHEN 'DR' THEN 8 END AS CampusCodeSortOrder
+		, SUM(Amount) AS Amount
 	FROM dw.FactRevenue
+	INNER JOIN DW.DimFinancialCategory
+		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
 	INNER JOIN DW.DimDate
 		ON FactRevenue.DateID = DimDate.DateID
-	INNER JOIN dw.DimEntity
-		ON FactRevenue.EntityID = DimEntity.EntityID
-		AND FactRevenue.TenantID = DimEntity.TenantID
-	INNER JOIN dw.DimFinancialCategory
-		ON FactRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
-		AND FactRevenue.TenantID = DimFinancialCategory.TenantID
 	LEFT JOIN CampusXLTReportGroup_CampusTabMap 
 		ON CampusXLTReportGroup_CampusTabMap.FinancialCategoryID = FactRevenue.FinancialCategoryID
 	LEFT JOIN CampusXLTReportGroup_CampusTab
 		ON  CampusXLTReportGroup_CampusTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
-	INNER JOIN CampusAllocation
-		ON 1=1
 	WHERE
-		DimEntity.Code = 'HBC'
-		AND DimFinancialCategory.FundCode = '025'
-		AND DimDate.CalendarYear = @BudgetYear AND DimDate.CalendarMonth IN( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CalendarYear = @BudgetYear
+		AND CalendarMonth IN( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
+		AND GLType = 'rev'
 		AND ISNULL(CampusDetail,'Other') = 'Other' -- only include ministries "other" since that's the default
+		AND DimFinancialCategory.GLCode = '30010' 
+		AND DimFinancialCategory.DepartmentCode = '3015'
 	GROUP BY
-		  ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
-		, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
+		  CASE WHEN REPLACE(DimFinancialCategory.CampusCode,'NS','DR') NOT IN ('AU','CC','CL','DR','EL','NI','RM') THEN 'Initiatives/BB' 
+			ELSE REPLACE(DimFinancialCategory.CampusCode,'NS','DR') END
+		, CASE  CASE WHEN REPLACE(DimFinancialCategory.CampusCode,'NS','DR') NOT IN ('AU','CC','CL','DR','EL','NI','RM') THEN 'Initiatives/BB' 
+			ELSE REPLACE(DimFinancialCategory.CampusCode,'NS','DR') END
 			WHEN 'Initiatives/BB' THEN 1
 			WHEN 'EL' THEN 2
 			WHEN 'RM' THEN 3
@@ -1276,8 +1279,8 @@ WITH Attendance AS(
 		CampusID, Code
 ), BudgetRevenues AS (
 	SELECT
-		  ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) AS CampusCode
-		, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
+		REPLACE(DimFinancialCategory.CampusCode,'NS','DR') AS CampusCode
+		, CASE  REPLACE(DimFinancialCategory.CampusCode,'NS','DR')
 			WHEN 'Initiatives/BB' THEN 1
 			WHEN 'EL' THEN 2
 			WHEN 'RM' THEN 3
@@ -1286,31 +1289,22 @@ WITH Attendance AS(
 			WHEN 'CC' THEN 6
 			WHEN 'AU' THEN 7
 			WHEN 'DR' THEN 8 END AS CampusCodeSortOrder
-		, SUM(CASE WHEN ISNULL(CampusXLTReportGroup_CampusTab.AllocateByAttendancePercentage,1) = 0 THEN 
-				CASE WHEN ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode) = CampusXLTReportGroup_CampusTab.CampusCode THEN Amount ELSE 0 END
-			  ELSE Amount * CampusAllocation.CampusPercent END) AS Amount 
-
+		, SUM(Amount) AS Amount
 	FROM dw.FactBudgetRevenue
-	INNER JOIN dw.DimEntity
-		ON FactBudgetRevenue.EntityID = DimEntity.EntityID
-		AND FactBudgetRevenue.TenantID = DimEntity.TenantID
-	INNER JOIN dw.DimFinancialCategory
+	INNER JOIN DW.DimFinancialCategory
 		ON FactBudgetRevenue.FinancialCategoryID = DimFinancialCategory.FinancialCategoryID
-		AND FactBudgetRevenue.TenantID = DimFinancialCategory.TenantID
-	LEFT JOIN CampusXLTReportGroup_CampusTabMap 
-		ON CampusXLTReportGroup_CampusTabMap.FinancialCategoryID = FactBudgetRevenue.FinancialCategoryID
-	LEFT JOIN CampusXLTReportGroup_CampusTab
-		ON  CampusXLTReportGroup_CampusTabMap.CampusXLTReportGroupID = CampusXLTReportGroup_CampusTab.CampusXLTReportGroupID
-	INNER JOIN CampusAllocation
-		ON 1=1
 	WHERE
-		DimEntity.Code = 'HBC'
-		AND DimFinancialCategory.FundCode = '025'
-		AND FactBudgetRevenue.BudgetYear = @BudgetYear AND FactBudgetRevenue.BudgetMonth IN( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
-		AND ISNULL(CampusDetail,'Other') = 'Other' -- only include ministries "other" since that's the default
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND BudgetYear = @BudgetYear
+		AND BudgetMonth IN( SELECT Item from dbo.fnSplit(@BudgetMonth, ',') )
+		AND GLType = 'rev'
+		AND REPLACE(DimFinancialCategory.CampusCode,'NS','DR') IN ('AU','CC','CL','DR','EL','NI','RM')
+		AND DimFinancialCategory.GLCode = '30010' 
+		AND DimFinancialCategory.DepartmentCode = '3015'
 	GROUP BY
-		  ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
-		, CASE ISNULL( CampusAllocation.Code, CampusXLTReportGroup_CampusTab.CampusCode)
+		REPLACE(DimFinancialCategory.CampusCode,'NS','DR')
+		, CASE REPLACE(DimFinancialCategory.CampusCode,'NS','DR')
 			WHEN 'Initiatives/BB' THEN 1
 			WHEN 'EL' THEN 2
 			WHEN 'RM' THEN 3
