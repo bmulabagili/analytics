@@ -539,8 +539,19 @@ AS
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND Dest.CampusXLTReportGroupID IS NULL
-
-
+	UNION
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 34 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	LEFT JOIN [dbo].[CampusXLTReportGroup_CampusTabMap] dest
+		ON DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID 
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode = 'PER1'
+		AND DepartmentCode IN ('4016', '4026', '4076', '4096', '4106')
+		AND CampusCode IN ('CL','NI','RM','EL','AC')
+		AND Dest.CampusXLTReportGroupID IS NULL
 
 	--Then load the map values
 	--1. General Office
@@ -1540,6 +1551,19 @@ AS
 		AND AccountingCode9 = '9999'
 		AND DepartmentCode <> '4056'
 		AND dest.CampusXLTReportGroupID IS NULL
+	UNION
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 43 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory 
+	LEFT JOIN CampusXLTReportGroup_XLTTabMap dest
+		ON DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode = 'PER1'
+		AND DepartmentCode IN ('4016', '4026', '4076', '4096', '4106')
+		AND CampusCode IN ('CL','NI','RM','EL','AC')
+		AND Dest.CampusXLTReportGroupID IS NULL
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
