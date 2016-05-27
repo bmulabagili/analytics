@@ -7,7 +7,8 @@ AS
 	--Set first day of week to sunday, or none of the following works!
 	SET DATEFIRST 7; -- Sunday is the first day of the week.
 
-	--Calendar Year: 1/1/yyyy - 12/31/yyyy
+	--Calendar Year: 1/1/yyyy - 12/31/yyyy 
+		--calendar weeks sunday to Saturday
 	--Fiscal   Year: 7/1/yyyy - 6/30/yyyy
 	--Ministry Year: 8/1/yyyy - 7/31/yyyy
 		--HBC minsitry weeks (Monday - Sunday) are reported together in Summary for KPI Reports
@@ -55,11 +56,27 @@ AS
     SET @CurrentYear = DATEPART(YY, @CurrentDate);
     SET @CurrentQuarter = DATEPART(QQ, @CurrentDate);
 
-	
+	DECLARE @CalendarWeekStartLabel NVARCHAR(255), @CalendarWeekEndLabel NVARCHAR(255);
+	DECLARE @MinistryDayOfWeek INT, @MinistryWeekStartLabel NVARCHAR(255), @MinistryWeekEndLabel NVARCHAR(255);
 
     --Proceed only if Start Date(Current date ) is less than End date you specified above
     WHILE @CurrentDate < @EndDate
          BEGIN
+			--handle the Calendar week labels
+			IF DATEPART(WEEKDAY, @CurrentDate) = 1 
+			BEGIN 
+				SET @CalendarWeekStartLabel = CONVERT(  CHAR(10), @CurrentDate, 101)
+				SET @CalendarWeekEndLabel = CONVERT(  CHAR(10), DATEADD(DAY, 6, @CurrentDate), 101)
+			END
+					
+			--Handle Ministry week labels
+			SET @MinistryDayOfWeek = CASE WHEN DATEPART(WEEKDAY, @CurrentDate) BETWEEN 2 AND 7 THEN DATEPART(WEEKDAY, @CurrentDate) - 1 ELSE 7 END;
+			IF @MinistryDayOfWeek = 1 
+			BEGIN
+				SET @MinistryWeekStartLabel = CONVERT(  CHAR(10), @CurrentDate, 101)
+				SET @MinistryWeekEndLabel = CONVERT(  CHAR(10), DATEADD(DAY, 6, @CurrentDate), 101)
+			END
+
 			--default Ministry Month Handler:
 			SET @MinistryMonth = CASE WHEN DATEPART(MM, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(MM, @CurrentDate) + 5 ELSE DATEPART(MM, @CurrentDate) - 7 END
 			--default handling for Ministry Month Abbreviation and label
@@ -196,8 +213,8 @@ AS
                 , @CurrentDate AS ActualDate
                 --Calendar Dates
 				, DATEPART(WEEK, @currentDate) AS CalendarWeek
-				, NULL AS CalendarWeekStartLabel
-				, NULL AS CalendarWeekEndLabel
+				, @CalendarWeekStartLabel AS CalendarWeekStartLabel
+				, @CalendarWeekEndLabel AS CalendarWeekEndLabel
 				, DATEPART(WEEKDAY, @CurrentDate) AS CalendarDayOfWeek
 				, DATENAME(WEEKDAY, @CurrentDate) AS CalendarDayOfWeekLabel
 				, CASE DATEPART(WEEKDAY, @CurrentDate)
@@ -259,9 +276,8 @@ AS
 			-- Ministry Dates
 			---fix ministry week in an update
 			 , NULL AS MinistryWeek  
-			 --add week start and end labels later   
-			 , NULL AS MinistryWeekStartLabel       
-			 , NULL AS MinistryWeekEndLabel         
+			 , @MinistryWeekStartLabel AS MinistryWeekStartLabel       
+			 , @MinistryWeekEndLabel AS MinistryWeekEndLabel         
 			 --shift all day of week - 1 (from first day of week sunday, to first day of week is monday)
 			 , CASE WHEN DATEPART(WEEKDAY, @CurrentDate) BETWEEN 2 AND 7 THEN DATEPART(WEEKDAY, @CurrentDate) - 1 ELSE 7 END AS MinistryDayOfWeek
 			 , DATENAME(WEEKDAY, @CurrentDate) AS MinistryDayOfWeekLabel
