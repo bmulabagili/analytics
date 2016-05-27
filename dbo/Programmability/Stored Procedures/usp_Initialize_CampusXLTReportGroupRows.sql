@@ -907,14 +907,15 @@ AS
 	LEFT JOIN [dbo].[CampusXLTReportGroup_CampusTabMap] dest
 		ON DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
 	WHERE
-		EntityCode = 'HBC'
+		GLType IN ('EXP','REV','APO','FAO')
+		AND EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode NOT IN (
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
 			,'90222','90227','90232','90235','90237','90247','90252','90260'
-			, '15027','15127','15132','15142','15147','15152','15157','15172')
+			, '15027','15127','15132','15142','15147','15152','15157','15172','20011')
 		AND dest.CampusXLTReportGroupID IS NULL
 	UNION
 	SELECT DISTINCT DimFinancialCategory.FinancialCategoryID, 61
@@ -922,7 +923,8 @@ AS
 	LEFT JOIN [dbo].[CampusXLTReportGroup_CampusTabMap] dest
 		ON DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
 	WHERE
-		EntityCode = 'HBC'
+		GLType IN ('EXP','REV','APO','FAO')
+		AND EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode = 'CH'
@@ -930,7 +932,7 @@ AS
 		AND CategoryCode = 'MIN1'
 		AND GLCode NOT IN (
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
-			,'90222','90227','90232','90235','90237','90247','90252','90260')
+			,'90222','90227','90232','90235','90237','90247','90252','90260','20011')
 		AND Dest.CampusXLTReportGroupID IS NULL
 
 	--Now the XLT MAP
@@ -1941,14 +1943,15 @@ AS
 	LEFT JOIN [CampusXLTReportGroup_XLTTabMap] dest
 		ON  DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
 	WHERE
-		EntityCode = 'HBC'
+		GLType IN ('EXP','REV','APO','FAO')
+		AND EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode NOT IN (
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
 			,'90222','90227','90232','90235','90237','90247','90252','90260'
-			, '15027','15127','15132','15142','15147','15152','15157','15172')
+			, '15027','15127','15132','15142','15147','15152','15157','15172','20011')
 		AND dest.CampusXLTReportGroupID IS NULL
 	--and pick up some special cases of 'CH'
 	UNION
@@ -1958,7 +1961,8 @@ AS
 	LEFT JOIN [CampusXLTReportGroup_XLTTabMap] dest
 		ON  DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
 	WHERE
-		EntityCode = 'HBC'
+		GLType IN ('EXP','REV','APO','FAO')
+		AND EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode = 'CH'
@@ -1966,7 +1970,7 @@ AS
 		AND CategoryCode = 'MIN1'
 		AND GLCode NOT IN (
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
-			,'90222','90227','90232','90235','90237','90247','90252','90260')
+			,'90222','90227','90232','90235','90237','90247','90252','90260','20011')
 		AND dest.CampusXLTReportGroupID IS NULL
 
 
