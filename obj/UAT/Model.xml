@@ -4691,7 +4691,7 @@ WITH Actuals AS (
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND GLCode IN ('41010', '41011', '41012', '41015', '41016')
-		AND AccountingCode9 IN ('9999')
+		AND AccountingCode9 IN( '9999','')
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
@@ -4927,8 +4927,19 @@ WITH Actuals AS (
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND Dest.CampusXLTReportGroupID IS NULL
-
-
+	UNION
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 34 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory
+	LEFT JOIN [dbo].[CampusXLTReportGroup_CampusTabMap] dest
+		ON DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID 
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode = 'PER1'
+		AND DepartmentCode IN ('4016', '4026', '4076', '4096', '4106')
+		AND CampusCode IN ('CL','NI','RM','EL','AC')
+		AND Dest.CampusXLTReportGroupID IS NULL
 
 	--Then load the map values
 	--1. General Office
@@ -5284,13 +5295,15 @@ WITH Actuals AS (
 	LEFT JOIN [dbo].[CampusXLTReportGroup_CampusTabMap] dest
 		ON DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
 	WHERE
-		EntityCode = 'HBC'
+		GLType IN ('EXP','REV','APO','FAO')
+		AND EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode NOT IN (
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
-			,'90222','90227','90232','90235','90237','90247','90252','90260')
+			,'90222','90227','90232','90235','90237','90247','90252','90260'
+			, '15027','15127','15132','15142','15147','15152','15157','15172','20011')
 		AND dest.CampusXLTReportGroupID IS NULL
 	UNION
 	SELECT DISTINCT DimFinancialCategory.FinancialCategoryID, 61
@@ -5298,7 +5311,8 @@ WITH Actuals AS (
 	LEFT JOIN [dbo].[CampusXLTReportGroup_CampusTabMap] dest
 		ON DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
 	WHERE
-		EntityCode = 'HBC'
+		GLType IN ('EXP','REV','APO','FAO')
+		AND EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode = 'CH'
@@ -5306,7 +5320,7 @@ WITH Actuals AS (
 		AND CategoryCode = 'MIN1'
 		AND GLCode NOT IN (
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
-			,'90222','90227','90232','90235','90237','90247','90252','90260')
+			,'90222','90227','90232','90235','90237','90247','90252','90260','20011')
 		AND Dest.CampusXLTReportGroupID IS NULL
 
 	--Now the XLT MAP
@@ -5327,17 +5341,17 @@ WITH Actuals AS (
 	SELECT DISTINCT 11				, 'Compensation'	, 'Direct EL Ops' 								, 11				,'Dean'		, 3		UNION
 	SELECT DISTINCT 12				, 'Compensation'	, 'Indirect - Central Ops' 						, 12				,'Dean'		, 3 	UNION
 	SELECT DISTINCT 13				, 'Compensation'	, 'Ministry Staff-RM  Total' 					, 13				,'Jeff'		, 4 	UNION
-	SELECT DISTINCT 14				, 'Compensation'	, 'Ministry Admin-RM Total' 					, 14				,NULL 		, NULL	UNION
+	--SELECT DISTINCT 14				, 'Compensation'	, 'Ministry Admin-RM Total' 					, 14				,NULL 		, NULL	UNION
 	SELECT DISTINCT 15				, 'Compensation'	, 'Ministry Staff-EL Total' 					, 15				,'Jeff'		, 4		UNION
-	SELECT DISTINCT 16				, 'Compensation'	, 'Ministry Admin-EL Total' 					, 16				,NULL		, NULL	UNION
+	--SELECT DISTINCT 16				, 'Compensation'	, 'Ministry Admin-EL Total' 					, 16				,NULL		, NULL	UNION
 	SELECT DISTINCT 17				, 'Compensation'	, 'Ministry Staff-NI Total' 					, 17				,'Jeff'		, 4		UNION
 	SELECT DISTINCT 18				, 'Compensation'	, 'Ministry Staff-CL Total' 					, 18				,'Dean'		, 3		UNION
 	SELECT DISTINCT 19				, 'Compensation'	, 'Ministry Staff-CL Total' 					, 18				,'Jeff'		, 4		UNION
 	SELECT DISTINCT 20				, 'Compensation'	, 'Ministry Staff-CC Total' 					, 19 				,'Jeff'		, 4		UNION
 	SELECT DISTINCT 21				, 'Compensation'	, 'Ministry Staff-AU Total' 					, 20				,'Jeff'		, 4		UNION
 	SELECT DISTINCT 22				, 'Compensation'	, 'Ministry Staff-DR Total' 					, 21				,'Jeff'		, 4		UNION
-	SELECT DISTINCT 23				, 'Compensation'	, 'Ministry Staff Hispanic-EL' 					, 22				,NULL		, NULL	UNION
-	SELECT DISTINCT 24				, 'Compensation'	, 'Misc Ministries Interns' 					, 23				,NULL		, NULL	UNION
+	--SELECT DISTINCT 23				, 'Compensation'	, 'Ministry Staff Hispanic-EL' 					, 22				,NULL		, NULL	UNION
+	SELECT DISTINCT 24				, 'Compensation'	, 'Misc Ministries Interns' 					, 23				,'Jeff'		, 4		UNION
 	SELECT DISTINCT 25				, 'Compensation'	, 'HR' 											, 24				,'Luke'		, 5		UNION
 	SELECT DISTINCT 26				, 'Compensation'	, 'Communications' 								, 25				,'Luke'		, 5		UNION
 	SELECT DISTINCT 27				, 'Compensation'	, 'Production' 									, 26				,'Luke'		, 5		UNION
@@ -5726,7 +5740,7 @@ WITH Actuals AS (
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND GLCode IN ('41010', '41011', '41012', '41015', '41016')
-		AND AccountingCode9 = '9999'
+		AND AccountingCode9 IN( '9999','')
 		AND DepartmentCode <> '4056'
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
@@ -5927,6 +5941,19 @@ WITH Actuals AS (
 		AND AccountingCode9 = '9999'
 		AND DepartmentCode <> '4056'
 		AND dest.CampusXLTReportGroupID IS NULL
+	UNION
+	SELECT DISTINCT
+		DimFinancialCategory.FinancialCategoryID, 43 AS CampusXLTReportGroupID
+	FROM DW.DimFinancialCategory 
+	LEFT JOIN CampusXLTReportGroup_XLTTabMap dest
+		ON DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
+	WHERE
+		EntityCode = 'HBC'
+		AND FundCode = '025'
+		AND CategoryCode = 'PER1'
+		AND DepartmentCode IN ('4016', '4026', '4076', '4096', '4106')
+		AND CampusCode IN ('CL','NI','RM','EL','AC')
+		AND Dest.CampusXLTReportGroupID IS NULL
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
@@ -6304,13 +6331,15 @@ WITH Actuals AS (
 	LEFT JOIN [CampusXLTReportGroup_XLTTabMap] dest
 		ON  DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
 	WHERE
-		EntityCode = 'HBC'
+		GLType IN ('EXP','REV','APO','FAO')
+		AND EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 		AND GLCode NOT IN (
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
-			,'90222','90227','90232','90235','90237','90247','90252','90260')
+			,'90222','90227','90232','90235','90237','90247','90252','90260'
+			, '15027','15127','15132','15142','15147','15152','15157','15172','20011')
 		AND dest.CampusXLTReportGroupID IS NULL
 	--and pick up some special cases of 'CH'
 	UNION
@@ -6320,7 +6349,8 @@ WITH Actuals AS (
 	LEFT JOIN [CampusXLTReportGroup_XLTTabMap] dest
 		ON  DimFinancialCategory.FinancialCategoryID = dest.FinancialCategoryID
 	WHERE
-		EntityCode = 'HBC'
+		GLType IN ('EXP','REV','APO','FAO')
+		AND EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode <> 'PER1'
 		AND CampusCode = 'CH'
@@ -6328,7 +6358,7 @@ WITH Actuals AS (
 		AND CategoryCode = 'MIN1'
 		AND GLCode NOT IN (
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
-			,'90222','90227','90232','90235','90237','90247','90252','90260')
+			,'90222','90227','90232','90235','90237','90247','90252','90260','20011')
 		AND dest.CampusXLTReportGroupID IS NULL
 
 
@@ -6421,6 +6451,9 @@ RETURN 0]]></Value>
 					<References Name="[dbo].[CampusXLTReportGroup_CampusTabMap].[CampusXLTReportGroupID]" />
 				</Entry>
 				<Entry>
+					<References Name="[DW].[DimFinancialCategory].[DepartmentCode]" />
+				</Entry>
+				<Entry>
 					<References Name="[DW].[DimFinancialCategory].[FinancialCategoryID]" />
 				</Entry>
 				<Entry>
@@ -6430,13 +6463,13 @@ RETURN 0]]></Value>
 					<References ExternalSource="BuiltIns" Name="[int]" />
 				</Entry>
 				<Entry>
+					<References Name="[DW].[DimFinancialCategory].[GLType]" />
+				</Entry>
+				<Entry>
 					<References Name="[DW].[DimFinancialCategory].[GLCode]" />
 				</Entry>
 				<Entry>
 					<References Name="[dbo].[CampusXLTReportGroup_CampusTabMap].[CampusXLTReportGroupID]" />
-				</Entry>
-				<Entry>
-					<References Name="[DW].[DimFinancialCategory].[DepartmentCode]" />
 				</Entry>
 				<Entry>
 					<References Name="[dbo].[CampusXLTReportGroup_XLTTab]" />
@@ -6496,10 +6529,16 @@ RETURN 0]]></Value>
 					<References Name="[dbo].[CampusXLTReportGroup_XLTTabMap].[CampusXLTReportGroupID]" />
 				</Entry>
 				<Entry>
+					<References Name="[dbo].[CampusXLTReportGroup_XLTTabMap].[CampusXLTReportGroupID]" />
+				</Entry>
+				<Entry>
 					<References ExternalSource="BuiltIns" Name="[int]" />
 				</Entry>
 				<Entry>
 					<References ExternalSource="BuiltIns" Name="[int]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimFinancialCategory].[GLType]" />
 				</Entry>
 				<Entry>
 					<References Name="[DW].[DimFinancialCategory].[GLCode]" />
@@ -6511,7 +6550,7 @@ RETURN 0]]></Value>
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="Length" Value="75631" />
+				<Property Name="Length" Value="76985" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
 				<Property Name="HeaderContents" Value="CREATE PROCEDURE [dbo].[usp_Initialize_CampusXLTReportGroupRows]&#xD;&#xA;AS" />
@@ -12673,6 +12712,14 @@ RETURN 0]]></Value>
 			</Relationship>
 			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="214" />
 			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="215" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="216" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="217" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="218" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="219" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="220" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="221" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="222" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="223" />
 		</Element>
 		<Element Type="SqlTable" Name="[DW].[FactMailchimpActivity]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -13038,8 +13085,8 @@ RETURN 0]]></Value>
 					<References Name="[DW]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="216" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="217" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="224" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="225" />
 		</Element>
 		<Element Type="SqlTable" Name="[DW].[FactMPXActivity]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -13333,8 +13380,8 @@ RETURN 0]]></Value>
 					<References Name="[DW]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="218" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="219" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="226" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="227" />
 		</Element>
 		<Element Type="SqlTable" Name="[DW].[FactPaycor]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -13491,8 +13538,8 @@ RETURN 0]]></Value>
 					<References Name="[DW]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="220" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="221" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="228" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="229" />
 		</Element>
 		<Element Type="SqlTable" Name="[DW].[FactRevenue]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -13681,8 +13728,8 @@ RETURN 0]]></Value>
 					<References Name="[DW]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="222" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="223" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="230" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="231" />
 		</Element>
 		<Element Type="SqlTable" Name="[DW].[FactSmallGroup]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -13951,8 +13998,8 @@ RETURN 0]]></Value>
 					<References Name="[DW]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="224" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="225" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="232" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="233" />
 		</Element>
 		<Element Type="SqlTable" Name="[DW].[FactSocialContact]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -14125,8 +14172,8 @@ RETURN 0]]></Value>
 					<References Name="[DW]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="226" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="227" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="234" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="235" />
 		</Element>
 		<Element Type="SqlTable" Name="[DW].[FactStewardshipBudget]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -14299,8 +14346,8 @@ RETURN 0]]></Value>
 					<References Name="[DW]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="228" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="229" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="236" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="237" />
 		</Element>
 		<Element Type="SqlTable" Name="[DW].[FactStewardshipGiving]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -14473,8 +14520,8 @@ RETURN 0]]></Value>
 					<References Name="[DW]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="230" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="231" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="238" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="239" />
 		</Element>
 		<Element Type="SqlTable" Name="[DW].[FactWebActivity]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -14719,8 +14766,8 @@ RETURN 0]]></Value>
 					<References Name="[DW]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="232" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="233" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="240" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="241" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWDimActivity_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -15205,6 +15252,203 @@ RETURN 0]]></Value>
 			</Relationship>
 			<AttachedAnnotation Disambiguator="213" />
 		</Element>
+		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactLifeEvent_DWDimActivity__ActivityID_TenantID]">
+			<Relationship Name="Columns">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[ActivityID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignColumns">
+				<Entry>
+					<References Name="[DW].[DimActivity].[ActivityID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimActivity].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignTable">
+				<Entry>
+					<References Name="[DW].[DimActivity]" />
+				</Entry>
+			</Relationship>
+			<AttachedAnnotation Disambiguator="219" />
+		</Element>
+		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactLifeEvent_DWDimDate__InstanceDateID_DateID]">
+			<Relationship Name="Columns">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[InstanceDateID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignColumns">
+				<Entry>
+					<References Name="[DW].[DimDate].[DateID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignTable">
+				<Entry>
+					<References Name="[DW].[DimDate]" />
+				</Entry>
+			</Relationship>
+			<AttachedAnnotation Disambiguator="223" />
+		</Element>
+		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactLifeEvent_DWDimIndividualStatus__IndividualStatusID_TenantID]">
+			<Relationship Name="Columns">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[IndividualStatusID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignColumns">
+				<Entry>
+					<References Name="[DW].[DimIndividualStatus].[IndividualStatusID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimIndividualStatus].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignTable">
+				<Entry>
+					<References Name="[DW].[DimIndividualStatus]" />
+				</Entry>
+			</Relationship>
+			<AttachedAnnotation Disambiguator="222" />
+		</Element>
+		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactLifeEvent_DWDimLifeEvent__LifeEventTypeID_TenantID]">
+			<Relationship Name="Columns">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[LifeEventTypeID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignColumns">
+				<Entry>
+					<References Name="[DW].[DimLifeEventType].[LifeEventTypeID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimLifeEventType].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignTable">
+				<Entry>
+					<References Name="[DW].[DimLifeEventType]" />
+				</Entry>
+			</Relationship>
+			<AttachedAnnotation Disambiguator="216" />
+		</Element>
+		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactLifeEvent_DWDimMaritalStatus__MaritalStatusID_TenantID]">
+			<Relationship Name="Columns">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[MaritalStatusID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignColumns">
+				<Entry>
+					<References Name="[DW].[DimMaritalStatus].[MaritalStatusID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimMaritalStatus].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignTable">
+				<Entry>
+					<References Name="[DW].[DimMaritalStatus]" />
+				</Entry>
+			</Relationship>
+			<AttachedAnnotation Disambiguator="221" />
+		</Element>
+		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactLifeEvent_DWDimMinistry__MinistryID_TenantID]">
+			<Relationship Name="Columns">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[MinistryID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignColumns">
+				<Entry>
+					<References Name="[DW].[DimMinistry].[MinistryID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimMinistry].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignTable">
+				<Entry>
+					<References Name="[DW].[DimMinistry]" />
+				</Entry>
+			</Relationship>
+			<AttachedAnnotation Disambiguator="218" />
+		</Element>
+		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactLifeEvent_DWDimRoster__RosterID_TenantID]">
+			<Relationship Name="Columns">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[RosterID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignColumns">
+				<Entry>
+					<References Name="[DW].[DimRoster].[RosterID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimRoster].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignTable">
+				<Entry>
+					<References Name="[DW].[DimRoster]" />
+				</Entry>
+			</Relationship>
+			<AttachedAnnotation Disambiguator="220" />
+		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactLifeEvent_Tenant__TenantID]">
 			<Relationship Name="Columns">
 				<Entry>
@@ -15228,6 +15472,35 @@ RETURN 0]]></Value>
 			</Relationship>
 			<AttachedAnnotation Disambiguator="215" />
 		</Element>
+		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactLifeEventType_DWDimCampus__CampusID_TenantID]">
+			<Relationship Name="Columns">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[CampusID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[FactLifeEvent].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="DefiningTable">
+				<Entry>
+					<References Name="[DW].[FactLifeEvent]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignColumns">
+				<Entry>
+					<References Name="[DW].[DimCampus].[CampusID]" />
+				</Entry>
+				<Entry>
+					<References Name="[DW].[DimCampus].[TenantID]" />
+				</Entry>
+			</Relationship>
+			<Relationship Name="ForeignTable">
+				<Entry>
+					<References Name="[DW].[DimCampus]" />
+				</Entry>
+			</Relationship>
+			<AttachedAnnotation Disambiguator="217" />
+		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactMailchimpActivity_Tenant__TenantID]">
 			<Relationship Name="Columns">
 				<Entry>
@@ -15249,7 +15522,7 @@ RETURN 0]]></Value>
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="217" />
+			<AttachedAnnotation Disambiguator="225" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactMPXActivity_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -15272,7 +15545,7 @@ RETURN 0]]></Value>
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="219" />
+			<AttachedAnnotation Disambiguator="227" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactPaycor_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -15295,7 +15568,7 @@ RETURN 0]]></Value>
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="221" />
+			<AttachedAnnotation Disambiguator="229" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactRevenue_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -15318,7 +15591,7 @@ RETURN 0]]></Value>
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="223" />
+			<AttachedAnnotation Disambiguator="231" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactSmallGroup_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -15341,7 +15614,7 @@ RETURN 0]]></Value>
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="225" />
+			<AttachedAnnotation Disambiguator="233" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactSocialContact_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -15364,7 +15637,7 @@ RETURN 0]]></Value>
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="227" />
+			<AttachedAnnotation Disambiguator="235" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactStewardshipBudget_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -15387,7 +15660,7 @@ RETURN 0]]></Value>
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="229" />
+			<AttachedAnnotation Disambiguator="237" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactStewardshipGiving_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -15410,7 +15683,7 @@ RETURN 0]]></Value>
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="231" />
+			<AttachedAnnotation Disambiguator="239" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[DW].[FK_DWFactWebActivity_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -15433,7 +15706,7 @@ RETURN 0]]></Value>
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="233" />
+			<AttachedAnnotation Disambiguator="241" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[DW].[pk_DWDimActivity__ActivityID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -16096,7 +16369,7 @@ RETURN 0]]></Value>
 					<References Name="[DW].[FactMailchimpActivity]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="216" />
+			<AttachedAnnotation Disambiguator="224" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[DW].[pk_DWFactMPXActivity__MPXActivityID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -16124,7 +16397,7 @@ RETURN 0]]></Value>
 					<References Name="[DW].[FactMPXActivity]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="218" />
+			<AttachedAnnotation Disambiguator="226" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[DW].[pk_DWFactPaycor__PaycorID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -16152,7 +16425,7 @@ RETURN 0]]></Value>
 					<References Name="[DW].[FactPaycor]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="220" />
+			<AttachedAnnotation Disambiguator="228" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[DW].[pk_DWFactRevenue__RevenueID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -16180,7 +16453,7 @@ RETURN 0]]></Value>
 					<References Name="[DW].[FactRevenue]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="222" />
+			<AttachedAnnotation Disambiguator="230" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[DW].[pk_DWFactSmallGroup__SmallGroupID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -16208,7 +16481,7 @@ RETURN 0]]></Value>
 					<References Name="[DW].[FactSmallGroup]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="224" />
+			<AttachedAnnotation Disambiguator="232" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[DW].[pk_DWFactSocialContact__SocialContactID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -16236,7 +16509,7 @@ RETURN 0]]></Value>
 					<References Name="[DW].[FactSocialContact]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="226" />
+			<AttachedAnnotation Disambiguator="234" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[DW].[pk_DWFactStewardshipBudget__FirstTimeGiverID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -16264,7 +16537,7 @@ RETURN 0]]></Value>
 					<References Name="[DW].[FactStewardshipBudget]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="228" />
+			<AttachedAnnotation Disambiguator="236" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[DW].[pk_DWFactStewardshipGiving__StewardshipGivingID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -16292,7 +16565,7 @@ RETURN 0]]></Value>
 					<References Name="[DW].[FactStewardshipGiving]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="230" />
+			<AttachedAnnotation Disambiguator="238" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[DW].[pk_DWFactWebActivity__WebActivityID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -16320,7 +16593,7 @@ RETURN 0]]></Value>
 					<References Name="[DW].[FactWebActivity]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="232" />
+			<AttachedAnnotation Disambiguator="240" />
 		</Element>
 		<Element Type="SqlProcedure" Name="[DW].[usp_Dashboard-56weekAttendance]">
 			<Property Name="BodyScript">
@@ -19175,7 +19448,8 @@ declare
 	--Set first day of week to sunday, or none of the following works!
 	SET DATEFIRST 7; -- Sunday is the first day of the week.
 
-	--Calendar Year: 1/1/yyyy - 12/31/yyyy
+	--Calendar Year: 1/1/yyyy - 12/31/yyyy 
+		--calendar weeks sunday to Saturday
 	--Fiscal   Year: 7/1/yyyy - 6/30/yyyy
 	--Ministry Year: 8/1/yyyy - 7/31/yyyy
 		--HBC minsitry weeks (Monday - Sunday) are reported together in Summary for KPI Reports
@@ -19223,11 +19497,27 @@ declare
     SET @CurrentYear = DATEPART(YY, @CurrentDate);
     SET @CurrentQuarter = DATEPART(QQ, @CurrentDate);
 
-	
+	DECLARE @CalendarWeekStartLabel NVARCHAR(255), @CalendarWeekEndLabel NVARCHAR(255);
+	DECLARE @MinistryDayOfWeek INT, @MinistryWeekStartLabel NVARCHAR(255), @MinistryWeekEndLabel NVARCHAR(255);
 
     --Proceed only if Start Date(Current date ) is less than End date you specified above
     WHILE @CurrentDate < @EndDate
          BEGIN
+			--handle the Calendar week labels
+			IF DATEPART(WEEKDAY, @CurrentDate) = 1 
+			BEGIN 
+				SET @CalendarWeekStartLabel = CONVERT(  CHAR(10), @CurrentDate, 101)
+				SET @CalendarWeekEndLabel = CONVERT(  CHAR(10), DATEADD(DAY, 6, @CurrentDate), 101)
+			END
+					
+			--Handle Ministry week labels
+			SET @MinistryDayOfWeek = CASE WHEN DATEPART(WEEKDAY, @CurrentDate) BETWEEN 2 AND 7 THEN DATEPART(WEEKDAY, @CurrentDate) - 1 ELSE 7 END;
+			IF @MinistryDayOfWeek = 1 
+			BEGIN
+				SET @MinistryWeekStartLabel = CONVERT(  CHAR(10), @CurrentDate, 101)
+				SET @MinistryWeekEndLabel = CONVERT(  CHAR(10), DATEADD(DAY, 6, @CurrentDate), 101)
+			END
+
 			--default Ministry Month Handler:
 			SET @MinistryMonth = CASE WHEN DATEPART(MM, @CurrentDate) BETWEEN 1 AND 7 THEN DATEPART(MM, @CurrentDate) + 5 ELSE DATEPART(MM, @CurrentDate) - 7 END
 			--default handling for Ministry Month Abbreviation and label
@@ -19364,8 +19654,8 @@ declare
                 , @CurrentDate AS ActualDate
                 --Calendar Dates
 				, DATEPART(WEEK, @currentDate) AS CalendarWeek
-				, NULL AS CalendarWeekStartLabel
-				, NULL AS CalendarWeekEndLabel
+				, @CalendarWeekStartLabel AS CalendarWeekStartLabel
+				, @CalendarWeekEndLabel AS CalendarWeekEndLabel
 				, DATEPART(WEEKDAY, @CurrentDate) AS CalendarDayOfWeek
 				, DATENAME(WEEKDAY, @CurrentDate) AS CalendarDayOfWeekLabel
 				, CASE DATEPART(WEEKDAY, @CurrentDate)
@@ -19427,9 +19717,8 @@ declare
 			-- Ministry Dates
 			---fix ministry week in an update
 			 , NULL AS MinistryWeek  
-			 --add week start and end labels later   
-			 , NULL AS MinistryWeekStartLabel       
-			 , NULL AS MinistryWeekEndLabel         
+			 , @MinistryWeekStartLabel AS MinistryWeekStartLabel       
+			 , @MinistryWeekEndLabel AS MinistryWeekEndLabel         
 			 --shift all day of week - 1 (from first day of week sunday, to first day of week is monday)
 			 , CASE WHEN DATEPART(WEEKDAY, @CurrentDate) BETWEEN 2 AND 7 THEN DATEPART(WEEKDAY, @CurrentDate) - 1 ELSE 7 END AS MinistryDayOfWeek
 			 , DATENAME(WEEKDAY, @CurrentDate) AS MinistryDayOfWeekLabel
@@ -19721,6 +20010,21 @@ declare
 					<References Name="[DW].[usp_UpsertDimDate].[@StartDate]" />
 				</Entry>
 				<Entry>
+					<References ExternalSource="BuiltIns" Name="[nvarchar]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[nvarchar]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[int]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[nvarchar]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[nvarchar]" />
+				</Entry>
+				<Entry>
 					<References Name="[DW].[DimDate]" />
 				</Entry>
 				<Entry>
@@ -19728,6 +20032,18 @@ declare
 				</Entry>
 				<Entry>
 					<References Name="[DW].[usp_UpsertDimDate].[@EndDate]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[char]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[char]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[char]" />
+				</Entry>
+				<Entry>
+					<References ExternalSource="BuiltIns" Name="[char]" />
 				</Entry>
 				<Entry>
 					<References ExternalSource="BuiltIns" Name="[varchar]" />
@@ -20391,7 +20707,7 @@ declare
 				</Entry>
 			</Relationship>
 			<Annotation Type="SysCommentsObjectAnnotation">
-				<Property Name="Length" Value="23548" />
+				<Property Name="Length" Value="24466" />
 				<Property Name="StartLine" Value="1" />
 				<Property Name="StartColumn" Value="1" />
 				<Property Name="HeaderContents" Value="CREATE PROCEDURE [DW].[usp_UpsertDimDate] @StartDate DATE,&#xD;&#xA;                                          @EndDate   DATE&#xD;&#xA;AS" />
@@ -27449,8 +27765,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="234" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="235" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="242" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="243" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[DimActivity]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -27671,8 +27987,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="236" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="237" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="244" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="245" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[DimAttendanceType]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -27846,8 +28162,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="238" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="239" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="246" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="247" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[DimCampus]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -28115,8 +28431,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="240" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="241" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="248" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="249" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[DimFinancialCategory]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -28915,8 +29231,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="242" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="243" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="250" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="251" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[DimIndividualStatus]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -29088,8 +29404,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="244" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="245" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="252" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="253" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[DimLifeEventType]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -29231,8 +29547,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="246" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="247" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="254" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="255" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[DimMinistry]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -29437,8 +29753,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="248" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="249" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="256" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="257" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[DimRoster]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -29658,8 +29974,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="250" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="251" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="258" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="259" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[DimSmallGroupDetail]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -29941,8 +30257,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="252" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="253" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="260" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="261" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactAttendance]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -30255,8 +30571,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="254" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="255" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="262" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="263" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactBudgetExpense]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -30477,8 +30793,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="256" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="257" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="264" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="265" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactBudgetRevenue]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -30699,8 +31015,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="258" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="259" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="266" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="267" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactCallMetric]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -30885,8 +31201,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="260" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="261" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="268" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="269" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactEnrollment]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -31126,8 +31442,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="262" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="263" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="270" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="271" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactExpense]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -31332,8 +31648,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="264" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="265" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="272" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="273" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactFinancialOther]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -31554,8 +31870,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="266" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="267" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="274" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="275" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactFirstTimeGiver]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -31744,8 +32060,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="268" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="269" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="276" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="277" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactHBFMetric]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -31951,8 +32267,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="270" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="271" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="278" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="279" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactHCAMetric]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -32158,8 +32474,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="272" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="273" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="280" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="281" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactLifeEvent]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -32488,8 +32804,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="274" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="275" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="282" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="283" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactMailchimpActivity]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -32871,8 +33187,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="276" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="277" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="284" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="285" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactMPXActivity]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -33182,8 +33498,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="278" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="279" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="286" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="287" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactPaycor]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -33356,8 +33672,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="280" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="281" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="288" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="289" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactRevenue]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -33562,8 +33878,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="282" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="283" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="290" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="291" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactSmallGroup]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -33848,8 +34164,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="284" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="285" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="292" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="293" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactSocialContact]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -34038,8 +34354,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="286" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="287" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="294" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="295" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactStewardshipBudget]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -34228,8 +34544,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="288" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="289" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="296" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="297" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactStewardshipGiving]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -34418,8 +34734,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="290" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="291" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="298" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="299" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[FactWebActivity]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -34680,8 +34996,8 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="292" />
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="293" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="300" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="301" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformConnectionString_ETLAction__ETLActionID]">
 			<Relationship Name="Columns">
@@ -34704,7 +35020,7 @@ declare
 					<References Name="[dbo].[ETLAction]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="235" />
+			<AttachedAnnotation Disambiguator="243" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformDimActivity_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -34727,7 +35043,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="237" />
+			<AttachedAnnotation Disambiguator="245" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformDimAttendanceType_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -34750,7 +35066,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="239" />
+			<AttachedAnnotation Disambiguator="247" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformDimCampus_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -34773,7 +35089,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="241" />
+			<AttachedAnnotation Disambiguator="249" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformDimFinancialCategory_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -34796,7 +35112,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="243" />
+			<AttachedAnnotation Disambiguator="251" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformDimIndividualStatus_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -34819,7 +35135,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="245" />
+			<AttachedAnnotation Disambiguator="253" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformDimLifeEventType_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -34842,7 +35158,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="247" />
+			<AttachedAnnotation Disambiguator="255" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformDimMinistry_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -34865,7 +35181,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="249" />
+			<AttachedAnnotation Disambiguator="257" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformDimRoster_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -34888,7 +35204,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="251" />
+			<AttachedAnnotation Disambiguator="259" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformDimSmallGroup_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -34911,7 +35227,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="253" />
+			<AttachedAnnotation Disambiguator="261" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactAttendance_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -34934,7 +35250,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="255" />
+			<AttachedAnnotation Disambiguator="263" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactBudgetExpense_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -34957,7 +35273,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="257" />
+			<AttachedAnnotation Disambiguator="265" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactBudgetRevenue_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -34980,7 +35296,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="259" />
+			<AttachedAnnotation Disambiguator="267" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactCallMetric_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35003,7 +35319,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="261" />
+			<AttachedAnnotation Disambiguator="269" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactEnrollment_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35026,7 +35342,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="263" />
+			<AttachedAnnotation Disambiguator="271" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactExpense_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35049,7 +35365,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="265" />
+			<AttachedAnnotation Disambiguator="273" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactFinancialOther_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35072,7 +35388,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="267" />
+			<AttachedAnnotation Disambiguator="275" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactFirstTimeGiver_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35095,7 +35411,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="269" />
+			<AttachedAnnotation Disambiguator="277" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactHBFMetric_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35118,7 +35434,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="271" />
+			<AttachedAnnotation Disambiguator="279" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactHCAMetric_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35141,7 +35457,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="273" />
+			<AttachedAnnotation Disambiguator="281" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactLifeEvent_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35164,7 +35480,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="275" />
+			<AttachedAnnotation Disambiguator="283" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactMailchimpActivity_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35187,7 +35503,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="277" />
+			<AttachedAnnotation Disambiguator="285" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactMPXActivity_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35210,7 +35526,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="279" />
+			<AttachedAnnotation Disambiguator="287" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactPaycor_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35233,7 +35549,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="281" />
+			<AttachedAnnotation Disambiguator="289" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactRevenue_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35256,7 +35572,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="283" />
+			<AttachedAnnotation Disambiguator="291" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactSmallGroup_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35279,7 +35595,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="285" />
+			<AttachedAnnotation Disambiguator="293" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactSocialContact_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35302,7 +35618,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="287" />
+			<AttachedAnnotation Disambiguator="295" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactStewardshipBudget_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35325,7 +35641,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="289" />
+			<AttachedAnnotation Disambiguator="297" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactStewardshipGiving_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35348,7 +35664,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="291" />
+			<AttachedAnnotation Disambiguator="299" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformFactWebActivity_Tenant__TenantID]">
 			<Relationship Name="Columns">
@@ -35371,7 +35687,7 @@ declare
 					<References Name="[dbo].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="293" />
+			<AttachedAnnotation Disambiguator="301" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformTenant_ConnectionString__ConnectionStringID]">
 			<Relationship Name="Columns">
@@ -35394,7 +35710,7 @@ declare
 					<References Name="[dbo].[ConnectionString]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="294" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="302" />
 		</Element>
 		<Element Type="SqlForeignKeyConstraint" Name="[Transform].[FK_TransformTenant_ETLAction__ETLActionID]">
 			<Relationship Name="Columns">
@@ -35417,7 +35733,7 @@ declare
 					<References Name="[dbo].[ETLAction]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="295" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="303" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformCallMetric__CallMetricID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35445,7 +35761,7 @@ declare
 					<References Name="[Transform].[FactCallMetric]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="260" />
+			<AttachedAnnotation Disambiguator="268" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformConnectionString__ConnectionStringID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35464,7 +35780,7 @@ declare
 					<References Name="[Transform].[ConnectionString]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="234" />
+			<AttachedAnnotation Disambiguator="242" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformDimActivity__ActivityID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35492,7 +35808,7 @@ declare
 					<References Name="[Transform].[DimActivity]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="236" />
+			<AttachedAnnotation Disambiguator="244" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformDimAttendanceType__AttendanceTypeID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35511,7 +35827,7 @@ declare
 					<References Name="[Transform].[DimAttendanceType]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="238" />
+			<AttachedAnnotation Disambiguator="246" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[pk_TransformDimCampus__CampusID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35539,7 +35855,7 @@ declare
 					<References Name="[Transform].[DimCampus]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="240" />
+			<AttachedAnnotation Disambiguator="248" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[pk_TransformDimFinancialCategory__FinancialCategoryID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35567,7 +35883,7 @@ declare
 					<References Name="[Transform].[DimFinancialCategory]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="242" />
+			<AttachedAnnotation Disambiguator="250" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[pk_TransformDimIndividualStatus__IndividualStatusID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35595,7 +35911,7 @@ declare
 					<References Name="[Transform].[DimIndividualStatus]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="244" />
+			<AttachedAnnotation Disambiguator="252" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[pk_TransformDimLifeEventType__CampusID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35623,7 +35939,7 @@ declare
 					<References Name="[Transform].[DimLifeEventType]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="246" />
+			<AttachedAnnotation Disambiguator="254" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[pk_TransformDimMinistry__MinistryID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35651,7 +35967,7 @@ declare
 					<References Name="[Transform].[DimMinistry]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="248" />
+			<AttachedAnnotation Disambiguator="256" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformDimRoster__RosterID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35679,7 +35995,7 @@ declare
 					<References Name="[Transform].[DimRoster]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="250" />
+			<AttachedAnnotation Disambiguator="258" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformDimSmallDetailGroup__SmallGroupDetailID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35707,7 +36023,7 @@ declare
 					<References Name="[Transform].[DimSmallGroupDetail]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="252" />
+			<AttachedAnnotation Disambiguator="260" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformFactAttendance__AttendanceID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35735,7 +36051,7 @@ declare
 					<References Name="[Transform].[FactAttendance]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="254" />
+			<AttachedAnnotation Disambiguator="262" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformFactBudgetExpense__BudgetExpenseID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35763,7 +36079,7 @@ declare
 					<References Name="[Transform].[FactBudgetExpense]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="256" />
+			<AttachedAnnotation Disambiguator="264" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformFactBudgetRevenue__BudgetRevenueID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35791,7 +36107,7 @@ declare
 					<References Name="[Transform].[FactBudgetRevenue]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="258" />
+			<AttachedAnnotation Disambiguator="266" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformFactEnrollment__EnrollmentID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35819,7 +36135,7 @@ declare
 					<References Name="[Transform].[FactEnrollment]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="262" />
+			<AttachedAnnotation Disambiguator="270" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformFactExpense__ExpenseID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35847,7 +36163,7 @@ declare
 					<References Name="[Transform].[FactExpense]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="264" />
+			<AttachedAnnotation Disambiguator="272" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformFactFinancialOther__FinancialOtherID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35875,7 +36191,7 @@ declare
 					<References Name="[Transform].[FactFinancialOther]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="266" />
+			<AttachedAnnotation Disambiguator="274" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformFactPaycor__PaycorID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35903,7 +36219,7 @@ declare
 					<References Name="[Transform].[FactPaycor]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="280" />
+			<AttachedAnnotation Disambiguator="288" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformFactRevenue__RevenueID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35931,7 +36247,7 @@ declare
 					<References Name="[Transform].[FactRevenue]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="282" />
+			<AttachedAnnotation Disambiguator="290" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformFirstTimeGiver__FirstTimeGiverID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35959,7 +36275,7 @@ declare
 					<References Name="[Transform].[FactFirstTimeGiver]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="268" />
+			<AttachedAnnotation Disambiguator="276" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformHBFMetric__HBFMetricID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -35987,7 +36303,7 @@ declare
 					<References Name="[Transform].[FactHBFMetric]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="270" />
+			<AttachedAnnotation Disambiguator="278" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformHCAMetric__HCAMetricID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -36015,7 +36331,7 @@ declare
 					<References Name="[Transform].[FactHCAMetric]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="272" />
+			<AttachedAnnotation Disambiguator="280" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformLifeEvent__LifeEventID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -36043,7 +36359,7 @@ declare
 					<References Name="[Transform].[FactLifeEvent]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="274" />
+			<AttachedAnnotation Disambiguator="282" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformMailchimpActivity__MailchimpActivityID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -36071,7 +36387,7 @@ declare
 					<References Name="[Transform].[FactMailchimpActivity]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="276" />
+			<AttachedAnnotation Disambiguator="284" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformMPXActivity__MPXActivityID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -36099,7 +36415,7 @@ declare
 					<References Name="[Transform].[FactMPXActivity]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="278" />
+			<AttachedAnnotation Disambiguator="286" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformSmallGroup__SmallGroupID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -36127,7 +36443,7 @@ declare
 					<References Name="[Transform].[FactSmallGroup]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="284" />
+			<AttachedAnnotation Disambiguator="292" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformSocialContact__SocialContactID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -36155,7 +36471,7 @@ declare
 					<References Name="[Transform].[FactSocialContact]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="286" />
+			<AttachedAnnotation Disambiguator="294" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformStewardshipBudget__StewardshipBudgetID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -36183,7 +36499,7 @@ declare
 					<References Name="[Transform].[FactStewardshipBudget]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="288" />
+			<AttachedAnnotation Disambiguator="296" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformStewardshipGiving__StewardshipGivingID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -36211,7 +36527,7 @@ declare
 					<References Name="[Transform].[FactStewardshipGiving]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="290" />
+			<AttachedAnnotation Disambiguator="298" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformTenant__TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -36230,7 +36546,7 @@ declare
 					<References Name="[Transform].[Tenant]" />
 				</Entry>
 			</Relationship>
-			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="296" />
+			<Annotation Type="SqlInlineConstraintAnnotation" Disambiguator="304" />
 		</Element>
 		<Element Type="SqlPrimaryKeyConstraint" Name="[Transform].[PK_TransformWebActivity__WebActivityID_TenantID]">
 			<Relationship Name="ColumnSpecifications">
@@ -36258,7 +36574,7 @@ declare
 					<References Name="[Transform].[FactWebActivity]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="292" />
+			<AttachedAnnotation Disambiguator="300" />
 		</Element>
 		<Element Type="SqlTable" Name="[Transform].[Tenant]">
 			<Property Name="IsAnsiNullsOn" Value="True" />
@@ -36416,9 +36732,9 @@ declare
 					<References Name="[Transform]" />
 				</Entry>
 			</Relationship>
-			<AttachedAnnotation Disambiguator="296" />
-			<AttachedAnnotation Disambiguator="294" />
-			<AttachedAnnotation Disambiguator="295" />
+			<AttachedAnnotation Disambiguator="304" />
+			<AttachedAnnotation Disambiguator="302" />
+			<AttachedAnnotation Disambiguator="303" />
 		</Element>
 	</Model>
 </DataSchemaModel>
