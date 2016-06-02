@@ -849,6 +849,7 @@ WHERE
 			(
 			DimFinancialCategory.EntityCode = 'HBC' 
 			AND DimFinancialCategory.FundCode IN ('053', '055', '058', '059', '061', '063', '064', '065', '067', '068', '069', '078', '098', '275', '315') 
+AND FactFinancialOther.DateID &gt;= 20150101
 			)
 			OR (
 			DimFinancialCategory.EntityCode = 'HBF' 
@@ -870,8 +871,7 @@ WHERE
 GROUP BY
 	  DimFinancialCategory.EntityCode
 	, DimFinancialCategory.FundCode
-	, DimFinancialCategory.FundName
-</CommandText>
+	, DimFinancialCategory.FundName</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -918,7 +918,7 @@ WITH NetAssetBalance AS (
 		AND FactFinancialOther.TenantID = DimFinancialCategory.TenantID
 	WHERE
 		FactFinancialOther.DateID &lt;= (SELECT MAX(DateID) FROM DW.DimDate WHERE CalendarYear = @CalendarYear AND CalendarMOnth = @CalendarMonth)
-		AND FactFinancialOther.GLType = 'NAE'
+		
 		AND (
 				(
 				DimFinancialCategory.EntityCode = 'HBC' 
