@@ -214,11 +214,13 @@ ORDER BY
       <Query>
         <DataSourceName>DW</DataSourceName>
         <QueryParameters>
-          <QueryParameter Name="@CalendarYear">
-            <Value>=Parameters!CalendarYear.Value</Value>
-          </QueryParameter>
           <QueryParameter Name="@CalendarMonth">
             <Value>=Parameters!CalendarMonth.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
+          <QueryParameter Name="@CalendarYear">
+            <Value>=Parameters!CalendarYear.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
           </QueryParameter>
         </QueryParameters>
         <CommandText>WITH FullExpense AS (
@@ -416,25 +418,25 @@ ORDER BY
           <DataField>FundName</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="GroupID">
-          <DataField>GroupID</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
         <Field Name="FundCode">
           <DataField>FundCode</DataField>
           <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="GroupID">
+          <DataField>GroupID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
         <Field Name="GroupName">
           <DataField>GroupName</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Amount">
-          <DataField>Amount</DataField>
-          <rd:TypeName>System.Decimal</rd:TypeName>
-        </Field>
         <Field Name="CalendarMonth">
           <DataField>CalendarMonth</DataField>
           <rd:TypeName>System.Byte</rd:TypeName>
+        </Field>
+        <Field Name="Amount">
+          <DataField>Amount</DataField>
+          <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
       </Fields>
     </DataSet>
@@ -841,6 +843,12 @@ SELECT  DISTINCT
 	  DimFinancialCategory.EntityCode
 	, DimFinancialCategory.FundCode
 	, DimFinancialCategory.FundName
+	, DimFinancialCategory.GLCode
+	, DimFinancialCategory.GLName
+	, DimFinancialCategory.GLType
+	, DimFinancialCategory.CampusCode
+	, DimFinancialCategory.DepartmentCode
+	, FactFinancialOther.dateid
 	, SUM(FactFinancialOther.Amount) AS Amount
 FROM dw.FactFinancialOther
 INNER JOIN dw.DimFinancialCategory
@@ -848,10 +856,9 @@ INNER JOIN dw.DimFinancialCategory
 	AND FactFinancialOther.TenantID = DimFinancialCategory.TenantID
 WHERE
 	FactFinancialOther.DateID &lt;= (SELECT MAX(DateID) FROM DW.DimDate WHERE CalendarYear = @CalendarYear AND CalendarMOnth = @CalendarMonth)
-	--AND FactFinancialOther.GLType = 'CSH'
 	AND (
 			(
-			DimFinancialCategory.EntityCode = 'HBC' 
+				DimFinancialCategory.EntityCode = 'HBC' 
 				--AND DimFinancialCategory.FundCode IN ('053', '055', '058', '059', '061', '063', '064', '065', '067', '068', '069', '078', '098', '275', '315') 
 				AND FactFinancialOther.DateID &gt;= 20150101
 				AND (
@@ -884,15 +891,45 @@ WHERE
 						(DimFinancialCategory.FundCode = '275' AND GLCode IN ('10016','10025','20010','20020'))
 						OR
 						(DimFinancialCategory.FundCode = '315' AND GLCode IN ('10016','10025','20025','20010'))  
+
 					)
 			)
 			OR (
-			DimFinancialCategory.EntityCode = 'HBF' 
-			AND DimFinancialCategory.FundCode IN ('036', '065', '067', '075', '088')
+				DimFinancialCategory.EntityCode = 'HBF' 
+				AND FactFinancialOther.DateID &gt;= 20150101
+				--AND DimFinancialCategory.FundCode IN ('036', '065', '067', '075', '088')
+				AND (
+						(DimFinancialCategory.FundCode = '036' AND GLCode IN ('10025','10041'))
+						OR
+						(DimFinancialCategory.FundCode = '065' AND GLCode IN ('10025','10041','13121','20010','20020'))
+						OR
+						(DimFinancialCategory.FundCode = '067' AND GLCode IN ('10025'))
+						OR
+						(DimFinancialCategory.FundCode = '075' AND GLCode IN ('10025','10041','13121','20010','20020'))
+						OR
+						(DimFinancialCategory.FundCode = '088' AND GLCode IN ('10025','10041'))
+					)
 			)
 			OR (
-			DimFinancialCategory.EntityCode = 'HCA' 
-			AND DimFinancialCategory.FundCode IN ('115', '155', '185', '225', '245', '285', '395', '415')
+				DimFinancialCategory.EntityCode = 'HCA' 
+				--AND DimFinancialCategory.FundCode IN ('115', '155', '185', '225', '245', '285', '395', '415')
+				AND (
+						(DimFinancialCategory.FundCode = '115' AND GLCode IN ('10016','10017','20010','20020','22025')  AND FactFinancialOther.DateID &gt;= 20140801)
+						OR
+						(DimFinancialCategory.FundCode = '155' AND GLCode IN ('10016','10017') AND FactFinancialOther.DateID &gt;= 20130801)
+						OR
+						(DimFinancialCategory.FundCode = '185' AND GLCode IN ('10016','10017') AND FactFinancialOther.DateID &gt;= 20140801)
+						OR
+						(DimFinancialCategory.FundCode = '225' AND GLCode IN ('10016','20020') AND FactFinancialOther.DateID &gt;= 20150801)
+						OR
+						(DimFinancialCategory.FundCode = '245' AND GLCode IN ('10016','10017') AND FactFinancialOther.DateID &gt;= 20150801)
+						OR
+						(DimFinancialCategory.FundCode = '285' AND GLCode IN ('10016','10017','20010','20020') AND FactFinancialOther.DateID &gt;= 20140801)
+						OR
+						(DimFinancialCategory.FundCode = '395' AND GLCode IN ('10020','23075') AND FactFinancialOther.DateID &gt;= 20140801)
+						OR
+						(DimFinancialCategory.FundCode = '415' AND GLCode IN ('10016','13077') AND FactFinancialOther.DateID &gt;= 20140801)
+				)
 			)	
 			OR (
 			DimFinancialCategory.EntityCode = 'WITW' 
@@ -900,36 +937,20 @@ WHERE
 			)	 
 	)
 	--testing:
-	--AND entitycode = 'hbc' and fundcode = '053'
-	--AND GLCode NOT IN (10015, 10016, 10025, 10034, 10035, 10041, 10042, 10045, 10060, 10061, 10063, 10067
-	--, 10069, 10072, 10075, 10076, 10077, 10091, 10093, 20010, 20016, 20018, 20020, 22025, 23018, 10017, 12017, 10050, 10052)
+	--AND entitycode = 'HCA' and fundcode = '115' AND GLCode = '22025'
 GROUP BY
 	  DimFinancialCategory.EntityCode
 	, DimFinancialCategory.FundCode
 	, DimFinancialCategory.FundName
+	, DimFinancialCategory.GLCode
+	, DimFinancialCategory.GLName
+	, DimFinancialCategory.GLType
+	, DimFinancialCategory.CampusCode
+	, DimFinancialCategory.DepartmentCode
+	, FactFinancialOther.dateid
 UNION
-
-	SELECT DISTINCT EntityCode, FundCode, FundName, 0 AS Amount
-	FROM DW. DimFinancialCategory
-	WHERE
-		(
-			DimFinancialCategory.EntityCode = 'HBC' 
-			AND
-			DimFinancialCategory.FundCode IN ('053', '055', '058', '059', '061', '063', '064', '065', '067', '068', '069', '078', '098', '275', '315') 
-		)
-		OR (
-			DimFinancialCategory.EntityCode = 'HBF' 
-			AND DimFinancialCategory.FundCode IN ('036', '065', '067', '075', '088')
-			)
-			OR (
-			DimFinancialCategory.EntityCode = 'HCA' 
-			AND DimFinancialCategory.FundCode IN ('115', '155', '185', '225', '245', '285', '395', '415')
-			)	
-			OR (
-			DimFinancialCategory.EntityCode = 'WITW' 
-			AND DimFinancialCategory.FundCode IN ('084', '088')
-			)	
-		ORDER BY FundCode</CommandText>
+SELECT 'HCA','245','Project-Ministry Expansion-EL','-1','placeholder','-1','-1','-1', '-1', 0
+ORDER BY FUNDCode, GLCode, DateID</CommandText>
       </Query>
       <Fields>
         <Field Name="EntityCode">
@@ -944,9 +965,33 @@ UNION
           <DataField>FundName</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="GLCode">
+          <DataField>GLCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
         <Field Name="Amount">
           <DataField>Amount</DataField>
           <rd:TypeName>System.Decimal</rd:TypeName>
+        </Field>
+        <Field Name="GLName">
+          <DataField>GLName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="GLType">
+          <DataField>GLType</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CampusCode">
+          <DataField>CampusCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="DepartmentCode">
+          <DataField>DepartmentCode</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="dateid">
+          <DataField>dateid</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
       </Fields>
     </DataSet>
@@ -954,11 +999,13 @@ UNION
       <Query>
         <DataSourceName>DW</DataSourceName>
         <QueryParameters>
-          <QueryParameter Name="@CalendarYear">
-            <Value>=Parameters!CalendarYear.Value</Value>
-          </QueryParameter>
           <QueryParameter Name="@CalendarMonth">
             <Value>=Parameters!CalendarMonth.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
+          <QueryParameter Name="@CalendarYear">
+            <Value>=Parameters!CalendarYear.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
           </QueryParameter>
         </QueryParameters>
         <CommandText>--Net Asset balance as of the end of @calendarMOnth, @CalendarYear
@@ -979,27 +1026,27 @@ WITH NetAssetBalance AS (
 		
 		AND (
 				(
-				DimFinancialCategory.EntityCode = 'HBC' 
-				AND DimFinancialCategory.FundCode IN ('053', '055', '058', '059', '061', '063', '064', '065', '067', '068', '069', '078', '098', '275', '315') 
+					DimFinancialCategory.EntityCode = 'HBC' 
+					AND DimFinancialCategory.FundCode IN ('053', '055', '058', '059', '061', '063', '064', '065', '067', '068', '069', '078', '098', '275', '315') 
 				)
 				OR (
-				DimFinancialCategory.EntityCode = 'HBF' 
-				AND DimFinancialCategory.FundCode IN ('036', '065', '067', '075', '088')
+					DimFinancialCategory.EntityCode = 'HBF' 
+					AND DimFinancialCategory.FundCode IN ('036', '065', '067', '075', '088')
 				)
 				OR (
-				DimFinancialCategory.EntityCode = 'HCA' 
-				AND DimFinancialCategory.FundCode IN ('115', '155', '185', '225', '245', '285', '395', '415')
+						DimFinancialCategory.EntityCode = 'HCA' 
+					AND (
+							DimFinancialCategory.FundCode IN ('115', '155', '185', '225', '245', '395', '415')
+							OR
+							(DimFinancialCategory.FundCode = '285' AND FactFinancialOther.DateID &gt; 20090128 AND GLCode NOT IN ('10015','10058','12013','13074','13077','13121','15126','15127','20012','22025','23075','29285'))
+						)
 				)	
 				OR (
-				DimFinancialCategory.EntityCode = 'WITW' 
-				AND DimFinancialCategory.FundCode IN ('084', '088')
+					DimFinancialCategory.EntityCode = 'WITW' 
+					AND DimFinancialCategory.FundCode IN ('084', '088')
 				)	 
 		)
-		--AND DimFinancialCategory.GLCode NOT IN (
-		--	29053, 29025, 29858, 29059, 29061, 29063, 29064, 29080, 29067, 29082, 29069, 29078, 29098, 29040, 29050 -- hbc
-		--	, 29020, 29040, 29067, 29045, 29088 --hbf
-		--	, 29040, 29155, 29185, 29225, 29285, 29395, 29415 -- hca
-		--	, 29019, 29018 )-- witw
+		--AND entitycode = 'HCA' and fundcode = '285' AND GLCode = '20115'
 	GROUP BY
 		  DimFinancialCategory.EntityCode
 		, DimFinancialCategory.FundCode
