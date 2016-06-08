@@ -12,8 +12,8 @@
   DTS:ObjectName="Extract_FellowshipOne_Attendance"
   DTS:PackageType="5"
   DTS:ProtectionLevel="2"
-  DTS:VersionBuild="126"
-  DTS:VersionGUID="{90A5918F-44AC-4E8C-8FC5-C3DBAE2615EE}">
+  DTS:VersionBuild="131"
+  DTS:VersionGUID="{2B9958BF-189F-4B49-B178-8A1FE556BE32}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -327,7 +327,7 @@
       DTS:Namespace="User"
       DTS:ObjectName="XPR_DestinationSchemaTable">
       <DTS:VariableValue
-        DTS:DataType="8">Extract.FellowshipOne_Attendance</DTS:VariableValue>
+        DTS:DataType="8">Extract.FellowshipOne_AssimilationAttendance</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -339,6 +339,17 @@
       DTS:ObjectName="XPR_ProcessingFileName">
       <DTS:VariableValue
         DTS:DataType="8">E:\ETLContainer\3\Processing\Attendance_20160504.xls</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{109663E3-6C38-4FC8-A0C7-2BF140F240B5}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[User::_InputFolderRoot] + &quot;\\&quot; + (DT_WSTR, 255) @[User::TenantID] + &quot;\\&quot; +  (@[User::_DestinationTableName]  == &quot;FellowshipOne_Attendance&quot; ? &quot;Input\\&quot; : &quot;Assimilation\\Input&quot;)"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="XPR_ProcessingFolder">
+      <DTS:VariableValue
+        DTS:DataType="8">E:\ETLContainer\3\Assimilation\Input</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -358,7 +369,7 @@
       DTS:ObjectName="_DestinationTableName"
       DTS:RaiseChangedEvent="True">
       <DTS:VariableValue
-        DTS:DataType="8">FellowshipOne_Attendance</DTS:VariableValue>
+        DTS:DataType="8">FellowshipOne_AssimilationAttendance</DTS:VariableValue>
     </DTS:Variable>
     <DTS:Variable
       DTS:CreationName=""
@@ -544,13 +555,13 @@
             DTS:DTSID="{9220338C-EFellowshipOne2-4E34-89F5-8B26AA737E58}"
             DTS:ObjectName="{9220338C-EFellowshipOne2-4E34-89F5-8B26AA737E58}">
             <DTS:PropertyExpression
-              DTS:Name="Directory">@[User::_InputFolderRoot] + "\\" +  (DT_WSTR, 20) @[User::TenantID] + "\\Input"</DTS:PropertyExpression>
+              DTS:Name="Directory">@[XPR_ProcessingFolder]</DTS:PropertyExpression>
             <DTS:PropertyExpression
               DTS:Name="FileSpec">@[User::_InputFilePattern]</DTS:PropertyExpression>
             <DTS:ObjectData>
               <ForEachFileEnumeratorProperties>
                 <FEFEProperty
-                  Folder="E:\ETLContainer\3\Input" />
+                  Folder="E:\ETLContainer\3\Assimilation\Input" />
                 <FEFEProperty
                   FileSpec="Attendance_*.xls" />
                 <FEFEProperty
@@ -625,10 +636,11 @@
                             </outputColumn>
                             <outputColumn
                               refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Derived Column.Outputs[Derived Column Output].Columns[ExecutionID]"
-                              dataType="wstr"
+                              codePage="1252"
+                              dataType="str"
                               errorOrTruncationOperation="Computation"
                               errorRowDisposition="FailComponent"
-                              length="38"
+                              length="50"
                               lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Derived Column.Outputs[Derived Column Output].Columns[ExecutionID]"
                               name="ExecutionID"
                               truncationRowDisposition="FailComponent">
@@ -721,6 +733,539 @@
                           refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\DEST Write to Destination.Outputs[Row Count Output 1]"
                           name="Row Count Output 1"
                           synchronousInputId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\DEST Write to Destination.Inputs[Row Count Input 1]">
+                          <externalMetadataColumns />
+                        </output>
+                      </outputs>
+                    </component>
+                    <component
+                      refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination"
+                      componentClassID="Microsoft.OLEDBDestination"
+                      contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+                      description="OLE DB Destination"
+                      name="OLE DB Destination"
+                      usesDispositions="true"
+                      version="4">
+                      <properties>
+                        <property
+                          dataType="System.Int32"
+                          description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                          name="CommandTimeout">0</property>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the name of the database object used to open a rowset."
+                          name="OpenRowset"></property>
+                        <property
+                          dataType="System.String"
+                          description="Specifies the variable that contains the name of the database object used to open a rowset."
+                          name="OpenRowsetVariable">User::XPR_DestinationSchemaTable</property>
+                        <property
+                          dataType="System.String"
+                          description="The SQL command to be executed."
+                          name="SqlCommand"
+                          UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                        <property
+                          dataType="System.Int32"
+                          description="Specifies the column code page to use when code page information is unavailable from the data source."
+                          name="DefaultCodePage">1252</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Forces the use of the DefaultCodePage property value when describing character data."
+                          name="AlwaysUseDefaultCodePage">false</property>
+                        <property
+                          dataType="System.Int32"
+                          description="Specifies the mode used to access the database."
+                          name="AccessMode"
+                          typeConverter="AccessMode">4</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                          name="FastLoadKeepIdentity">false</property>
+                        <property
+                          dataType="System.Boolean"
+                          description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                          name="FastLoadKeepNulls">false</property>
+                        <property
+                          dataType="System.String"
+                          description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                          name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                        <property
+                          dataType="System.Int32"
+                          description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                          name="FastLoadMaxInsertCommitSize">2147483647</property>
+                      </properties>
+                      <connections>
+                        <connection
+                          refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Connections[OleDbConnection]"
+                          connectionManagerID="{B6E37887-2F99-4FE4-A057-6AA974D16012}:external"
+                          connectionManagerRefId="Project.ConnectionManagers[OLEDB_Extract]"
+                          description="The OLE DB runtime connection used to access the database."
+                          name="OleDbConnection" />
+                      </connections>
+                      <inputs>
+                        <input
+                          refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                          errorOrTruncationOperation="Insert"
+                          errorRowDisposition="FailComponent"
+                          hasSideEffects="true"
+                          name="OLE DB Destination Input">
+                          <inputColumns>
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Instance]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Instance"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Instance]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Instance]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[TenantID]"
+                              cachedDataType="i4"
+                              cachedName="TenantID"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[TenantID]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Derived Column.Outputs[Derived Column Output].Columns[TenantID]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[ExecutionID]"
+                              cachedCodepage="1252"
+                              cachedDataType="str"
+                              cachedLength="50"
+                              cachedName="ExecutionID"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ExecutionID]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Derived Column.Outputs[Derived Column Output].Columns[ExecutionID]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[InsertedDateTime]"
+                              cachedDataType="dbTimeStamp"
+                              cachedName="InsertedDateTime"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[InsertedDateTime]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Derived Column.Outputs[Derived Column Output].Columns[InsertedDateTime]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column1]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column1"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[RowNumber]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column1]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column2]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column2"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Assigned]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column2]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column3]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column3"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ActivityType]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column3]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column4]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column4"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Ministry]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column4]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column5]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column5"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Activity]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column5]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column6]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column6"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[RosterFolder]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column6]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column7]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column7"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Roster]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column7]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column8]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column8"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[BreakoutGroup]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column8]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column9]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column9"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[VolStaffType]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column9]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column10]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column10"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[VolStaffJob]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column10]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column11]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column11"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[VolStaffSchedule]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column11]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column12]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column12"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[IndividualID]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column12]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column13]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column13"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Name]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column13]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column14]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column14"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[FirstName]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column14]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column15]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column15"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[LastName]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column15]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column16]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column16"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[DOB]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column16]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column17]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column17"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[MaritalStatus]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column17]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column18]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column18"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Gender]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column18]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column19]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column19"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[HouseholdPosition]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column19]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column20]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column20"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Status]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column20]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column21]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column21"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SubStatus]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column21]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column22]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column22"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[School]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column22]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column23]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column23"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[HouseholdID]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column23]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column24]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column24"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[HouseholdFullName]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column24]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column25]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column25"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Address]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column25]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column26]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column26"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[City]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column26]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column27]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column27"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[StateProvince]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column27]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column28]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column28"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[PostalCode]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column28]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column29]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column29"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CheckInTagCode]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column29]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column30]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column30"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CheckInvPager]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column30]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column31]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column31"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CheckInTime]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column31]" />
+                            <inputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Column32]"
+                              cachedDataType="wstr"
+                              cachedLength="255"
+                              cachedName="Column32"
+                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CheckInStation]"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column32]" />
+                          </inputColumns>
+                          <externalMetadataColumns
+                            isUsed="True">
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[RowNumber]"
+                              dataType="wstr"
+                              length="255"
+                              name="RowNumber" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Assigned]"
+                              dataType="wstr"
+                              length="255"
+                              name="Assigned" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ActivityType]"
+                              dataType="wstr"
+                              length="255"
+                              name="ActivityType" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Ministry]"
+                              dataType="wstr"
+                              length="255"
+                              name="Ministry" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Activity]"
+                              dataType="wstr"
+                              length="255"
+                              name="Activity" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[RosterFolder]"
+                              dataType="wstr"
+                              length="255"
+                              name="RosterFolder" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Roster]"
+                              dataType="wstr"
+                              length="255"
+                              name="Roster" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[BreakoutGroup]"
+                              dataType="wstr"
+                              length="255"
+                              name="BreakoutGroup" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[VolStaffType]"
+                              dataType="wstr"
+                              length="255"
+                              name="VolStaffType" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[VolStaffJob]"
+                              dataType="wstr"
+                              length="255"
+                              name="VolStaffJob" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[VolStaffSchedule]"
+                              dataType="wstr"
+                              length="255"
+                              name="VolStaffSchedule" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[IndividualID]"
+                              dataType="wstr"
+                              length="255"
+                              name="IndividualID" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Name]"
+                              dataType="wstr"
+                              length="255"
+                              name="Name" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[FirstName]"
+                              dataType="wstr"
+                              length="255"
+                              name="FirstName" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[LastName]"
+                              dataType="wstr"
+                              length="255"
+                              name="LastName" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[DOB]"
+                              dataType="wstr"
+                              length="255"
+                              name="DOB" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[MaritalStatus]"
+                              dataType="wstr"
+                              length="255"
+                              name="MaritalStatus" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Gender]"
+                              dataType="wstr"
+                              length="255"
+                              name="Gender" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[HouseholdPosition]"
+                              dataType="wstr"
+                              length="255"
+                              name="HouseholdPosition" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Status]"
+                              dataType="wstr"
+                              length="255"
+                              name="Status" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SubStatus]"
+                              dataType="wstr"
+                              length="255"
+                              name="SubStatus" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[School]"
+                              dataType="wstr"
+                              length="255"
+                              name="School" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[HouseholdID]"
+                              dataType="wstr"
+                              length="255"
+                              name="HouseholdID" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[HouseholdFullName]"
+                              dataType="wstr"
+                              length="255"
+                              name="HouseholdFullName" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Address]"
+                              dataType="wstr"
+                              length="255"
+                              name="Address" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[City]"
+                              dataType="wstr"
+                              length="255"
+                              name="City" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[StateProvince]"
+                              dataType="wstr"
+                              length="255"
+                              name="StateProvince" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[PostalCode]"
+                              dataType="wstr"
+                              length="255"
+                              name="PostalCode" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CheckInTagCode]"
+                              dataType="wstr"
+                              length="255"
+                              name="CheckInTagCode" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CheckInvPager]"
+                              dataType="wstr"
+                              length="255"
+                              name="CheckInvPager" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CheckInTime]"
+                              dataType="wstr"
+                              length="255"
+                              name="CheckInTime" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CheckInStation]"
+                              dataType="wstr"
+                              length="255"
+                              name="CheckInStation" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Instance]"
+                              dataType="wstr"
+                              length="255"
+                              name="Instance" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[TenantID]"
+                              dataType="i4"
+                              name="TenantID" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ExecutionID]"
+                              codePage="1252"
+                              dataType="str"
+                              length="50"
+                              name="ExecutionID" />
+                            <externalMetadataColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[InsertedDateTime]"
+                              dataType="dbTimeStamp"
+                              name="InsertedDateTime" />
+                          </externalMetadataColumns>
+                        </input>
+                      </inputs>
+                      <outputs>
+                        <output
+                          refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                          exclusionGroup="1"
+                          isErrorOut="true"
+                          name="OLE DB Destination Error Output"
+                          synchronousInputId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                          <outputColumns>
+                            <outputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                              dataType="i4"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                              name="ErrorCode"
+                              specialFlags="1" />
+                            <outputColumn
+                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                              dataType="i4"
+                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                              name="ErrorColumn"
+                              specialFlags="2" />
+                          </outputColumns>
                           <externalMetadataColumns />
                         </output>
                       </outputs>
@@ -9684,514 +10229,6 @@ AAAAAAAAAAAAAA==]]></arrayElement>
                         </output>
                       </outputs>
                     </component>
-                    <component
-                      refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination"
-                      componentClassID="Microsoft.ManagedComponentHost"
-                      contactInfo="Loads data into an ADO.NET-compliant database that uses a database table or view. Load data into a new or existing table. For example, use an ADO.NET provider for ODBC to load data into an ODBC destination.;Microsoft Corporation; Microsoft SQL Server; © Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2"
-                      description="Loads data into an ADO.NET-compliant database that uses a database table or view. Load data into a new or existing table. For example, use an ADO.NET provider for ODBC to load data into an ODBC destination."
-                      name="Write to Destination"
-                      usesDispositions="true"
-                      version="2">
-                      <properties>
-                        <property
-                          dataType="System.String"
-                          description="The Destination database table name."
-                          expressionType="Notify"
-                          name="TableOrViewName"
-                          UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">"Extract"."FellowshipOne_Attendance"</property>
-                        <property
-                          dataType="System.Int32"
-                          description="Specify the number of rows per batch. The default is 0 which uses the same size as SSIS internal buffer. "
-                          expressionType="Notify"
-                          name="BatchSize">0</property>
-                        <property
-                          dataType="System.Int32"
-                          description="The number of seconds before a command times out. A value of 0 indicates infinite time-out. "
-                          expressionType="Notify"
-                          name="CommandTimeout">30</property>
-                        <property
-                          dataType="System.Boolean"
-                          description="Specifies whether to use the SqlBulkCopy interface to improve the performance of bulk insert operations. Only certain providers support this interface."
-                          expressionType="Notify"
-                          name="UseBulkInsertWhenPossible">true</property>
-                        <property
-                          dataType="System.String"
-                          name="UserComponentTypeName">Microsoft.ADONETDestination</property>
-                      </properties>
-                      <connections>
-                        <connection
-                          refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Connections[IDbConnection]"
-                          connectionManagerID="{1CEF2530-4DD2-4BE8-84A3-D4DE641942A1}:external"
-                          connectionManagerRefId="Project.ConnectionManagers[ADO_DW]"
-                          description="Managed connection manager"
-                          name="IDbConnection" />
-                      </connections>
-                      <inputs>
-                        <input
-                          refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input]"
-                          errorRowDisposition="FailComponent"
-                          hasSideEffects="true"
-                          name="ADO NET Destination Input">
-                          <inputColumns>
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Instance]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Instance"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Instance]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Instance]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[TenantID]"
-                              cachedDataType="i4"
-                              cachedName="TenantID"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[TenantID]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Derived Column.Outputs[Derived Column Output].Columns[TenantID]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[ExecutionID]"
-                              cachedDataType="wstr"
-                              cachedLength="38"
-                              cachedName="ExecutionID"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[ExecutionID]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Derived Column.Outputs[Derived Column Output].Columns[ExecutionID]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[InsertedDateTime]"
-                              cachedDataType="dbTimeStamp"
-                              cachedName="InsertedDateTime"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[InsertedDateTime]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Derived Column.Outputs[Derived Column Output].Columns[InsertedDateTime]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column1]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column1"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[RowNumber]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column1]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column2]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column2"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Assigned]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column2]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column3]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column3"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[ActivityType]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column3]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column4]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column4"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Ministry]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column4]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column5]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column5"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Activity]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column5]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column6]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column6"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[RosterFolder]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column6]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column7]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column7"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Roster]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column7]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column8]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column8"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[BreakoutGroup]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column8]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column9]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column9"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[VolStaffType]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column9]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column10]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column10"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[VolStaffJob]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column10]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column11]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column11"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[VolStaffSchedule]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column11]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column12]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column12"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[IndividualID]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column12]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column13]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column13"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Name]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column13]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column14]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column14"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[FirstName]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column14]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column15]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column15"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[LastName]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column15]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column16]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column16"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[DOB]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column16]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column17]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column17"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[MaritalStatus]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column17]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column18]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column18"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Gender]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column18]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column19]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column19"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[HouseholdPosition]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column19]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column20]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column20"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Status]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column20]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column21]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column21"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[SubStatus]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column21]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column22]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column22"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[School]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column22]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column23]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column23"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[HouseholdID]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column23]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column24]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column24"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[HouseholdFullName]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column24]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column25]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column25"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Address]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column25]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column26]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column26"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[City]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column26]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column27]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column27"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[StateProvince]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column27]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column28]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column28"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[PostalCode]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column28]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column29]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column29"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[CheckInTagCode]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column29]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column30]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column30"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[CheckInvPager]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column30]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column31]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column31"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[CheckInTime]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column31]" />
-                            <inputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].Columns[Column32]"
-                              cachedDataType="wstr"
-                              cachedLength="255"
-                              cachedName="Column32"
-                              externalMetadataColumnId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[CheckInStation]"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS.Outputs[Output 0].Columns[Column32]" />
-                          </inputColumns>
-                          <externalMetadataColumns
-                            isUsed="True">
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[RowNumber]"
-                              dataType="wstr"
-                              length="255"
-                              name="RowNumber" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Assigned]"
-                              dataType="wstr"
-                              length="255"
-                              name="Assigned" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[ActivityType]"
-                              dataType="wstr"
-                              length="255"
-                              name="ActivityType" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Ministry]"
-                              dataType="wstr"
-                              length="255"
-                              name="Ministry" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Activity]"
-                              dataType="wstr"
-                              length="255"
-                              name="Activity" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[RosterFolder]"
-                              dataType="wstr"
-                              length="255"
-                              name="RosterFolder" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Roster]"
-                              dataType="wstr"
-                              length="255"
-                              name="Roster" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[BreakoutGroup]"
-                              dataType="wstr"
-                              length="255"
-                              name="BreakoutGroup" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[VolStaffType]"
-                              dataType="wstr"
-                              length="255"
-                              name="VolStaffType" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[VolStaffJob]"
-                              dataType="wstr"
-                              length="255"
-                              name="VolStaffJob" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[VolStaffSchedule]"
-                              dataType="wstr"
-                              length="255"
-                              name="VolStaffSchedule" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[IndividualID]"
-                              dataType="wstr"
-                              length="255"
-                              name="IndividualID" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Name]"
-                              dataType="wstr"
-                              length="255"
-                              name="Name" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[FirstName]"
-                              dataType="wstr"
-                              length="255"
-                              name="FirstName" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[LastName]"
-                              dataType="wstr"
-                              length="255"
-                              name="LastName" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[DOB]"
-                              dataType="wstr"
-                              length="255"
-                              name="DOB" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[MaritalStatus]"
-                              dataType="wstr"
-                              length="255"
-                              name="MaritalStatus" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Gender]"
-                              dataType="wstr"
-                              length="255"
-                              name="Gender" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[HouseholdPosition]"
-                              dataType="wstr"
-                              length="255"
-                              name="HouseholdPosition" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Status]"
-                              dataType="wstr"
-                              length="255"
-                              name="Status" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[SubStatus]"
-                              dataType="wstr"
-                              length="255"
-                              name="SubStatus" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[School]"
-                              dataType="wstr"
-                              length="255"
-                              name="School" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[HouseholdID]"
-                              dataType="wstr"
-                              length="255"
-                              name="HouseholdID" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[HouseholdFullName]"
-                              dataType="wstr"
-                              length="255"
-                              name="HouseholdFullName" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Address]"
-                              dataType="wstr"
-                              length="255"
-                              name="Address" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[City]"
-                              dataType="wstr"
-                              length="255"
-                              name="City" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[StateProvince]"
-                              dataType="wstr"
-                              length="255"
-                              name="StateProvince" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[PostalCode]"
-                              dataType="wstr"
-                              length="255"
-                              name="PostalCode" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[CheckInTagCode]"
-                              dataType="wstr"
-                              length="255"
-                              name="CheckInTagCode" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[CheckInvPager]"
-                              dataType="wstr"
-                              length="255"
-                              name="CheckInvPager" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[CheckInTime]"
-                              dataType="wstr"
-                              length="255"
-                              name="CheckInTime" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[CheckInStation]"
-                              dataType="wstr"
-                              length="255"
-                              name="CheckInStation" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[Instance]"
-                              dataType="wstr"
-                              length="255"
-                              name="Instance" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[TenantID]"
-                              dataType="i4"
-                              name="TenantID" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[ExecutionID]"
-                              dataType="wstr"
-                              length="50"
-                              name="ExecutionID" />
-                            <externalMetadataColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input].ExternalColumns[InsertedDateTime]"
-                              dataType="dbTimeStamp"
-                              name="InsertedDateTime" />
-                          </externalMetadataColumns>
-                        </input>
-                      </inputs>
-                      <outputs>
-                        <output
-                          refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Outputs[ADO NET Destination Error Output]"
-                          exclusionGroup="1"
-                          isErrorOut="true"
-                          name="ADO NET Destination Error Output"
-                          synchronousInputId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input]">
-                          <outputColumns>
-                            <outputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Outputs[ADO NET Destination Error Output].Columns[ErrorCode]"
-                              dataType="i4"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Outputs[ADO NET Destination Error Output].Columns[ErrorCode]"
-                              name="ErrorCode"
-                              specialFlags="1" />
-                            <outputColumn
-                              refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Outputs[ADO NET Destination Error Output].Columns[ErrorColumn]"
-                              dataType="i4"
-                              lineageId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Outputs[ADO NET Destination Error Output].Columns[ErrorColumn]"
-                              name="ErrorColumn"
-                              specialFlags="2" />
-                          </outputColumns>
-                          <externalMetadataColumns />
-                        </output>
-                      </outputs>
-                    </component>
                   </components>
                   <paths>
                     <path
@@ -10210,9 +10247,9 @@ AAAAAAAAAAAAAA==]]></arrayElement>
                       name="Row Count Output 1"
                       startId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SRC SC Extract Attendance XLS.Outputs[Row Count Output 1]" />
                     <path
-                      refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance.Paths[Row Count Output 2]"
-                      endId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination.Inputs[ADO NET Destination Input]"
-                      name="Row Count Output 2"
+                      refId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance.Paths[Row Count Output 11]"
+                      endId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                      name="Row Count Output 1"
                       startId="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\DEST Write to Destination.Outputs[Row Count Output 1]" />
                   </paths>
                 </pipeline>
@@ -10372,8 +10409,8 @@ AAAAAAAAAAAAAA==]]></arrayElement>
           <DTS:ForEachVariableMappings>
             <DTS:ForEachVariableMapping
               DTS:CreationName=""
-              DTS:DTSID="{EFBE37EB-F374-44E0-8749-3DABC025F5BA}"
-              DTS:ObjectName="{EFBE37EB-F374-44E0-8749-3DABC025F5BA}"
+              DTS:DTSID="{EC1AFDE1-C425-40E4-BD5B-F40AC6EA20F6}"
+              DTS:ObjectName="{EC1AFDE1-C425-40E4-BD5B-F40AC6EA20F6}"
               DTS:ValueIndex="0"
               DTS:VariableName="User::SourceFileName" />
           </DTS:ForEachVariableMappings>
@@ -10410,7 +10447,7 @@ WHERE
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{05BDE260-67C8-4729-B3E0-6933D6DE43A5}"
-          SQLTask:SqlStatementSource="&#xA;SELECT TenantID &#xA;FROM TenantEtlProcess tep&#xA;INNER JOIN ETLProcess ep&#xA;    ON tep.ETLProcessID = ep.ETLProcessID&#xA;WHERE&#xA;    ep.Name = 'FellowshipOne_Attendance';"
+          SQLTask:SqlStatementSource="&#xA;SELECT TenantID &#xA;FROM TenantEtlProcess tep&#xA;INNER JOIN ETLProcess ep&#xA;    ON tep.ETLProcessID = ep.ETLProcessID&#xA;WHERE&#xA;    ep.Name = 'FellowshipOne_AssimilationAttendance';"
           SQLTask:ResultType="ResultSetType_Rowset" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
           <SQLTask:ResultBinding
             SQLTask:ResultName="0"
@@ -10419,13 +10456,13 @@ WHERE
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
-      DTS:refId="Package\TRUNCATE ExtractFellowshipOne_Attendance"
+      DTS:refId="Package\TRUNCATE ExtractFellowshipOne_AssimilationAttendance"
       DTS:CreationName="Microsoft.ExecuteSQLTask"
       DTS:Description="Execute SQL Task"
       DTS:DTSID="{AE224B80-E2F9-4C5C-BC44-C862953B2F38}"
       DTS:ExecutableType="Microsoft.ExecuteSQLTask"
       DTS:LocaleID="-1"
-      DTS:ObjectName="TRUNCATE ExtractFellowshipOne_Attendance"
+      DTS:ObjectName="TRUNCATE ExtractFellowshipOne_AssimilationAttendance"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2014; © 2014 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
       DTS:ThreadHint="0">
       <DTS:Variables />
@@ -10436,7 +10473,7 @@ WHERE
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{B6E37887-2F99-4FE4-A057-6AA974D16012}"
-          SQLTask:SqlStatementSource="TRUNCATE TABLE Extract.FellowshipOne_Attendance" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="TRUNCATE TABLE Extract.FellowshipOne_AssimilationAttendance" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
   </DTS:Executables>
@@ -10453,7 +10490,7 @@ WHERE
       DTS:refId="Package.PrecedenceConstraints[Constraint 1]"
       DTS:CreationName=""
       DTS:DTSID="{97BD02B5-1F23-4C5F-9430-2A6269FellowshipOne42A1}"
-      DTS:From="Package\TRUNCATE ExtractFellowshipOne_Attendance"
+      DTS:From="Package\TRUNCATE ExtractFellowshipOne_AssimilationAttendance"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint 1"
       DTS:To="Package\Get Enabled Tenants" />
@@ -10499,6 +10536,15 @@ WHERE
               VSTAMajorVersion="3"
               VSTAMinorVersion="0"
               Language="CSharp">
+              <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -10618,35 +10664,6 @@ WHERE
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_25d5cab158d24cfabbadd2179d78179c.Properties.Settings.get_Default():st_25d5cab158d24cfabbadd2179d78179c.Properties.Sett" +
-    "ings")]
-
-namespace st_25d5cab158d24cfabbadd2179d78179c.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="st_25d5cab158d24cfabbadd2179d78179c.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -10890,6 +10907,35 @@ namespace st_25d5cab158d24cfabbadd2179d78179c
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_25d5cab158d24cfabbadd2179d78179c.Properties.Settings.get_Default():st_25d5cab158d24cfabbadd2179d78179c.Properties.Sett" +
+    "ings")]
+
+namespace st_25d5cab158d24cfabbadd2179d78179c.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\AssemblyInfo.cs"
                 Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -10919,15 +10965,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -11440,7 +11477,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_VariableValues">
           <DTS:VariableValue
-            DTS:DataType="8">User::_DestinationSchemaName,User::_DestinationTableName,User::_HeaderRowsToSkip,User::_InputFilePattern,User::_InputFolderRoot,User::EnabledTenants,User::InputFileName,User::SourceFileName,User::TenantID,User::XPR_CompleteFileName,User::XPR_DestinationSchemaTable,User::XPR_ProcessingFileName</DTS:VariableValue>
+            DTS:DataType="8">User::_DestinationSchemaName,User::_DestinationTableName,User::_HeaderRowsToSkip,User::_InputFilePattern,User::_InputFolderRoot,User::EnabledTenants,User::InputFileName,User::SourceFileName,User::TenantID,User::XPR_CompleteFileName,User::XPR_DestinationSchemaTable,User::XPR_ProcessingFileName,User::XPR_ProcessingFolder</DTS:VariableValue>
         </DTS:Variable>
       </DTS:Variables>
       <DTS:Executables>
@@ -11570,6 +11607,15 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -11688,35 +11734,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_dfb802031bc64eccb59ce49ef68b9899.Properties.Settings.get_Default():st_dfb802031bc64eccb59ce49ef68b9899.Properties.Sett" +
-    "ings")]
-
-namespace st_dfb802031bc64eccb59ce49ef68b9899.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -12142,6 +12159,35 @@ namespace st_dfb802031bc64eccb59ce49ef68b9899
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_dfb802031bc64eccb59ce49ef68b9899.Properties.Settings.get_Default():st_dfb802031bc64eccb59ce49ef68b9899.Properties.Sett" +
+    "ings")]
+
+namespace st_dfb802031bc64eccb59ce49ef68b9899.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\AssemblyInfo.cs"
                 Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -12171,15 +12217,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -12469,6 +12506,15 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
                 Name="st_416e62dc84bb4ceba3bdee508569e4f2.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -12687,35 +12733,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
   </resheader>
 </root>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_416e62dc84bb4ceba3bdee508569e4f2.Properties.Settings.get_Default():st_416e62dc84bb4ceba3bdee508569e4f2.Properties.Sett" +
-    "ings")]
-
-namespace st_416e62dc84bb4ceba3bdee508569e4f2.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
-              <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
 
@@ -12916,6 +12933,35 @@ string sSourceID = ReadVariable("System::SourceID").ToString().ToUpper();
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_416e62dc84bb4ceba3bdee508569e4f2.Properties.Settings.get_Default():st_416e62dc84bb4ceba3bdee508569e4f2.Properties.Sett" +
+    "ings")]
+
+namespace st_416e62dc84bb4ceba3bdee508569e4f2.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\AssemblyInfo.cs"
                 Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -12945,15 +12991,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -13181,14 +13218,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_0104711e4d1447c38207acddf2243835")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_0104711e4d1447c38207acddf2243835")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -13309,34 +13367,104 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
   </resheader>
 </root>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+                Name="st_0104711e4d1447c38207acddf2243835.csproj"
+                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2ccb3198-6f7b-4f66-a916-770e29a3a885}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>st_0104711e4d1447c38207acddf2243835</RootNamespace>
+    <AssemblyName>st_0104711e4d1447c38207acddf2243835</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_0104711e4d1447c38207acddf2243835.Properties.Settings.get_Default():st_0104711e4d1447c38207acddf2243835.Properties.Sett" +
-    "ings")]
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
 
-namespace st_0104711e4d1447c38207acddf2243835.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>.\bin\Release\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+         <Generator>ResXFileCodeGenerator</Generator>
+         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+             <AutoGen>True</AutoGen>
+         <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+         <Generator>SettingsSingleFileGenerator</Generator>
+         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+         <AutoGen>True</AutoGen>
+         <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptMain.cs">
+         <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <!-- Include the build rules for a C# project.-->
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
+        <ProjectProperties HostName="ScriptTask"
+                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
+                           ApplicationType="usd"
+                           Language="cs"
+                           TemplatesPath=""
+                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
+                           DebugInfoCommandLine=""
+                           DebugInfoWorkingDir=""
+                           IconImageList=""/>
+        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
+        </Host>
+        <ProjectClient>
+            <HostIdentifier>SSIS_ST120</HostIdentifier>
+        </ProjectClient>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -13481,134 +13609,43 @@ namespace st_0104711e4d1447c38207acddf2243835
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_0104711e4d1447c38207acddf2243835")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_0104711e4d1447c38207acddf2243835")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_0104711e4d1447c38207acddf2243835.Properties.Settings.get_Default():st_0104711e4d1447c38207acddf2243835.Properties.Sett" +
+    "ings")]
 
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+namespace st_0104711e4d1447c38207acddf2243835.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
-                Name="st_0104711e4d1447c38207acddf2243835.csproj"
-                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2ccb3198-6f7b-4f66-a916-770e29a3a885}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>st_0104711e4d1447c38207acddf2243835</RootNamespace>
-    <AssemblyName>st_0104711e4d1447c38207acddf2243835</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>.\bin\Debug\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>false</DebugSymbols>
-    <Optimize>true</Optimize>
-    <OutputPath>.\bin\Release\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AppDesigner Include="Properties\" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-         <Generator>ResXFileCodeGenerator</Generator>
-         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-             <AutoGen>True</AutoGen>
-         <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-         <Generator>SettingsSingleFileGenerator</Generator>
-         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-         <AutoGen>True</AutoGen>
-         <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="ScriptMain.cs">
-         <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <!-- Include the build rules for a C# project.-->
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-
-  <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
-        <ProjectProperties HostName="ScriptTask"
-                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
-                           ApplicationType="usd"
-                           Language="cs"
-                           TemplatesPath=""
-                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
-                           DebugInfoCommandLine=""
-                           DebugInfoWorkingDir=""
-                           IconImageList=""/>
-        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
-        </Host>
-        <ProjectClient>
-            <HostIdentifier>SSIS_ST120</HostIdentifier>
-        </ProjectClient>
-      </FlavorProperties>
-    </VisualStudio>
-  </ProjectExtensions>
-</Project>]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -13981,7 +14018,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_DfLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[H4sIAAAAAAAEAO2X3W/aMBDA/xUrz2m+ILAyQJoobJXohxqkTVqnyiRHYtWxWXwU2mn/+0wI1NCx8UIfquYpvi//fHe5yO0RVfdfpEKSgGKpOEGWw4mgOXSsaxrf0xRuB7IAGmekL+iYQzICQQVupBcU44yJlAwYh9uzAekvsKAx3g2AczlXGZteCbj7hAgioSIGq9se0kc5w3Mxkd3254JOs5WA9OiUxgwfO5bfsMgi50J1rJgXJZDSOmhdsLiQSk7QiX7yCIoHKJxzgZAWFJkUSwmLQTln5XG08kImwB0tZ5Szp9LoI1UK8jF/7BwarYSsiFq5UimHQ8BKN2d1uL5ImYB/b721zcbSyhCnLddVcQY5VU6+8Yxl7s6ZmCzcwPMa7oLmXGf3Up+4SmjEnjRoEDTtemCR8+RoRb2Nbnok6q3tyLOGfBtGFhnJ6RAm2LFCJ/SMx7d9r+mEFnH/wu03asfnPoC5pgntcC9l8/iUXwuGQFAS3dbIRNmcJmCgAet+bS9iWD864pn+wh4gIT3JZ7kJVw/swDvdhxZ4wfHR+tGI/CeF/ge75vsVZT9J15RH5HKuKWbq+42c66TNBJKrGU71lv4Pk8s/tf36Mn0mltOb6YHRba9GUatckQhpgT0pBMQoi471az1BWpczzn9bmjsx1J7d8KyV03LhlfrlWxiUu5mx9fxMcxCoNuJKoKvNdTydS2N4G95DPfMq063wyyy7+0I9q3Y335Lr5cuMGJIhHQNXa5F+N2Ddbee1qSF75S6oau/t1r7efC/9Gy/99uSspsBuHwSh/94Ib7wRXvwJgt0uqIW19y54/S5wjUuKXpnXF3d9ger+AWgNQX5LDQAA]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[H4sIAAAAAAAEAO1XXW/aMBT9K1aeaRInBAYDpBXoVol+qEHapHWqTHIJVh2bxaalnfbfZ0JCDYyuL6m2qXmKz732ObkfdtwZE3n7SUiFYpA04UeKpnDESQpd65JEtySB6xORAYlmaMjJhEE8Bk642qBnREUzyhN0QhlcD07QcKkyEqmbE2BM3MsZnV9wuPmgFPCY8AisXmdEHsRCnfKp6HU+ZmQ+WwOoT+Ykouqha+GGhZYp47JrRSzLBUltg/YZjTIhxVTZ4XcWQnYHmX3KFSQZUVTwFUIjkPYg/xxtPBMxMFvjlDD6mDu9J1JCOmEP3ZeulossFLVTKRMGLxGWT7PXHzfkCeXwPPUWzcbTmik1bzuOjGaQEmmnm5mRSJ17yqdLx3PdhrMkKdPRPddfXAQ0pI9aqOc1a3XPQqdxZUm9Dq/6KOyXfujJgr6MQguNxXwEU9W1AjtwjQfXsNu0Aws5v9GNG371ul+g2dcKa8FBlUG9cpUDXb53EKO+YIuUG9LqXs1zW4ekea5XvbRhOEafM6oAKYF02ynK8+YxVOJ3NR/jQuUwTkqVFeqyL4maya9X4l4HbcEVuliouabE30xduFXD9VX4TFl2f6G7sddZ93k7H6FQkUz1BecQKZF1rR9le7bPF4z9tLTu2DC7tYZrrSetBm5uX70FXs5mrq03pyQFruQGLgCdbabX07E0dkZj9khvKIXr1vKrKDuHlnoy7ZJv4Xq4HxEDGZEJMFlC+t0Q62xPLl0N7JWroMi9u5v7evMt9f956rd3zmIX2K0DL8BvhfD6hbB/lDZx5efVxWiIBscHDqrA1fzu33BM7Z1TfuBXUKO4oX9tGo1VwewVam4LWhVWqteyvXWpbhgmNDqGRwpZ6XopKFfY8M4BbwX4/hPg63+hEnAOc2LdG/tuz9CaE0rmPDA75Gus+Uf+Iqb/Qns6xtVMj8xLm1NeG3u/ALxmf5pBDgAA]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -14077,7 +14114,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_PkgLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[H4sIAAAAAAAEAO1c61LbSBZ+lV5v1e4ft6xudevCAFO6TlJFAhWzma1KUlRbbtuayJIjyQFmat5ln2WfbI+EbARY4ABmgHWqQkl9O5/6O30ugqPdw8FvMixy9FFmeZQme538W0xoZ3/3bxj7IpygJB1KNJBxeopOozhGYZoUIkrQLEtnMisimaNiIgo0TGFogcRoBOuhbJ4U0bScOBHfozRTMN7fPRLhVzGWaCjzaJzgcgBOxFTudeoeEHsgztN58TYZpfu7v2RiNrloQK6YiTAqzvc6RO+gs2mc5HudMM6qBXLokzvvojBL83RUKP1vcV9m32WmvE0KOc5EAY9WtkShzBWvEg+d7+DRYgXaIxFHv1eDfhJ5LqeD+Hxv3dUqkDWinWmej2O5DrBqmnLxcH4yjhJ5u+grYpYjO5OimO30enk4kVORK9PlzDCd9k6jZHTWo6qq987ENIbdfQ9PXG9oP/odgBLD7HKjg94OlyR8DtJMlsz7iRjEcngsE5EUy9Z3oggnUTJGQRTLz16A/LMiE2FxEsgYlCSfRLPDRJ7YRSGToUhC2UHH6exAjoq9jsa7lqrwDuqtgqIbXUbvD+Vd+l2CKOSm01ksi6ZcxrvEsFoFW+xRBB9lKShEDu0N0bQUXcn1h+OF3HtKUo4yGcqhhE110ySHbY+SIv90ef2lIZhQrcutTlOu4s5Bl/Z3L7R0p7pD/UJkBSyRwLFNs73OHwvl2nk/j+M/OwBs2OhWuxopN7KaVt6q1YjyirLO1bXhaI2nEiAum+sGN41jWA+OUeNc88vZB3Ac6qGNxctN7LUtdNl1XfSVdri9uR+NlgMBpi5fNMF1A2rv6uTF0Ebbk5CMyFWadaXUMWYofBNk0xaqFb5Rsuuz+tzpdi+cocxqzt9IMZTZGxmNJ6XZ0cCo5P7ZTCRDCQ92nM3BKh2JRMYXloeaOjwrjGrcmvq9LVFTLUiXqNUWPhCiplI48XQBsbrlfA2ITTAGGP2uZpEW+2vcNPy/yGKxHLpYL28aVWqVCxJr9YKU0xsLHn/413vXPvYX7moNb0Us2qWc3WK8f8ggA1zFANQ62cQ5VVefU7rZc0pfyDm9J31XTa1GzC619A2wR7WV7BG+Ufaq5V8Ce3YCmUUVddccHssz2KrjSZSjWZ1TzHNIRATKwyyaFagQ+VcUAY1g7FA6go5RLIp//P3M/mkEhhLl6TwLZReSluSfBaQ0s3MUFWiexBC/IRCBEgmGp8prqknNZUUlp1qg6qt+RKNq2hjMlsyyNIMxgxIphP9KCkZsoBBa5UeZHEcAK5PDUvppEqdiWK3w3/9AoG6gw9EI0grUP4dBU+RlEQT/O8gThUC1ykTfgdsqyk2TkoyLp8rSKSqTgRyygdPT02uZgEzwPO8t5PUghxtF2bTaUkXks7Ofo+Ee1QyNVYuVDiCDpRtHpYMC8CNlWrZCnS+sLrN0UKna7PKQ6ZQKhqkILcyk1LHgbIilJNQajSAlGenNAB08H6tDvFa2JZqWkXaRAmEXIT4KRckfpGQDIEuikltFqS6bjA1TmZfjRpkERZmhb/Mo/BqfI5mk8/FEqZ55Ks4H8sbMMJ3Hw1psvf7P998dXrt2qUpNhMTAo6E5wEwLOR5YlGI2MGXIDMphh65tjq5fOM9eIyeGu2a23KvB7O96Re5/B4RvwKnHMmvPt5XmsPzTYeKXuvtlrTTc3Gbh98vCGyCn62OsdmkdcCvioffifRf+XwmIWqj/3O+/7R/Ocn9yOPjtpG49qXxTQyOXC66Kvu4trR67kLpxecdwwu8Q1hI3rF69JZz4w6E6dx3uYNsNfMyITbEdmHDLSeCYKrUdj37+88sKCI8dady0TTeDDrU94rgyuxk4PEp0UB2InWWMgJx0ngwhtXHSswpXt0L5QYIjB6d4lOZRUb2wtJPzzkOCwB8jMzA9T2eOh13TUzFziYXNQDexoWrEsFXu0MDfkrl5Mm9zhNf830McIiAr/DMZzgu5nlvcvp1+ZX6xqQFX/YfjeVpgeCrTXMosxh34YalW4Oi2xy2fn5BHdWEPAEKfCMiVvpODdPxRgPYOYnmYlYbrL0FRd/WrqP6vQfDo0VO75MsYqjHmiWTX8dTdgtd0xE1Jbe6YUt22AsPCjhlwzDzmYdMKNGxqxAsg1dQMom/d8bOJrdahVOPMYa5BMLM8yIlVlQO5BsTMhuZ5EF95pq9tKX1ZlPqW7zKVYkJdOKXcD7BNSQDn1WaBQ1XbZHxL6YuiFFKgwDaJAcfSsIFSF2wuAUoDRzUCTXOYwdUtpS+KUsv2A1dTPRzYgQuUEhvI5QRbKtjjQHMc1zS2lL4oSuFwGjzwOOaOZmHm+jq2GXGx7QXAqEcMy9+GR6/obUUmf+hlxfYd/it7V3HJ/42EdNm1iXy0TW4jHV0OeRrJi2T0LrHrGttLOa1BbsA10/c5pmqZilLLwRYx4JYEKphfxzYCZ2trn4/7vJtR7pgUUhQfawTCIEaJhy1NU3HAHCdgKqGBTraMvhrvuXhZ+VHEc+lORDKWw/X8KNv60VflR1dqwnWPumrQBnzrGlhqX7dq5MO83krZbdbS55R6mq1iw7Uh12CqjU3TVzFnkFc6uu+6vre1lq/GWv4qsgRgbxON/0cDuSD/uk2s2zdgBldLvMwv6v4nkFlb29sFrmlgFxJacwrPcBlzTDCivo2Z45nYNLiDTe77uu5Sk6jbvzZ5PjnF3XT6JvdUF/uM8PJXWx62A9XAmqZbrkaY5+v2ls5n5iLL8/4mzYt23/joFZPbPzR64jJYSh9We7oGqZ/7H1zUdxfj0GUP+vdBv3HkucLVxr+ykMtor5nVNo97DcwaIOzyVpTG5lH+mkVFVRsAal1ESaWcTYAUADKitULkD6sBXgeiJ8tqjiFy03g+bYJjtEvV1vJkqt6sZnt0aH7/GN2xhcTsaoTUKB9e57oOLuVIFJP804f0FDZtnhTocF7M5tcrYInVJczaSPmrvrqsjm+2rI6/7LK6DWlBzb16nfsNVT5vqX8+1F+1nLUVuK4HlJOtIrxyRbjhCeh1LdC4ttWCp9eC2zKqRQK1v3sUzWQMT7ksXn0nCzEsa1ufLLdaHSgCtOXnjJbX5xCMAZT9svi2X9X7fozk6Vtvt1c17/Yux/Wa03utj/kD71sf9Ombh9R1PsffZT3B14LaKgZv+aoQLQNPzu+sy73/S/cHfoZoqwaPt2m3KYJ+4R5+VA169bfX9v8Hv8M0gYVNAAA=]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[H4sIAAAAAAAEAO1c627bOBZ+Fa4X2P1jyiIl6pJJMtB1WiBtgjrbWaAtAlqmbU1lyZXkXDqYd9lnmSebI1l2FMdK3DjOJFkHSGCRhzxH/M5V8dH+ce83EeQZ+ijSLEzig1b2LSK0dbj/D4w9HoxQnPQF6okouUAXYRShIIlzHsZokiYTkeahyFA+4jnqJ0CaIz4YwH4oncZ5OC4Wjvh5mKQSxof7Jzz4yocC9UUWDmNcEOCYj8VBq5oBtkf8Kpnmb+NBcrj/S8ono9kAcviEB2F+ddAiWgtdjqM4O2gFUVpukMGc2HsXBmmSJYNc6n6LuiI9F6n0Ns7FMOU53FoxEgYik9ySPUy+g1uLJBgPeRR+L4l+4lkmxr3o6mDd3UohK4n2xlk2jMQ6gpXLpNnNefEwjMXdrG+wWVC2Rnk+2et0smAkxjyTxouVQTLuXITx4LJDZVnrXPJxBKf7Hu64OtBu+B0EJbrRZnoLve0vQPjsJ6kokPdi3otE/1TEPM4Xo+94HozCeIj8MBKfXR95l3nKg/zMFxEoSTYKJ8exOLPyXMR9HgeihU6TyZEY5ActhbVNWWIt1Fkliqa3VfpwUd4l5wJYIScZTyKR1/mqrE10s5GxqT4K45M0AYXIYLzGmhasS75efzjn+0BO0kkqAtEXcKhOEmdw7GGcZ5+uP3+pMSZUaTOzVecrOVPQpcP9mZbulVeom/M0hy1iMNskPWj9PleuvffTKPqjBYL1a9NyWyHFQZbLiku5pCg+UbV1c28wreFYgIiL4WrASaII9gMzqtk1u159BOZQkdY2Lw6x07TR9dQy6xvjcHn7PGojRxxcXTYfgs81UTs3F89Ja2NPAjIiN2HWpELHVF1i2wCbNkAtsa2CXdnqc4fbmQVDkVaYvxG8L9I3IhyOCrejgFPJvMsJj/sCbuw0nYJXOuGxiGaehxoa3CtQ1S4N7cGeqK4WpE3k8gg3FFGRKVg8nYtYXjK2hoh1YXRw+m3FJA3+V7/t+H8R+Xw7NNsvqztVahYbEnP1hpTRWxuefvjPe8c69ebhailagdseh1EZ2VdGLmLSNmXqHY78h5wziC7pcAca2YbNyqttlm7XZukLsdkHwnfT7SrEaFNT2wJ6VFmJHmFbRa/c/iWgZ8VQZZR2WmF4Ki7hqE5HYYYmVX0xzaAo4SgL0nCSo5xnX1EIMILjQ8kAJgZg6P/656X10wCcJsqSaRqINhQw8b9zKG8mVyjM0TSOIJdDwALFApxQWeOUi+rb8pJPuUE5V/4JB+WyIbgwkaZJCjS9QlIoBaQEHFpPIrSslVIxDEGsVPQL7hdxlPB+ucOf/4OkXUfHgwGUGKh7BURj5KYhFAJ7yOU5R5XKhOeAbZnxJnEBxuyu0mSMisIgg8rg4uJiqSoQMZ5mnTm/DtRzgzAdl0cq8Wxy+XPYP6CKrqjlZkUwSGHrmqm0kA8xpSjRVqjzzAOrpgYqVblgFqgapVzFlAcmVoXQMGdqHwtBqDkYQHky0OrJOkRBtUr3GtEWaFxk3XkCgM3SfRTwAj8oz3oAlkAFtpJUfqwj1k9EVtANUgGKMkHfpmHwNbpCIk6mw5FU3vOYX/XErZVBMo36Fdtq/58ffjqsCvNCFgoPiI4HfaOHVSVguGdSitWeIQJVpwxOaOlwNG0WSDu1+hiu6pVzpxLmcN/NM+8cJHwDAT4SaXPtLdXJsk/HsVfo7pe1SnJjV5E/rCKvCTleX8bylNYRbkVu9J6/b8PvjeSoAfrP3e7b7vEk80bHvd/OqtGzMjbVNHKx4apM7MHcKto5163zOwULv4dZQ96weveGdOJ3m2rMsZmNLcf3sEosii3fgEtGfNuQqWW79PMfX1aI8NiZxm3fdDvpkJszjhur64nDo2QHpUHsLXIEZCfTuA9ljp1clnK1Syk/iCJjPxcnSRbm5cNLK75qbZIE/hiYvuG6mmq72DFcGasOMbHhawbWZYXolsxs6ns7MLcP5l2BcCn+bRIQQbLcuxTBNBfrhcXdk+pXFhfrGnAzftiuq/i6K6uKQ1VTZTb8MWXTtzXLZabHzsijhrANBKFPJMiNubOjZPiRg/b2InGcFo7rb5GimuqWWf3fI8GjZ0/NnK9zqBrNE/Gu8qn7Ga8ZiOucmsIxpZpl+rqJbcNnWHVVFxumr2BDIa4PpaaiE20Xjp9NbrUOpApTbdXRCVZNF2piWWYArg45s664LuRXruEpO0hfFqSe6TmqTDGhDlgp83xsUeKDvVqqb1PZMlS2g/RFQQolkG8ZRAez1C2A1AGfSwBS35Z1X1FsVWfyDtIXBalpeb6jyC72Ld8BSIkF4DKCTRn8sa/YtmPoO0hfFKRgnDrzXYaZrZhYdTwNWypxsOX6gKhLdNPbpUev6GlFKn7oYcXuGf4re1Zxjf+tgnQxtY16tIlvrRxdkDwN53kxeh/bdZ3tNZ/GJNdniuF5DFO5KEWpaWOT6HBJfBncr23pvr3ztc8nfN6PKLMNCiWKhxUCaZBKiYtNRZGxr9q2r8qE+hrZIfpqouf8YeVHHk2FM+LxUPTXi6PqLo6+qji6UhOWI+oqoi3E1jVkqWLdKsrNot5K3k3e0mOUuoolY92xoNZQZQsbhidjpkJdaWue43juzlu+Gm/5K09jEHtXaPw/Osg5+Ms+sRrfghtczfG6vqjmn4Bn5W3vZrimg51zaKwpXN1RVdsAJ+pZWLVdAxs6s7HBPE/THGoQefdtk+dTU9wPp2cwV3awpxJW/GvLxZYv61hRNNNRiOp6mrWD85mFyMLe3yRZ3hwbH717cvdFoyduiaV0sz7UNUD93P3goK4zp0PXM+i/R92ayTOJybWfoqlLb+6fVbYv9xoyKyBhmzVKyTZrtl1HSlcUrRJ95CTRdFz/ppFK21Ru7AOm8u22sUcXzeueol/TMC97F8Ds8jAujafea2a0FUIqKTdvKF1HLumE56Ps04fkAg5tGufoeJpPpsutpsRsE9XcSp+ptrpnjW23Z4297J61LWlBhb28jP2WWox30D8f6G96zsoLLOsBZWSnCE+vCCv6psnW49XxkYdcuyFQMRn4y88hTN2KUwpTtqCjRIPURtNWvv+inCtfuLG1DmtTojNVXXDohYEtvocinZOeJFBdkhp1OUDLtnDlekCBXGg+0GnmSWjRZr9Mdgfb+oI55/JglpjPxvR7+Vdn+hLM8646cl42/sAz1o1efbNJL+dz/P/VE7wtqKlL8I63CtEiH2bs3l7chz9o3/A1RDs1eLxDu0sRtFnu8qNqcBJORAQub9G+/07kvF909z/Z06VV8R0EW7zabfH5Cs4eBDksXj7QLd938DEUF2/d/U45vN+5puvUl3cabxLmqnfPHf4FSm/9voVOAAA=]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -14097,7 +14134,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_TaskList">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{A1E0E8F7-7725-4751-A924-6A9E0C081354}" typ="ForEachLoopContainer" p="" name="Foreach EnabledTenant" on="1"  tag1="User::TenantID"/&gt;&lt;tsk id="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" typ="ForEachLoopContainer" p="{A1E0E8F7-7725-4751-A924-6A9E0C081354}" name="Foreach Matching File" on="1"  tag1="User::SourceFileName"/&gt;&lt;pc id="{9192CC69-A82F-4156-AACB-9653D48F3B85}" op="2" and="True" val="0" task1="{1C6C1DDE-7CE6-4D82-B7B6-8FBDBBEA0B19}" task2="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" refId="Package\Foreach EnabledTenant\Foreach Matching File.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{C8EB2DA5-2AEC-4B11-AA43-C3C626B4DD44}" op="2" and="True" val="0" task1="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}" task2="{a88608dc-8cef-4df1-9e1c-860f48d939b5}" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" refId="Package\Foreach EnabledTenant\Foreach Matching File.PrecedenceConstraints[Constraint 1]"/&gt;&lt;tsk id="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}" typ="PipelineTask" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" name="DF Extract_FellowshipOne_Attendance" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column" pid="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnrowcount" name="DEST Write to Destination" pid="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}_17" /&gt;&lt;com id="21" dir="SRC"  typ="scriptcomponent" name="SC Extract Attendance XLS" pid="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}_21" /&gt;&lt;com id="288" dir="TRAN"  typ="trnrowcount" name="SRC SC Extract Attendance XLS" pid="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}_288" /&gt;&lt;com id="292" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="Write to Destination" pid="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}_292" /&gt;&lt;dp id="375" val="0"  ann="" c1="2" c2="17"/&gt;&lt;dp id="376" val="0"  ann="" c1="21" c2="288"/&gt;&lt;dp id="377" val="0"  ann="" c1="288" c2="2"/&gt;&lt;dp id="378" val="0"  ann="" c1="17" c2="292"/&gt;&lt;/tsk&gt;&lt;tsk id="{a88608dc-8cef-4df1-9e1c-860f48d939b5}" typ="FileSystemTask" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" name="Move To Complete" on="0" /&gt;&lt;tsk id="{1C6C1DDE-7CE6-4D82-B7B6-8FBDBBEA0B19}" typ="FileSystemTask" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" name="Move To Processing" on="1" /&gt;&lt;tsk id="{1019A645-E8B8-412B-8868-A498C8E49A85}" typ="SQLTask" p="" name="Get Enabled Tenants" on="1" /&gt;&lt;tsk id="{AE224B80-E2F9-4C5C-BC44-C862953B2F38}" typ="SQLTask" p="" name="TRUNCATE ExtractFellowshipOne_Attendance" on="1" /&gt;&lt;pc id="{B918AE47-1BB0-458E-A2FC-38FFA1B2321A}" op="2" and="True" val="0" task1="{1019A645-E8B8-412B-8868-A498C8E49A85}" task2="{A1E0E8F7-7725-4751-A924-6A9E0C081354}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{97BD02B5-1F23-4C5F-9430-2A6269FellowshipOne42A1}" op="2" and="True" val="0" task1="{AE224B80-E2F9-4C5C-BC44-C862953B2F38}" task2="{1019A645-E8B8-412B-8868-A498C8E49A85}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{A1E0E8F7-7725-4751-A924-6A9E0C081354}" typ="ForEachLoopContainer" p="" name="Foreach EnabledTenant" on="1"  tag1="User::TenantID"/&gt;&lt;tsk id="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" typ="ForEachLoopContainer" p="{A1E0E8F7-7725-4751-A924-6A9E0C081354}" name="Foreach Matching File" on="1"  tag1="User::SourceFileName"/&gt;&lt;pc id="{9192CC69-A82F-4156-AACB-9653D48F3B85}" op="2" and="True" val="0" task1="{1C6C1DDE-7CE6-4D82-B7B6-8FBDBBEA0B19}" task2="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" refId="Package\Foreach EnabledTenant\Foreach Matching File.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{C8EB2DA5-2AEC-4B11-AA43-C3C626B4DD44}" op="2" and="True" val="0" task1="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}" task2="{a88608dc-8cef-4df1-9e1c-860f48d939b5}" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" refId="Package\Foreach EnabledTenant\Foreach Matching File.PrecedenceConstraints[Constraint 1]"/&gt;&lt;tsk id="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}" typ="PipelineTask" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" name="DF Extract_FellowshipOne_Attendance" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column" pid="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnrowcount" name="DEST Write to Destination" pid="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}_17" /&gt;&lt;com id="21" dir="SRC"  typ="scriptcomponent" name="SC Extract Attendance XLS" pid="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}_21" /&gt;&lt;com id="288" dir="TRAN"  typ="trnrowcount" name="SRC SC Extract Attendance XLS" pid="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}_288" /&gt;&lt;com id="396" dir="DEST"  typ="desoledb" name="OLE DB Destination" pid="{BDD3F7D0-43C2-4945-B494-909FB6AD59E5}_396" /&gt;&lt;dp id="375" val="0"  ann="" c1="2" c2="17"/&gt;&lt;dp id="376" val="0"  ann="" c1="21" c2="288"/&gt;&lt;dp id="377" val="0"  ann="" c1="288" c2="2"/&gt;&lt;dp id="413" val="0"  ann="" c1="17" c2="396"/&gt;&lt;/tsk&gt;&lt;tsk id="{a88608dc-8cef-4df1-9e1c-860f48d939b5}" typ="FileSystemTask" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" name="Move To Complete" on="0" /&gt;&lt;tsk id="{1C6C1DDE-7CE6-4D82-B7B6-8FBDBBEA0B19}" typ="FileSystemTask" p="{8B0E6F90-CF39-45EB-9CE9-AB47C3ACCFellowshipOne9}" name="Move To Processing" on="1" /&gt;&lt;tsk id="{1019A645-E8B8-412B-8868-A498C8E49A85}" typ="SQLTask" p="" name="Get Enabled Tenants" on="1" /&gt;&lt;tsk id="{AE224B80-E2F9-4C5C-BC44-C862953B2F38}" typ="SQLTask" p="" name="TRUNCATE ExtractFellowshipOne_AssimilationAttendance" on="1" /&gt;&lt;pc id="{B918AE47-1BB0-458E-A2FC-38FFA1B2321A}" op="2" and="True" val="0" task1="{1019A645-E8B8-412B-8868-A498C8E49A85}" task2="{A1E0E8F7-7725-4751-A924-6A9E0C081354}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{97BD02B5-1F23-4C5F-9430-2A6269FellowshipOne42A1}" op="2" and="True" val="0" task1="{AE224B80-E2F9-4C5C-BC44-C862953B2F38}" task2="{1019A645-E8B8-412B-8868-A498C8E49A85}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -14107,7 +14144,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_VariableValues">
           <DTS:VariableValue
-            DTS:DataType="8">User::_DestinationSchemaName,User::_DestinationTableName,User::_HeaderRowsToSkip,User::_InputFilePattern,User::_InputFolderRoot,User::EnabledTenants,User::InputFileName,User::SourceFileName,User::TenantID,User::XPR_CompleteFileName,User::XPR_DestinationSchemaTable,User::XPR_ProcessingFileName</DTS:VariableValue>
+            DTS:DataType="8">User::_DestinationSchemaName,User::_DestinationTableName,User::_HeaderRowsToSkip,User::_InputFilePattern,User::_InputFolderRoot,User::EnabledTenants,User::InputFileName,User::SourceFileName,User::TenantID,User::XPR_CompleteFileName,User::XPR_DestinationSchemaTable,User::XPR_ProcessingFileName,User::XPR_ProcessingFolder</DTS:VariableValue>
         </DTS:Variable>
       </DTS:Variables>
       <DTS:Executables>
@@ -14129,6 +14166,15 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMajorVersion="3"
               VSTAMinorVersion="0"
               Language="CSharp">
+              <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -14248,35 +14294,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_eb739c55ee4547a2a7f4adaaf9a85f04.Properties.Settings.get_Default():st_eb739c55ee4547a2a7f4adaaf9a85f04.Properties.Sett" +
-    "ings")]
-
-namespace st_eb739c55ee4547a2a7f4adaaf9a85f04.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -14745,6 +14762,35 @@ namespace st_eb739c55ee4547a2a7f4adaaf9a85f04
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_eb739c55ee4547a2a7f4adaaf9a85f04.Properties.Settings.get_Default():st_eb739c55ee4547a2a7f4adaaf9a85f04.Properties.Sett" +
+    "ings")]
+
+namespace st_eb739c55ee4547a2a7f4adaaf9a85f04.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\AssemblyInfo.cs"
                 Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -14774,15 +14820,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -15312,6 +15349,15 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -15430,35 +15476,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_ca36699c54374d1f86cc14bb5db4aa74.Properties.Settings.get_Default():st_ca36699c54374d1f86cc14bb5db4aa74.Properties.Sett" +
-    "ings")]
-
-namespace st_ca36699c54374d1f86cc14bb5db4aa74.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -15634,6 +15651,153 @@ namespace st_ca36699c54374d1f86cc14bb5db4aa74
     }
 }]]></ProjectItem>
               <ProjectItem
+                Name="Properties\Resources.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_ca36699c54374d1f86cc14bb5db4aa74.Properties.Resources.get_ResourceManager():System.Resources.Resou" +
+    "rceManager")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_ca36699c54374d1f86cc14bb5db4aa74.Properties.Resources.get_Culture():System.Globalization.CultureIn" +
+    "fo")]
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_ca36699c54374d1f86cc14bb5db4aa74.Properties.Resources.set_Culture(System.Globalization.CultureInfo" +
+    "):Void")]
+
+namespace st_ca36699c54374d1f86cc14bb5db4aa74.Properties {
+    
+    
+    /// <summary>
+    ///   A strongly-typed resource class, for looking up localized strings, etc.
+    /// </summary>
+    // This class was auto-generated by the StronglyTypedResourceBuilder
+    // class via a tool like ResGen or Visual Studio.
+    // To add or remove a member, edit your .ResX file then rerun ResGen
+    // with the /str option, or rebuild your VS project.
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    internal class Resources {
+        
+        private static global::System.Resources.ResourceManager resourceMan;
+        
+        private static global::System.Globalization.CultureInfo resourceCulture;
+        
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        internal Resources() {
+        }
+        
+        /// <summary>
+        ///   Returns the cached ResourceManager instance used by this class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if ((resourceMan == null)) {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("st_ca36699c54374d1f86cc14bb5db4aa74.Properties.Resources", typeof(Resources).Assembly);
+                    resourceMan = temp;
+                }
+                return resourceMan;
+            }
+        }
+        
+        /// <summary>
+        ///   Overrides the current thread's CurrentUICulture property for all
+        ///   resource lookups using this strongly typed resource class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
+                return resourceCulture;
+            }
+            set {
+                resourceCulture = value;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
+                Name="Project"
+                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
+	<msb:PropertyGroup>
+		<msb:CodeName>st_ca36699c54374d1f86cc14bb5db4aa74</msb:CodeName>
+		<msb:DisplayName>st_ca36699c54374d1f86cc14bb5db4aa74</msb:DisplayName>
+		<msb:Language>msBuild</msb:Language>
+		<msb:ProjectId>{2176C745-A15C-4629-82A5-EAC2ABAD0CC8}</msb:ProjectId>
+	</msb:PropertyGroup>
+	<msb:ItemGroup>
+		<msb:Project Include="st_ca36699c54374d1f86cc14bb5db4aa74.csproj"/>
+		<msb:File Include="Properties\AssemblyInfo.cs"/>
+		<msb:File Include="Properties\Resources.resx"/>
+		<msb:File Include="Properties\Resources.Designer.cs"/>
+		<msb:File Include="Properties\Settings.Designer.cs"/>
+		<msb:File Include="Properties\Settings.settings"/>
+		<msb:File Include="ScriptMain.cs"/>
+	</msb:ItemGroup>
+</c:Project>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_ca36699c54374d1f86cc14bb5db4aa74.Properties.Settings.get_Default():st_ca36699c54374d1f86cc14bb5db4aa74.Properties.Sett" +
+    "ings")]
+
+namespace st_ca36699c54374d1f86cc14bb5db4aa74.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_ca36699c54374d1f86cc14bb5db4aa74")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_ca36699c54374d1f86cc14bb5db4aa74")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+              <ProjectItem
                 Name="st_ca36699c54374d1f86cc14bb5db4aa74.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -15732,133 +15896,6 @@ namespace st_ca36699c54374d1f86cc14bb5db4aa74
     </VisualStudio>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
-              <ProjectItem
-                Name="Project"
-                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
-<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
-	<msb:PropertyGroup>
-		<msb:CodeName>st_ca36699c54374d1f86cc14bb5db4aa74</msb:CodeName>
-		<msb:DisplayName>st_ca36699c54374d1f86cc14bb5db4aa74</msb:DisplayName>
-		<msb:Language>msBuild</msb:Language>
-		<msb:ProjectId>{2176C745-A15C-4629-82A5-EAC2ABAD0CC8}</msb:ProjectId>
-	</msb:PropertyGroup>
-	<msb:ItemGroup>
-		<msb:Project Include="st_ca36699c54374d1f86cc14bb5db4aa74.csproj"/>
-		<msb:File Include="Properties\AssemblyInfo.cs"/>
-		<msb:File Include="Properties\Resources.resx"/>
-		<msb:File Include="Properties\Resources.Designer.cs"/>
-		<msb:File Include="Properties\Settings.Designer.cs"/>
-		<msb:File Include="Properties\Settings.settings"/>
-		<msb:File Include="ScriptMain.cs"/>
-	</msb:ItemGroup>
-</c:Project>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_ca36699c54374d1f86cc14bb5db4aa74")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_ca36699c54374d1f86cc14bb5db4aa74")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Resources.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_ca36699c54374d1f86cc14bb5db4aa74.Properties.Resources.get_ResourceManager():System.Resources.Resou" +
-    "rceManager")]
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_ca36699c54374d1f86cc14bb5db4aa74.Properties.Resources.get_Culture():System.Globalization.CultureIn" +
-    "fo")]
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_ca36699c54374d1f86cc14bb5db4aa74.Properties.Resources.set_Culture(System.Globalization.CultureInfo" +
-    "):Void")]
-
-namespace st_ca36699c54374d1f86cc14bb5db4aa74.Properties {
-    
-    
-    /// <summary>
-    ///   A strongly-typed resource class, for looking up localized strings, etc.
-    /// </summary>
-    // This class was auto-generated by the StronglyTypedResourceBuilder
-    // class via a tool like ResGen or Visual Studio.
-    // To add or remove a member, edit your .ResX file then rerun ResGen
-    // with the /str option, or rebuild your VS project.
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-    internal class Resources {
-        
-        private static global::System.Resources.ResourceManager resourceMan;
-        
-        private static global::System.Globalization.CultureInfo resourceCulture;
-        
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
-        }
-        
-        /// <summary>
-        ///   Returns the cached ResourceManager instance used by this class.
-        /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if ((resourceMan == null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("st_ca36699c54374d1f86cc14bb5db4aa74.Properties.Resources", typeof(Resources).Assembly);
-                    resourceMan = temp;
-                }
-                return resourceMan;
-            }
-        }
-        
-        /// <summary>
-        ///   Overrides the current thread's CurrentUICulture property for all
-        ///   resource lookups using this strongly typed resource class.
-        /// </summary>
-        [global::System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
-            get {
-                return resourceCulture;
-            }
-            set {
-                resourceCulture = value;
-            }
-        }
-    }
-}]]></ProjectItem>
               <BinaryItem
                 Name="st_ca36699c54374d1f86cc14bb5db4aa74.dll">TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1v
@@ -16112,6 +16149,15 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -16330,35 +16376,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_829eab495ea54c3da12d5096b8997c99.Properties.Settings.get_Default():st_829eab495ea54c3da12d5096b8997c99.Properties.Sett" +
-    "ings")]
-
-namespace st_829eab495ea54c3da12d5096b8997c99.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
-              <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
 
@@ -16502,6 +16519,35 @@ namespace st_829eab495ea54c3da12d5096b8997c99
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_829eab495ea54c3da12d5096b8997c99.Properties.Settings.get_Default():st_829eab495ea54c3da12d5096b8997c99.Properties.Sett" +
+    "ings")]
+
+namespace st_829eab495ea54c3da12d5096b8997c99.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\AssemblyInfo.cs"
                 Encoding="UTF8"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -16531,15 +16577,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -16942,7 +16979,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           TopLeft="229.5,319" />
         <NodeLayout
           Size="252,42"
-          Id="Package\TRUNCATE ExtractFellowshipOne_Attendance"
+          Id="Package\TRUNCATE ExtractFellowshipOne_AssimilationAttendance"
           TopLeft="192,254" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
@@ -17391,10 +17428,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\SC Extract Attendance XLS"
           TopLeft="37.5,5.5" />
         <NodeLayout
-          Size="173,42"
-          Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination"
-          TopLeft="32.5,413.5" />
-        <NodeLayout
           Size="154,42"
           Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Derived Column"
           TopLeft="42,209.5" />
@@ -17468,20 +17501,36 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <NodeLayout
+          Size="171,42"
+          Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination"
+          TopLeft="50,420" />
         <EdgeLayout
-          Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance.Paths[Row Count Output 2]"
+          Id="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance.Paths[Row Count Output 11]"
           TopLeft="119,353.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,60"
+              EndConnector="16.5,66.5"
               Start="0,0"
-              End="0,52.5">
+              End="16.5,59">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,52.5" />
+                    End="0,29.25" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,29.25"
+                    Point2="0,33.25"
+                    Point3="4,33.25" />
+                  <mssgle:LineSegment
+                    End="12.5,33.25" />
+                  <mssgle:CubicBezierSegment
+                    Point1="12.5,33.25"
+                    Point2="16.5,33.25"
+                    Point3="16.5,37.25" />
+                  <mssgle:LineSegment
+                    End="16.5,59" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -17493,14 +17542,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
-  <PipelineComponentMetadata
-    design-time-name="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\Write to Destination">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
   <DtsEventHandler
     design-time-name="Package\Foreach EnabledTenant\Foreach Matching File\Move To Complete.EventHandlers[OnError]">
     <LayoutInfo>
@@ -17525,5 +17566,13 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
       </GraphLayout>
     </LayoutInfo>
   </DtsEventHandler>
+  <PipelineComponentMetadata
+    design-time-name="Package\Foreach EnabledTenant\Foreach Matching File\DF Extract_FellowshipOne_Attendance\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
 </Objects>]]></DTS:DesignTimeProperties>
 </DTS:Executable>
