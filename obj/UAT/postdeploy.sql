@@ -27,7 +27,6 @@ USING (VALUES
 	, (12, 'Mailchimp_Stats', NULL)
 	, (13, 'MPX_Activity', NULL)
 	, (14, 'FellowshipOne_ContactItem', NULL)
-	, (15, 'FellowshipOne_Attribute', NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
@@ -173,8 +172,7 @@ VALUES
   , (3, 12, 0)
   , (3, 13, 9)
   , (3, 13, 10)
-  , (3, 14, 0)
-  , (3, 15, 0);
+  , (3, 14, 0);
 
 --base tenants (including HBC
 MERGE INTO Tenant AS Target
@@ -800,3 +798,4 @@ SELECT 3, 29527341 AS AccountID, 'UA-29527341-2' AS WebProperty, 92087633 AS Pro
 EXEC [dbo].[usp_Initialize_CampusXLTReportGroupRows];
 
 GRANT EXEC ON Schema::DW TO HBCReportReader
+GO
