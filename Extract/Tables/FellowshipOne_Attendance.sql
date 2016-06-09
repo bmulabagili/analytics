@@ -35,7 +35,7 @@
   , TenantID            INT NOT NULL
   , [ExecutionID]       VARCHAR(50) NOT NULL
   , [InsertedDateTime]  DATETIME DEFAULT(GETDATE())
-                                 NULL
+  , [SourceFileName]    NVARCHAR(255) NULL
 );
 GO
 
