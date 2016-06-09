@@ -29,6 +29,7 @@ USING (VALUES
 	, (14, 'FellowshipOne_ContactItem', NULL)
 	, (15, 'FellowshipOne_Attribute', NULL)
 	, (16, 'FellowshipOne_AssimilationAttendance', NULL)
+	, (17, 'FellowshipOne_Assignment', NULL)
 )
 AS Source (ETLProcessID, Name, [Description])
     ON Target.ETLProcessID = Source.ETLProcessID 
@@ -176,7 +177,8 @@ VALUES
   , (3, 13, 10)
   , (3, 14, 0)
   , (3, 15, 0)
-  , (3, 16, 0);
+  , (3, 16, 0)
+  , (3, 17, 0);
 
 --base tenants (including HBC
 MERGE INTO Tenant AS Target
