@@ -1,6 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
   <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DW">
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString>Data Source=localhost;Initial Catalog=Analytics</ConnectString>
+        <IntegratedSecurity>true</IntegratedSecurity>
+      </ConnectionProperties>
+      <rd:SecurityType>Integrated</rd:SecurityType>
+      <rd:DataSourceID>1a9c52f1-ed5b-4665-9042-ac36cbf36c63</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="MinistryMonths">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <CommandText>	SELECT DISTINCT MinistryMonth, MinistryMonthLabel
+	FROM DW.DimDate
+ORDER BY MinistryMonth</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="MinistryMonth">
+          <DataField>MinistryMonth</DataField>
+          <rd:TypeName>System.Byte</rd:TypeName>
+        </Field>
+        <Field Name="MinistryMonthLabel">
+          <DataField>MinistryMonthLabel</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
   <ReportSections>
     <ReportSection>
       <Body>
@@ -9,6 +40,17 @@
             <ReportItems>
               <Subreport Name="CampusSummaryLead">
                 <ReportName>HBC-CampusSummaryLead</ReportName>
+                <Parameters>
+                  <Parameter Name="MinistryMonth">
+                    <Value>=Parameters!MinistryMonth.Value</Value>
+                  </Parameter>
+                  <Parameter Name="MinistryYear">
+                    <Value>=Parameters!MinistryYear.Value</Value>
+                  </Parameter>
+                  <Parameter Name="username">
+                    <Value>=User!UserID</Value>
+                  </Parameter>
+                </Parameters>
                 <Height>1.21875in</Height>
                 <Width>1.54167in</Width>
                 <Style>
@@ -24,7 +66,7 @@
             <PageName>Campus Summary - Lead</PageName>
             <KeepTogether>true</KeepTogether>
             <Height>1.30083in</Height>
-            <Width>1.63417in</Width>
+            <Width>2.02542in</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -32,6 +74,36 @@
             </Style>
           </Rectangle>
           <Rectangle Name="Rectangle2">
+            <ReportItems>
+              <Textbox Name="Textbox1">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Campus Summary - Lag</Value>
+                        <Style />
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox1</rd:DefaultName>
+                <Top>0.35765in</Top>
+                <Height>0.25in</Height>
+                <Width>1.97917in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+            </ReportItems>
             <PageBreak>
               <BreakLocation>End</BreakLocation>
             </PageBreak>
@@ -39,7 +111,7 @@
             <KeepTogether>true</KeepTogether>
             <Top>1.37027in</Top>
             <Height>1.30083in</Height>
-            <Width>1.63417in</Width>
+            <Width>2.02542in</Width>
             <ZIndex>1</ZIndex>
             <Style>
               <Border>
@@ -51,8 +123,17 @@
             <ReportItems>
               <Subreport Name="ResultsSummaryLead">
                 <ReportName>HBC-ResultsSummaryLead</ReportName>
-                <Top>0.04104in</Top>
-                <Left>0.04625in</Left>
+                <Parameters>
+                  <Parameter Name="MinistryMonth">
+                    <Value>=Parameters!MinistryMonth.Value</Value>
+                  </Parameter>
+                  <Parameter Name="MinistryYear">
+                    <Value>=Parameters!MinistryYear.Value</Value>
+                  </Parameter>
+                  <Parameter Name="username">
+                    <Value>=User!UserID</Value>
+                  </Parameter>
+                </Parameters>
                 <Height>1.21875in</Height>
                 <Width>1.54167in</Width>
                 <Style>
@@ -68,9 +149,8 @@
             <PageName>Results Summary - Lead</PageName>
             <KeepTogether>true</KeepTogether>
             <Top>2.74055in</Top>
-            <Left>0in</Left>
             <Height>1.30083in</Height>
-            <Width>1.63417in</Width>
+            <Width>2.02542in</Width>
             <ZIndex>2</ZIndex>
             <Style>
               <Border>
@@ -79,15 +159,44 @@
             </Style>
           </Rectangle>
           <Rectangle Name="Rectangle4">
+            <ReportItems>
+              <Textbox Name="Textbox20">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Results Summary Lag</Value>
+                        <Style />
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox20</rd:DefaultName>
+                <Top>0.57543in</Top>
+                <Height>0.25in</Height>
+                <Width>1.97917in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+            </ReportItems>
             <PageBreak>
               <BreakLocation>End</BreakLocation>
             </PageBreak>
             <PageName>Results Summary - Lag</PageName>
             <KeepTogether>true</KeepTogether>
             <Top>4.11082in</Top>
-            <Left>0in</Left>
             <Height>1.30083in</Height>
-            <Width>1.63417in</Width>
+            <Width>2.02542in</Width>
             <ZIndex>3</ZIndex>
             <Style>
               <Border>
@@ -95,8 +204,667 @@
               </Border>
             </Style>
           </Rectangle>
+          <Rectangle Name="Rectangle5">
+            <ReportItems>
+              <Subreport Name="ResultsSummaryLead2">
+                <ReportName>HBC-ResultsSummaryLead</ReportName>
+                <Parameters>
+                  <Parameter Name="MinistryMonth">
+                    <Value>=Parameters!MinistryMonth.Value</Value>
+                  </Parameter>
+                  <Parameter Name="MinistryYear">
+                    <Value>=Parameters!MinistryYear.Value</Value>
+                  </Parameter>
+                  <Parameter Name="username">
+                    <Value>=User!UserID</Value>
+                  </Parameter>
+                  <Parameter Name="Campus">
+                    <Value>RM</Value>
+                  </Parameter>
+                </Parameters>
+                <Height>1.21875in</Height>
+                <Width>1.54167in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Subreport>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>RM Lead</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>5.48109in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>4</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle6">
+            <ReportItems>
+              <Textbox Name="Textbox4">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>RM Lag</Value>
+                        <Style />
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox2</rd:DefaultName>
+                <Top>0.53376in</Top>
+                <Height>0.25in</Height>
+                <Width>1.97917in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>RM Lag</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>6.85137in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>5</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle7">
+            <ReportItems>
+              <Subreport Name="ResultsSummaryLead3">
+                <ReportName>HBC-ResultsSummaryLead</ReportName>
+                <Parameters>
+                  <Parameter Name="MinistryMonth">
+                    <Value>=Parameters!MinistryMonth.Value</Value>
+                  </Parameter>
+                  <Parameter Name="MinistryYear">
+                    <Value>=Parameters!MinistryYear.Value</Value>
+                  </Parameter>
+                  <Parameter Name="username">
+                    <Value>=User!UserID</Value>
+                  </Parameter>
+                  <Parameter Name="Campus">
+                    <Value>EL</Value>
+                  </Parameter>
+                </Parameters>
+                <Height>1.21875in</Height>
+                <Width>1.54167in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Subreport>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>EL Lead</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>8.22164in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>6</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle8">
+            <ReportItems>
+              <Textbox Name="Textbox6">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>EL Lag</Value>
+                        <Style />
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox2</rd:DefaultName>
+                <Top>0.53376in</Top>
+                <Height>0.25in</Height>
+                <Width>1.97917in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>EL Lag</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>9.59191in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>7</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle9">
+            <ReportItems>
+              <Subreport Name="ResultsSummaryLead4">
+                <ReportName>HBC-ResultsSummaryLead</ReportName>
+                <Parameters>
+                  <Parameter Name="MinistryMonth">
+                    <Value>=Parameters!MinistryMonth.Value</Value>
+                  </Parameter>
+                  <Parameter Name="MinistryYear">
+                    <Value>=Parameters!MinistryYear.Value</Value>
+                  </Parameter>
+                  <Parameter Name="username">
+                    <Value>=User!UserID</Value>
+                  </Parameter>
+                  <Parameter Name="Campus">
+                    <Value>NI</Value>
+                  </Parameter>
+                </Parameters>
+                <Height>1.21875in</Height>
+                <Width>1.54167in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Subreport>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>NI Lead</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>10.96219in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>8</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle10">
+            <ReportItems>
+              <Textbox Name="Textbox8">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>NI Lag</Value>
+                        <Style />
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox2</rd:DefaultName>
+                <Top>0.53376in</Top>
+                <Height>0.25in</Height>
+                <Width>1.97917in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>NI Lag</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>12.33247in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>9</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle11">
+            <ReportItems>
+              <Subreport Name="ResultsSummaryLead5">
+                <ReportName>HBC-ResultsSummaryLead</ReportName>
+                <Parameters>
+                  <Parameter Name="MinistryMonth">
+                    <Value>=Parameters!MinistryMonth.Value</Value>
+                  </Parameter>
+                  <Parameter Name="MinistryYear">
+                    <Value>=Parameters!MinistryYear.Value</Value>
+                  </Parameter>
+                  <Parameter Name="username">
+                    <Value>=User!UserID</Value>
+                  </Parameter>
+                  <Parameter Name="Campus">
+                    <Value>CL</Value>
+                  </Parameter>
+                </Parameters>
+                <Height>1.21875in</Height>
+                <Width>1.54167in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Subreport>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>CL Lead</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>13.70274in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>10</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle12">
+            <ReportItems>
+              <Textbox Name="Textbox10">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>CL Lag</Value>
+                        <Style />
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox2</rd:DefaultName>
+                <Top>0.53376in</Top>
+                <Height>0.25in</Height>
+                <Width>1.97917in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>CL Lag</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>15.07302in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>11</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle13">
+            <ReportItems>
+              <Subreport Name="ResultsSummaryLead6">
+                <ReportName>HBC-ResultsSummaryLead</ReportName>
+                <Parameters>
+                  <Parameter Name="MinistryMonth">
+                    <Value>=Parameters!MinistryMonth.Value</Value>
+                  </Parameter>
+                  <Parameter Name="MinistryYear">
+                    <Value>=Parameters!MinistryYear.Value</Value>
+                  </Parameter>
+                  <Parameter Name="username">
+                    <Value>=User!UserID</Value>
+                  </Parameter>
+                  <Parameter Name="Campus">
+                    <Value>CC</Value>
+                  </Parameter>
+                </Parameters>
+                <Height>1.21875in</Height>
+                <Width>1.54167in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Subreport>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>CC Lead</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>16.44329in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>12</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle14">
+            <ReportItems>
+              <Textbox Name="Textbox12">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>CC Lag</Value>
+                        <Style />
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox2</rd:DefaultName>
+                <Top>0.53376in</Top>
+                <Height>0.25in</Height>
+                <Width>1.97917in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>CC Lag</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>17.81356in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>13</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle15">
+            <ReportItems>
+              <Subreport Name="ResultsSummaryLead7">
+                <ReportName>HBC-ResultsSummaryLead</ReportName>
+                <Parameters>
+                  <Parameter Name="MinistryMonth">
+                    <Value>=Parameters!MinistryMonth.Value</Value>
+                  </Parameter>
+                  <Parameter Name="MinistryYear">
+                    <Value>=Parameters!MinistryYear.Value</Value>
+                  </Parameter>
+                  <Parameter Name="username">
+                    <Value>=User!UserID</Value>
+                  </Parameter>
+                  <Parameter Name="Campus">
+                    <Value>AU</Value>
+                  </Parameter>
+                </Parameters>
+                <Height>1.21875in</Height>
+                <Width>1.54167in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Subreport>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>AU Lead</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>19.18384in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>14</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle16">
+            <ReportItems>
+              <Textbox Name="Textbox14">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>AU Lag</Value>
+                        <Style />
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox2</rd:DefaultName>
+                <Top>0.53376in</Top>
+                <Height>0.25in</Height>
+                <Width>1.97917in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>AU Lag</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>20.55411in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>15</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle17">
+            <ReportItems>
+              <Subreport Name="ResultsSummaryLead8">
+                <ReportName>HBC-ResultsSummaryLead</ReportName>
+                <Parameters>
+                  <Parameter Name="MinistryMonth">
+                    <Value>=Parameters!MinistryMonth.Value</Value>
+                  </Parameter>
+                  <Parameter Name="MinistryYear">
+                    <Value>=Parameters!MinistryYear.Value</Value>
+                  </Parameter>
+                  <Parameter Name="username">
+                    <Value>=User!UserID</Value>
+                  </Parameter>
+                  <Parameter Name="Campus">
+                    <Value>DR</Value>
+                  </Parameter>
+                </Parameters>
+                <Height>1.21875in</Height>
+                <Width>1.54167in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Subreport>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>DR Lead</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>21.92438in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>16</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle18">
+            <ReportItems>
+              <Textbox Name="Textbox16">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>DR Lag</Value>
+                        <Style />
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox2</rd:DefaultName>
+                <Top>0.53376in</Top>
+                <Height>0.25in</Height>
+                <Width>1.97917in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <PageName>DR Lag</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>23.29465in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>17</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle19">
+            <ReportItems>
+              <Textbox Name="Textbox17">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Camp-Other Lag</Value>
+                        <Style />
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox2</rd:DefaultName>
+                <Top>0.53376in</Top>
+                <Height>0.25in</Height>
+                <Width>1.97917in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+            </ReportItems>
+            <PageName>Camp-Other Lag</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>24.66493in</Top>
+            <Height>1.30083in</Height>
+            <Width>2.02542in</Width>
+            <ZIndex>18</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
         </ReportItems>
-        <Height>6.73457in</Height>
+        <Height>26.83506in</Height>
         <Style />
       </Body>
       <Width>6.5in</Width>
@@ -109,6 +877,53 @@
       </Page>
     </ReportSection>
   </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="MinistryMonth">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>= IIF(DatePart(DateInterval.Month, DateAdd(DateInterval.Month, -1, Now())) &lt;= 7, DatePart(DateInterval.Month, DateAdd(DateInterval.Month, 4, Now())), DatePart(DateInterval.Month, DateAdd(DateInterval.Month, -8, Now())))</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>MinistryMonth</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>MinistryMonths</DataSetName>
+          <ValueField>MinistryMonth</ValueField>
+          <LabelField>MinistryMonthLabel</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="MinistryYear">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=DatePart(DateInterval.Year, DateAdd(DateInterval.Month, -1, Now()))</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>MinistryYear</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="TenantID">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>3</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>TenantID</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="username">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=User!UserID</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>username</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+  </ReportParameters>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
   <rd:ReportID>1a0bf112-5cf0-4b2a-a4ab-2a6567dd88aa</rd:ReportID>
 </Report>

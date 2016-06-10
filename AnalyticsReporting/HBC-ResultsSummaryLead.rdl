@@ -230,7 +230,7 @@
                               <Paragraph>
                                 <TextRuns>
                                   <TextRun>
-                                    <Value>=Left(MonthName(IIF(Fields!MinistryMonth.Value + 7 &lt;= 12, Fields!MinistryMonth.Value + 7, Fields!MinistryMonth.Value - 5)), 3)</Value>
+                                    <Value>=Fields!MonthLabel.Value</Value>
                                     <Style>
                                       <FontFamily>Calibri</FontFamily>
                                       <FontSize>12pt</FontSize>
@@ -11825,7 +11825,6 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
@@ -12655,7 +12654,6 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
@@ -13423,7 +13421,6 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
@@ -14253,8 +14250,12 @@ ORDER BY MinistryMonth</CommandText>
           <QueryParameter Name="@MinistryMonth">
             <Value>=Parameters!MinistryMonth.Value</Value>
           </QueryParameter>
+          <QueryParameter Name="@Campus">
+            <Value>=Join(Parameters!Campus.Value, ",")</Value>
+          </QueryParameter>
         </QueryParameters>
-        <CommandText>WITH ReportPeriod AS (
+        <CommandText>
+WITH ReportPeriod AS (
 	SELECT 
 		  DimDate.DateID
 		, DimDate.MinistryMonth
@@ -14293,7 +14294,8 @@ ORDER BY MinistryMonth</CommandText>
 	INNER JOIN DW.DimLifeEventType
 		ON FactLifeEvent.LifeEventTypeID = DimLifeEventType.LifeEventTypeID
 	WHERE
-		DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		--DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 		AND CASE WHEN DimLifeEventType.Name = 'FTV' AND (DimMinistry.Name LIKE '%Chuchwide Services' OR DimMinistry.Name LIKE '%Churchwide Services')
 			THEN 
 				'FTV Adults'
@@ -14322,27 +14324,27 @@ ORDER BY MinistryMonth</CommandText>
 	UNION
 	SELECT MinistryYear, MinistryMonth, MonthLabel, 'FTV Adults' AS SectionName, DimCampus.Code, 0 AS LifeEventCount
 	FROM ReportPeriod, DW.DimCampus
-	WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+	WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 	UNION
 	SELECT MinistryYear, MinistryMonth, MonthLabel, 'FTV Children' AS SectionName, DimCampus.Code, 0 AS LifeEventCount
 	FROM ReportPeriod, DW.DimCampus
-	WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+	WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 	UNION
 	SELECT MinistryYear, MinistryMonth, MonthLabel, 'Step 1: Meet' AS SectionName, DimCampus.Code, 0 AS LifeEventCount
 	FROM ReportPeriod, DW.DimCampus
-	WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+	WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 	UNION
 	SELECT MinistryYear, MinistryMonth, MonthLabel, 'Step 2: Connect' AS SectionName, DimCampus.Code, 0 AS LifeEventCount
 	FROM ReportPeriod, DW.DimCampus
-	WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+	WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 	UNION
 	SELECT MinistryYear, MinistryMonth, MonthLabel, 'Baptized' AS SectionName, DimCampus.Code, 0 AS LifeEventCount
 	FROM ReportPeriod, DW.DimCampus
-	WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+	WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 	UNION
 	SELECT MinistryYear, MinistryMonth, MonthLabel, 'Membership Confirmation Sent' AS SectionName, DimCampus.Code, 0 AS LifeEventCount
 	FROM ReportPeriod, DW.DimCampus
-	WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+	WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 ) 
 SELECT 
 	  MinistryYear
@@ -14425,6 +14427,9 @@ ORDER BY
           <QueryParameter Name="@MinistryMonth">
             <Value>=Parameters!MinistryMonth.Value</Value>
           </QueryParameter>
+          <QueryParameter Name="@Campus">
+            <Value>=Join(Parameters!Campus.Value, ",")</Value>
+          </QueryParameter>
         </QueryParameters>
         <CommandText>WITH ReportPeriod AS (
 	SELECT 
@@ -14457,7 +14462,7 @@ ORDER BY
 	INNER JOIN DW.DimCampus
 		ON FactFirstTimeGiver.CampusID = DimCampus.CampusID
 	WHERE
-		DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 	GROUP BY
 		ReportPeriod.MinistryYear
 		, ReportPeriod.MinistryMonth
@@ -14473,7 +14478,7 @@ ORDER BY
 		, 0 AS FirstTimeGiverCount
 	FROM ReportPeriod, DW.DimCampus
 	WHERE
-		DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 )
 SELECT 
 	  MinistryYear
@@ -14553,6 +14558,10 @@ ORDER BY
           <QueryParameter Name="@MinistryMonth">
             <Value>=Parameters!MinistryMonth.Value</Value>
           </QueryParameter>
+          <QueryParameter Name="@Campus">
+            <Value>=Join(Parameters!Campus.Value, ",")</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
         </QueryParameters>
         <CommandText>WITH ReportPeriod AS (
 	SELECT 
@@ -14611,9 +14620,10 @@ ORDER BY
 	INNER JOIN DW.DimAttendanceType
 		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
 	WHERE
-		DimActivity.Name LIKE '%Awana%'
+		(DimActivity.Name LIKE '%Awana%'
 		OR DimMinistry.Name like '%junior high%'
-		OR DimMinistry.Name like '%high school%'
+		OR DimMinistry.Name like '%high school%')
+		AND DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 	GROUP BY
 		  ReportPeriod.MinistryYear
 		, ReportPeriod.MinistryMonth
@@ -14644,47 +14654,47 @@ ORDER BY
 		SELECT MinistryYear, MinistryMonth, MonthLabel, 'Awana - Kids' AS SectionName, DimCampus.Code, 0 AS AttendanceSum
 			, 0 AS WeekCount -- don't count the 0 filled weeks per the specs
 		FROM ReportPeriod, DW.DimCampus
-		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 		UNION
 		SELECT MinistryYear, MinistryMonth, MonthLabel, 'Awana - Volunteers'  AS SectionName, DimCampus.Code, 0 AS AttendanceSum
 			, 0 AS WeekCount -- don't count the 0 filled weeks per the specs
 		FROM ReportPeriod, DW.DimCampus
-		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 		UNION
 		SELECT MinistryYear, MinistryMonth, MonthLabel,  'Awana - (Kids + Volunteers)' AS SectionName, DimCampus.Code, 0 AS AttendanceSum
 			, 0 AS WeekCount -- don't count the 0 filled weeks per the specs
 		FROM ReportPeriod, DW.DimCampus
-		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 		UNION
 		SELECT MinistryYear, MinistryMonth, MonthLabel, 'Junior High - Students' AS SectionName, DimCampus.Code, 0 AS AttendanceSum
 		, 0 AS WeekCount -- don't count the 0 filled weeks per the specs
 		FROM ReportPeriod, DW.DimCampus
-		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 		UNION
 		SELECT MinistryYear, MinistryMonth, MonthLabel, 'Junior High - Volunteers'  AS SectionName, DimCampus.Code, 0 AS AttendanceSum
 			, 0 AS WeekCount -- don't count the 0 filled weeks per the specs
 		FROM ReportPeriod, DW.DimCampus
-		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 		UNION
 		SELECT MinistryYear, MinistryMonth, MonthLabel, 'Junior High - (Students + Vounteers)'  AS SectionName, DimCampus.Code, 0 AS AttendanceSum
 			, 0 AS WeekCount -- don't count the 0 filled weeks per the specs
 		FROM ReportPeriod, DW.DimCampus
-		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 		UNION
 		SELECT MinistryYear, MinistryMonth, MonthLabel, 'Senior High - Students'  AS SectionName, DimCampus.Code, 0 AS AttendanceSum
 			, 0 AS WeekCount -- don't count the 0 filled weeks per the specs
 		FROM ReportPeriod, DW.DimCampus
-		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 		UNION
 		SELECT MinistryYear, MinistryMonth, MonthLabel, 'Senior High - Volunteers'  AS SectionName, DimCampus.Code, 0 AS AttendanceSum
 			, 0 AS WeekCount -- don't count the 0 filled weeks per the specs
 		FROM ReportPeriod, DW.DimCampus
-		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 		UNION
 		SELECT MinistryYear, MinistryMonth, MonthLabel, 'Senior High - (Students + Vounteers)'  AS SectionName, DimCampus.Code, 0 AS AttendanceSum
 			, 0 AS WeekCount -- don't count the 0 filled weeks per the specs
 		FROM ReportPeriod, DW.DimCampus
-		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		WHERE DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 )
 SELECT 
 	  MinistryYear
@@ -14819,6 +14829,56 @@ FROM DW.FactAttendance</CommandText>
       </DefaultValue>
       <Prompt>username</Prompt>
       <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="Campus">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>RM</Value>
+          <Value>EL</Value>
+          <Value>NI</Value>
+          <Value>CL</Value>
+          <Value>CC</Value>
+          <Value>AU</Value>
+          <Value>DR</Value>
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>Campus</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>RM</Value>
+            <Label>RM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>EL</Value>
+            <Label>EL</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>NI</Value>
+            <Label>NI</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>CL</Value>
+            <Label>CL</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>CC</Value>
+            <Label>CC</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>AU</Value>
+            <Label>AU</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>DR</Value>
+            <Label>DR</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+      <MultiValue>true</MultiValue>
+      <UsedInQuery>True</UsedInQuery>
     </ReportParameter>
   </ReportParameters>
   <EmbeddedImages>
