@@ -176,7 +176,7 @@
                           <Paragraph>
                             <TextRuns>
                               <TextRun>
-                                <Value>Summary Results- Lag Indicators</Value>
+                                <Value>= IIF(Parameters!Campus.Count &gt; 1, "Summary Results", First(Fields!Name.Value, "DimCampus")) + " - Lag Indicators"</Value>
                                 <Style>
                                   <FontFamily>Calibri</FontFamily>
                                   <FontSize>12pt</FontSize>
@@ -582,7 +582,6 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
@@ -7507,6 +7506,27 @@ ORDER BY
         <Field Name="StewardshipGivingAmount">
           <DataField>StewardshipGivingAmount</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DimCampus">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@CampusCode">
+            <Value>=Join(Parameters!Campus.Value, ",")</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select Code, Name from dw.DimCampus WHERE Code = @CampusCode</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="Code">
+          <DataField>Code</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
     </DataSet>
