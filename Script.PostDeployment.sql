@@ -263,12 +263,14 @@ UPDATE SET
 ;
 
 --DimDate Load at least the next five years and the previous five years
-DECLARE @FiveYearsAgo DATE, @FiveYearsFromNow DATE
-SET @FiveYearsAgo = '1/1/' + CONVERT(VARCHAR(4), YEAR(GETDATE()) - 5)
-SET @FiveYearsFromNow = '12/31/' + CONVERT(VARCHAR(4), YEAR(GETDATE()) + 5)
+IF(SELECT COUNT(*) FROM DW.DimDate) = 0
+BEGIN
+	DECLARE @FiveYearsAgo DATE, @FiveYearsFromNow DATE
+	SET @FiveYearsAgo = '1/1/' + CONVERT(VARCHAR(4), YEAR(GETDATE()) - 5)
+	SET @FiveYearsFromNow = '12/31/' + CONVERT(VARCHAR(4), YEAR(GETDATE()) + 5)
 
-EXEC DW.usp_UpsertDimDate @FiveYearsAgo, @FiveYearsFromNow
-
+	EXEC DW.usp_UpsertDimDate @FiveYearsAgo, @FiveYearsFromNow
+END
 --DimIndividualStatus
 
 MERGE INTO DW.DimIndividualStatus AS Target

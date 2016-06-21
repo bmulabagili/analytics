@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DW">
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString>Data Source=localhost;Initial Catalog=Analytics</ConnectString>
+        <IntegratedSecurity>true</IntegratedSecurity>
+      </ConnectionProperties>
+      <rd:SecurityType>Integrated</rd:SecurityType>
+      <rd:DataSourceID>14df1adf-08fd-42f5-881f-179e62f1b613</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="WeekCount">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@BudgetMonth">
+            <Value>=Parameters!BudgetMonth.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@BudgetYear">
+            <Value>=Parameters!BudgetYear.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT count(DISTINCT CalendarWeek) WeekCount from dw.dimdate where CalendarMonth= @BudgetMonth and CalendarYear= @BudgetYear</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="WeekCount">
+          <DataField>WeekCount</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="MonthsToDate">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@BudgetMonth">
+            <Value>=Parameters!BudgetMonth.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT DISTINCT CalendarMonth
+FROM            DW.DimDate
+WHERE        (CalendarMonth &lt;= @BudgetMonth)</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="CalendarMonth">
+          <DataField>CalendarMonth</DataField>
+          <rd:TypeName>System.Byte</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Rectangle Name="Rectangle1">
+            <ReportItems>
+              <Subreport Name="CampusSubReport">
+                <ReportName>CampusXLT-CampusTab</ReportName>
+                <Parameters>
+                  <Parameter Name="BudgetYear">
+                    <Value>=Parameters!BudgetYear.Value</Value>
+                  </Parameter>
+                  <Parameter Name="BudgetMonth">
+                    <Value>=Parameters!BudgetMonth.Value</Value>
+                  </Parameter>
+                  <Parameter Name="TenantID">
+                    <Value>=Parameters!TenantID.Value</Value>
+                  </Parameter>
+                  <Parameter Name="username">
+                    <Value>=Parameters!username.Value</Value>
+                  </Parameter>
+                </Parameters>
+                <Height>3in</Height>
+                <Width>3in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Subreport>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <KeepTogether>true</KeepTogether>
+            <Top>0.02083in</Top>
+            <Height>3in</Height>
+            <Width>3in</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle2">
+            <ReportItems>
+              <Subreport Name="XLTTab">
+                <ReportName>CampusXLT-XLTTab</ReportName>
+                <Parameters>
+                  <Parameter Name="BudgetYear">
+                    <Value>=Parameters!BudgetYear.Value</Value>
+                  </Parameter>
+                  <Parameter Name="TenantID">
+                    <Value>=Parameters!TenantID.Value</Value>
+                  </Parameter>
+                  <Parameter Name="BudgetMonth">
+                    <Value>=Parameters!BudgetMonth.Value</Value>
+                  </Parameter>
+                  <Parameter Name="username">
+                    <Value>=Parameters!username.Value</Value>
+                  </Parameter>
+                </Parameters>
+                <Height>3in</Height>
+                <Width>3in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Subreport>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <KeepTogether>true</KeepTogether>
+            <Top>6.17931in</Top>
+            <Height>3in</Height>
+            <Width>3in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle3">
+            <ReportItems>
+              <Subreport Name="CampusSubReport2">
+                <ReportName>CampusXLT-CampusTab</ReportName>
+                <Parameters>
+                  <Parameter Name="BudgetYear">
+                    <Value>=Parameters!BudgetYear.Value</Value>
+                  </Parameter>
+                  <Parameter Name="BudgetMonth">
+                    <Value>=Parameters!YTDBudgetMonths.Value</Value>
+                  </Parameter>
+                  <Parameter Name="TenantID">
+                    <Value>=Parameters!TenantID.Value</Value>
+                  </Parameter>
+                  <Parameter Name="username">
+                    <Value>=Parameters!username.Value</Value>
+                  </Parameter>
+                </Parameters>
+                <Height>3in</Height>
+                <Width>3in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Subreport>
+            </ReportItems>
+            <PageBreak>
+              <BreakLocation>End</BreakLocation>
+            </PageBreak>
+            <KeepTogether>true</KeepTogether>
+            <Top>3.09028in</Top>
+            <Height>3in</Height>
+            <Width>3in</Width>
+            <ZIndex>2</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="Rectangle4">
+            <ReportItems>
+              <Subreport Name="XLTTab2">
+                <ReportName>CampusXLT-XLTTab</ReportName>
+                <Parameters>
+                  <Parameter Name="BudgetYear">
+                    <Value>=Parameters!BudgetYear.Value</Value>
+                  </Parameter>
+                  <Parameter Name="TenantID">
+                    <Value>=Parameters!TenantID.Value</Value>
+                  </Parameter>
+                  <Parameter Name="BudgetMonth">
+                    <Value>=Parameters!YTDBudgetMonths.Value</Value>
+                  </Parameter>
+                  <Parameter Name="username">
+                    <Value>=Parameters!username.Value</Value>
+                  </Parameter>
+                </Parameters>
+                <Height>3in</Height>
+                <Width>3in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Subreport>
+            </ReportItems>
+            <KeepTogether>true</KeepTogether>
+            <Top>9.24875in</Top>
+            <Height>3in</Height>
+            <Width>3in</Width>
+            <ZIndex>3</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+        </ReportItems>
+        <Height>12.80083in</Height>
+        <Style />
+      </Body>
+      <Width>3.10627in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="BudgetYear">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=DatePart(DateInterval.Year, DateAdd(DateInterval.Month, -1, Now()))</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Budget Year</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="TenantID">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>3</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>TenantID</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="BudgetMonth">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=DatePart(DateInterval.Month, DateAdd(DateInterval.Month, -1, Now()))</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>BudgetMonth</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>1</Value>
+            <Label>January</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>2</Value>
+            <Label>February</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>3</Value>
+            <Label>March</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>4</Value>
+            <Label>April</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>5</Value>
+            <Label>May</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>6</Value>
+            <Label>June</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>7</Value>
+            <Label>July</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>8</Value>
+            <Label>August</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>9</Value>
+            <Label>September</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>10</Value>
+            <Label>October</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>11</Value>
+            <Label>November</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>12</Value>
+            <Label>December</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="username">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>username</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="WeekCount">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <DataSetReference>
+          <DataSetName>WeekCount</DataSetName>
+          <ValueField>WeekCount</ValueField>
+        </DataSetReference>
+      </DefaultValue>
+      <Prompt>WeekCount</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="YTDBudgetMonths">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <DataSetReference>
+          <DataSetName>MonthsToDate</DataSetName>
+          <ValueField>CalendarMonth</ValueField>
+        </DataSetReference>
+      </DefaultValue>
+      <Prompt>YTDBudgetMonths</Prompt>
+      <Hidden>true</Hidden>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>MonthsToDate</DataSetName>
+          <ValueField>CalendarMonth</ValueField>
+          <LabelField>CalendarMonth</LabelField>
+        </DataSetReference>
+      </ValidValues>
+      <MultiValue>true</MultiValue>
+    </ReportParameter>
+  </ReportParameters>
+  <EmbeddedImages>
+    <EmbeddedImage Name="hbclog">
+      <MIMEType>image/png</MIMEType>
+      <ImageData>iVBORw0KGgoAAAANSUhEUgAAAHQAAAA3CAYAAADdVm7lAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAADJmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMwNjcgNzkuMTU3NzQ3LCAyMDE1LzAzLzMwLTIzOjQwOjQyICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxNSAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RDg3MDFCOTM0QTkyMTFFNUJEQkQ5QTdCMDI5MzkzQzAiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RDg3MDFCOTQ0QTkyMTFFNUJEQkQ5QTdCMDI5MzkzQzAiPiA8eG1wTU06RGVyaXZlZEZyb20g
+c3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpEODcwMUI5MTRBOTIxMUU1QkRCRDlBN0IwMjkzOTNDMCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpEODcwMUI5MjRBOTIxMUU1QkRCRDlBN0IwMjkzOTNDMCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PrE5hKkAABVZSURBVHhe7ZsHdFTVusd3Qui9KEh9CERAevMhgjQFvCBNvSpVSigBEhDBXAgEUKSFJsWEjnq5IooKIsiTiyBF+kMFBOlNkdC7BN/+/c+cMOSCkpHhZWXlv9ZZM7PP2eV8/fv2noDfLUwqUgwCPZ+pSCFIZWgKQypDUxhSGZrCkMrQFAa/MvT06dNm9+7dJjWQvn/wK0MPHTpsli5dlsrQ+wi/MvSXX34xmzdvNjdu3PC0JA30u379uq74+HhP653bXdDGvd9++83TchPefb0vb1y9ek1tt+uPcNLO/WvXriXMdbsr8dpou3jxorly5YqnxVmPO97trqTSzq+FhZiYWDN37lzzyScLzQMPPOBpvXssXLjQfPTRQhMUlMaUKlXK9O/fT+1Lliwx8+Z9YAICAswjjwSbvn1fNenTp9e977773kyYMMEEBqYxly9fNtWr/7fp3r2b7oGvv15lZs6caTJmzKTfdgjLJGPy5MltnnqqvnnyySdNdPRYs337dt2vXLmy6dWrp76D8eMnmG3btllC/26eeOJxkzdvPrvGj0ymTJk1lh3RXr9bxl0y9evXM23bthETP/zwQ7N27Tpz9uw5u9Z0Jjj4EfPMMw3Nli1bzerVq03mzJk1pgvGunTpsmnfvp2pU6e2p/XPEeT59Av27t1rfv01zuzbt98nhh44cNAy4GuTJk2QleLr0g6YePjwYbXzHaZ5S/Hy5f9jli370uTIkUOacOTIYfPc
+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</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>28cf50ad-1784-4338-8249-0e582de09a5e</rd:ReportID>
+</Report>

@@ -12,8 +12,8 @@
   DTS:ObjectName="Extract_FellowshipOne_tsv_Attribute"
   DTS:PackageType="5"
   DTS:ProtectionLevel="2"
-  DTS:VersionBuild="148"
-  DTS:VersionGUID="{9EA1C616-2AE8-486D-9F46-40F66C733B50}">
+  DTS:VersionBuild="149"
+  DTS:VersionGUID="{E7912FD5-D54B-46C3-B750-6E65FAD33EAC}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -590,12 +590,14 @@
     <DTS:Variable
       DTS:CreationName=""
       DTS:DTSID="{C2EE92AA-CA1F-4578-A9CB-F9AE5ECF9043}"
+      DTS:EvaluateAsExpression="True"
+      DTS:Expression="@[$Project::_InputFolderRoot]"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
       DTS:ObjectName="_InputFolderRoot"
       DTS:RaiseChangedEvent="True">
       <DTS:VariableValue
-        DTS:DataType="8">E:\ETLContainer</DTS:VariableValue>
+        DTS:DataType="8">E:\</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:LoggingOptions
@@ -757,7 +759,7 @@
             <DTS:ObjectData>
               <ForEachFileEnumeratorProperties>
                 <FEFEProperty
-                  Folder="E:\ETLContainer\3\Input" />
+                  Folder="E:\\3\Input" />
                 <FEFEProperty
                   FileSpec="5_*.csv" />
                 <FEFEProperty
@@ -5221,143 +5223,6 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyVersion("1.0.0.0")> 
 <Assembly: AssemblyFileVersion("1.0.0.0")> ]]></ProjectItem>
               <ProjectItem
-                Name="ScriptMain.vb"
-                Encoding="UTF8"><![CDATA[#Region "Imports"
-Imports System
-Imports System.Data
-Imports System.Math
-Imports System.Runtime.InteropServices
-Imports Microsoft.SqlServer.Dts.Runtime
-#End Region
-
-'ScriptMain is the entry point class of the script.  Do not change the name, attributes,
-'or parent of this class.
-<Microsoft.SqlServer.Dts.Tasks.ScriptTask.SSISScriptTaskEntryPointAttribute()> _
-<System.CLSCompliantAttribute(False)> _
-Partial Public Class ScriptMain
-    Inherits Microsoft.SqlServer.Dts.Tasks.ScriptTask.VSTARTScriptObjectModelBase
-
-    Public Sub Main()
-
-        ' Begin BI xPress Code
-
-Dim sSourceID As String = ReadVariable("System::SourceID").ToString().ToUpper()
-  Try
-'//DF Extract_FellowshipOne_tsv_Attribute ---- > Flat File Source
-      If sSourceID="{70C656C0-3D22-461A-8A89-1EA6756969CE}" Then
-          Dim conn As ConnectionManager
-          If (Dts.Connections.Contains("{6E5D79CA-4A27-4C9D-9F9B-1DF0DDB43DF6}"))
-              conn = Dts.Connections("{6E5D79CA-4A27-4C9D-9F9B-1DF0DDB43DF6}")
-          ElseIf (Dts.Connections.Contains("FlatFile"))
-              conn = Dts.Connections("FlatFile")
-          Else
-              Dts.Events.FireWarning(0,"","Can not log connection FlatFile. Re-applying BIxPress Auditing Framework may fix this issue.","",0)
-              Exit Try
-          End If
-          Try
-              If Not conn.ConnectionString Is Nothing Then
-                  WriteVariable("User::varSSISOps_70C656C03D22461A8A891EA6756969CE_RowCount_1_DataObjectName",System.IO.Path.GetFileName(conn.ConnectionString))
-              End If
-          Catch ex As Exception
-          End Try
-          If conn IsNot Nothing Then
-          Try
-              If Not conn.ConnectionString Is Nothing Then
-                  WriteVariable("User::varSSISOps_70C656C03D22461A8A891EA6756969CE_RowCount_1_DataObjectConnectionString",conn.ConnectionString)
-              End If
-          Catch ex As Exception
-          End Try
-          Try
-              If Not conn.ConnectionString Is Nothing Then
-                  WriteVariable("User::varSSISOps_70C656C03D22461A8A891EA6756969CE_RowCount_1_DataObjectDataSource",conn.ConnectionString)
-              End If
-          Catch ex As Exception
-          End Try
-          End If
-      End If
-  Catch ex As Exception
-  End Try
-
-
-
-
-        ' End BI xPress Code
-
-        Dts.TaskResult = ScriptResults.Success
-    End Sub
-
-#Region "ScriptResults declaration"
-
-    Enum ScriptResults
-        Success = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Success
-        Failure = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Failure
-    End Enum
-
-#End Region
-
-    Private Sub WriteVariable(ByVal variableName As String, ByVal variableValue As Object)
-        Dim vars As Variables = Nothing
-        Dim isUnlocked As Boolean = False
-
-        Try
-            Dts.VariableDispenser.LockForWrite(variableName)
-            Dts.VariableDispenser.GetVariables(vars)
-
-            Try
-                vars(variableName).Value = variableValue
-            Catch ex As Exception
-                Throw
-            Finally
-                If vars IsNot Nothing Then
-                    vars.Unlock()
-                    isUnlocked = True
-                End If
-            End Try
-        Catch ex As Exception
-            Dts.VariableDispenser.Reset()
-
-            Throw
-        Finally
-            If vars IsNot Nothing AndAlso Not isUnlocked Then
-                vars.Unlock()
-            End If
-        End Try
-    End Sub
-
-    Private Function ReadVariable(ByVal variableName As String) As Object
-        Dim vars As Variables = Nothing
-        Dim isUnlocked As Boolean = False
-        Dim result As Object
-
-        Try
-            Dts.VariableDispenser.LockForRead(variableName)
-            Dts.VariableDispenser.GetVariables(vars)
-
-            Try
-                result = vars(variableName).Value
-            Catch ex As Exception
-                Throw
-            Finally
-                If vars IsNot Nothing Then
-                    vars.Unlock()
-                    isUnlocked = True
-                End If
-            End Try
-        Catch ex As Exception
-            Dts.VariableDispenser.Reset()
-
-            Throw
-        Finally
-            If vars IsNot Nothing AndAlso Not isUnlocked Then
-                vars.Unlock()
-            End If
-        End Try
-
-        Return result
-    End Function
-
-End Class]]></ProjectItem>
-              <ProjectItem
                 Name="st_454d26450a7d4c4f859fc22a685499c2.vbproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -5542,6 +5407,143 @@ End Class]]></ProjectItem>
 		<msb:File Include="My Project\Settings.Designer.vb"/>
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
+              <ProjectItem
+                Name="ScriptMain.vb"
+                Encoding="UTF8"><![CDATA[#Region "Imports"
+Imports System
+Imports System.Data
+Imports System.Math
+Imports System.Runtime.InteropServices
+Imports Microsoft.SqlServer.Dts.Runtime
+#End Region
+
+'ScriptMain is the entry point class of the script.  Do not change the name, attributes,
+'or parent of this class.
+<Microsoft.SqlServer.Dts.Tasks.ScriptTask.SSISScriptTaskEntryPointAttribute()> _
+<System.CLSCompliantAttribute(False)> _
+Partial Public Class ScriptMain
+    Inherits Microsoft.SqlServer.Dts.Tasks.ScriptTask.VSTARTScriptObjectModelBase
+
+    Public Sub Main()
+
+        ' Begin BI xPress Code
+
+Dim sSourceID As String = ReadVariable("System::SourceID").ToString().ToUpper()
+  Try
+'//DF Extract_FellowshipOne_tsv_Attribute ---- > Flat File Source
+      If sSourceID="{70C656C0-3D22-461A-8A89-1EA6756969CE}" Then
+          Dim conn As ConnectionManager
+          If (Dts.Connections.Contains("{6E5D79CA-4A27-4C9D-9F9B-1DF0DDB43DF6}"))
+              conn = Dts.Connections("{6E5D79CA-4A27-4C9D-9F9B-1DF0DDB43DF6}")
+          ElseIf (Dts.Connections.Contains("FlatFile"))
+              conn = Dts.Connections("FlatFile")
+          Else
+              Dts.Events.FireWarning(0,"","Can not log connection FlatFile. Re-applying BIxPress Auditing Framework may fix this issue.","",0)
+              Exit Try
+          End If
+          Try
+              If Not conn.ConnectionString Is Nothing Then
+                  WriteVariable("User::varSSISOps_70C656C03D22461A8A891EA6756969CE_RowCount_1_DataObjectName",System.IO.Path.GetFileName(conn.ConnectionString))
+              End If
+          Catch ex As Exception
+          End Try
+          If conn IsNot Nothing Then
+          Try
+              If Not conn.ConnectionString Is Nothing Then
+                  WriteVariable("User::varSSISOps_70C656C03D22461A8A891EA6756969CE_RowCount_1_DataObjectConnectionString",conn.ConnectionString)
+              End If
+          Catch ex As Exception
+          End Try
+          Try
+              If Not conn.ConnectionString Is Nothing Then
+                  WriteVariable("User::varSSISOps_70C656C03D22461A8A891EA6756969CE_RowCount_1_DataObjectDataSource",conn.ConnectionString)
+              End If
+          Catch ex As Exception
+          End Try
+          End If
+      End If
+  Catch ex As Exception
+  End Try
+
+
+
+
+        ' End BI xPress Code
+
+        Dts.TaskResult = ScriptResults.Success
+    End Sub
+
+#Region "ScriptResults declaration"
+
+    Enum ScriptResults
+        Success = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Success
+        Failure = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Failure
+    End Enum
+
+#End Region
+
+    Private Sub WriteVariable(ByVal variableName As String, ByVal variableValue As Object)
+        Dim vars As Variables = Nothing
+        Dim isUnlocked As Boolean = False
+
+        Try
+            Dts.VariableDispenser.LockForWrite(variableName)
+            Dts.VariableDispenser.GetVariables(vars)
+
+            Try
+                vars(variableName).Value = variableValue
+            Catch ex As Exception
+                Throw
+            Finally
+                If vars IsNot Nothing Then
+                    vars.Unlock()
+                    isUnlocked = True
+                End If
+            End Try
+        Catch ex As Exception
+            Dts.VariableDispenser.Reset()
+
+            Throw
+        Finally
+            If vars IsNot Nothing AndAlso Not isUnlocked Then
+                vars.Unlock()
+            End If
+        End Try
+    End Sub
+
+    Private Function ReadVariable(ByVal variableName As String) As Object
+        Dim vars As Variables = Nothing
+        Dim isUnlocked As Boolean = False
+        Dim result As Object
+
+        Try
+            Dts.VariableDispenser.LockForRead(variableName)
+            Dts.VariableDispenser.GetVariables(vars)
+
+            Try
+                result = vars(variableName).Value
+            Catch ex As Exception
+                Throw
+            Finally
+                If vars IsNot Nothing Then
+                    vars.Unlock()
+                    isUnlocked = True
+                End If
+            End Try
+        Catch ex As Exception
+            Dts.VariableDispenser.Reset()
+
+            Throw
+        Finally
+            If vars IsNot Nothing AndAlso Not isUnlocked Then
+                vars.Unlock()
+            End If
+        End Try
+
+        Return result
+    End Function
+
+End Class]]></ProjectItem>
               <ProjectItem
                 Name="My Project\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -5984,105 +5986,6 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyVersion("1.0.0.0")> 
 <Assembly: AssemblyFileVersion("1.0.0.0")> ]]></ProjectItem>
               <ProjectItem
-                Name="ScriptMain.vb"
-                Encoding="UTF8"><![CDATA[#Region "Imports"
-Imports System
-Imports System.Data
-Imports System.Math
-Imports System.Runtime.InteropServices
-Imports Microsoft.SqlServer.Dts.Runtime
-#End Region
-
-'ScriptMain is the entry point class of the script.  Do not change the name, attributes,
-'or parent of this class.
-<Microsoft.SqlServer.Dts.Tasks.ScriptTask.SSISScriptTaskEntryPointAttribute()> _
-<System.CLSCompliantAttribute(False)> _
-Partial Public Class ScriptMain
-    Inherits Microsoft.SqlServer.Dts.Tasks.ScriptTask.VSTARTScriptObjectModelBase
-
-    Public Sub Main()
-
-        ' Begin BI xPress Code
-
-
-
-        ' End BI xPress Code
-
-        Dts.TaskResult = ScriptResults.Success
-    End Sub
-
-#Region "ScriptResults declaration"
-
-    Enum ScriptResults
-        Success = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Success
-        Failure = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Failure
-    End Enum
-
-#End Region
-
-    Private Sub WriteVariable(ByVal variableName As String, ByVal variableValue As Object)
-        Dim vars As Variables = Nothing
-        Dim isUnlocked As Boolean = False
-
-        Try
-            Dts.VariableDispenser.LockForWrite(variableName)
-            Dts.VariableDispenser.GetVariables(vars)
-
-            Try
-                vars(variableName).Value = variableValue
-            Catch ex As Exception
-                Throw
-            Finally
-                If vars IsNot Nothing Then
-                    vars.Unlock()
-                    isUnlocked = True
-                End If
-            End Try
-        Catch ex As Exception
-            Dts.VariableDispenser.Reset()
-
-            Throw
-        Finally
-            If vars IsNot Nothing AndAlso Not isUnlocked Then
-                vars.Unlock()
-            End If
-        End Try
-    End Sub
-
-    Private Function ReadVariable(ByVal variableName As String) As Object
-        Dim vars As Variables = Nothing
-        Dim isUnlocked As Boolean = False
-        Dim result As Object
-
-        Try
-            Dts.VariableDispenser.LockForRead(variableName)
-            Dts.VariableDispenser.GetVariables(vars)
-
-            Try
-                result = vars(variableName).Value
-            Catch ex As Exception
-                Throw
-            Finally
-                If vars IsNot Nothing Then
-                    vars.Unlock()
-                    isUnlocked = True
-                End If
-            End Try
-        Catch ex As Exception
-            Dts.VariableDispenser.Reset()
-
-            Throw
-        Finally
-            If vars IsNot Nothing AndAlso Not isUnlocked Then
-                vars.Unlock()
-            End If
-        End Try
-
-        Return result
-    End Function
-
-End Class]]></ProjectItem>
-              <ProjectItem
                 Name="My Project\Settings.settings"
                 Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
 <SettingsFile xmlns="uri:settings" CurrentProfile="(Default)" GeneratedClassNamespace="$safeprojectname" GeneratedClassName="MySettings">
@@ -6267,6 +6170,105 @@ End Class]]></ProjectItem>
 		<msb:File Include="My Project\Settings.Designer.vb"/>
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
+              <ProjectItem
+                Name="ScriptMain.vb"
+                Encoding="UTF8"><![CDATA[#Region "Imports"
+Imports System
+Imports System.Data
+Imports System.Math
+Imports System.Runtime.InteropServices
+Imports Microsoft.SqlServer.Dts.Runtime
+#End Region
+
+'ScriptMain is the entry point class of the script.  Do not change the name, attributes,
+'or parent of this class.
+<Microsoft.SqlServer.Dts.Tasks.ScriptTask.SSISScriptTaskEntryPointAttribute()> _
+<System.CLSCompliantAttribute(False)> _
+Partial Public Class ScriptMain
+    Inherits Microsoft.SqlServer.Dts.Tasks.ScriptTask.VSTARTScriptObjectModelBase
+
+    Public Sub Main()
+
+        ' Begin BI xPress Code
+
+
+
+        ' End BI xPress Code
+
+        Dts.TaskResult = ScriptResults.Success
+    End Sub
+
+#Region "ScriptResults declaration"
+
+    Enum ScriptResults
+        Success = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Success
+        Failure = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Failure
+    End Enum
+
+#End Region
+
+    Private Sub WriteVariable(ByVal variableName As String, ByVal variableValue As Object)
+        Dim vars As Variables = Nothing
+        Dim isUnlocked As Boolean = False
+
+        Try
+            Dts.VariableDispenser.LockForWrite(variableName)
+            Dts.VariableDispenser.GetVariables(vars)
+
+            Try
+                vars(variableName).Value = variableValue
+            Catch ex As Exception
+                Throw
+            Finally
+                If vars IsNot Nothing Then
+                    vars.Unlock()
+                    isUnlocked = True
+                End If
+            End Try
+        Catch ex As Exception
+            Dts.VariableDispenser.Reset()
+
+            Throw
+        Finally
+            If vars IsNot Nothing AndAlso Not isUnlocked Then
+                vars.Unlock()
+            End If
+        End Try
+    End Sub
+
+    Private Function ReadVariable(ByVal variableName As String) As Object
+        Dim vars As Variables = Nothing
+        Dim isUnlocked As Boolean = False
+        Dim result As Object
+
+        Try
+            Dts.VariableDispenser.LockForRead(variableName)
+            Dts.VariableDispenser.GetVariables(vars)
+
+            Try
+                result = vars(variableName).Value
+            Catch ex As Exception
+                Throw
+            Finally
+                If vars IsNot Nothing Then
+                    vars.Unlock()
+                    isUnlocked = True
+                End If
+            End Try
+        Catch ex As Exception
+            Dts.VariableDispenser.Reset()
+
+            Throw
+        Finally
+            If vars IsNot Nothing AndAlso Not isUnlocked Then
+                vars.Unlock()
+            End If
+        End Try
+
+        Return result
+    End Function
+
+End Class]]></ProjectItem>
               <ProjectItem
                 Name="My Project\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -6987,6 +6989,191 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyVersion("1.0.0.0")> 
 <Assembly: AssemblyFileVersion("1.0.0.0")> ]]></ProjectItem>
               <ProjectItem
+                Name="My Project\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)" GeneratedClassNamespace="$safeprojectname" GeneratedClassName="MySettings">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
+              <ProjectItem
+                Name="st_eb4019a3cec74ea289c840c21714768c.vbproj"
+                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{072beb7d-edba-4a0d-b2ae-b8515a4feaa6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>My Project</AppDesignerFolder>
+    <RootNamespace>st_eb4019a3cec74ea289c840c21714768c</RootNamespace>
+    <AssemblyName>st_eb4019a3cec74ea289c840c21714768c</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>true</ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>.\bin\Release\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Data" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AppDesigner Include="My Project\" />
+    <Compile Include="My Project\AssemblyInfo.vb">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+    </EmbeddedResource>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ScriptMain.vb">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <!-- Include the build rules for a VB project.-->
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
+        <ProjectProperties HostName="ScriptTask"
+                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
+                           ApplicationType="usd"
+                           Language="vb"
+                           TemplatesPath=""
+                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
+                           DebugInfoCommandLine=""
+                           DebugInfoWorkingDir=""
+                           IconImageList=""/>
+
+        <Host Name="ScriptTask" IconIndex="">
+        </Host>
+        <ProjectClient>
+          <HostIdentifier>SSIS_ST120</HostIdentifier>
+        </ProjectClient>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>]]></ProjectItem>
+              <ProjectItem
+                Name="My Project\Settings.Designer.vb"
+                Encoding="UTF8"><![CDATA['------------------------------------------------------------------------------
+' <autogenerated>
+'     This code was generated by a tool.
+'
+'     Changes to this file may cause incorrect behavior and will be lost if
+'     the code is regenerated.
+' </autogenerated>
+'------------------------------------------------------------------------------
+
+Option Strict Off
+Option Explicit On
+
+
+
+Partial Friend NotInheritable Class MySettings
+    Inherits System.Configuration.ApplicationSettingsBase
+
+    Private Shared m_Value As MySettings
+
+    Private Shared m_SyncObject As Object = New Object
+
+    <System.Diagnostics.DebuggerNonUserCode()> _
+    Public Shared ReadOnly Property Value() As MySettings
+        Get
+            If (MySettings.m_Value Is Nothing) Then
+                System.Threading.Monitor.Enter(MySettings.m_SyncObject)
+                If (MySettings.m_Value Is Nothing) Then
+                    Try
+                        MySettings.m_Value = New MySettings
+                    Finally
+                        System.Threading.Monitor.Exit(MySettings.m_SyncObject)
+                    End Try
+                End If
+            End If
+            Return MySettings.m_Value
+        End Get
+    End Property
+End Class]]></ProjectItem>
+              <ProjectItem
+                Name="Project"
+                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
+<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
+	<msb:PropertyGroup>
+		<msb:CodeName>st_eb4019a3cec74ea289c840c21714768c</msb:CodeName>
+		<msb:Language>msBuild</msb:Language>
+		<msb:DisplayName>st_eb4019a3cec74ea289c840c21714768c</msb:DisplayName>
+		<msb:ProjectId>{A2D25664-D3AD-4475-B921-90BFDC6F7A97}</msb:ProjectId>
+	</msb:PropertyGroup>
+	<msb:ItemGroup>
+		<msb:Project Include="st_eb4019a3cec74ea289c840c21714768c.vbproj"/>
+		<msb:File Include="My Project\AssemblyInfo.vb"/>
+		<msb:File Include="My Project\Resources.resx"/>
+		<msb:File Include="ScriptMain.vb"/>
+		<msb:File Include="My Project\Resources.Designer.vb"/>
+		<msb:File Include="My Project\Settings.settings"/>
+		<msb:File Include="My Project\Settings.Designer.vb"/>
+	</msb:ItemGroup>
+</c:Project>]]></ProjectItem>
+              <ProjectItem
                 Name="ScriptMain.vb"
                 Encoding="UTF8"><![CDATA[#Region "Imports"
 Imports System
@@ -7273,191 +7460,6 @@ Partial Public Class ScriptMain
     End Function
 
 End Class]]></ProjectItem>
-              <ProjectItem
-                Name="My Project\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)" GeneratedClassNamespace="$safeprojectname" GeneratedClassName="MySettings">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
-              <ProjectItem
-                Name="st_eb4019a3cec74ea289c840c21714768c.vbproj"
-                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</ProjectTypeGuids>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{072beb7d-edba-4a0d-b2ae-b8515a4feaa6}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>My Project</AppDesignerFolder>
-    <RootNamespace>st_eb4019a3cec74ea289c840c21714768c</RootNamespace>
-    <AssemblyName>st_eb4019a3cec74ea289c840c21714768c</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>true</ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>.\bin\Debug\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineDebug>true</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>false</DebugSymbols>
-    <Optimize>true</Optimize>
-    <OutputPath>.\bin\Release\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineDebug>false</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Import Include="Microsoft.VisualBasic" />
-    <Import Include="System" />
-    <Import Include="System.Collections" />
-    <Import Include="System.Data" />
-    <Import Include="System.Diagnostics" />
-    <Import Include="System.Windows.Forms" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AppDesigner Include="My Project\" />
-    <Compile Include="My Project\AssemblyInfo.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <EmbeddedResource Include="My Project\Resources.resx">
-      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
-      <CustomToolNamespace>My.Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <Compile Include="My Project\Resources.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <None Include="My Project\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
-    </None>
-    <Compile Include="My Project\Settings.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ScriptMain.vb">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <!-- Include the build rules for a VB project.-->
-  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
-
-  <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
-        <ProjectProperties HostName="ScriptTask"
-                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
-                           ApplicationType="usd"
-                           Language="vb"
-                           TemplatesPath=""
-                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
-                           DebugInfoCommandLine=""
-                           DebugInfoWorkingDir=""
-                           IconImageList=""/>
-
-        <Host Name="ScriptTask" IconIndex="">
-        </Host>
-        <ProjectClient>
-          <HostIdentifier>SSIS_ST120</HostIdentifier>
-        </ProjectClient>
-      </FlavorProperties>
-    </VisualStudio>
-  </ProjectExtensions>
-</Project>]]></ProjectItem>
-              <ProjectItem
-                Name="My Project\Settings.Designer.vb"
-                Encoding="UTF8"><![CDATA['------------------------------------------------------------------------------
-' <autogenerated>
-'     This code was generated by a tool.
-'
-'     Changes to this file may cause incorrect behavior and will be lost if
-'     the code is regenerated.
-' </autogenerated>
-'------------------------------------------------------------------------------
-
-Option Strict Off
-Option Explicit On
-
-
-
-Partial Friend NotInheritable Class MySettings
-    Inherits System.Configuration.ApplicationSettingsBase
-
-    Private Shared m_Value As MySettings
-
-    Private Shared m_SyncObject As Object = New Object
-
-    <System.Diagnostics.DebuggerNonUserCode()> _
-    Public Shared ReadOnly Property Value() As MySettings
-        Get
-            If (MySettings.m_Value Is Nothing) Then
-                System.Threading.Monitor.Enter(MySettings.m_SyncObject)
-                If (MySettings.m_Value Is Nothing) Then
-                    Try
-                        MySettings.m_Value = New MySettings
-                    Finally
-                        System.Threading.Monitor.Exit(MySettings.m_SyncObject)
-                    End Try
-                End If
-            End If
-            Return MySettings.m_Value
-        End Get
-    End Property
-End Class]]></ProjectItem>
-              <ProjectItem
-                Name="Project"
-                Encoding="UTF16LE"><![CDATA[<?xml version="1.0" encoding="UTF-16" standalone="yes"?>
-<c:Project xmlns:c="http://schemas.microsoft.com/codeprojectml/2010/08/main" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" runtimeVersion="3.0" schemaVersion="1.0">
-	<msb:PropertyGroup>
-		<msb:CodeName>st_eb4019a3cec74ea289c840c21714768c</msb:CodeName>
-		<msb:Language>msBuild</msb:Language>
-		<msb:DisplayName>st_eb4019a3cec74ea289c840c21714768c</msb:DisplayName>
-		<msb:ProjectId>{A2D25664-D3AD-4475-B921-90BFDC6F7A97}</msb:ProjectId>
-	</msb:PropertyGroup>
-	<msb:ItemGroup>
-		<msb:Project Include="st_eb4019a3cec74ea289c840c21714768c.vbproj"/>
-		<msb:File Include="My Project\AssemblyInfo.vb"/>
-		<msb:File Include="My Project\Resources.resx"/>
-		<msb:File Include="ScriptMain.vb"/>
-		<msb:File Include="My Project\Resources.Designer.vb"/>
-		<msb:File Include="My Project\Settings.settings"/>
-		<msb:File Include="My Project\Settings.Designer.vb"/>
-	</msb:ItemGroup>
-</c:Project>]]></ProjectItem>
               <ProjectItem
                 Name="My Project\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>

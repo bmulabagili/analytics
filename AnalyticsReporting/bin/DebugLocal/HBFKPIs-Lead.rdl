@@ -1,0 +1,3323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DW">
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString>Data Source=localhost;Initial Catalog=Analytics</ConnectString>
+        <IntegratedSecurity>true</IntegratedSecurity>
+      </ConnectionProperties>
+      <rd:SecurityType>Integrated</rd:SecurityType>
+      <rd:DataSourceID>dc8560d6-4727-49e1-90a4-362e27535e52</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="FactHBFMetrics">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@MinistryYear">
+            <Value>=Parameters!MinistryYear.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@MinistryMonth">
+            <Value>=Parameters!MinistryMonth.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>;WITH FullHBFMinistryYear AS (
+	SELECT
+		  SectionName
+		, MetricName	
+		, DimDate.MinistryYear
+		, DimDate.MinistryMonth
+		, DimDate.CalendarMonthAbbreviation
+		, SUM(HBFMetricAmount) AS HBFMetricAmount
+	FROM dw.FactHBFMetric
+	INNER JOIN (
+		SELECT DISTINCT 
+			  CalendarMonth, CalendarYear, CalendarMonthAbbreviation
+			, MinistryMonth , MinistryYear
+		FROM DW.DimDate
+		WHERE
+			CalendarDayOfMonth = 1
+			AND DimDate.MinistryYear = @MinistryYear 
+			AND DimDate.MinistryMonth &lt;= @MinistryMonth ) DimDate
+		ON FactHBFMetric.CalendarMonth = DimDate.CalendarMonth
+		AND FactHBFMetric.CalendarYear = DimDate.CalendarYear
+	GROUP BY
+		  SectionName
+		, MetricName 
+		, DimDate.MinistryYear
+		, DimDate.MinistryMonth
+		, DimDate.CalendarMonthAbbreviation
+	UNION
+	--pull in the "0"s too
+	SELECT DISTINCT 
+		  SectionName
+		, MetricName
+		, DimDate.MinistryYear
+		, DimDate.MinistryMonth
+		, DimDate.CalendarMonthAbbreviation
+		, 0 AS HBFMetricAmount
+	FROM DW.FactHBFMetric, (
+		SELECT DISTINCT 
+			  CalendarMonth, CalendarYear, CalendarMonthAbbreviation
+			, MinistryMonth , MinistryYear
+		FROM DW.DimDate
+		WHERE
+			CalendarDayOfMonth = 1
+			AND DimDate.MinistryYear = @MinistryYear) DimDate
+)
+SELECT 
+	  ISNULL(SectionName, 'New Plants') AS SectionName
+	, CASE WHEN MetricName LIKE 'Survival%' OR MetricName LIKE 'Interest%' OR MetricName = 'North America' THEN 1 ELSE
+			CASE WHEN MetricName LIKE 'Foundational%' OR MetricName LIKE 'Assessment%'  OR MetricName LIKE 'Assesment' OR MetricName = 'International' THEN 2 ELSE	
+				CASE WHEN MetricName LIKE 'Acceleration%' OR MetricName LIKE 'Selection%' THEN 3 ELSE	
+					CASE WHEN MetricName LIKE 'Replication%' OR MetricName LIKE 'Training%'  THEN 4 ELSE	
+						CASE WHEN MetricName LIKE 'Maturation%' OR MetricName LIKE 'Core Group Dev%' THEN 5 END
+					END
+				END
+			END
+		  END AS SortOrder
+	, CASE WHEN SectionName = 'International Stages' THEN
+		CASE WHEN MetricName like 'survival%' THEN 'Survival (Rented Bldg)' ELSE
+			CASE WHEN MetricName LIKE 'Foundational%' THEN 'Foundational (Elders)' ELSE
+				CASE WHEN MetricName LIKE 'Acceleration%' THEN 'Acceleration (Add Staff)' ELSE	
+					CASE WHEN MetricName LIKE 'Replication%' THEN 'Replication (Policies)' ELSE	
+						CASE WHEN MetricName LIKE 'Maturation%' THEN 'Maturation (Planting)' ELSE 
+							MetricName
+						END 
+					END 
+				END 
+			END 
+		END ELSE
+	  REPLACE(MetricName ,'Assesment' , 'Assessment') END AS MetricName
+	, MinistryYear
+	, MinistryMonth
+	, CalendarMonthAbbreviation
+	, SUM(HBFMetricAmount) AS HBFMetricAmount
+FROM FullHBFMinistryYear
+--where SectionName = 'International Stages'
+GROUP BY
+	  ISNULL(SectionName, 'New Plants')
+	, CASE WHEN MetricName LIKE 'Survival%' OR MetricName LIKE 'Interest%' OR MetricName = 'North America' THEN 1 ELSE
+			CASE WHEN MetricName LIKE 'Foundational%' OR MetricName LIKE 'Assessment%'  OR MetricName LIKE 'Assesment' OR MetricName = 'International' THEN 2 ELSE	
+				CASE WHEN MetricName LIKE 'Acceleration%' OR MetricName LIKE 'Selection%' THEN 3 ELSE	
+					CASE WHEN MetricName LIKE 'Replication%' OR MetricName LIKE 'Training%'  THEN 4 ELSE	
+						CASE WHEN MetricName LIKE 'Maturation%' OR MetricName LIKE 'Core Group Dev%' THEN 5 END
+					END
+				END
+			END
+		  END 
+	, CASE WHEN SectionName = 'International Stages' THEN
+	CASE WHEN MetricName like 'survival%' THEN 'Survival (Rented Bldg)' ELSE
+		CASE WHEN MetricName LIKE 'Foundational%' THEN 'Foundational (Elders)' ELSE
+			CASE WHEN MetricName LIKE 'Acceleration%' THEN 'Acceleration (Add Staff)' ELSE	
+				CASE WHEN MetricName LIKE 'Replication%' THEN 'Replication (Policies)' ELSE	
+					CASE WHEN MetricName LIKE 'Maturation%' THEN 'Maturation (Planting)' ELSE 
+						MetricName
+					END 
+				END 
+			END 
+		END 
+	END ELSE
+  REPLACE(MetricName ,'Assesment' , 'Assessment') END
+	, MinistryYear
+	, MinistryMonth
+	, CalendarMonthAbbreviation
+ORDER BY
+	MinistryYear, MinistryMonth, SectionName, SortOrder	</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="SectionName">
+          <DataField>SectionName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SortOrder">
+          <DataField>SortOrder</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="MetricName">
+          <DataField>MetricName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="MinistryYear">
+          <DataField>MinistryYear</DataField>
+          <rd:TypeName>System.Int16</rd:TypeName>
+        </Field>
+        <Field Name="MinistryMonth">
+          <DataField>MinistryMonth</DataField>
+          <rd:TypeName>System.Byte</rd:TypeName>
+        </Field>
+        <Field Name="CalendarMonthAbbreviation">
+          <DataField>CalendarMonthAbbreviation</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="HBFMetricAmount">
+          <DataField>HBFMetricAmount</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="LastUpdate">
+      <Query>
+        <DataSourceName>DW</DataSourceName>
+        <CommandText>SELECT MAX(UpdatedDateTime) AS LastUpdatedDateTime FROM dw.FactHBFMetric</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="LastUpdatedDateTime">
+          <DataField>LastUpdatedDateTime</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Rectangle Name="LeadKPIs">
+            <ReportItems>
+              <Textbox Name="Textbox81">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>= "Access Restricted – Internal Use Only Generated " + CStr(Globals!ExecutionTime) + " by " + IIf(Len(Parameters!username.Value) &lt; 1, User!UserID, Parameters!username.Value)</Value>
+                        <Style>
+                          <FontStyle>Normal</FontStyle>
+                          <FontFamily>Calibri</FontFamily>
+                          <FontSize>11pt</FontSize>
+                          <FontWeight>Normal</FontWeight>
+                          <TextDecoration>None</TextDecoration>
+                          <Color>#000000</Color>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox19</rd:DefaultName>
+                <Top>5.03278in</Top>
+                <Height>0.25in</Height>
+                <Width>10.25in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="Textbox87">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>New Plants - Total</Value>
+                        <Style>
+                          <FontStyle>Normal</FontStyle>
+                          <FontFamily>Calibri</FontFamily>
+                          <FontSize>11pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <TextDecoration>None</TextDecoration>
+                          <Color>White</Color>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox70</rd:DefaultName>
+                <Top>4.48611in</Top>
+                <Height>0.25in</Height>
+                <Width>2in</Width>
+                <ZIndex>1</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <BackgroundColor>Black</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Tablix Name="Tablix11">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.75in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="HBFMetricAmount10">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "White", "Black")</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>HBFMetricAmount</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox86">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, "Black"
+	, Fields!SortOrder.Value = 2, "Black"
+	, Fields!SortOrder.Value = 3, "Black"
+	, Fields!SortOrder.Value = 4, "White"
+, Fields!SortOrder.Value = 5, "White")</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox78</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="CalendarMonthAbbreviation8">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!CalendarMonthAbbreviation.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!MinistryMonth.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="MetricName8">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value />
+                                    <Style />
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>MetricName</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>FactHBFMetrics</DataSetName>
+                <Filters>
+                  <Filter>
+                    <FilterExpression>=IIF(InStr(Fields!SectionName.Value, "New Plants") AND InStr(Fields!MetricName.Value, "International"), 1, 0)</FilterExpression>
+                    <Operator>Equal</Operator>
+                    <FilterValues>
+                      <FilterValue DataType="Integer">1</FilterValue>
+                    </FilterValues>
+                  </Filter>
+                </Filters>
+                <Top>4.23611in</Top>
+                <Left>2in</Left>
+                <Height>0.25in</Height>
+                <Width>2.75in</Width>
+                <ZIndex>2</ZIndex>
+                <Style>
+                  <Border>
+                    <Color>White</Color>
+                    <Style>None</Style>
+                  </Border>
+                  <TopBorder>
+                    <Color>White</Color>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Color>White</Color>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Color>Black</Color>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Color>Black</Color>
+                  </RightBorder>
+                  <FontFamily>Calibri</FontFamily>
+                  <FontSize>11pt</FontSize>
+                </Style>
+              </Tablix>
+              <Textbox Name="Textbox77">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>New Plants - International</Value>
+                        <Style>
+                          <FontStyle>Normal</FontStyle>
+                          <FontFamily>Calibri</FontFamily>
+                          <FontSize>11pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <TextDecoration>None</TextDecoration>
+                          <Color>White</Color>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox70</rd:DefaultName>
+                <Top>4.23611in</Top>
+                <Height>0.25in</Height>
+                <Width>2in</Width>
+                <ZIndex>3</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <BackgroundColor>Black</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Tablix Name="Tablix10">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.75in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="HBFMetricAmount9">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "White", "Black")</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>HBFMetricAmount</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox85">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, "Black"
+	, Fields!SortOrder.Value = 2, "Black"
+	, Fields!SortOrder.Value = 3, "Black"
+	, Fields!SortOrder.Value = 4, "White"
+, Fields!SortOrder.Value = 5, "White")</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox78</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="CalendarMonthAbbreviation7">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!CalendarMonthAbbreviation.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!MinistryMonth.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="MetricName7">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value />
+                                    <Style />
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>MetricName</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>FactHBFMetrics</DataSetName>
+                <Filters>
+                  <Filter>
+                    <FilterExpression>=IIF(InStr(Fields!SectionName.Value, "New Plants") AND InStr(Fields!MetricName.Value, "North America"), 1, 0)</FilterExpression>
+                    <Operator>Equal</Operator>
+                    <FilterValues>
+                      <FilterValue DataType="Integer">1</FilterValue>
+                    </FilterValues>
+                  </Filter>
+                </Filters>
+                <Top>3.98611in</Top>
+                <Left>2in</Left>
+                <Height>0.25in</Height>
+                <Width>2.75in</Width>
+                <ZIndex>4</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <FontFamily>Calibri</FontFamily>
+                  <FontSize>11pt</FontSize>
+                </Style>
+              </Tablix>
+              <Textbox Name="Textbox76">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>New Plants - North America</Value>
+                        <Style>
+                          <FontStyle>Normal</FontStyle>
+                          <FontFamily>Calibri</FontFamily>
+                          <FontSize>11pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <TextDecoration>None</TextDecoration>
+                          <Color>White</Color>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox70</rd:DefaultName>
+                <Top>3.98611in</Top>
+                <Height>0.25in</Height>
+                <Width>2in</Width>
+                <ZIndex>5</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <BackgroundColor>Black</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Tablix Name="Tablix9">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.75in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="HBFMetricAmount7">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#ebf1de", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#d8e4bc", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#c4d79b", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#76933c", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#4f6228", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>HBFMetricAmount</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>= SWITCH (Fields!SortOrder.Value = 1, "#ebf1de"
+	, Fields!SortOrder.Value = 2, "#d8e4bc"
+	, Fields!SortOrder.Value = 3, "#c4d79b"
+	, Fields!SortOrder.Value = 4, "#76933c"
+	, Fields!SortOrder.Value = 5, "#4f6228")</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox84">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#ebf1de", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#d8e4bc", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#c4d79b", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#76933c", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#4f6228", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox78</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>= SWITCH (Fields!SortOrder.Value = 1, "#ebf1de"
+	, Fields!SortOrder.Value = 2, "#d8e4bc"
+	, Fields!SortOrder.Value = 3, "#c4d79b"
+	, Fields!SortOrder.Value = 4, "#76933c"
+	, Fields!SortOrder.Value = 5, "#4f6228")</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox97">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#ebf1de", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#d8e4bc", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#c4d79b", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#76933c", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#4f6228", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox93</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>#eeece1</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="HBFMetricAmount8">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#ebf1de", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#d8e4bc", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#c4d79b", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#76933c", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#4f6228", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>HBFMetricAmount1</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>#eeece1</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="CalendarMonthAbbreviation6">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!CalendarMonthAbbreviation.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!MinistryMonth.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="MetricName6">
+                        <GroupExpressions>
+                          <GroupExpression>=SWITCH(Fields!SortOrder.Value = 1 , "Survival"
+	, Fields!SortOrder.Value = 2 , "Foundational"
+	, Fields!SortOrder.Value = 3 , "Acceleration"
+	, Fields!SortOrder.Value = 4 , "Replication"
+	, Fields!SortOrder.Value = 5 , "Maturation")</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!SortOrder.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="MetricName6">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>=SWITCH(Fields!SortOrder.Value = 1 , "Survival"
+	, Fields!SortOrder.Value = 2 , "Foundational"
+	, Fields!SortOrder.Value = 3 , "Acceleration"
+	, Fields!SortOrder.Value = 4 , "Replication"
+	, Fields!SortOrder.Value = 5 , "Maturation")</Value>
+                                    <Style />
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>MetricName</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                    </TablixMember>
+                    <TablixMember>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="Textbox96">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>Total</Value>
+                                    <Style>
+                                      <FontWeight>Bold</FontWeight>
+                                      <Color>Red</Color>
+                                    </Style>
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>Textbox92</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                      <KeepWithGroup>Before</KeepWithGroup>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>FactHBFMetrics</DataSetName>
+                <Filters>
+                  <Filter>
+                    <FilterExpression>=IIF(InStr(Fields!SectionName.Value, "Stages"),1,0)</FilterExpression>
+                    <Operator>Equal</Operator>
+                    <FilterValues>
+                      <FilterValue DataType="Integer">1</FilterValue>
+                    </FilterValues>
+                  </Filter>
+                </Filters>
+                <Top>3.41667in</Top>
+                <Left>2in</Left>
+                <Height>0.5in</Height>
+                <Width>2.75in</Width>
+                <ZIndex>6</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <FontFamily>Calibri</FontFamily>
+                  <FontSize>11pt</FontSize>
+                </Style>
+              </Tablix>
+              <Textbox Name="Textbox75">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Total Churches</Value>
+                        <Style>
+                          <FontStyle>Normal</FontStyle>
+                          <FontFamily>Calibri</FontFamily>
+                          <FontSize>11pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <TextDecoration>None</TextDecoration>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox70</rd:DefaultName>
+                <Top>3.41667in</Top>
+                <Height>0.25in</Height>
+                <Width>2in</Width>
+                <ZIndex>7</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Tablix Name="Tablix8">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.75in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="HBFMetricAmount5">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#ebf1de", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#d8e4bc", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#c4d79b", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#76933c", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#4f6228", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>HBFMetricAmount</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>= SWITCH (Fields!SortOrder.Value = 1, "#ebf1de"
+	, Fields!SortOrder.Value = 2, "#d8e4bc"
+	, Fields!SortOrder.Value = 3, "#c4d79b"
+	, Fields!SortOrder.Value = 4, "#76933c"
+	, Fields!SortOrder.Value = 5, "#4f6228")</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox83">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#ebf1de", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#d8e4bc", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#c4d79b", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#76933c", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#4f6228", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox78</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>= SWITCH (Fields!SortOrder.Value = 1, "#ebf1de"
+	, Fields!SortOrder.Value = 2, "#d8e4bc"
+	, Fields!SortOrder.Value = 3, "#c4d79b"
+	, Fields!SortOrder.Value = 4, "#76933c"
+	, Fields!SortOrder.Value = 5, "#4f6228")</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox95">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#ebf1de", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#d8e4bc", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#c4d79b", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#76933c", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#4f6228", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox93</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>#eeece1</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="HBFMetricAmount6">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#ebf1de", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#d8e4bc", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#c4d79b", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#76933c", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#4f6228", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>HBFMetricAmount1</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>#eeece1</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="CalendarMonthAbbreviation5">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!CalendarMonthAbbreviation.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!MinistryMonth.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="MetricName5">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!MetricName.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!SortOrder.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="MetricName5">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>=Fields!MetricName.Value</Value>
+                                    <Style />
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>MetricName</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                    </TablixMember>
+                    <TablixMember>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="Textbox94">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>Total</Value>
+                                    <Style>
+                                      <FontWeight>Bold</FontWeight>
+                                      <Color>Red</Color>
+                                    </Style>
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>Textbox92</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                      <KeepWithGroup>Before</KeepWithGroup>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>FactHBFMetrics</DataSetName>
+                <Filters>
+                  <Filter>
+                    <FilterExpression>=Microsoft.VisualBasic.Strings.InStr(Fields!SectionName.Value, "International Stages")</FilterExpression>
+                    <Operator>Equal</Operator>
+                    <FilterValues>
+                      <FilterValue DataType="Integer">1</FilterValue>
+                    </FilterValues>
+                  </Filter>
+                </Filters>
+                <Top>2.84722in</Top>
+                <Left>2in</Left>
+                <Height>0.5in</Height>
+                <Width>2.75in</Width>
+                <ZIndex>8</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <FontFamily>Calibri</FontFamily>
+                  <FontSize>11pt</FontSize>
+                </Style>
+              </Tablix>
+              <Textbox Name="Textbox74">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Stages - International</Value>
+                        <Style>
+                          <FontStyle>Normal</FontStyle>
+                          <FontFamily>Calibri</FontFamily>
+                          <FontSize>11pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <TextDecoration>None</TextDecoration>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox70</rd:DefaultName>
+                <Top>2.84722in</Top>
+                <Height>0.25in</Height>
+                <Width>2in</Width>
+                <ZIndex>9</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Tablix Name="Tablix7">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.75in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="HBFMetricAmount4">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#ebf1de", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#d8e4bc", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#c4d79b", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#76933c", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#4f6228", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>HBFMetricAmount</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>= SWITCH (Fields!SortOrder.Value = 1, "#ebf1de"
+	, Fields!SortOrder.Value = 2, "#d8e4bc"
+	, Fields!SortOrder.Value = 3, "#c4d79b"
+	, Fields!SortOrder.Value = 4, "#76933c"
+	, Fields!SortOrder.Value = 5, "#4f6228")</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox82">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#ebf1de", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#d8e4bc", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#c4d79b", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#76933c", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#4f6228", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox78</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>= SWITCH (Fields!SortOrder.Value = 1, "#ebf1de"
+	, Fields!SortOrder.Value = 2, "#d8e4bc"
+	, Fields!SortOrder.Value = 3, "#c4d79b"
+	, Fields!SortOrder.Value = 4, "#76933c"
+	, Fields!SortOrder.Value = 5, "#4f6228")</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox93">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#ebf1de", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#d8e4bc", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#c4d79b", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#76933c", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#4f6228", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox93</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>#eeece1</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="HBFMetricAmount1">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#ebf1de", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#d8e4bc", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#c4d79b", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#76933c", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#4f6228", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>HBFMetricAmount1</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>#eeece1</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="CalendarMonthAbbreviation4">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!CalendarMonthAbbreviation.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!MinistryMonth.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="MetricName4">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!MetricName.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!SortOrder.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="MetricName4">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>=Fields!MetricName.Value</Value>
+                                    <Style />
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>MetricName</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                    </TablixMember>
+                    <TablixMember>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="Textbox92">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>Total</Value>
+                                    <Style>
+                                      <FontWeight>Bold</FontWeight>
+                                      <Color>Red</Color>
+                                    </Style>
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>Textbox92</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                      <KeepWithGroup>Before</KeepWithGroup>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>FactHBFMetrics</DataSetName>
+                <Filters>
+                  <Filter>
+                    <FilterExpression>=Microsoft.VisualBasic.Strings.InStr(Fields!SectionName.Value, "North American Stages")</FilterExpression>
+                    <Operator>Equal</Operator>
+                    <FilterValues>
+                      <FilterValue DataType="Integer">1</FilterValue>
+                    </FilterValues>
+                  </Filter>
+                </Filters>
+                <Top>2.27778in</Top>
+                <Left>2in</Left>
+                <Height>0.5in</Height>
+                <Width>2.75in</Width>
+                <ZIndex>10</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <FontFamily>Calibri</FontFamily>
+                  <FontSize>11pt</FontSize>
+                </Style>
+              </Tablix>
+              <Textbox Name="Textbox73">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Stages - North America</Value>
+                        <Style>
+                          <FontStyle>Normal</FontStyle>
+                          <FontFamily>Calibri</FontFamily>
+                          <FontSize>11pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <TextDecoration>None</TextDecoration>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox70</rd:DefaultName>
+                <Top>2.27778in</Top>
+                <Height>0.25in</Height>
+                <Width>2in</Width>
+                <ZIndex>11</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Tablix Name="Tablix6">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.75in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="HBFMetricAmount3">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#daeef3", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#b7dee8", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#92cddc", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#31869b", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#215967", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>HBFMetricAmount</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>= SWITCH (Fields!SortOrder.Value = 1, "#daeef3"
+	, Fields!SortOrder.Value = 2, "#b7dee8"
+	, Fields!SortOrder.Value = 3, "#92cddc"
+	, Fields!SortOrder.Value = 4, "#31869b"
+	, Fields!SortOrder.Value = 5, "#215967")</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox80">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, "Black"
+	, Fields!SortOrder.Value = 2, "Black"
+	, Fields!SortOrder.Value = 3, "Black"
+	, Fields!SortOrder.Value = 4, "White"
+, Fields!SortOrder.Value = 5, "White")</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox78</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>= SWITCH (Fields!SortOrder.Value = 1, "#daeef3"
+	, Fields!SortOrder.Value = 2, "#b7dee8"
+	, Fields!SortOrder.Value = 3, "#92cddc"
+	, Fields!SortOrder.Value = 4, "#31869b"
+	, Fields!SortOrder.Value = 5, "#215967")</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="CalendarMonthAbbreviation3">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!CalendarMonthAbbreviation.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!MinistryMonth.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="MetricName3">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!MetricName.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!SortOrder.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="MetricName3">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>=Fields!MetricName.Value</Value>
+                                    <Style />
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>MetricName</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>FactHBFMetrics</DataSetName>
+                <Filters>
+                  <Filter>
+                    <FilterExpression>=InStr(Fields!SectionName.Value, "Recruitment")</FilterExpression>
+                    <Operator>Equal</Operator>
+                    <FilterValues>
+                      <FilterValue DataType="Integer">1</FilterValue>
+                    </FilterValues>
+                  </Filter>
+                </Filters>
+                <Top>1.95833in</Top>
+                <Left>2in</Left>
+                <Height>0.25in</Height>
+                <Width>2.75in</Width>
+                <ZIndex>12</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <FontFamily>Calibri</FontFamily>
+                  <FontSize>11pt</FontSize>
+                </Style>
+              </Tablix>
+              <Textbox Name="Textbox72">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Recruiting - Total</Value>
+                        <Style>
+                          <FontStyle>Normal</FontStyle>
+                          <FontFamily>Calibri</FontFamily>
+                          <FontSize>11pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <TextDecoration>None</TextDecoration>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox70</rd:DefaultName>
+                <Top>1.95833in</Top>
+                <Height>0.25in</Height>
+                <Width>2in</Width>
+                <ZIndex>13</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Tablix Name="Tablix5">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.75in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="HBFMetricAmount2">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#daeef3", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#b7dee8", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#92cddc", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#31869b", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#215967", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>HBFMetricAmount</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>= SWITCH (Fields!SortOrder.Value = 1, "#daeef3"
+	, Fields!SortOrder.Value = 2, "#b7dee8"
+	, Fields!SortOrder.Value = 3, "#92cddc"
+	, Fields!SortOrder.Value = 4, "#31869b"
+	, Fields!SortOrder.Value = 5, "#215967")</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox79">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, "Black"
+	, Fields!SortOrder.Value = 2, "Black"
+	, Fields!SortOrder.Value = 3, "Black"
+	, Fields!SortOrder.Value = 4, "White"
+, Fields!SortOrder.Value = 5, "White")</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox78</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>= SWITCH (Fields!SortOrder.Value = 1, "#daeef3"
+	, Fields!SortOrder.Value = 2, "#b7dee8"
+	, Fields!SortOrder.Value = 3, "#92cddc"
+	, Fields!SortOrder.Value = 4, "#31869b"
+	, Fields!SortOrder.Value = 5, "#215967")</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="CalendarMonthAbbreviation2">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!CalendarMonthAbbreviation.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!MinistryMonth.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="MetricName2">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!MetricName.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!SortOrder.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="MetricName2">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>=Fields!MetricName.Value</Value>
+                                    <Style />
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>MetricName</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>FactHBFMetrics</DataSetName>
+                <Filters>
+                  <Filter>
+                    <FilterExpression>=InStr(Fields!SectionName.Value, "Recruitment (International)")</FilterExpression>
+                    <Operator>Equal</Operator>
+                    <FilterValues>
+                      <FilterValue DataType="Integer">1</FilterValue>
+                    </FilterValues>
+                  </Filter>
+                </Filters>
+                <Top>1.63889in</Top>
+                <Left>2in</Left>
+                <Height>0.25in</Height>
+                <Width>2.75in</Width>
+                <ZIndex>14</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <FontFamily>Calibri</FontFamily>
+                  <FontSize>11pt</FontSize>
+                </Style>
+              </Tablix>
+              <Textbox Name="Textbox71">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Recruiting - International</Value>
+                        <Style>
+                          <FontStyle>Normal</FontStyle>
+                          <FontFamily>Calibri</FontFamily>
+                          <FontSize>11pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <TextDecoration>None</TextDecoration>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox70</rd:DefaultName>
+                <Top>1.63889in</Top>
+                <Height>0.25in</Height>
+                <Width>2in</Width>
+                <ZIndex>15</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Tablix Name="Tablix4">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.75in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="HBFMetricAmount">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#daeef3", "Black")
+	, Fields!SortOrder.Value = 2, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#b7dee8", "Black")
+	, Fields!SortOrder.Value = 3, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#92cddc", "Black")
+	, Fields!SortOrder.Value = 4, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#31869b", "White")
+, Fields!SortOrder.Value = 5, IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "#215967", "White"))</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>HBFMetricAmount</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>= SWITCH (Fields!SortOrder.Value = 1, "#daeef3"
+	, Fields!SortOrder.Value = 2, "#b7dee8"
+	, Fields!SortOrder.Value = 3, "#92cddc"
+	, Fields!SortOrder.Value = 4, "#31869b"
+	, Fields!SortOrder.Value = 5, "#215967")</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox78">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, "Black"
+	, Fields!SortOrder.Value = 2, "Black"
+	, Fields!SortOrder.Value = 3, "Black"
+	, Fields!SortOrder.Value = 4, "White"
+, Fields!SortOrder.Value = 5, "White")</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox78</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>= SWITCH (Fields!SortOrder.Value = 1, "#daeef3"
+	, Fields!SortOrder.Value = 2, "#b7dee8"
+	, Fields!SortOrder.Value = 3, "#92cddc"
+	, Fields!SortOrder.Value = 4, "#31869b"
+	, Fields!SortOrder.Value = 5, "#215967")</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="CalendarMonthAbbreviation">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!CalendarMonthAbbreviation.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!MinistryMonth.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="MetricName">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!MetricName.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!SortOrder.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="MetricName">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>=Fields!MetricName.Value</Value>
+                                    <Style />
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>MetricName</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>FactHBFMetrics</DataSetName>
+                <Filters>
+                  <Filter>
+                    <FilterExpression>= InStr(Fields!SectionName.Value, "Recruitment (North America)")</FilterExpression>
+                    <Operator>Equal</Operator>
+                    <FilterValues>
+                      <FilterValue DataType="Integer">1</FilterValue>
+                    </FilterValues>
+                  </Filter>
+                </Filters>
+                <Top>1.31944in</Top>
+                <Left>2in</Left>
+                <Height>0.25in</Height>
+                <Width>2.75in</Width>
+                <ZIndex>16</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <FontFamily>Calibri</FontFamily>
+                  <FontSize>11pt</FontSize>
+                </Style>
+              </Tablix>
+              <Textbox Name="Textbox70">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Recruiting - North America</Value>
+                        <Style>
+                          <FontStyle>Normal</FontStyle>
+                          <FontFamily>Calibri</FontFamily>
+                          <FontSize>11pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <TextDecoration>None</TextDecoration>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox70</rd:DefaultName>
+                <Top>1.31944in</Top>
+                <Height>0.25in</Height>
+                <Width>2in</Width>
+                <ZIndex>17</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Tablix Name="Tablix2">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.75in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox12">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Aug</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>11pt</FontSize>
+                                        <Color>White</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox11</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Black</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox14">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Sep</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>11pt</FontSize>
+                                        <Color>White</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox13</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Black</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox16">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Oct</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>11pt</FontSize>
+                                        <Color>White</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox15</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Black</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox18">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Nov</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>11pt</FontSize>
+                                        <Color>White</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox17</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Black</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox20">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Dec</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>11pt</FontSize>
+                                        <Color>White</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox19</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Black</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox22">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Jan</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>11pt</FontSize>
+                                        <Color>White</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox21</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Black</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox24">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Feb</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>11pt</FontSize>
+                                        <Color>White</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox23</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Black</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox57">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Mar</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>11pt</FontSize>
+                                        <Color>White</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox25</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Black</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox58">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Apr</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>11pt</FontSize>
+                                        <Color>White</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox26</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Black</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox59">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>May</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>11pt</FontSize>
+                                        <Color>White</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox27</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Black</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox60">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Jun</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>11pt</FontSize>
+                                        <Color>White</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox28</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Black</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox61">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Jul</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>11pt</FontSize>
+                                        <Color>White</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox29</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Black</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox62">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Min - YTD</Value>
+                                      <Style>
+                                        <FontFamily>Calibri</FontFamily>
+                                        <FontSize>11pt</FontSize>
+                                        <Color>White</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style>
+                                    <TextAlign>Right</TextAlign>
+                                  </Style>
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox30</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Black</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                    <TablixMember />
+                    <TablixMember />
+                    <TablixMember />
+                    <TablixMember />
+                    <TablixMember />
+                    <TablixMember />
+                    <TablixMember />
+                    <TablixMember />
+                    <TablixMember />
+                    <TablixMember />
+                    <TablixMember />
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>FactHBFMetrics</DataSetName>
+                <Top>1in</Top>
+                <Left>3.5in</Left>
+                <Height>0.25in</Height>
+                <Width>6.75in</Width>
+                <ZIndex>18</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Tablix>
+              <Textbox Name="Textbox8">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Key Performance Indicators</Value>
+                        <Style>
+                          <FontFamily>calibri</FontFamily>
+                          <FontSize>12pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <Color>White</Color>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Center</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox7</rd:DefaultName>
+                <Top>0.75in</Top>
+                <Left>3.5in</Left>
+                <Height>0.25in</Height>
+                <Width>6.75in</Width>
+                <ZIndex>19</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <BackgroundColor>Black</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="Textbox7">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>Monthly KPI Report v1.5a</Value>
+                        <Style>
+                          <FontFamily>Calibri</FontFamily>
+                          <FontSize>14pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <Color>White</Color>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox7</rd:DefaultName>
+                <Top>0.75in</Top>
+                <Height>0.5in</Height>
+                <Width>3.5in</Width>
+                <ZIndex>20</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <BackgroundColor>Black</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Image Name="Logo">
+                <Source>Embedded</Source>
+                <Value>HBFLogos01event1</Value>
+                <Sizing>FitProportional</Sizing>
+                <Height>0.5in</Height>
+                <Width>2.5in</Width>
+                <ZIndex>21</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Image>
+              <Tablix Name="Tablix12">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>0.5in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>0.75in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.25in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="HBFMetricAmount11">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= IIF( Fields!MinistryMonth.Value &gt; Parameters!MinistryMonth.Value, "White", "Black")</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>HBFMetricAmount</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="Textbox88">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Sum(Fields!HBFMetricAmount.Value)</Value>
+                                      <Style>
+                                        <Color>= SWITCH (Fields!SortOrder.Value = 1, "Black"
+	, Fields!SortOrder.Value = 2, "Black"
+	, Fields!SortOrder.Value = 3, "Black"
+	, Fields!SortOrder.Value = 4, "White"
+, Fields!SortOrder.Value = 5, "White")</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox78</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="CalendarMonthAbbreviation9">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!CalendarMonthAbbreviation.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!MinistryMonth.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                    </TablixMember>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="MetricName9">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value />
+                                    <Style />
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>MetricName</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Style>Solid</Style>
+                              </Border>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>FactHBFMetrics</DataSetName>
+                <Filters>
+                  <Filter>
+                    <FilterExpression>=IIF(InStr(Fields!SectionName.Value, "New Plants"), 1, 0)</FilterExpression>
+                    <Operator>Equal</Operator>
+                    <FilterValues>
+                      <FilterValue DataType="Integer">1</FilterValue>
+                    </FilterValues>
+                  </Filter>
+                </Filters>
+                <Top>4.48611in</Top>
+                <Left>2in</Left>
+                <Height>0.25in</Height>
+                <Width>2.75in</Width>
+                <ZIndex>22</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <FontFamily>Calibri</FontFamily>
+                  <FontSize>11pt</FontSize>
+                </Style>
+              </Tablix>
+              <Textbox Name="Textbox121">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>= "HBF Metric data last updated: " + First(Fields!LastUpdatedDateTime.Value, "LastUpdate")</Value>
+                        <Style>
+                          <FontFamily>calibri</FontFamily>
+                          <FontSize>11pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>Textbox121</rd:DefaultName>
+                <Top>5.32028in</Top>
+                <Height>0.25in</Height>
+                <Width>10.25in</Width>
+                <ZIndex>23</ZIndex>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+            </ReportItems>
+            <PageName>HBF Lead KPIs</PageName>
+            <KeepTogether>true</KeepTogether>
+            <Top>0.25in</Top>
+            <Left>0.24999in</Left>
+            <Height>5.81125in</Height>
+            <Width>10.54167in</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Rectangle>
+        </ReportItems>
+        <Height>6.06125in</Height>
+        <Style />
+      </Body>
+      <Width>11.06249in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="MinistryYear">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>= IIF(DatePart(DateInterval.Month, DateAdd(DateInterval.Month, -1, Now())) &lt;= 7, DatePart(DateInterval.Year, DateAdd(DateInterval.Month, -1, Now())), DatePart(DateInterval.Year, DateAdd(DateInterval.Month, -1, Now())) + 1)</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Ministry Year</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="MinistryMonth">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>= IIF(DatePart(DateInterval.Month, DateAdd(DateInterval.Month, -1, Now())) &lt;= 7, DatePart(DateInterval.Month, DateAdd(DateInterval.Month, 4, Now())), DatePart(DateInterval.Month, DateAdd(DateInterval.Month, -8, Now())))</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Ministry Month</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>6</Value>
+            <Label>January</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>7</Value>
+            <Label>February</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>8</Value>
+            <Label>March</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>9</Value>
+            <Label>April</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>10</Value>
+            <Label>May</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>11</Value>
+            <Label>June</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>12</Value>
+            <Label>July</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>1</Value>
+            <Label>August</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>2</Value>
+            <Label>September</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>3</Value>
+            <Label>October</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>4</Value>
+            <Label>November</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>5</Value>
+            <Label>December</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="TenantID">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>3</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>TenantID</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="username">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>username</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+  </ReportParameters>
+  <EmbeddedImages>
+    <EmbeddedImage Name="HBFLogos01event">
+      <MIMEType>image/png</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+    <EmbeddedImage Name="HBFLogos01event1">
+      <MIMEType>image/png</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>4c56d3e5-fa36-4fc0-b2da-0ed7755824db</rd:ReportID>
+</Report>
