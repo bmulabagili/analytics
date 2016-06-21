@@ -418,7 +418,7 @@
                       <Paragraph>
                         <TextRuns>
                           <TextRun>
-                            <Value />
+                            <Value>.8</Value>
                             <Style>
                               <FontFamily>Calibri</FontFamily>
                               <FontSize>12pt</FontSize>
@@ -652,7 +652,7 @@
             </Paragraphs>
             <rd:DefaultName>Textbox38</rd:DefaultName>
             <Height>0.25in</Height>
-            <Width>9.2in</Width>
+            <Width>10.11727in</Width>
             <Style>
               <Border>
                 <Style>Solid</Style>
@@ -7900,7 +7900,7 @@
         <KeepTogether>true</KeepTogether>
         <Top>1.50023in</Top>
         <Height>13.82231in</Height>
-        <Width>9.2in</Width>
+        <Width>10.11727in</Width>
         <ZIndex>1</ZIndex>
         <Style>
           <Border>
@@ -8935,7 +8935,7 @@
         <KeepTogether>true</KeepTogether>
         <Top>15.42822in</Top>
         <Height>2.0625in</Height>
-        <Width>9.2in</Width>
+        <Width>10.11727in</Width>
         <ZIndex>2</ZIndex>
         <Style>
           <Border>
@@ -8968,7 +8968,7 @@
         <rd:DefaultName>Textbox19</rd:DefaultName>
         <Top>17.56016in</Top>
         <Height>0.25in</Height>
-        <Width>6.83333in</Width>
+        <Width>10.11727in</Width>
         <ZIndex>3</ZIndex>
         <Style>
           <Border>
@@ -9000,7 +9000,7 @@
         <rd:DefaultName>Textbox151</rd:DefaultName>
         <Top>17.81016in</Top>
         <Height>0.25in</Height>
-        <Width>6.83333in</Width>
+        <Width>10.11727in</Width>
         <ZIndex>4</ZIndex>
         <Style>
           <Border>
@@ -9016,7 +9016,7 @@
     <Height>18.20808in</Height>
     <Style />
   </Body>
-  <Width>9.29404in</Width>
+  <Width>10.39852in</Width>
   <Page>
     <PageHeight>8.5in</PageHeight>
     <PageWidth>11in</PageWidth>
@@ -9150,6 +9150,30 @@ ORDER BY MinistryMonth</CommandText>
 		  END
 		, DimCampus.Code
 		UNION
+		--Fill in Campus and other "as campuses"
+		SELECT DISTINCT	
+		  ReportPeriod.MinistryYear
+		, ReportPeriod.MinistryMonth
+		, ReportPeriod.MonthLabel
+		--, DimMinistry.Name, Dimministry.CampusID, dimministry.CampusID
+		--, DimActivity.Name, DimActivity.MinistryID, DimActivity.CampusID, FactAttendance.CampusID
+		--, DimAttendanceType.Category
+		, 'Weekend Worship - Adult Headcount'  AS SectionName
+		, 'Camp-Other' AS CampusCode
+		, SUM(AttendanceCount) AS AttendanceSum
+		, COUNT( DISTINCT WeekCount ) AS WeekCount		
+		FROM DW.FactAttendance
+		INNER JOIN ReportPeriod
+			ON FactAttendance.InstanceDateID = ReportPeriod.DateID
+		INNER JOIN DW.DimMinistry
+			ON FactAttendance.MinistryID = DimMinistry.MinistryID
+		WHERE
+			DimMinistry.Name IN ('Camp','Other')
+		GROUP BY
+			ReportPeriod.MinistryYear
+			, ReportPeriod.MinistryMonth
+			, ReportPeriod.MonthLabel
+		UNION
 		--fill in the 0 rows here
 		SELECT  DISTINCT ReportPeriod.MinistryYear, ReportPeriod.MinistryMonth, ReportPeriod.MonthLabel
 			, 'Weekend Worship - Childrens' AS SectionName, DimCampus.Code, 0 AS AttendanceSum, 0 AS WeekCount
@@ -9174,7 +9198,34 @@ ORDER BY MinistryMonth</CommandText>
 		SELECT  DISTINCT ReportPeriod.MinistryYear, ReportPeriod.MinistryMonth, ReportPeriod.MonthLabel
 			, 'WFC - All Volunteers' AS SectionName, DimCampus.Code, 0 AS AttendanceSum, 0 AS WeekCount
 		FROM ReportPeriod, DW.DimCampus
-		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')		
+		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')	
+		UNION
+
+		SELECT  DISTINCT ReportPeriod.MinistryYear, ReportPeriod.MinistryMonth, ReportPeriod.MonthLabel
+			, 'Weekend Worship - Childrens' AS SectionName, 'Camp-Other', 0 AS AttendanceSum, 0 AS WeekCount
+		FROM ReportPeriod, DW.DimCampus
+		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		UNION
+		SELECT  DISTINCT ReportPeriod.MinistryYear, ReportPeriod.MinistryMonth, ReportPeriod.MonthLabel
+			, 'Weekend Worship - Childrens Volunteers' AS SectionName, 'Camp-Other', 0 AS AttendanceSum, 0 AS WeekCount
+		FROM ReportPeriod, DW.DimCampus
+		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		UNION
+		SELECT  DISTINCT ReportPeriod.MinistryYear, ReportPeriod.MinistryMonth, ReportPeriod.MonthLabel
+			, 'Weekend Worship' AS SectionName, 'Camp-Other', 0 AS AttendanceSum, 0 AS WeekCount
+		FROM ReportPeriod, DW.DimCampus
+		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		UNION
+		SELECT  DISTINCT ReportPeriod.MinistryYear, ReportPeriod.MinistryMonth, ReportPeriod.MonthLabel
+			, 'Weekend Worship - Adult Headcount' AS SectionName, 'Camp-Other', 0 AS AttendanceSum, 0 AS WeekCount
+		FROM ReportPeriod, DW.DimCampus
+		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		UNION
+		SELECT  DISTINCT ReportPeriod.MinistryYear, ReportPeriod.MinistryMonth, ReportPeriod.MonthLabel
+			, 'WFC - All Volunteers' AS SectionName, 'Camp-Other', 0 AS AttendanceSum, 0 AS WeekCount
+		FROM ReportPeriod, DW.DimCampus
+		WHERE DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')	
+			
 )
 SELECT 
 	  MinistryYear
@@ -9188,12 +9239,14 @@ SELECT
 		WHEN 'CL' THEN 4
 		WHEN 'CC' THEN 5
 		WHEN 'AU' THEN 6
-		WHEN 'DR' THEN 7 END AS CampusOrder
+		WHEN 'DR' THEN 7 
+		WHEN 'Camp-Other' THEN 8 END AS CampusOrder
 	, CampusCode
 	, SUM(AttendanceSum) AS AttendanceSum
 	, ISNULL(NULLIF(SUM(WeekCount), 0), 1) AS WeekCount
 FROM ZeroFilledAttendance
---WHERE --sectionname like 'Weekend Worship%' and CampusCode = 'cc'
+--WHERE --sectionname like '%weekend worship%' --and 
+--CampusCode = 'Camp-Other' --and MinistryMonth = @MinistryMonth
 GROUP BY
 	  MinistryYear
 	, MinistryMonth
@@ -9207,17 +9260,14 @@ GROUP BY
 		WHEN 'CL' THEN 4
 		WHEN 'CC' THEN 5
 		WHEN 'AU' THEN 6
-		WHEN 'DR' THEN 7 END
+		WHEN 'DR' THEN 7 
+		WHEN 'Camp-Other' THEN 8 END
 ORDER BY
 	  MinistryYear
 	, MinistryMonth
 	, SectionName
 	, CampusOrder	
-
-
-
-
---</CommandText>
+</CommandText>
       </Query>
       <Fields>
         <Field Name="MinistryYear">
@@ -9333,6 +9383,15 @@ FROM DW.FactAttendance</CommandText>
 	FROM ReportPeriod, DW.DimCampus
 	WHERE
 		DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+	UNION
+	SELECT 
+		  ReportPeriod.MinistryYear
+		, ReportPeriod.MinistryMonth
+		, ReportPeriod.MonthLabel
+		, 'Camp-Other' AS CampusCode
+		, 0 AS AttendanceSum
+		, 0 AS WeekCount
+	FROM ReportPeriod
 )
 SELECT
 	  MinistryYear
@@ -9345,7 +9404,8 @@ SELECT
 		WHEN 'CL' THEN 4
 		WHEN 'CC' THEN 5
 		WHEN 'AU' THEN 6
-		WHEN 'DR' THEN 7 END AS CampusOrder
+		WHEN 'DR' THEN 7 
+		WHEN 'Camp-Other' THEN 8 END AS CampusOrder
 	, CampusCode
 	, SUM(AttendanceSum) AS AttendanceSum
 	, ISNULL(NULLIF(SUM(WeekCount), 0), 1) AS WeekCount
@@ -9361,7 +9421,8 @@ GROUP BY
 		WHEN 'CL' THEN 4
 		WHEN 'CC' THEN 5
 		WHEN 'AU' THEN 6
-		WHEN 'DR' THEN 7 END
+		WHEN 'DR' THEN 7 
+		WHEN 'Camp-Other' THEN 8 END
 	, CampusCode
 ORDER BY
 	1,2,4
@@ -9458,6 +9519,14 @@ ORDER BY
 	FROM ReportPeriod, DW.DimCampus
 	WHERE
 		DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+	UNION
+	SELECT DISTINCT
+		  ReportPeriod.MinistryYear
+		, ReportPeriod.MinistryMonth
+		, ReportPeriod.MonthLabel
+		, 0 AS StewardshipGivingAmount
+		, 'Camp-Other' AS CampusCode
+	FROM ReportPeriod
 )
 SELECT
 	  MinistryYear
@@ -9470,7 +9539,8 @@ SELECT
 		WHEN 'CL' THEN 4
 		WHEN 'CC' THEN 5
 		WHEN 'AU' THEN 6
-		WHEN 'DR' THEN 7 END AS CampusOrder
+		WHEN 'DR' THEN 7 
+		WHEN 'Camp-Other' THEN 8 END AS CampusOrder
 	, CampusCode
 	, SUM(StewardshipGivingAmount) AS StewardshipGivingAmount
 FROM ZeroFilledStewardshipGiving
@@ -9485,12 +9555,11 @@ GROUP BY
 		WHEN 'CL' THEN 4
 		WHEN 'CC' THEN 5
 		WHEN 'AU' THEN 6
-		WHEN 'DR' THEN 7 END
+		WHEN 'DR' THEN 7 
+		WHEN 'Camp-Other' THEN 8 END
 	, CampusCode
 ORDER BY
-	1,2,4
-
-</CommandText>
+	1,2,4</CommandText>
       </Query>
       <Fields>
         <Field Name="MinistryYear">
