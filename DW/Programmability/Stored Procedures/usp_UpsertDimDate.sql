@@ -15,6 +15,7 @@ AS
 		--When a week is split over 2 calendar months, the Sunday date determines which month the KPI report data gets calculated into.
 		--UNLESS that would cause days to move into the next calendar year (from july - august)
 		--weekly data is defined starting Monday 12:00 AM through Sunday 11:59 PM
+		--Due to the complex logic of Minsitry calendars, either start on @startdate '8/1/yyyy' or start with a year before the one you need.
 	--School   Year: 6/1/yyyy - 5/31/yyyy
 
      --REMOVE existing rows	
@@ -58,7 +59,10 @@ AS
 
 	DECLARE @CalendarWeekStartLabel NVARCHAR(255), @CalendarWeekEndLabel NVARCHAR(255);
 	DECLARE @MinistryDayOfWeek INT, @MinistryWeekStartLabel NVARCHAR(255), @MinistryWeekEndLabel NVARCHAR(255)
-		, @MinistryWeek INT;
+		, @MinistryWeek INT, @MinistryQuarter TINYINT, @MinistryQuarterLabel VARCHAR(50), @MinistryYear INT;
+
+	--Initialize @MinistryYear
+	SET @MinistryYear = YEAR(@CurrentDate);
 
     --Proceed only if Start Date(Current date ) is less than End date you specified above
     WHILE @CurrentDate < @EndDate
@@ -72,8 +76,13 @@ AS
 			
 			--Reset the Ministry week to 1 on 8/1/yyyy
 			IF MONTH(@CurrentDate) = 8 AND DATEPART(DAY, @CurrentDate) = 1
+			BEGIN
 				SET @MinistryWeek = 1
-					
+				--also reset the @MinistryWeekStartLabel for 8/1/yyyy
+				SET @MinistryWeekStartLabel = CONVERT(  CHAR(10), @CurrentDate, 101)
+				--Set the MinistryYear ahead one.
+				SET @MinistryYear = YEAR(@CurrentDate) + 1;
+			END	
 			--Handle Ministry week labels
 			SET @MinistryDayOfWeek = CASE WHEN DATEPART(WEEKDAY, @CurrentDate) BETWEEN 2 AND 7 THEN DATEPART(WEEKDAY, @CurrentDate) - 1 ELSE 7 END;
 			IF @MinistryDayOfWeek = 1 
@@ -81,7 +90,7 @@ AS
 				SET @MinistryWeekStartLabel = CONVERT(  CHAR(10), @CurrentDate, 101)
 				SET @MinistryWeekEndLabel = CONVERT(  CHAR(10), DATEADD(DAY, 6, @CurrentDate), 101)
 				--Increment the @MinistryWeek too, Don't start at ministry week 2 if the first day of the ministry year is also a Monday
-				IF MONTH(@CurrentDate) = 8 AND DATEPART(DAY, @CurrentDate) <> 1
+				IF  NOT(MONTH(@CurrentDate) = 8 AND DATEPART(DAY, @CurrentDate) = 1)
 					SET @MinistryWeek = @MinistryWeek + 1
 			END
 
@@ -133,6 +142,27 @@ AS
 				SET @MinistryMonthAbbreviation = LEFT(CONVERT(VARCHAR(20), DATEADD(DAY, 1, @CurrentDate) , 107), 3)
 				SET @MinistryMonthLabel = DATENAME(MONTH, DATEADD(DAY, 1, @CurrentDate)) 
 			END
+			
+
+
+			--Set the @MinistryQuarter TINYINT, @MinistryQuarterLabel VARCHAR(50);
+			SET @MinistryQuarter =
+				CASE @MinistryMonth
+					WHEN 1  THEN 1
+					WHEN 2  THEN 1
+					WHEN 3  THEN 1
+					WHEN 4  THEN 2
+					WHEN 5  THEN 2
+					WHEN 6  THEN 2
+					WHEN 7  THEN 3
+					WHEN 8  THEN 3
+					WHEN 9  THEN 3
+					WHEN 10 THEN 4
+					WHEN 11 THEN 4
+					WHEN 12 THEN 4 END;
+
+			SET @MinistryQuarterLabel = 'Q' + CONVERT(CHAR(1), @MinistryQuarter) + '-' + CONVERT(CHAR(4), @MinistryYear);
+
 
              --Begin day of week logic
 
@@ -303,13 +333,11 @@ AS
 			 , @MinistryMonthLabel AS MinistryMonthLabel
 			 --The ministry Day of month won't always be right, correct it later         
 			 , NULL AS MinistryDayOfMonth           
-			 , CASE WHEN @currentDate = CONVERT(  DATETIME, CONVERT(DATE, DATEADD(DD, -(DATEPART(DD, (DATEADD(MM, 1, @CurrentDate)))), DATEADD(MM, 1, @CurrentDate))))
-				THEN 1
-				ELSE 0 END AS MinistryLastDayOfMonthFlag
-			 , NULL AS MinistryQuarter  
-			 , NULL AS MinistryQuarterLabel         
-			 , CASE WHEN @CurrentMonth BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END AS MinistryYear   
-			 , CONVERT(VARCHAR(4), CASE WHEN @CurrentMonth BETWEEN 1 AND 7 THEN DATEPART(YEAR, @CurrentDate) ELSE DATEPART(YEAR, @CurrentDate) + 1 END) AS MinistryYearLabel   
+			 , NULL AS MinistryLastDayOfMonthFlag
+			 , @MinistryQuarter AS MinistryQuarter  
+			 , @MinistryQuarterLabel AS MinistryQuarterLabel         
+			 , @MinistryYear AS MinistryYear   
+			 , CONVERT(VARCHAR(4), @MinistryYear) AS MinistryYearLabel   
 			 --the ministrydayofyear will be corrected via update
 			 , NULL AS MinistryDayOfYear     
 
@@ -352,6 +380,7 @@ AS
          
              SET @CurrentDate = DATEADD(DD, 1, @CurrentDate);
          END;
+
 	--Correct MinistryDayOfMonth
     ;WITH MinistryDaysInMonth AS (
 		SELECT DateID, MinistryMonth, MinistryYear
@@ -363,23 +392,20 @@ AS
 	INNER JOIN MinistryDaysInMonth
 		ON DimDate.DateID = MinistryDaysInMonth.DateID;
 
-	--Correct MinsitryWeek
-	--abandon this version, try to do it in the loop
-	--;WITH MinistryWeek AS (
-	--	SELECT
-	--	  DateID, CalendarWeek, CalendarMonth
-	--	, MinistryYear
-	--	, MinistryMonth
-	--	, MinistryDayOfWeek
-	--	, DENSE_RANK() OVER (PARTITION BY MinistryYear, MinistryDayOfWeek ORDER BY MinistryMonth, MinistryDayOfMonth) AS MinistryWeek
-	--FROM DW.DimDate
-	--)
-	--UPDATE DimDate SET DimDate.MinistryWeek = MinistryWeek.MinistryWeek
-	--FROM DW.DimDate
-	--INNER JOIN MinistryWeek
-	--	ON DimDate.DateID = MinistryWeek.DateID
-	--;	
-
+	--correct MinistryLastDayOfMonthFlag
+	;WITH MinistryLastDayOfMonthFlag AS (
+		SELECT MinistryYear, MinistryMonth, MAX(DateID) AS MinistryLastDateIDOfMonth
+		FROM DW.DimDate
+		GROUP BY
+			MinistryYear, MinistryMonth
+	)
+	UPDATE DimDate SET DimDate.MinistryLastDayOfMonthFlag = 
+		CASE WHEN DimDate.DateID = MinistryLastDayOfMonthFlag.MinistryLastDateIDOfMonth THEN 1 ELSE 0 END
+	FROM DW.DimDate
+	INNER JOIN MinistryLastDayOfMonthFlag
+		ON DimDate.MinistryYear = MinistryLastDayOfMonthFlag.MinistryYear
+		AND DimDate.MinistryMonth = MinistryLastDayOfMonthFlag.MinistryMonth;
+		
 	--Correct MinistryDayOfYear
 	;WITH MinistryDayOfYear AS (
 		SELECT
@@ -539,3 +565,4 @@ AS
      
      RETURN 0;
 GO
+
