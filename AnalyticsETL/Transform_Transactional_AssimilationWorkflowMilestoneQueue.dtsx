@@ -12,8 +12,8 @@
   DTS:ObjectName="Transform_Transactional_AssimilationWorkflowMilestoneQueue"
   DTS:PackageType="5"
   DTS:ProtectionLevel="2"
-  DTS:VersionBuild="181"
-  DTS:VersionGUID="{E7EA5A94-615F-4E44-A998-4AA7F844D989}">
+  DTS:VersionBuild="182"
+  DTS:VersionGUID="{AFBA9813-E6BD-4502-9B76-E810019F68E2}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:LogProviders>
@@ -1164,6 +1164,7 @@ where [refTable].[TenantID] = ? and [refTable].[WorkflowMilestoneTypeID] = ? and
 FROM [Extract].[FellowshipOne_Assignment]
 WHERE
 	LTRIM(RTRIM(IndividualID)) &lt;&gt; '' -- no blank person ids
+	AND LTRIM(RTRIM(IndividualID)) &lt;&gt; '0' -- no 0 person ids
 	AND LTRIM(RTRIM(IndividualID)) &lt;&gt; 'Individual ID' -- no header rows</property>
                 <property
                   dataType="System.Int32"
@@ -1374,7 +1375,8 @@ WHERE
 		ELSE -1 END AS AttendanceCount
 FROM [Extract].[FellowshipOne_AssimilationAttendance]
 WHERE 
-	ISNUMERIC(RowNumber) &lt;&gt; 0 -- remove header rows from the source files.</property>
+	ISNUMERIC(RowNumber) &lt;&gt; 0 -- remove header rows from the source files.
+	AND LTRIM(RTRIM(IndividualID)) &lt;&gt; '0' -- no 0 person ids</property>
                 <property
                   dataType="System.Int32"
                   description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
@@ -1596,7 +1598,8 @@ WHERE
 	
 	FROM [Extract].[FellowshipOne_Attribute]
 	WHERE
-		LTRIM(RTRIM(Individual_ID)) &lt;&gt; '' -- no blank personids</property>
+		LTRIM(RTRIM(Individual_ID)) &lt;&gt; '' -- no blank personids
+		AND LTRIM(RTRIM(Individual_ID)) &lt;&gt; '0' -- no 0 person ids</property>
                 <property
                   dataType="System.Int32"
                   description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
@@ -1778,7 +1781,10 @@ SELECT DISTINCT
 	, LTRIM(RTRIM(textbox18)) AS ContactFormName
 	, LTRIM(RTRIM(textbox10)) AS ContactItemName
 	, LTRIM(RTRIM(textbox8)) AS MinistryName
-FROM [Extract].[FellowshipOne_ContactItem]</property>
+FROM [Extract].[FellowshipOne_ContactItem]
+WHERE
+	LTRIM(RTRIM(Individual_ID)) &lt;&gt; '' -- no blank
+	AND LTRIM(RTRIM(Individual_ID)) &lt;&gt; '0' -- no 0</property>
                 <property
                   dataType="System.Int32"
                   description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
