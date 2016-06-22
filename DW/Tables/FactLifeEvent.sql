@@ -47,8 +47,8 @@
 	, CONSTRAINT FK_DWFactLifeEvent_DWDimIndividualStatus__IndividualStatusID_TenantID
 		FOREIGN KEY(IndividualStatusID, TenantID)
 		REFERENCES DW.DimIndividualStatus(IndividualStatusID, TenantID)
-	, CONSTRAINT FK_DWFactLifeEvent_DWDimDate__InstanceDateID_DateID
-		FOREIGN KEY(InstanceDateID)
-		REFERENCES DW.DimDate(DateID)
+	--, CONSTRAINT FK_DWFactLifeEvent_DWDimDate__InstanceDateID_DateID
+	--	FOREIGN KEY(InstanceDateID)
+	--	REFERENCES DW.DimDate(DateID)
 
 );

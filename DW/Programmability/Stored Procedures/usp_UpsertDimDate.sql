@@ -57,7 +57,8 @@ AS
     SET @CurrentQuarter = DATEPART(QQ, @CurrentDate);
 
 	DECLARE @CalendarWeekStartLabel NVARCHAR(255), @CalendarWeekEndLabel NVARCHAR(255);
-	DECLARE @MinistryDayOfWeek INT, @MinistryWeekStartLabel NVARCHAR(255), @MinistryWeekEndLabel NVARCHAR(255);
+	DECLARE @MinistryDayOfWeek INT, @MinistryWeekStartLabel NVARCHAR(255), @MinistryWeekEndLabel NVARCHAR(255)
+		, @MinistryWeek INT;
 
     --Proceed only if Start Date(Current date ) is less than End date you specified above
     WHILE @CurrentDate < @EndDate
@@ -68,6 +69,10 @@ AS
 				SET @CalendarWeekStartLabel = CONVERT(  CHAR(10), @CurrentDate, 101)
 				SET @CalendarWeekEndLabel = CONVERT(  CHAR(10), DATEADD(DAY, 6, @CurrentDate), 101)
 			END
+			
+			--Reset the Ministry week to 1 on 8/1/yyyy
+			IF MONTH(@CurrentDate) = 8 AND DATEPART(DAY, @CurrentDate) = 1
+				SET @MinistryWeek = 1
 					
 			--Handle Ministry week labels
 			SET @MinistryDayOfWeek = CASE WHEN DATEPART(WEEKDAY, @CurrentDate) BETWEEN 2 AND 7 THEN DATEPART(WEEKDAY, @CurrentDate) - 1 ELSE 7 END;
@@ -75,6 +80,9 @@ AS
 			BEGIN
 				SET @MinistryWeekStartLabel = CONVERT(  CHAR(10), @CurrentDate, 101)
 				SET @MinistryWeekEndLabel = CONVERT(  CHAR(10), DATEADD(DAY, 6, @CurrentDate), 101)
+				--Increment the @MinistryWeek too, Don't start at ministry week 2 if the first day of the ministry year is also a Monday
+				IF MONTH(@CurrentDate) = 8 AND DATEPART(DAY, @CurrentDate) <> 1
+					SET @MinistryWeek = @MinistryWeek + 1
 			END
 
 			--default Ministry Month Handler:
@@ -275,7 +283,7 @@ AS
 			             
 			-- Ministry Dates
 			---fix ministry week in an update
-			 , NULL AS MinistryWeek  
+			 , @MinistryWeek AS MinistryWeek  
 			 , @MinistryWeekStartLabel AS MinistryWeekStartLabel       
 			 , @MinistryWeekEndLabel AS MinistryWeekEndLabel         
 			 --shift all day of week - 1 (from first day of week sunday, to first day of week is monday)
@@ -356,20 +364,21 @@ AS
 		ON DimDate.DateID = MinistryDaysInMonth.DateID;
 
 	--Correct MinsitryWeek
-	;WITH MinistryWeek AS (
-		SELECT
-		  DateID, CalendarWeek, CalendarMonth
-		, MinistryYear
-		, MinistryMonth
-		, MinistryDayOfWeek
-		, DENSE_RANK() OVER (PARTITION BY MinistryYear, MinistryDayOfWeek ORDER BY MinistryMonth, MinistryDayOfMonth) AS MinistryWeek
-	FROM DW.DimDate
-	)
-	UPDATE DimDate SET DimDate.MinistryWeek = MinistryWeek.MinistryWeek
-	FROM DW.DimDate
-	INNER JOIN MinistryWeek
-		ON DimDate.DateID = MinistryWeek.DateID
-	;	
+	--abandon this version, try to do it in the loop
+	--;WITH MinistryWeek AS (
+	--	SELECT
+	--	  DateID, CalendarWeek, CalendarMonth
+	--	, MinistryYear
+	--	, MinistryMonth
+	--	, MinistryDayOfWeek
+	--	, DENSE_RANK() OVER (PARTITION BY MinistryYear, MinistryDayOfWeek ORDER BY MinistryMonth, MinistryDayOfMonth) AS MinistryWeek
+	--FROM DW.DimDate
+	--)
+	--UPDATE DimDate SET DimDate.MinistryWeek = MinistryWeek.MinistryWeek
+	--FROM DW.DimDate
+	--INNER JOIN MinistryWeek
+	--	ON DimDate.DateID = MinistryWeek.DateID
+	--;	
 
 	--Correct MinistryDayOfYear
 	;WITH MinistryDayOfYear AS (
