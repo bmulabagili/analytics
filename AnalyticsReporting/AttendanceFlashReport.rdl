@@ -3111,7 +3111,7 @@ ORDER BY ActualDate DESC</CommandText>
 			, 'Camp'
 			, 'Other') THEN 'ADULTS' ELSE
 			'KIDS' END AS AttendanceCategory
-		, FactAttendance.AttendanceCount
+		, SUM(FactAttendance.AttendanceCount) AS AttendanceCount
 	FROM DW.FactAttendance
 	INNER JOIN LastTwoWeekends 
 		ON FactAttendance.InstanceDateID IN ( LastTwoWeekends.DateID, LastTwoWeekends.DateID -1) -- Saturday AND Sunday
@@ -3133,6 +3133,24 @@ ORDER BY ActualDate DESC</CommandText>
 			, 'Camp'
 			, 'Other')
 		OR DimMinistry.Name LIKE '%Harvest Kids'
+	GROUP BY
+		LastTwoWeekends.SectionName
+		, LastTwoWeekends.ActualDate 
+		--, DimCampus.Code
+		, CASE WHEN DimCampus.Code = '--' AND DimMinistry.Name IN ('Camp','Other') THEN 'Camp / Other' ELSE 
+			CASE WHEN DimCampus.Code  = '--' THEN Campus2.Code ELSE DimCampus.Code END END
+		, DimMinistry.Name 
+		, CASE WHEN DimMinistry.Name IN (
+			  'AU - Churchwide Services'
+			, 'CC - Churchwide Services'
+			, 'CL - Churchwide Services'
+			, 'DR - Chuchwide Services'
+			, 'EL - Churchwide Services'
+			, 'NI - Churchwide Services'
+			, 'RM - Churchwide Services'
+			, 'Camp'
+			, 'Other') THEN 'ADULTS' ELSE
+			'KIDS' END
 	UNION
 	SELECT 
 		  LastTwoWeekends.SectionName
@@ -3187,7 +3205,9 @@ GROUP BY
 	, Campus
 	, MinistryName
 	, AttendanceCategory
-ORDER BY 1,2,3,4</CommandText>
+ORDER BY 1,2,3,4
+
+</CommandText>
       </Query>
       <Fields>
         <Field Name="SectionName">
