@@ -3088,9 +3088,9 @@ ORDER BY ActualDate DESC</CommandText>
 		AND CalendarDayOfWeekLabel = 'Sunday'
 	ORDER BY ActualDate DESC)
 , LastTwoWeekends AS (
-	SELECT 'Current Week' AS SectionName, LastTwoSundays.ActualDate, DateID FROM LastTwoSundays
+	SELECT TOP 1 'Current Week' AS SectionName, LastTwoSundays.ActualDate, DateID FROM LastTwoSundays ORDER BY DateID DESC
 	UNION
-	SELECT 'Previous Week' AS SectionName, LastTwoSundays.ActualDate, DateID -1  FROM LastTwoSundays
+	SELECT TOP 1 'Previous Week' AS SectionName, LastTwoSundays.ActualDate, DateID -1  FROM LastTwoSundays ORDER BY DateID 
 ), FullAttendance AS (
 	SELECT 
 		  LastTwoWeekends.SectionName
@@ -3113,7 +3113,7 @@ ORDER BY ActualDate DESC</CommandText>
 		, FactAttendance.AttendanceCount
 	FROM DW.FactAttendance
 	INNER JOIN LastTwoWeekends 
-		ON FactAttendance.InstanceDateID = LastTwoWeekends.DateID
+		ON FactAttendance.InstanceDateID IN ( LastTwoWeekends.DateID, LastTwoWeekends.DateID -1) -- Saturday AND Sunday
 	INNER JOIN DW.DimMinistry
 		ON FactAttendance.MinistryID = DimMinistry.MinistryID
 	LEFT JOIN DW.DimCampus
@@ -3155,7 +3155,8 @@ ORDER BY ActualDate DESC</CommandText>
 	FROM LastTwoWeekends
 )
 SELECT
-	SectionName, WeekendDate
+	  SectionName
+	, WeekendDate
 	, CASE Campus
 		WHEN 'RM' THEN 2
 		WHEN 'EL' THEN 3
@@ -3165,10 +3166,14 @@ SELECT
 		WHEN 'AU' THEN 7
 		WHEN 'DR' THEN 8
 		WHEN 'Camp / Other' THEN 9 END AS RowNumber
-	, Campus, MinistryName, AttendanceCategory, SUM(AttendanceCount) AS AttendanceCount
+	, Campus
+	, MinistryName
+	, AttendanceCategory
+	, SUM(AttendanceCount) AS AttendanceCount
 FROM FullAttendance
 GROUP BY 
-	SectionName, WeekendDate
+	  SectionName
+	, WeekendDate
 	, CASE Campus
 		WHEN 'RM' THEN 2
 		WHEN 'EL' THEN 3
@@ -3178,9 +3183,10 @@ GROUP BY
 		WHEN 'AU' THEN 7
 		WHEN 'DR' THEN 8
 		WHEN 'Camp / Other' THEN 9 END
-	, Campus, MinistryName, AttendanceCategory
-ORDER BY 1,2,3,4
-</CommandText>
+	, Campus
+	, MinistryName
+	, AttendanceCategory
+ORDER BY 1,2,3,4</CommandText>
       </Query>
       <Fields>
         <Field Name="SectionName">
