@@ -14569,7 +14569,7 @@ ORDER BY
 		, DimDate.MinistryMonth
 		, DimDate.MinistryYear
 		, DimDate.MinistryMonthAbbreviation + '-' + RIGHT(CONVERT(VARCHAR(4), DimDate.MinistryYear), 2) AS MonthLabel
-		, CASE WHEN Dimdate.MinistryDayOfWeekLabel = 'Sunday' THEN DimDate.DateID ELSE NULL END AS WeekCount
+		, DimDate.MinistryWeek 
 	FROM DW.DimDate
 	WHERE
 		MinistryYear IN (@MinistryYear - 1) --previous year
@@ -14585,8 +14585,17 @@ ORDER BY
 		--, DimActivity.Name--, DimActivity.MinistryID, DimActivity.CampusID, FactAttendance.CampusID
 		--, DimAttendanceType.Category
 		, CASE WHEN DimActivity.Name Like '%Awana%' THEN
-			CASE WHEN Category = 'Attendee' THEN 'Awana - Kids' ELSE
-				CASE WHEN DimActivity.Name Like '%Awana%' AND Category IN ('Volunteer','Staff') THEN 'Awana - Volunteers' ELSE
+			CASE WHEN DimAttendanceType.Category NOT LIKE '%Volunteer%'
+					  AND DimAttendanceType.Category NOT LIKE '%staff%'
+					  AND DimRoster.RosterFolder NOT IN ('Volunteers','Undefined')
+					  AND DimRoster.Roster NOT LIKE '%ADMIN%'
+					  AND DimRoster.Roster NOT LIKE '%registration%' THEN 'Awana - Kids'
+			ELSE
+				CASE WHEN DimAttendanceType.Category LIKE '%Volunteer%'
+					OR DimAttendanceType.Category LIKE '%staff%'
+					OR DimRoster.RosterFolder IN ('Volunteers')
+					OR DimRoster.Roster LIKE '%ADMIN%'
+					OR DimRoster.Roster LIKE '%registration%' THEN 'Awana - Volunteers' ELSE
 					'Awana - (Kids + Volunteers)' 
 				END 
 			END
@@ -14607,7 +14616,7 @@ ORDER BY
 		  END AS SectionName
 		, DimCampus.Code AS CampusCode
 		, SUM(AttendanceCount) AS AttendanceSum
-		, COUNT( DISTINCT WeekCount ) AS WeekCount		
+		, COUNT( DISTINCT MinistryWeek ) AS WeekCount		
 	FROM DW.FactAttendance
 	INNER JOIN ReportPeriod
 		ON FactAttendance.InstanceDateID = ReportPeriod.DateID
@@ -14617,6 +14626,8 @@ ORDER BY
 		ON FactAttendance.CampusID = DimCampus.CampusID
 	INNER JOIN DW.DimActivity
 		ON FactAttendance.ActivityID = DimActivity.ActivityID
+	INNER JOIN DW.DimRoster
+		ON FactAttendance.RosterID = DimRoster.RosterID
 	INNER JOIN DW.DimAttendanceType
 		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
 	WHERE
@@ -14629,8 +14640,17 @@ ORDER BY
 		, ReportPeriod.MinistryMonth
 		, ReportPeriod.MonthLabel
 		, CASE WHEN DimActivity.Name Like '%Awana%' THEN
-			CASE WHEN Category = 'Attendee' THEN 'Awana - Kids' ELSE
-				CASE WHEN DimActivity.Name Like '%Awana%' AND Category IN ('Volunteer','Staff') THEN 'Awana - Volunteers' ELSE
+			CASE WHEN DimAttendanceType.Category NOT LIKE '%Volunteer%'
+					  AND DimAttendanceType.Category NOT LIKE '%staff%'
+					  AND DimRoster.RosterFolder NOT IN ('Volunteers','Undefined')
+					  AND DimRoster.Roster NOT LIKE '%ADMIN%'
+					  AND DimRoster.Roster NOT LIKE '%registration%' THEN 'Awana - Kids'
+			ELSE
+				CASE WHEN DimAttendanceType.Category LIKE '%Volunteer%'
+					OR DimAttendanceType.Category LIKE '%staff%'
+					OR DimRoster.RosterFolder IN ('Volunteers')
+					OR DimRoster.Roster LIKE '%ADMIN%'
+					OR DimRoster.Roster LIKE '%registration%' THEN 'Awana - Volunteers' ELSE
 					'Awana - (Kids + Volunteers)' 
 				END 
 			END
