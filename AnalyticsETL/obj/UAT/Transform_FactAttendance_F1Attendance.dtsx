@@ -12,8 +12,8 @@
   DTS:ObjectName="Transform_FactAttendance_F1Attendance"
   DTS:PackageType="5"
   DTS:ProtectionLevel="2"
-  DTS:VersionBuild="168"
-  DTS:VersionGUID="{025BDD09-EFF2-4F0B-9037-9CA39A4295B5}">
+  DTS:VersionBuild="186"
+  DTS:VersionGUID="{54A1059E-76BB-41B1-B7ED-09A787F6DAEB}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:LogProviders>
@@ -2069,7 +2069,7 @@ where [refTable].[TenantID] = ? and [refTable].[Code] = ?</property>
                   containsID="true"
                   dataType="System.String"
                   description="Specifies the list of lineage identifiers that map to the parameters that the SQL statement in the SQLCommand property uses. Entries in the list are separated by semicolons."
-                  name="ParameterMap">#{Package\DF Transform_FactAttendance_F1Attendance\Read From Source.Outputs[ADO NET Source Output].Columns[ActivityType]};#{Package\DF Transform_FactAttendance_F1Attendance\Get CampusCodes.Outputs[Derived Column Output].Columns[RosterCampusCode]};</property>
+                  name="ParameterMap">#{Package\DF Transform_FactAttendance_F1Attendance\2582:invalid};#{Package\DF Transform_FactAttendance_F1Attendance\Get CampusCodes.Outputs[Derived Column Output].Columns[RosterCampusCode]};</property>
                 <property
                   dataType="System.Int32"
                   description="Specifies the column code page to use when code page information is unavailable from the data source."
@@ -3313,7 +3313,11 @@ where [refTable].[TenantID] = ? and [refTable].[CampusID] = ? and [refTable].[Ag
                   name="SqlCommand"
                   UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
       LTRIM(RTRIM(ActivityType))     AS ActivityType
-    , LTRIM(RTRIM(Ministry))			  AS Ministry
+    , CASE WHEN LEN(Ministry) - LEN(REPLACE(Ministry, '-','')) &gt; 1 THEN
+	   LTRIM(RTRIM(SUBSTRING(Ministry, 1, CHARINDEX('-' , Ministry, CHARINDEX('-', Ministry) + 1) - CHARINDEX('-', Ministry))))
+	 ELSE
+	   LTRIM(RTRIM(Ministry)) 
+	 END AS Ministry
     , LTRIM(RTRIM(Activity))			  AS Activity
     , LTRIM(RTRIM(RosterFolder))		  AS RosterFolder
     , LTRIM(RTRIM(Roster))			  AS Roster
@@ -3336,7 +3340,11 @@ WHERE
     Rownumber &lt;&gt; ''
 GROUP BY
     LTRIM(RTRIM(ActivityType))	 
-    , LTRIM(RTRIM(Ministry))		
+    , CASE WHEN LEN(Ministry) - LEN(REPLACE(Ministry, '-','')) &gt; 1 THEN
+	   LTRIM(RTRIM(SUBSTRING(Ministry, 1, CHARINDEX('-' , Ministry, CHARINDEX('-', Ministry) + 1) - CHARINDEX('-', Ministry))))
+	 ELSE
+	   LTRIM(RTRIM(Ministry)) 
+	 END 		
     , LTRIM(RTRIM(Activity))		
     , LTRIM(RTRIM(RosterFolder))	
     , LTRIM(RTRIM(Roster))		
@@ -14409,64 +14417,64 @@ GROUP BY
               startId="Package\DF Transform_FactAttendance_F1Attendance\Conditional Split.Outputs[Conditional Split Default Output]" />
             <path
               refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output11]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 1.Inputs[Union All Input 2]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Set CampusID -1.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output10]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 2.Inputs[Union All Input 2]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Set MinistryID -1.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output9]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 3.Inputs[Union All Input 2]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Set ActivityID -1.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output8]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 5.Inputs[Union All Input 2]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Set AttendanceTypeID -1.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output7]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All.Inputs[Union All Input 2]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Add Insert Defaults.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output6]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All.Inputs[Union All Input 1]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Add Update Defaults.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output4]"
               endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 8.Inputs[Union All Input 2]"
               name="Derived Column Output"
               startId="Package\DF Transform_FactAttendance_F1Attendance\Derived Column.Outputs[Derived Column Output]" />
             <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output3]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 6.Inputs[Union All Input 2]"
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output10]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\TF Hash Transform.Inputs[Input]"
               name="Derived Column Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Set MaritalStatus -1.Outputs[Derived Column Output]" />
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Get CampusCodes.Outputs[Derived Column Output]" />
             <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output2]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 4.Inputs[Union All Input 2]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Set RosterID -1.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output1]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 7.Inputs[Union All Input 2]"
-              name="Derived Column Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Set IndividualStatus -1.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output]"
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output9]"
               endId="Package\DF Transform_FactAttendance_F1Attendance\Conditional Split 1.Inputs[Conditional Split Input]"
               name="Derived Column Output"
               startId="Package\DF Transform_FactAttendance_F1Attendance\Add Defaults.Outputs[Derived Column Output]" />
             <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output5]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\TF Hash Transform.Inputs[Input]"
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output8]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 7.Inputs[Union All Input 2]"
               name="Derived Column Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Get CampusCodes.Outputs[Derived Column Output]" />
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Set IndividualStatus -1.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output7]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 4.Inputs[Union All Input 2]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Set RosterID -1.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output6]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 6.Inputs[Union All Input 2]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Set MaritalStatus -1.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output4]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 5.Inputs[Union All Input 2]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Set AttendanceTypeID -1.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output3]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 3.Inputs[Union All Input 2]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Set ActivityID -1.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output2]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 2.Inputs[Union All Input 2]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Set MinistryID -1.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output1]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 1.Inputs[Union All Input 2]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Set CampusID -1.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All.Inputs[Union All Input 1]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Add Update Defaults.Outputs[Derived Column Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output5]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All.Inputs[Union All Input 2]"
+              name="Derived Column Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Add Insert Defaults.Outputs[Derived Column Output]" />
             <path
               refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Do Nothing]"
               endId="Package\DF Transform_FactAttendance_F1Attendance\DEST TF Terminator Destination.Inputs[Row Count Input 1]"
@@ -14479,54 +14487,54 @@ GROUP BY
               startId="Package\DF Transform_FactAttendance_F1Attendance\Conditional Split 1.Outputs[HarvestKids]" />
             <path
               refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output6]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 5.Inputs[Union All Input 1]"
-              name="Lookup Match Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup AttendanceTypeID.Outputs[Lookup Match Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output9]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 3.Inputs[Union All Input 3]"
-              name="Lookup Match Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup ActivityID.Outputs[Lookup Match Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output7]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 1.Inputs[Union All Input 4]"
-              name="Lookup Match Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup CampusID For ActivityCampusCode.Outputs[Lookup Match Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output5]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 1.Inputs[Union All Input 3]"
-              name="Lookup Match Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup CampusID For RosterCampusCode.Outputs[Lookup Match Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output8]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Update or Do Nothing.Inputs[Conditional Split Input]"
-              name="Lookup Match Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Member Exist?.Outputs[Lookup Match Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output3]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 2.Inputs[Union All Input 1]"
-              name="Lookup Match Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup MinistryID.Outputs[Lookup Match Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output2]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 4.Inputs[Union All Input 3]"
-              name="Lookup Match Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup RosterID.Outputs[Lookup Match Output]" />
-            <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output1]"
               endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 7.Inputs[Union All Input 1]"
               name="Lookup Match Output"
               startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup IndividualStatusID.Outputs[Lookup Match Output]" />
             <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output4]"
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output9]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 4.Inputs[Union All Input 3]"
+              name="Lookup Match Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup RosterID.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output7]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 6.Inputs[Union All Input 1]"
+              name="Lookup Match Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup MaritalStatusID.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output5]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 2.Inputs[Union All Input 1]"
+              name="Lookup Match Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup MinistryID.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output8]"
               endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 1.Inputs[Union All Input 1]"
               name="Lookup Match Output"
               startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup CampusID For MinsitryCampusCode.Outputs[Lookup Match Output]" />
             <path
-              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output]"
-              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 6.Inputs[Union All Input 1]"
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output3]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 1.Inputs[Union All Input 3]"
               name="Lookup Match Output"
-              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup MaritalStatusID.Outputs[Lookup Match Output]" />
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup CampusID For RosterCampusCode.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output2]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 3.Inputs[Union All Input 3]"
+              name="Lookup Match Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup ActivityID.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output1]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 5.Inputs[Union All Input 1]"
+              name="Lookup Match Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup AttendanceTypeID.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output4]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Update or Do Nothing.Inputs[Conditional Split Input]"
+              name="Lookup Match Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Member Exist?.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output]"
+              endId="Package\DF Transform_FactAttendance_F1Attendance\Union All 1.Inputs[Union All Input 4]"
+              name="Lookup Match Output"
+              startId="Package\DF Transform_FactAttendance_F1Attendance\Lookup CampusID For ActivityCampusCode.Outputs[Lookup Match Output]" />
             <path
               refId="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup No Match Output]"
               endId="Package\DF Transform_FactAttendance_F1Attendance\Set CampusID -1.Inputs[Derived Column Input]"
@@ -17631,14 +17639,35 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_47e9094dd3644e7db4781f1c6b27e597")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_47e9094dd3644e7db4781f1c6b27e597")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -17759,34 +17788,105 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
   </resheader>
 </root>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+                Name="st_47e9094dd3644e7db4781f1c6b27e597.csproj"
+                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{899f0cd7-8ba3-4547-8dd5-1e1ddf24521e}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>st_47e9094dd3644e7db4781f1c6b27e597</RootNamespace>
+    <AssemblyName>st_47e9094dd3644e7db4781f1c6b27e597</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>true</ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>
+  </PropertyGroup>
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_47e9094dd3644e7db4781f1c6b27e597.Properties.Settings.get_Default():st_47e9094dd3644e7db4781f1c6b27e597.Properties.Sett" +
-    "ings")]
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
 
-namespace st_47e9094dd3644e7db4781f1c6b27e597.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>.\bin\Release\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+         <Generator>ResXFileCodeGenerator</Generator>
+         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+             <AutoGen>True</AutoGen>
+         <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+         <Generator>SettingsSingleFileGenerator</Generator>
+         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+         <AutoGen>True</AutoGen>
+         <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptMain.cs">
+         <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <!-- Include the build rules for a C# project.-->
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
+        <ProjectProperties HostName="ScriptTask"
+                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
+                           ApplicationType="usd"
+                           Language="cs"
+                           TemplatesPath=""
+                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
+                           DebugInfoCommandLine=""
+                           DebugInfoWorkingDir=""
+                           IconImageList=""/>
+        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
+        </Host>
+        <ProjectClient>
+            <HostIdentifier>SSIS_ST120</HostIdentifier>
+        </ProjectClient>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -17931,135 +18031,43 @@ namespace st_47e9094dd3644e7db4781f1c6b27e597
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_47e9094dd3644e7db4781f1c6b27e597")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_47e9094dd3644e7db4781f1c6b27e597")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_47e9094dd3644e7db4781f1c6b27e597.Properties.Settings.get_Default():st_47e9094dd3644e7db4781f1c6b27e597.Properties.Sett" +
+    "ings")]
 
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+namespace st_47e9094dd3644e7db4781f1c6b27e597.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
-                Name="st_47e9094dd3644e7db4781f1c6b27e597.csproj"
-                Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <ProjectTypeGuids>{30D016F9-3734-4E33-A861-5E7D899E18F3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{899f0cd7-8ba3-4547-8dd5-1e1ddf24521e}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>st_47e9094dd3644e7db4781f1c6b27e597</RootNamespace>
-    <AssemblyName>st_47e9094dd3644e7db4781f1c6b27e597</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>true</ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>.\bin\Debug\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>false</DebugSymbols>
-    <Optimize>true</Optimize>
-    <OutputPath>.\bin\Release\</OutputPath>
-    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.SqlServer.ManagedDTS, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-    <Reference Include="Microsoft.SqlServer.ScriptTask, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AppDesigner Include="Properties\" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-         <Generator>ResXFileCodeGenerator</Generator>
-         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-             <AutoGen>True</AutoGen>
-         <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-         <Generator>SettingsSingleFileGenerator</Generator>
-         <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-         <AutoGen>True</AutoGen>
-         <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="ScriptMain.cs">
-         <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <!-- Include the build rules for a C# project.-->
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-
-  <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{30D016F9-3734-4E33-A861-5E7D899E18F3}">
-        <ProjectProperties HostName="ScriptTask"
-                           HostPackage="{B3A685AA-7EAF-4BC6-9940-57959FA5AC07}"
-                           ApplicationType="usd"
-                           Language="cs"
-                           TemplatesPath=""
-                           DebugInfoExeName="#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\10.0\InstallDir#\devenv.exe"
-                           DebugInfoCommandLine=""
-                           DebugInfoWorkingDir=""
-                           IconImageList=""/>
-        <Host Name="ScriptTask" GeneratedNamespace="$safeprojectname" IconIndex="">
-        </Host>
-        <ProjectClient>
-            <HostIdentifier>SSIS_ST120</HostIdentifier>
-        </ProjectClient>
-      </FlavorProperties>
-    </VisualStudio>
-  </ProjectExtensions>
-</Project>]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -18458,7 +18466,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_DfLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\DF Transform_FactAttendance_F1Attendance&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "ObjectName"&gt;Package\DF Transform_FactAttendance_F1Attendance&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -18554,7 +18562,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_PkgLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -18574,7 +18582,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_TaskList">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="False" LogConnectionMgrs="True"&gt;&lt;tsk id="{940241B1-6151-43CD-8B8F-4B615CC76977}" typ="PipelineTask" p="" name="DF Transform_FactAttendance_F1Attendance" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnderivedcolumn" name="Add Insert Defaults" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_17" /&gt;&lt;com id="26" dir="TRAN"  typ="trnderivedcolumn" name="Add Update Defaults" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_26" /&gt;&lt;com id="35" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="ADO NET Destination" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_35" /&gt;&lt;com id="84" dir="TRAN"  typ="trnconditionalsplit" name="Conditional Split" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_84" /&gt;&lt;com id="97" dir="TRAN"  typ="trnconditionalsplit" name="Conditional Split 1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_97" /&gt;&lt;com id="109" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_109" /&gt;&lt;com id="118" dir="TRAN"  typ="trnrowcount" name="DEST ADO NET Destination" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_118" /&gt;&lt;com id="122" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_122" /&gt;&lt;com id="126" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination 1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_126" /&gt;&lt;com id="130" dir="TRAN"  typ="trnderivedcolumn" name="Get CampusCodes" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_130" /&gt;&lt;com id="148" dir="TRAN"  typ="trnlookup" name="Lookup ActivityID" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_148" /&gt;&lt;com id="182" dir="TRAN"  typ="trnlookup" name="Lookup AttendanceTypeID" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_182" /&gt;&lt;com id="216" dir="TRAN"  typ="trnlookup" name="Lookup CampusID For ActivityCampusCode" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_216" /&gt;&lt;com id="241" dir="TRAN"  typ="trnlookup" name="Lookup CampusID For MinsitryCampusCode" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_241" /&gt;&lt;com id="266" dir="TRAN"  typ="trnlookup" name="Lookup CampusID For RosterCampusCode" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_266" /&gt;&lt;com id="294" dir="TRAN"  typ="trnlookup" name="Lookup IndividualStatusID" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_294" /&gt;&lt;com id="325" dir="TRAN"  typ="trnlookup" name="Lookup MaritalStatusID" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_325" /&gt;&lt;com id="353" dir="TRAN"  typ="trnlookup" name="Lookup MinistryID" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_353" /&gt;&lt;com id="384" dir="TRAN"  typ="trnlookup" name="Lookup RosterID" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_384" /&gt;&lt;com id="418" dir="TRAN"  typ="trnlookup" name="Member Exist?" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_418" /&gt;&lt;com id="478" dir="SRC"  typ="srcdatareader" name="Read From Source" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_478" /&gt;&lt;com id="547" dir="TRAN"  typ="trnderivedcolumn" name="Set ActivityID -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_547" /&gt;&lt;com id="556" dir="TRAN"  typ="trnderivedcolumn" name="Set AttendanceTypeID -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_556" /&gt;&lt;com id="565" dir="TRAN"  typ="trnderivedcolumn" name="Set CampusID -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_565" /&gt;&lt;com id="574" dir="TRAN"  typ="trnderivedcolumn" name="Set IndividualStatus -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_574" /&gt;&lt;com id="583" dir="TRAN"  typ="trnderivedcolumn" name="Set MaritalStatus -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_583" /&gt;&lt;com id="592" dir="TRAN"  typ="trnderivedcolumn" name="Set MinistryID -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_592" /&gt;&lt;com id="601" dir="TRAN"  typ="trnderivedcolumn" name="Set RosterID -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_601" /&gt;&lt;com id="610" dir="TRAN"  typ="trnrowcount" name="SRC Read From Source" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_610" /&gt;&lt;com id="614" dir="TRAN"  typ="PragmaticWorks.TaskFactory.Components.Transforms.Hash.HashTransform, PragmaticWorks.TaskFactory.Components120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Hash Transform" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_614" /&gt;&lt;com id="626" dir="TRAN"  typ="PW.TaskFactory.SurrogateKeyTransform.SurrogateKeyTransform, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Surrogate Key Transform" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_626" /&gt;&lt;com id="646" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_646" /&gt;&lt;com id="655" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination 1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_655" /&gt;&lt;com id="664" dir="TRAN"  typ="trnunionall" name="Union All" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_664" /&gt;&lt;com id="839" dir="TRAN"  typ="trnunionall" name="Union All 1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_839" /&gt;&lt;com id="1089" dir="TRAN"  typ="trnunionall" name="Union All 2" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_1089" /&gt;&lt;com id="1234" dir="TRAN"  typ="trnunionall" name="Union All 3" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_1234" /&gt;&lt;com id="1379" dir="TRAN"  typ="trnunionall" name="Union All 4" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_1379" /&gt;&lt;com id="1529" dir="TRAN"  typ="trnunionall" name="Union All 5" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_1529" /&gt;&lt;com id="1684" dir="TRAN"  typ="trnunionall" name="Union All 6" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_1684" /&gt;&lt;com id="1844" dir="TRAN"  typ="trnunionall" name="Union All 7" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_1844" /&gt;&lt;com id="2009" dir="TRAN"  typ="trnunionall" name="Union All 8" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_2009" /&gt;&lt;com id="2124" dir="TRAN"  typ="trnconditionalsplit" name="Update or Do Nothing" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_2124" /&gt;&lt;dp id="2137" val="0"  ann="" c1="478" c2="610"/&gt;&lt;dp id="2138" val="0"  ann="" c1="84" c2="126"/&gt;&lt;dp id="2139" val="0"  ann="" c1="97" c2="2009"/&gt;&lt;dp id="2140" val="0"  ann="" c1="84" c2="2"/&gt;&lt;dp id="2141" val="0"  ann="" c1="592" c2="1089"/&gt;&lt;dp id="2142" val="0"  ann="" c1="547" c2="1234"/&gt;&lt;dp id="2143" val="0"  ann="" c1="556" c2="1529"/&gt;&lt;dp id="2144" val="0"  ann="" c1="17" c2="664"/&gt;&lt;dp id="2145" val="0"  ann="" c1="26" c2="664"/&gt;&lt;dp id="2146" val="0"  ann="" c1="565" c2="839"/&gt;&lt;dp id="2147" val="0"  ann="" c1="130" c2="614"/&gt;&lt;dp id="2148" val="0"  ann="" c1="109" c2="2009"/&gt;&lt;dp id="2149" val="0"  ann="" c1="583" c2="1684"/&gt;&lt;dp id="2150" val="0"  ann="" c1="601" c2="1379"/&gt;&lt;dp id="2151" val="0"  ann="" c1="574" c2="1844"/&gt;&lt;dp id="2152" val="0"  ann="" c1="2" c2="97"/&gt;&lt;dp id="2153" val="0"  ann="" c1="2124" c2="122"/&gt;&lt;dp id="2154" val="0"  ann="" c1="97" c2="109"/&gt;&lt;dp id="2155" val="0"  ann="" c1="148" c2="1234"/&gt;&lt;dp id="2156" val="0"  ann="" c1="216" c2="839"/&gt;&lt;dp id="2157" val="0"  ann="" c1="182" c2="1529"/&gt;&lt;dp id="2158" val="0"  ann="" c1="266" c2="839"/&gt;&lt;dp id="2159" val="0"  ann="" c1="418" c2="2124"/&gt;&lt;dp id="2160" val="0"  ann="" c1="353" c2="1089"/&gt;&lt;dp id="2161" val="0"  ann="" c1="325" c2="1684"/&gt;&lt;dp id="2162" val="0"  ann="" c1="384" c2="1379"/&gt;&lt;dp id="2163" val="0"  ann="" c1="241" c2="839"/&gt;&lt;dp id="2164" val="0"  ann="" c1="294" c2="1844"/&gt;&lt;dp id="2165" val="0"  ann="" c1="241" c2="565"/&gt;&lt;dp id="2166" val="0"  ann="" c1="325" c2="583"/&gt;&lt;dp id="2167" val="0"  ann="" c1="353" c2="592"/&gt;&lt;dp id="2168" val="0"  ann="" c1="182" c2="556"/&gt;&lt;dp id="2169" val="0"  ann="" c1="266" c2="216"/&gt;&lt;dp id="2170" val="0"  ann="" c1="294" c2="574"/&gt;&lt;dp id="2171" val="0"  ann="" c1="418" c2="626"/&gt;&lt;dp id="2172" val="0"  ann="" c1="216" c2="241"/&gt;&lt;dp id="2173" val="0"  ann="" c1="384" c2="601"/&gt;&lt;dp id="2174" val="0"  ann="" c1="148" c2="547"/&gt;&lt;dp id="2175" val="0"  ann="" c1="614" c2="266"/&gt;&lt;dp id="2176" val="0"  ann="" c1="118" c2="35"/&gt;&lt;dp id="2177" val="0"  ann="" c1="122" c2="646"/&gt;&lt;dp id="2178" val="0"  ann="" c1="610" c2="84"/&gt;&lt;dp id="2179" val="0"  ann="" c1="126" c2="655"/&gt;&lt;dp id="2180" val="0"  ann="" c1="626" c2="17"/&gt;&lt;dp id="2181" val="0"  ann="" c1="839" c2="353"/&gt;&lt;dp id="2182" val="0"  ann="" c1="2009" c2="130"/&gt;&lt;dp id="2183" val="0"  ann="" c1="1529" c2="325"/&gt;&lt;dp id="2184" val="0"  ann="" c1="1379" c2="182"/&gt;&lt;dp id="2185" val="0"  ann="" c1="1844" c2="418"/&gt;&lt;dp id="2186" val="0"  ann="" c1="1234" c2="384"/&gt;&lt;dp id="2187" val="0"  ann="" c1="1684" c2="294"/&gt;&lt;dp id="2188" val="0"  ann="" c1="1089" c2="148"/&gt;&lt;dp id="2189" val="0"  ann="" c1="664" c2="118"/&gt;&lt;dp id="2190" val="0"  ann="" c1="2124" c2="26"/&gt;&lt;/tsk&gt;&lt;tsk id="{C894F408-2539-4303-9E76-96D229B6AC68}" typ="SQLTask" p="" name="Get Surrogate Key Seed" on="1" /&gt;&lt;tsk id="{4BBE547D-8F3F-4524-BE59-26CF3044165D}" typ="SQLTask" p="" name="TRUNCATE TransformFactAttendance" on="1" /&gt;&lt;pc id="{2AD90B53-EB50-4C90-83DE-20D92604B154}" op="2" and="True" val="0" task1="{4BBE547D-8F3F-4524-BE59-26CF3044165D}" task2="{C894F408-2539-4303-9E76-96D229B6AC68}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{6ED9C5B7-ED20-4DFF-B56F-FB95AF4880E2}" op="2" and="True" val="0" task1="{C894F408-2539-4303-9E76-96D229B6AC68}" task2="{940241B1-6151-43CD-8B8F-4B615CC76977}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{940241B1-6151-43CD-8B8F-4B615CC76977}" typ="PipelineTask" p="" name="DF Transform_FactAttendance_F1Attendance" on="1" &gt;&lt;com id="2" dir="TRAN"  typ="trnderivedcolumn" name="Add Defaults" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_2" /&gt;&lt;com id="17" dir="TRAN"  typ="trnderivedcolumn" name="Add Insert Defaults" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_17" /&gt;&lt;com id="26" dir="TRAN"  typ="trnderivedcolumn" name="Add Update Defaults" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_26" /&gt;&lt;com id="35" dir="DEST"  typ="Microsoft.SqlServer.Dts.Pipeline.ADONETDestination, Microsoft.SqlServer.ADONETDest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" name="ADO NET Destination" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_35" /&gt;&lt;com id="84" dir="TRAN"  typ="trnconditionalsplit" name="Conditional Split" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_84" /&gt;&lt;com id="97" dir="TRAN"  typ="trnconditionalsplit" name="Conditional Split 1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_97" /&gt;&lt;com id="109" dir="TRAN"  typ="trnderivedcolumn" name="Derived Column" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_109" /&gt;&lt;com id="118" dir="TRAN"  typ="trnrowcount" name="DEST ADO NET Destination" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_118" /&gt;&lt;com id="122" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_122" /&gt;&lt;com id="126" dir="TRAN"  typ="trnrowcount" name="DEST TF Terminator Destination 1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_126" /&gt;&lt;com id="130" dir="TRAN"  typ="trnderivedcolumn" name="Get CampusCodes" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_130" /&gt;&lt;com id="148" dir="TRAN"  typ="trnlookup" name="Lookup ActivityID" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_148" /&gt;&lt;com id="182" dir="TRAN"  typ="trnlookup" name="Lookup AttendanceTypeID" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_182" /&gt;&lt;com id="216" dir="TRAN"  typ="trnlookup" name="Lookup CampusID For ActivityCampusCode" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_216" /&gt;&lt;com id="241" dir="TRAN"  typ="trnlookup" name="Lookup CampusID For MinsitryCampusCode" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_241" /&gt;&lt;com id="266" dir="TRAN"  typ="trnlookup" name="Lookup CampusID For RosterCampusCode" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_266" /&gt;&lt;com id="294" dir="TRAN"  typ="trnlookup" name="Lookup IndividualStatusID" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_294" /&gt;&lt;com id="325" dir="TRAN"  typ="trnlookup" name="Lookup MaritalStatusID" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_325" /&gt;&lt;com id="353" dir="TRAN"  typ="trnlookup" name="Lookup MinistryID" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_353" /&gt;&lt;com id="384" dir="TRAN"  typ="trnlookup" name="Lookup RosterID" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_384" /&gt;&lt;com id="418" dir="TRAN"  typ="trnlookup" name="Member Exist?" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_418" /&gt;&lt;com id="478" dir="SRC"  typ="srcdatareader" name="Read From Source" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_478" /&gt;&lt;com id="547" dir="TRAN"  typ="trnderivedcolumn" name="Set ActivityID -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_547" /&gt;&lt;com id="556" dir="TRAN"  typ="trnderivedcolumn" name="Set AttendanceTypeID -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_556" /&gt;&lt;com id="565" dir="TRAN"  typ="trnderivedcolumn" name="Set CampusID -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_565" /&gt;&lt;com id="574" dir="TRAN"  typ="trnderivedcolumn" name="Set IndividualStatus -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_574" /&gt;&lt;com id="583" dir="TRAN"  typ="trnderivedcolumn" name="Set MaritalStatus -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_583" /&gt;&lt;com id="592" dir="TRAN"  typ="trnderivedcolumn" name="Set MinistryID -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_592" /&gt;&lt;com id="601" dir="TRAN"  typ="trnderivedcolumn" name="Set RosterID -1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_601" /&gt;&lt;com id="610" dir="TRAN"  typ="trnrowcount" name="SRC Read From Source" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_610" /&gt;&lt;com id="614" dir="TRAN"  typ="PragmaticWorks.TaskFactory.Components.Transforms.Hash.HashTransform, PragmaticWorks.TaskFactory.Components120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Hash Transform" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_614" /&gt;&lt;com id="626" dir="TRAN"  typ="PW.TaskFactory.SurrogateKeyTransform.SurrogateKeyTransform, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Surrogate Key Transform" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_626" /&gt;&lt;com id="646" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_646" /&gt;&lt;com id="655" dir="DEST"  typ="PW.TaskFactory.TerminatorDestination.TerminatorDestination, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39" name="TF Terminator Destination 1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_655" /&gt;&lt;com id="664" dir="TRAN"  typ="trnunionall" name="Union All" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_664" /&gt;&lt;com id="839" dir="TRAN"  typ="trnunionall" name="Union All 1" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_839" /&gt;&lt;com id="1089" dir="TRAN"  typ="trnunionall" name="Union All 2" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_1089" /&gt;&lt;com id="1234" dir="TRAN"  typ="trnunionall" name="Union All 3" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_1234" /&gt;&lt;com id="1379" dir="TRAN"  typ="trnunionall" name="Union All 4" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_1379" /&gt;&lt;com id="1529" dir="TRAN"  typ="trnunionall" name="Union All 5" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_1529" /&gt;&lt;com id="1684" dir="TRAN"  typ="trnunionall" name="Union All 6" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_1684" /&gt;&lt;com id="1844" dir="TRAN"  typ="trnunionall" name="Union All 7" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_1844" /&gt;&lt;com id="2009" dir="TRAN"  typ="trnunionall" name="Union All 8" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_2009" /&gt;&lt;com id="2124" dir="TRAN"  typ="trnconditionalsplit" name="Update or Do Nothing" pid="{940241B1-6151-43CD-8B8F-4B615CC76977}_2124" /&gt;&lt;dp id="2137" val="0"  ann="" c1="478" c2="610"/&gt;&lt;dp id="2138" val="0"  ann="" c1="84" c2="126"/&gt;&lt;dp id="2139" val="0"  ann="" c1="97" c2="2009"/&gt;&lt;dp id="2140" val="0"  ann="" c1="84" c2="2"/&gt;&lt;dp id="2141" val="0"  ann="" c1="130" c2="614"/&gt;&lt;dp id="2142" val="0"  ann="" c1="2" c2="97"/&gt;&lt;dp id="2143" val="0"  ann="" c1="574" c2="1844"/&gt;&lt;dp id="2144" val="0"  ann="" c1="601" c2="1379"/&gt;&lt;dp id="2145" val="0"  ann="" c1="583" c2="1684"/&gt;&lt;dp id="2146" val="0"  ann="" c1="109" c2="2009"/&gt;&lt;dp id="2147" val="0"  ann="" c1="17" c2="664"/&gt;&lt;dp id="2148" val="0"  ann="" c1="556" c2="1529"/&gt;&lt;dp id="2149" val="0"  ann="" c1="547" c2="1234"/&gt;&lt;dp id="2150" val="0"  ann="" c1="592" c2="1089"/&gt;&lt;dp id="2151" val="0"  ann="" c1="565" c2="839"/&gt;&lt;dp id="2152" val="0"  ann="" c1="26" c2="664"/&gt;&lt;dp id="2153" val="0"  ann="" c1="2124" c2="122"/&gt;&lt;dp id="2154" val="0"  ann="" c1="97" c2="109"/&gt;&lt;dp id="2155" val="0"  ann="" c1="384" c2="1379"/&gt;&lt;dp id="2156" val="0"  ann="" c1="325" c2="1684"/&gt;&lt;dp id="2157" val="0"  ann="" c1="294" c2="1844"/&gt;&lt;dp id="2158" val="0"  ann="" c1="353" c2="1089"/&gt;&lt;dp id="2159" val="0"  ann="" c1="241" c2="839"/&gt;&lt;dp id="2160" val="0"  ann="" c1="266" c2="839"/&gt;&lt;dp id="2161" val="0"  ann="" c1="216" c2="839"/&gt;&lt;dp id="2162" val="0"  ann="" c1="148" c2="1234"/&gt;&lt;dp id="2163" val="0"  ann="" c1="418" c2="2124"/&gt;&lt;dp id="2164" val="0"  ann="" c1="182" c2="1529"/&gt;&lt;dp id="2165" val="0"  ann="" c1="241" c2="565"/&gt;&lt;dp id="2166" val="0"  ann="" c1="325" c2="583"/&gt;&lt;dp id="2167" val="0"  ann="" c1="353" c2="592"/&gt;&lt;dp id="2168" val="0"  ann="" c1="182" c2="556"/&gt;&lt;dp id="2169" val="0"  ann="" c1="266" c2="216"/&gt;&lt;dp id="2170" val="0"  ann="" c1="294" c2="574"/&gt;&lt;dp id="2171" val="0"  ann="" c1="418" c2="626"/&gt;&lt;dp id="2172" val="0"  ann="" c1="216" c2="241"/&gt;&lt;dp id="2173" val="0"  ann="" c1="384" c2="601"/&gt;&lt;dp id="2174" val="0"  ann="" c1="148" c2="547"/&gt;&lt;dp id="2175" val="0"  ann="" c1="614" c2="266"/&gt;&lt;dp id="2176" val="0"  ann="" c1="118" c2="35"/&gt;&lt;dp id="2177" val="0"  ann="" c1="122" c2="646"/&gt;&lt;dp id="2178" val="0"  ann="" c1="610" c2="84"/&gt;&lt;dp id="2179" val="0"  ann="" c1="126" c2="655"/&gt;&lt;dp id="2180" val="0"  ann="" c1="626" c2="17"/&gt;&lt;dp id="2181" val="0"  ann="" c1="839" c2="353"/&gt;&lt;dp id="2182" val="0"  ann="" c1="2009" c2="130"/&gt;&lt;dp id="2183" val="0"  ann="" c1="1529" c2="325"/&gt;&lt;dp id="2184" val="0"  ann="" c1="1379" c2="182"/&gt;&lt;dp id="2185" val="0"  ann="" c1="1844" c2="418"/&gt;&lt;dp id="2186" val="0"  ann="" c1="1234" c2="384"/&gt;&lt;dp id="2187" val="0"  ann="" c1="1684" c2="294"/&gt;&lt;dp id="2188" val="0"  ann="" c1="1089" c2="148"/&gt;&lt;dp id="2189" val="0"  ann="" c1="664" c2="118"/&gt;&lt;dp id="2190" val="0"  ann="" c1="2124" c2="26"/&gt;&lt;/tsk&gt;&lt;tsk id="{C894F408-2539-4303-9E76-96D229B6AC68}" typ="SQLTask" p="" name="Get Surrogate Key Seed" on="1" /&gt;&lt;tsk id="{4BBE547D-8F3F-4524-BE59-26CF3044165D}" typ="SQLTask" p="" name="TRUNCATE TransformFactAttendance" on="1" /&gt;&lt;pc id="{2AD90B53-EB50-4C90-83DE-20D92604B154}" op="2" and="True" val="0" task1="{4BBE547D-8F3F-4524-BE59-26CF3044165D}" task2="{C894F408-2539-4303-9E76-96D229B6AC68}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{6ED9C5B7-ED20-4DFF-B56F-FB95AF4880E2}" op="2" and="True" val="0" task1="{C894F408-2539-4303-9E76-96D229B6AC68}" task2="{940241B1-6151-43CD-8B8F-4B615CC76977}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -18607,35 +18615,14 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_942b4dce498a4285a457aeee6234be07")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_942b4dce498a4285a457aeee6234be07")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+                Name="Properties\Settings.settings"
+                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
+<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
+  <Profiles>
+    <Profile Name="(Default)" />
+  </Profiles>
+  <Settings />
+</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -18755,6 +18742,35 @@ using System.Runtime.CompilerServices;
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
+              <ProjectItem
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_942b4dce498a4285a457aeee6234be07.Properties.Settings.get_Default():st_942b4dce498a4285a457aeee6234be07.Properties.Sett" +
+    "ings")]
+
+namespace st_942b4dce498a4285a457aeee6234be07.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -19124,34 +19140,35 @@ namespace st_942b4dce498a4285a457aeee6234be07
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
 //
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_942b4dce498a4285a457aeee6234be07")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_942b4dce498a4285a457aeee6234be07")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
 
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_942b4dce498a4285a457aeee6234be07.Properties.Settings.get_Default():st_942b4dce498a4285a457aeee6234be07.Properties.Sett" +
-    "ings")]
-
-namespace st_942b4dce498a4285a457aeee6234be07.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="st_942b4dce498a4285a457aeee6234be07.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -19252,15 +19269,6 @@ namespace st_942b4dce498a4285a457aeee6234be07.Properties {
     </VisualStudio>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.settings"
-                Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
-</SettingsFile>]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.Designer.cs"
                 Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
@@ -21430,24 +21438,24 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </LayoutInfo>
   </Package>
   <DtsEventHandler
-    design-time-name="{CE25B072-9E78-4946-84A6-344BF77CBB5D}">
+    design-time-name="Package.EventHandlers[OnError]">
     <LayoutInfo>
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="NaN,NaN"
-          Id="{02DCF6AC-857E-4F93-B273-F27AECAB033E}"
+          Id="Package.EventHandlers[OnError]\SSISOpsEhObj_OnError_Start"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{42EA81D7-9C28-4CA6-A9ED-7DED283AF2F0}"
+          Id="Package.EventHandlers[OnError]\SSISOpsEhObj_Package_OnError"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{29DB75D7-5CFF-4B8D-B995-44F9DE83FC72}"
+          Id="Package.EventHandlers[OnError]\SSISOpsEhObj_Task_OnError"
           TopLeft="NaN,NaN" />
         <EdgeLayout
-          Id="{3B191006-5B24-4C65-9984-02A75C92A550}"
+          Id="Package.EventHandlers[OnError].PrecedenceConstraints[{271D623B-A1E2-4E8C-94E4-7EE8DB4C36AB\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21467,7 +21475,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{C06A028E-97D6-4C1E-9394-81B17D24FEE7}"
+          Id="Package.EventHandlers[OnError].PrecedenceConstraints[{8C0D5F21-584A-488A-8AD7-A87435417467\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21490,48 +21498,48 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </LayoutInfo>
   </DtsEventHandler>
   <DtsEventHandler
-    design-time-name="{80042901-1B27-432A-844E-3D25D9B74BF5}">
+    design-time-name="Package.EventHandlers[OnPostExecute]">
     <LayoutInfo>
       <GraphLayout
         Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="NaN,NaN"
-          Id="{70D8B0F9-B187-4EF5-9F8A-CD2EF203F350}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_940241B1615143CD8B8F4B615CC76977_1"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{ABDD4577-2A7B-4636-8CAF-64AD31EEFDEC}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_940241B1615143CD8B8F4B615CC76977_2"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{4D5C1057-75D7-420C-9A05-B4EFE9ECD0E0}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_940241B1615143CD8B8F4B615CC76977_3"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{BB131AAB-F35F-4CC7-9FD7-0E5D690361C4}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_940241B1615143CD8B8F4B615CC76977_4"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{DB089693-44FF-4644-A769-BCA3805471BB}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_OnPostExecute_LogVariableOrConn"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{7E94197A-DDA4-4064-A755-BC47B8380831}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_OnPostExecute_SSISOpsScript"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{5FFA295D-1432-441B-BC68-127C431B7785}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_OnPostExecute_Start"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{088729F4-94AF-4C63-A519-150CE43565DF}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_Package_OnPostExecute"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{65918FE5-D651-4771-8413-94890908E486}"
+          Id="Package.EventHandlers[OnPostExecute]\SSISOpsEhObj_Task_OnPostExecute"
           TopLeft="NaN,NaN" />
         <EdgeLayout
-          Id="{02A09B5A-E439-4312-A788-404044E65505}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{2E859595-DA6B-4671-87EF-86FBC3734A59\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21551,7 +21559,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{42FFE8B1-9DBE-43D3-910A-196F354284A2}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{3A9CA4FA-70D5-4483-9BEF-947EFC58E07C\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21571,7 +21579,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{A14E8FC3-0785-425C-A338-12E11B0D6A8C}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{53713BF7-5F51-4068-9B52-4B6EBE8572A3\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21591,7 +21599,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{AB32C700-A6F7-4D62-B9BC-32098E0F9D47}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{5E745621-ADB2-48D9-A6F2-C70F3C3938B5\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21611,7 +21619,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{ACBAC6F6-AE6B-498F-8D7F-9E98F02271DF}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{60A2E5AE-7BC9-46E2-925F-9FD29AAC443E\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21631,7 +21639,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{C4D33DE5-A90B-4E41-BD5A-D7620D458CA1}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{81E5FC31-22DF-4592-80CB-EB5B1BC15089\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21651,7 +21659,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{CCD60497-C8BC-4A1E-B9B7-5B04CCCABB49}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{AC2F35C4-33E7-4CCC-9E3C-6D7A8A7A2795\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21671,7 +21679,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{F305AB0D-9E49-4951-B1D6-733F6EC7E759}"
+          Id="Package.EventHandlers[OnPostExecute].PrecedenceConstraints[{BF5BF8F3-8DD6-4A84-987D-857199D157B7\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21694,24 +21702,24 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </LayoutInfo>
   </DtsEventHandler>
   <DtsEventHandler
-    design-time-name="{2247833E-7E4F-4D98-99B8-180DA7A89359}">
+    design-time-name="Package.EventHandlers[OnPreExecute]">
     <LayoutInfo>
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="NaN,NaN"
-          Id="{50267C94-F75F-4AEB-86C5-F725CAE471B3}"
+          Id="Package.EventHandlers[OnPreExecute]\SSISOpsEhObj_OnPreExecute_Start"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{9D55E0AE-C3EB-4D3B-925C-D9F29FD49771}"
+          Id="Package.EventHandlers[OnPreExecute]\SSISOpsEhObj_Package_OnPreExecute"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{4D1401E9-A01F-48FB-AB2A-ECF0D74D4937}"
+          Id="Package.EventHandlers[OnPreExecute]\SSISOpsEhObj_Task_OnPreExecute"
           TopLeft="NaN,NaN" />
         <EdgeLayout
-          Id="{96745CB8-40D6-40BB-9C61-29F5C86501B6}"
+          Id="Package.EventHandlers[OnPreExecute].PrecedenceConstraints[{8AA4712D-37EF-4A67-A1AD-1B1E296ADB4E\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21731,7 +21739,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{E66D0420-00DF-461F-BCD4-F836197BBC97}"
+          Id="Package.EventHandlers[OnPreExecute].PrecedenceConstraints[{BDF34DDF-A53C-4801-A1CC-84EB68576C04\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21754,20 +21762,20 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </LayoutInfo>
   </DtsEventHandler>
   <DtsEventHandler
-    design-time-name="{34CDAB1D-D769-4948-8C80-08FD2F0A3FDC}">
+    design-time-name="Package.EventHandlers[OnVariableValueChanged]">
     <LayoutInfo>
       <GraphLayout
         Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="NaN,NaN"
-          Id="{13B0DE2F-A822-4BC4-970B-36A98DCCB5C3}"
+          Id="Package.EventHandlers[OnVariableValueChanged]\SSISOpsEhObj_OnVariableValueChanged_Start"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{50DE02CF-759C-4F59-B7B9-5E1AA908D493}"
+          Id="Package.EventHandlers[OnVariableValueChanged]\SSISOpsEhObj_Task_OnVariableValueChanged"
           TopLeft="NaN,NaN" />
         <EdgeLayout
-          Id="{8F70B295-5DC5-4AAB-BD83-0A97A601565F}"
+          Id="Package.EventHandlers[OnVariableValueChanged].PrecedenceConstraints[{D17AE3DA-938E-437C-A810-19468B7CFB39\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21790,24 +21798,24 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </LayoutInfo>
   </DtsEventHandler>
   <DtsEventHandler
-    design-time-name="{800EA042-0BC9-40C2-892D-9B7D5E3F33C2}">
+    design-time-name="Package.EventHandlers[OnWarning]">
     <LayoutInfo>
       <GraphLayout
         Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="NaN,NaN"
-          Id="{5C46CA5B-6D24-4C1F-8D2F-D139BB1A6C4F}"
+          Id="Package.EventHandlers[OnWarning]\SSISOpsEhObj_OnWarning_Start"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{48E7140C-2AAF-4496-8CAB-DC8F8E50B25A}"
+          Id="Package.EventHandlers[OnWarning]\SSISOpsEhObj_Package_OnWarning"
           TopLeft="NaN,NaN" />
         <NodeLayout
           Size="NaN,NaN"
-          Id="{044506C8-295E-42CB-BEE8-71D9E0F5572B}"
+          Id="Package.EventHandlers[OnWarning]\SSISOpsEhObj_Task_OnWarning"
           TopLeft="NaN,NaN" />
         <EdgeLayout
-          Id="{58130FF5-CE93-48F9-BE88-E22175E6F6EC}"
+          Id="Package.EventHandlers[OnWarning].PrecedenceConstraints[{D04B27F1-87D3-4FE0-81F3-02FD3688846E\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -21827,7 +21835,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="{C8A0B57B-1B70-42FF-A13B-C059C50B7216}"
+          Id="Package.EventHandlers[OnWarning].PrecedenceConstraints[{D2E1E2C9-5642-4BBE-89B1-232D4EA26965\}]"
           TopLeft="NaN,NaN">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -22077,8 +22085,30 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Union All Output 14]"
-          TopLeft="369.5,3209.5">
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Union All Output 17]"
+          TopLeft="369.5,1679.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Union All Output 16]"
+          TopLeft="369.5,2903.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -22121,30 +22151,8 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Union All Output 11]"
-          TopLeft="431.5,659.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Union All Output 1]"
-          TopLeft="369.5,1373.5">
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Union All Output 14]"
+          TopLeft="369.5,3209.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -22209,8 +22217,8 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Union All Output 16]"
-          TopLeft="369.5,2903.5">
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Union All Output 11]"
+          TopLeft="431.5,659.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -22231,8 +22239,8 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Union All Output 17]"
-          TopLeft="369.5,1679.5">
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Union All Output 1]"
+          TopLeft="369.5,1373.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -22385,74 +22393,38 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup No Match Output3]"
-          TopLeft="336.833333333334,2393.5">
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup No Match Output9]"
+          TopLeft="343.833333333333,1781.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-127.333333333333,60"
+              EndConnector="-113.333333333333,60"
               Start="0,0"
-              End="-127.333333333333,52.5">
+              End="-113.333333333333,52.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,20.2801556420233" />
+                    End="0,20.3520782396088" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,20.2801556420233"
-                    Point2="0,24.2801556420233"
-                    Point3="-4,24.2801556420233" />
+                    Point1="0,20.3520782396088"
+                    Point2="0,24.3520782396088"
+                    Point3="-4,24.3520782396088" />
                   <mssgle:LineSegment
-                    End="-123.333333333333,24.2801556420233" />
+                    End="-109.333333333333,24.3520782396088" />
                   <mssgle:CubicBezierSegment
-                    Point1="-123.333333333333,24.2801556420233"
-                    Point2="-127.333333333333,24.2801556420233"
-                    Point3="-127.333333333333,28.2801556420233" />
+                    Point1="-109.333333333333,24.3520782396088"
+                    Point2="-113.333333333333,24.3520782396088"
+                    Point3="-113.333333333333,28.3520782396088" />
                   <mssgle:LineSegment
-                    End="-127.333333333333,52.5" />
+                    End="-113.333333333333,52.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-119.473053385417,29.2801556420233,111.6127734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup No Match Output7]"
-          TopLeft="183.833333333333,1067.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-18.3333333333333,60"
-              Start="0,0"
-              End="-18.3333333333333,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,20.2031029619182" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,20.2031029619182"
-                    Point2="0,24.2031029619182"
-                    Point3="-4,24.2031029619182" />
-                  <mssgle:LineSegment
-                    End="-14.3333333333333,24.2031029619182" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-14.3333333333333,24.2031029619182"
-                    Point2="-18.3333333333333,24.2031029619182"
-                    Point3="-18.3333333333333,28.2031029619182" />
-                  <mssgle:LineSegment
-                    End="-18.3333333333333,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-64.9730533854166,29.2031029619182,111.6127734375,11.609375"
+              BoundingBox="-112.473053385417,29.3520782396088,111.6127734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -22493,38 +22465,74 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup No Match Output1]"
-          TopLeft="339.333333333334,2699.5">
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup No Match Output7]"
+          TopLeft="183.833333333333,1067.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-116.833333333333,60"
+              EndConnector="-18.3333333333333,60"
               Start="0,0"
-              End="-116.833333333333,52.5">
+              End="-18.3333333333333,52.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,20.302203567681" />
+                    End="0,20.2031029619182" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,20.302203567681"
-                    Point2="0,24.302203567681"
-                    Point3="-4,24.302203567681" />
+                    Point1="0,20.2031029619182"
+                    Point2="0,24.2031029619182"
+                    Point3="-4,24.2031029619182" />
                   <mssgle:LineSegment
-                    End="-112.833333333333,24.302203567681" />
+                    End="-14.3333333333333,24.2031029619182" />
                   <mssgle:CubicBezierSegment
-                    Point1="-112.833333333333,24.302203567681"
-                    Point2="-116.833333333333,24.302203567681"
-                    Point3="-116.833333333333,28.302203567681" />
+                    Point1="-14.3333333333333,24.2031029619182"
+                    Point2="-18.3333333333333,24.2031029619182"
+                    Point3="-18.3333333333333,28.2031029619182" />
                   <mssgle:LineSegment
-                    End="-116.833333333333,52.5" />
+                    End="-18.3333333333333,52.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-114.223053385417,29.302203567681,111.6127734375,11.609375"
+              BoundingBox="-64.9730533854166,29.2031029619182,111.6127734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup No Match Output6]"
+          TopLeft="346.166666666667,3311.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-234.666666666667,60"
+              Start="0,0"
+              End="-234.666666666667,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,20.3850267379679" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,20.3850267379679"
+                    Point2="0,24.3850267379679"
+                    Point3="-4,24.3850267379679" />
+                  <mssgle:LineSegment
+                    End="-230.666666666667,24.3850267379679" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-230.666666666667,24.3850267379679"
+                    Point2="-234.666666666667,24.3850267379679"
+                    Point3="-234.666666666667,28.3850267379679" />
+                  <mssgle:LineSegment
+                    End="-234.666666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-173.139720052084,29.3850267379679,111.6127734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -22601,110 +22609,38 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup No Match Output9]"
-          TopLeft="343.833333333334,1781.5">
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup No Match Output3]"
+          TopLeft="336.833333333334,2393.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-113.333333333333,60"
+              EndConnector="-127.333333333333,60"
               Start="0,0"
-              End="-113.333333333333,52.5">
+              End="-127.333333333333,52.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,20.3520782396088" />
+                    End="0,20.2801556420233" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,20.3520782396088"
-                    Point2="0,24.3520782396088"
-                    Point3="-4,24.3520782396088" />
+                    Point1="0,20.2801556420233"
+                    Point2="0,24.2801556420233"
+                    Point3="-4,24.2801556420233" />
                   <mssgle:LineSegment
-                    End="-109.333333333333,24.3520782396088" />
+                    End="-123.333333333333,24.2801556420233" />
                   <mssgle:CubicBezierSegment
-                    Point1="-109.333333333333,24.3520782396088"
-                    Point2="-113.333333333333,24.3520782396088"
-                    Point3="-113.333333333333,28.3520782396088" />
+                    Point1="-123.333333333333,24.2801556420233"
+                    Point2="-127.333333333333,24.2801556420233"
+                    Point3="-127.333333333333,28.2801556420233" />
                   <mssgle:LineSegment
-                    End="-113.333333333333,52.5" />
+                    End="-127.333333333333,52.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-112.473053385417,29.3520782396088,111.6127734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup No Match Output]"
-          TopLeft="119.333333333334,1169.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-20.8333333333333,89"
-              Start="0,0"
-              End="-20.8333333333333,81.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.8981158408932" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,31.8981158408932"
-                    Point2="0,35.8981158408932"
-                    Point3="-4,35.8981158408932" />
-                  <mssgle:LineSegment
-                    End="-16.8333333333333,35.8981158408932" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-16.8333333333333,35.8981158408932"
-                    Point2="-20.8333333333333,35.8981158408932"
-                    Point3="-20.8333333333333,39.8981158408932" />
-                  <mssgle:LineSegment
-                    End="-20.8333333333333,81.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-66.2230533854167,40.8981158408932,111.6127734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup No Match Output6]"
-          TopLeft="346.166666666667,3311.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-234.666666666667,60"
-              Start="0,0"
-              End="-234.666666666667,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,20.3850267379679" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,20.3850267379679"
-                    Point2="0,24.3850267379679"
-                    Point3="-4,24.3850267379679" />
-                  <mssgle:LineSegment
-                    End="-230.666666666667,24.3850267379679" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-230.666666666667,24.3850267379679"
-                    Point2="-234.666666666667,24.3850267379679"
-                    Point3="-234.666666666667,28.3850267379679" />
-                  <mssgle:LineSegment
-                    End="-234.666666666667,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-173.139720052084,29.3850267379679,111.6127734375,11.609375"
+              BoundingBox="-119.473053385417,29.2801556420233,111.6127734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -22745,91 +22681,115 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output3]"
-          TopLeft="392.666666666667,1475.5">
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup No Match Output1]"
+          TopLeft="339.333333333334,2699.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,162"
+              EndConnector="-116.833333333333,60"
               Start="0,0"
-              End="0,154.5">
+              End="-116.833333333333,52.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,154.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-48.19138671875,71.4453125,96.3827734375,11.609375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output]"
-          TopLeft="399.666666666667,2699.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-9.83333333333326,162"
-              Start="0,0"
-              End="-9.83333333333326,154.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,76.6208346556649" />
+                    End="0,20.302203567681" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,76.6208346556649"
-                    Point2="0,80.6208346556649"
-                    Point3="-4,80.6208346556649" />
+                    Point1="0,20.302203567681"
+                    Point2="0,24.302203567681"
+                    Point3="-4,24.302203567681" />
                   <mssgle:LineSegment
-                    End="-5.83333333333326,80.6208346556649" />
+                    End="-112.833333333333,24.302203567681" />
                   <mssgle:CubicBezierSegment
-                    Point1="-5.83333333333326,80.6208346556649"
-                    Point2="-9.83333333333326,80.6208346556649"
-                    Point3="-9.83333333333326,84.6208346556649" />
+                    Point1="-112.833333333333,24.302203567681"
+                    Point2="-116.833333333333,24.302203567681"
+                    Point3="-116.833333333333,28.302203567681" />
                   <mssgle:LineSegment
-                    End="-9.83333333333326,154.5" />
+                    End="-116.833333333333,52.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-53.1080533854166,85.6208346556649,96.3827734375,11.609375"
+              BoundingBox="-114.223053385417,29.302203567681,111.6127734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output2]"
-          TopLeft="392.166666666667,2087.5">
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup No Match Output]"
+          TopLeft="119.333333333334,1169.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,162"
+              EndConnector="-20.8333333333333,89"
               Start="0,0"
-              End="0,154.5">
+              End="-20.8333333333333,81.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,154.5" />
+                    End="0,31.8981158408932" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.8981158408932"
+                    Point2="0,35.8981158408932"
+                    Point3="-4,35.8981158408932" />
+                  <mssgle:LineSegment
+                    End="-16.8333333333333,35.8981158408932" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-16.8333333333333,35.8981158408932"
+                    Point2="-20.8333333333333,35.8981158408932"
+                    Point3="-20.8333333333333,39.8981158408932" />
+                  <mssgle:LineSegment
+                    End="-20.8333333333333,81.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-48.19138671875,71.4453125,96.3827734375,11.609375"
+              BoundingBox="-66.2230533854166,40.8981158408932,111.6127734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output8]"
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output1]"
+          TopLeft="402.166666666667,2393.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-12.3333333333333,162"
+              Start="0,0"
+              End="-12.3333333333333,154.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,76.5590701780197" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,76.5590701780197"
+                    Point2="0,80.5590701780197"
+                    Point3="-4,80.5590701780197" />
+                  <mssgle:LineSegment
+                    End="-8.33333333333331,80.5590701780197" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-8.33333333333331,80.5590701780197"
+                    Point2="-12.3333333333333,80.5590701780197"
+                    Point3="-12.3333333333333,84.5590701780197" />
+                  <mssgle:LineSegment
+                    End="-12.3333333333333,154.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-54.3580533854167,85.5590701780197,96.3827734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output4]"
           TopLeft="392.833333333334,3311.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -22865,43 +22825,31 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output5]"
-          TopLeft="476.666666666667,965.5">
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output2]"
+          TopLeft="392.5,1781.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-70.5666666666665,366"
+              EndConnector="0,162"
               Start="0,0"
-              End="-70.5666666666665,358.5">
+              End="0,154.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,218.340854149879" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,218.340854149879"
-                    Point2="0,222.340854149879"
-                    Point3="-4,222.340854149879" />
-                  <mssgle:LineSegment
-                    End="-66.5666666666665,222.340854149879" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-66.5666666666665,222.340854149879"
-                    Point2="-70.5666666666665,222.340854149879"
-                    Point3="-70.5666666666665,226.340854149879" />
-                  <mssgle:LineSegment
-                    End="-70.5666666666665,358.5" />
+                    End="0,154.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-83.4747200520833,227.340854149879,96.3827734375,11.609375"
+              BoundingBox="-48.19138671875,71.4453125,96.3827734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output7]"
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output]"
           TopLeft="275.166666666667,1067.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -22937,31 +22885,43 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output9]"
-          TopLeft="392.5,1781.5">
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output3]"
+          TopLeft="476.666666666667,965.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,162"
+              EndConnector="-70.5666666666665,366"
               Start="0,0"
-              End="0,154.5">
+              End="-70.5666666666665,358.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,154.5" />
+                    End="0,218.340854149879" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,218.340854149879"
+                    Point2="0,222.340854149879"
+                    Point3="-4,222.340854149879" />
+                  <mssgle:LineSegment
+                    End="-66.5666666666665,222.340854149879" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-66.5666666666665,222.340854149879"
+                    Point2="-70.5666666666665,222.340854149879"
+                    Point3="-70.5666666666665,226.340854149879" />
+                  <mssgle:LineSegment
+                    End="-70.5666666666665,358.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-48.19138671875,71.4453125,96.3827734375,11.609375"
+              BoundingBox="-83.4747200520833,227.340854149879,96.3827734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output4]"
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output8]"
           TopLeft="211.666666666667,1169.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -22997,7 +22957,31 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output1]"
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output5]"
+          TopLeft="392.666666666667,1475.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,162"
+              Start="0,0"
+              End="0,154.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,154.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-48.19138671875,71.4453125,96.3827734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output6]"
           TopLeft="402,3005.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -23033,38 +23017,62 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output6]"
-          TopLeft="402.166666666667,2393.5">
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output7]"
+          TopLeft="399.666666666667,2699.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-12.3333333333333,162"
+              EndConnector="-9.83333333333326,162"
               Start="0,0"
-              End="-12.3333333333333,154.5">
+              End="-9.83333333333326,154.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,76.5590701780197" />
+                    End="0,76.6208346556649" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,76.5590701780197"
-                    Point2="0,80.5590701780197"
-                    Point3="-4,80.5590701780197" />
+                    Point1="0,76.6208346556649"
+                    Point2="0,80.6208346556649"
+                    Point3="-4,80.6208346556649" />
                   <mssgle:LineSegment
-                    End="-8.33333333333331,80.5590701780197" />
+                    End="-5.83333333333326,80.6208346556649" />
                   <mssgle:CubicBezierSegment
-                    Point1="-8.33333333333331,80.5590701780197"
-                    Point2="-12.3333333333333,80.5590701780197"
-                    Point3="-12.3333333333333,84.5590701780197" />
+                    Point1="-5.83333333333326,80.6208346556649"
+                    Point2="-9.83333333333326,80.6208346556649"
+                    Point3="-9.83333333333326,84.6208346556649" />
                   <mssgle:LineSegment
-                    End="-12.3333333333333,154.5" />
+                    End="-9.83333333333326,154.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
             <mssgm:EdgeLabel
-              BoundingBox="-54.3580533854167,85.5590701780197,96.3827734375,11.609375"
+              BoundingBox="-53.1080533854166,85.6208346556649,96.3827734375,11.609375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Lookup Match Output9]"
+          TopLeft="392.166666666667,2087.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,162"
+              Start="0,0"
+              End="0,154.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,154.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-48.19138671875,71.4453125,96.3827734375,11.609375"
               RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
@@ -23141,323 +23149,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output2]"
-          TopLeft="232.5,2189.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="116.666666666667,60"
-              Start="0,0"
-              End="116.666666666667,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,31.5623100303951"
-                    Point2="0,35.5623100303951"
-                    Point3="4,35.5623100303951" />
-                  <mssgle:LineSegment
-                    End="112.666666666667,35.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="112.666666666667,35.5623100303951"
-                    Point2="116.666666666667,35.5623100303951"
-                    Point3="116.666666666667,39.5623100303951" />
-                  <mssgle:LineSegment
-                    End="116.666666666667,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output3]"
-          TopLeft="222.5,2801.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="126.666666666667,60"
-              Start="0,0"
-              End="126.666666666667,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,31.5623100303951"
-                    Point2="0,35.5623100303951"
-                    Point3="4,35.5623100303951" />
-                  <mssgle:LineSegment
-                    End="122.666666666667,35.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="122.666666666667,35.5623100303951"
-                    Point2="126.666666666667,35.5623100303951"
-                    Point3="126.666666666667,39.5623100303951" />
-                  <mssgle:LineSegment
-                    End="126.666666666667,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output4]"
-          TopLeft="293.5,557.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="117.666666666667,60"
-              Start="0,0"
-              End="117.666666666667,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,31.5623100303951"
-                    Point2="0,35.5623100303951"
-                    Point3="4,35.5623100303951" />
-                  <mssgle:LineSegment
-                    End="113.666666666667,35.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="113.666666666667,35.5623100303951"
-                    Point2="117.666666666667,35.5623100303951"
-                    Point3="117.666666666667,39.5623100303951" />
-                  <mssgle:LineSegment
-                    End="117.666666666667,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output5]"
-          TopLeft="431.5,761.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output11]"
-          TopLeft="98.5000000000002,1300.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="234.4,31"
-              Start="0,0"
-              End="234.4,23.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,17.5738758029979" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,17.5738758029979"
-                    Point2="0,21.5738758029979"
-                    Point3="4,21.5738758029979" />
-                  <mssgle:LineSegment
-                    End="230.4,21.5738758029979" />
-                  <mssgle:CubicBezierSegment
-                    Point1="230.4,21.5738758029979"
-                    Point2="234.4,21.5738758029979"
-                    Point3="234.4,25.5738758029979" />
-                  <mssgle:LineSegment
-                    End="234.4,23.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output10]"
-          TopLeft="229.5,1577.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="119.666666666667,60"
-              Start="0,0"
-              End="119.666666666667,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,31.5623100303951"
-                    Point2="0,35.5623100303951"
-                    Point3="4,35.5623100303951" />
-                  <mssgle:LineSegment
-                    End="115.666666666667,35.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="115.666666666667,35.5623100303951"
-                    Point2="119.666666666667,35.5623100303951"
-                    Point3="119.666666666667,39.5623100303951" />
-                  <mssgle:LineSegment
-                    End="119.666666666667,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output9]"
-          TopLeft="230.5,1883.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="118.666666666667,60"
-              Start="0,0"
-              End="118.666666666667,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,31.5623100303951"
-                    Point2="0,35.5623100303951"
-                    Point3="4,35.5623100303951" />
-                  <mssgle:LineSegment
-                    End="114.666666666667,35.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="114.666666666667,35.5623100303951"
-                    Point2="118.666666666667,35.5623100303951"
-                    Point3="118.666666666667,39.5623100303951" />
-                  <mssgle:LineSegment
-                    End="118.666666666667,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output1]"
-          TopLeft="215.5,3107.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="133.666666666667,60"
-              Start="0,0"
-              End="133.666666666667,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,31.5623100303951"
-                    Point2="0,35.5623100303951"
-                    Point3="4,35.5623100303951" />
-                  <mssgle:LineSegment
-                    End="129.666666666667,35.5623100303951" />
-                  <mssgle:CubicBezierSegment
-                    Point1="129.666666666667,35.5623100303951"
-                    Point2="133.666666666667,35.5623100303951"
-                    Point3="133.666666666667,39.5623100303951" />
-                  <mssgle:LineSegment
-                    End="133.666666666667,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output7]"
-          TopLeft="111.5,3515.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="215.166666666667,60"
-              Start="0,0"
-              End="215.166666666667,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,31.5301794453507" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,31.5301794453507"
-                    Point2="0,35.5301794453507"
-                    Point3="4,35.5301794453507" />
-                  <mssgle:LineSegment
-                    End="211.166666666667,35.5301794453507" />
-                  <mssgle:CubicBezierSegment
-                    Point1="211.166666666667,35.5301794453507"
-                    Point2="215.166666666667,35.5301794453507"
-                    Point3="215.166666666667,39.5301794453507" />
-                  <mssgle:LineSegment
-                    End="215.166666666667,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
           Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output]"
-          TopLeft="431.5,353.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output6]"
           TopLeft="345.5,3515.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -23491,7 +23183,109 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output8]"
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output1]"
+          TopLeft="98.5000000000002,1300.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="234.4,31"
+              Start="0,0"
+              End="234.4,23.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,17.5738758029979" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,17.5738758029979"
+                    Point2="0,21.5738758029979"
+                    Point3="4,21.5738758029979" />
+                  <mssgle:LineSegment
+                    End="230.4,21.5738758029979" />
+                  <mssgle:CubicBezierSegment
+                    Point1="230.4,21.5738758029979"
+                    Point2="234.4,21.5738758029979"
+                    Point3="234.4,25.5738758029979" />
+                  <mssgle:LineSegment
+                    End="234.4,23.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output2]"
+          TopLeft="229.5,1577.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="119.666666666667,60"
+              Start="0,0"
+              End="119.666666666667,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.5623100303951"
+                    Point2="0,35.5623100303951"
+                    Point3="4,35.5623100303951" />
+                  <mssgle:LineSegment
+                    End="115.666666666667,35.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="115.666666666667,35.5623100303951"
+                    Point2="119.666666666667,35.5623100303951"
+                    Point3="119.666666666667,39.5623100303951" />
+                  <mssgle:LineSegment
+                    End="119.666666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output3]"
+          TopLeft="230.5,1883.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="118.666666666667,60"
+              Start="0,0"
+              End="118.666666666667,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.5623100303951"
+                    Point2="0,35.5623100303951"
+                    Point3="4,35.5623100303951" />
+                  <mssgle:LineSegment
+                    End="114.666666666667,35.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="114.666666666667,35.5623100303951"
+                    Point2="118.666666666667,35.5623100303951"
+                    Point3="118.666666666667,39.5623100303951" />
+                  <mssgle:LineSegment
+                    End="118.666666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output4]"
           TopLeft="209.5,2495.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -23516,6 +23310,220 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
                     Point3="139.666666666667,39.5623100303951" />
                   <mssgle:LineSegment
                     End="139.666666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output5]"
+          TopLeft="111.5,3515.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="215.166666666667,60"
+              Start="0,0"
+              End="215.166666666667,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.5301794453507" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.5301794453507"
+                    Point2="0,35.5301794453507"
+                    Point3="4,35.5301794453507" />
+                  <mssgle:LineSegment
+                    End="211.166666666667,35.5301794453507" />
+                  <mssgle:CubicBezierSegment
+                    Point1="211.166666666667,35.5301794453507"
+                    Point2="215.166666666667,35.5301794453507"
+                    Point3="215.166666666667,39.5301794453507" />
+                  <mssgle:LineSegment
+                    End="215.166666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output11]"
+          TopLeft="293.5,557.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="117.666666666667,60"
+              Start="0,0"
+              End="117.666666666667,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.5623100303951"
+                    Point2="0,35.5623100303951"
+                    Point3="4,35.5623100303951" />
+                  <mssgle:LineSegment
+                    End="113.666666666667,35.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="113.666666666667,35.5623100303951"
+                    Point2="117.666666666667,35.5623100303951"
+                    Point3="117.666666666667,39.5623100303951" />
+                  <mssgle:LineSegment
+                    End="117.666666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output6]"
+          TopLeft="222.5,2801.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="126.666666666667,60"
+              Start="0,0"
+              End="126.666666666667,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.5623100303951"
+                    Point2="0,35.5623100303951"
+                    Point3="4,35.5623100303951" />
+                  <mssgle:LineSegment
+                    End="122.666666666667,35.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="122.666666666667,35.5623100303951"
+                    Point2="126.666666666667,35.5623100303951"
+                    Point3="126.666666666667,39.5623100303951" />
+                  <mssgle:LineSegment
+                    End="126.666666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output7]"
+          TopLeft="232.5,2189.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="116.666666666667,60"
+              Start="0,0"
+              End="116.666666666667,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.5623100303951"
+                    Point2="0,35.5623100303951"
+                    Point3="4,35.5623100303951" />
+                  <mssgle:LineSegment
+                    End="112.666666666667,35.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="112.666666666667,35.5623100303951"
+                    Point2="116.666666666667,35.5623100303951"
+                    Point3="116.666666666667,39.5623100303951" />
+                  <mssgle:LineSegment
+                    End="116.666666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output8]"
+          TopLeft="215.5,3107.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="133.666666666667,60"
+              Start="0,0"
+              End="133.666666666667,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,31.5623100303951"
+                    Point2="0,35.5623100303951"
+                    Point3="4,35.5623100303951" />
+                  <mssgle:LineSegment
+                    End="129.666666666667,35.5623100303951" />
+                  <mssgle:CubicBezierSegment
+                    Point1="129.666666666667,35.5623100303951"
+                    Point2="133.666666666667,35.5623100303951"
+                    Point3="133.666666666667,39.5623100303951" />
+                  <mssgle:LineSegment
+                    End="133.666666666667,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output9]"
+          TopLeft="431.5,353.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\DF Transform_FactAttendance_F1Attendance.Paths[Derived Column Output10]"
+          TopLeft="431.5,761.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,60"
+              Start="0,0"
+              End="0,52.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,52.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
