@@ -14262,8 +14262,7 @@ ORDER BY MinistryMonth</CommandText>
             <Value>=Join(Parameters!Campus.Value, ",")</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
-WITH ReportPeriod AS (
+        <CommandText>WITH ReportPeriod AS (
 	SELECT 
 		  DimDate.DateID
 		, DimDate.MinistryMonth
@@ -14280,11 +14279,18 @@ WITH ReportPeriod AS (
 		  ReportPeriod.MinistryYear
 		, ReportPeriod.MinistryMonth
 		, ReportPeriod.MonthLabel
-		, CASE WHEN DimLifeEventType.Name = 'FTV' AND (DimMinistry.Name LIKE '%Chuchwide Services' OR DimMinistry.Name LIKE '%Churchwide Services')
+		, CASE WHEN 
+				DimLifeEventType.Name = 'FTV' 
+				AND (DimMinistry.Name LIKE '%Chuchwide Services' OR DimMinistry.Name LIKE '%Churchwide Services')
+				AND DimActivity.Name LIKE '%Worship Service%'
+				AND DimRoster.Roster LIKE '%Register Attendance%'
 			THEN 
 				'FTV Adults'
 			ELSE 
-				CASE WHEN DimLifeEventType.Name = 'FTV' AND DimMinistry.Name LIKE '%Harvest Kids%'
+				CASE WHEN 
+					DimLifeEventType.Name = 'FTV' 
+					AND DimMinistry.Name LIKE '%Harvest Kids%'
+					AND DimActivity.Name LIKE '%Harvest Kids Weekend%'
 				THEN 
 					'FTV Children'
 				ELSE
@@ -14297,18 +14303,34 @@ WITH ReportPeriod AS (
 		ON FactLifeEvent.InstanceDateID = ReportPeriod.DateID
 	INNER JOIN DW.DimCampus
 		ON FactLifeEvent.CampusID = DimCampus.CampusID
+		AND FactLifeEvent.TenantID = DimCampus.TenantID
 	INNER JOIN DW.DimMinistry
 		ON FactLifeEvent.MinistryID = DimMinistry.MinistryID
+		AND FactLifeEvent.TenantID = DimMinistry.TenantID
+	INNER JOIN DW.DimActivity
+		ON FactLifeEvent.ActivityID = DimActivity.ActivityID
+		AND FactLifeEvent.TenantID = DimActivity.TenantID
+	INNER JOIN DW.DimRoster 
+		ON FactLifeEvent.RosterID = DimRoster.RosterID
+		AND FactLifeEvent.TenantID = DimRoster.TenantID
 	INNER JOIN DW.DimLifeEventType
 		ON FactLifeEvent.LifeEventTypeID = DimLifeEventType.LifeEventTypeID
+		AND FactLifeEvent.TenantID = DimLifeEventType.TenantID
 	WHERE
 		--DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
 		DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
-		AND CASE WHEN DimLifeEventType.Name = 'FTV' AND (DimMinistry.Name LIKE '%Chuchwide Services' OR DimMinistry.Name LIKE '%Churchwide Services')
+		AND CASE WHEN 
+				DimLifeEventType.Name = 'FTV' 
+				AND (DimMinistry.Name LIKE '%Chuchwide Services' OR DimMinistry.Name LIKE '%Churchwide Services')
+				AND DimActivity.Name LIKE '%Worship Service%'
+				AND DimRoster.Roster LIKE '%Register Attendance%'
 			THEN 
 				'FTV Adults'
 			ELSE 
-				CASE WHEN DimLifeEventType.Name = 'FTV' AND DimMinistry.Name LIKE '%Harvest Kids%'
+				CASE WHEN 
+					DimLifeEventType.Name = 'FTV' 
+					AND DimMinistry.Name LIKE '%Harvest Kids%'
+					AND DimActivity.Name LIKE '%Harvest Kids Weekend%'
 				THEN 
 					'FTV Children'
 				ELSE
@@ -14318,11 +14340,18 @@ WITH ReportPeriod AS (
 		  ReportPeriod.MinistryYear
 		, ReportPeriod.MinistryMonth
 		, ReportPeriod.MonthLabel
-		, CASE WHEN DimLifeEventType.Name = 'FTV' AND (DimMinistry.Name LIKE '%Chuchwide Services' OR DimMinistry.Name LIKE '%Churchwide Services')
+		, CASE WHEN 
+				DimLifeEventType.Name = 'FTV' 
+				AND (DimMinistry.Name LIKE '%Chuchwide Services' OR DimMinistry.Name LIKE '%Churchwide Services')
+				AND DimActivity.Name LIKE '%Worship Service%'
+				AND DimRoster.Roster LIKE '%Register Attendance%'
 			THEN 
 				'FTV Adults'
 			ELSE 
-				CASE WHEN DimLifeEventType.Name = 'FTV' AND DimMinistry.Name LIKE '%Harvest Kids%'
+				CASE WHEN 
+					DimLifeEventType.Name = 'FTV' 
+					AND DimMinistry.Name LIKE '%Harvest Kids%'
+					AND DimActivity.Name LIKE '%Harvest Kids Weekend%'
 				THEN 
 					'FTV Children'
 				ELSE
