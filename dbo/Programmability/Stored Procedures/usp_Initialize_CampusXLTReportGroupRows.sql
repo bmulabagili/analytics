@@ -969,7 +969,7 @@ AS
 	SELECT DISTINCT 27				, 'Compensation'	, 'Production' 									, 26				,'Luke'		, 5		UNION
 	SELECT DISTINCT 28				, 'Compensation'	, 'Worship' 									, 27				,'Luke'		, 5		UNION
 	SELECT DISTINCT 29				, 'Compensation'	, 'BSC' 										, 28				,'XLT'		, 6		UNION
-	SELECT DISTINCT 30				, 'Compensation'	, 'Health Insurance' 							, 29				,'Scott'	, 6		UNION
+	SELECT DISTINCT 30				, 'Compensation'	, 'Health Insurance' 							, 29				,'Scott'	, 1		UNION
 	SELECT DISTINCT 31				, 'Compensation'	, 'Expense Sharing'								, 30				,'XLT'		, 6		UNION
 	SELECT DISTINCT 32				, 'Compensation'	, 'Personal Accounts'							, 31				,'XLT'		, 6		UNION
 	SELECT DISTINCT 33				, 'Compensation'	, 'Cell Phones'									, 32				,'XLT'		, 6		UNION

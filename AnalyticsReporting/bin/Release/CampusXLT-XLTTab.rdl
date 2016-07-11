@@ -290,21 +290,21 @@ FROM (
 		--no budgeted apo/FAO records
 		UNION 
 		SELECT
-		  CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
-		, CampusXLTReportGroup_XLTTab.XLTHeading
-		, CampusXLTReportGroup_XLTTab.XLTDetail
-		, CampusXLTReportGroup_XLTTab.XLTDetailSortOrder 
-		, CampusXLTReportGroup_XLTTab.Manager
-		, CampusXLTReportGroup_XLTTab.ManagerSortOrder 
+		  ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1) AS CampusXLTReportGroupID
+		, ISNULL(CampusXLTReportGroup_XLTTab.XLTHeading, '???') AS Heading
+		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetail, '???') AS Detail
+		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetailSortOrder, -1) AS XLTDetailSortOrder 
+		, ISNULL(CampusXLTReportGroup_XLTTab.Manager, 'XLT') AS Manager
+		, ISNULL(CampusXLTReportGroup_XLTTab.ManagerSortOrder,6) AS ManagerSortOrder
 		, 0 AS Amount 
 	FROM CampusXLTReportGroup_XLTTab
 	GROUP BY
-		  CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
-		, CampusXLTReportGroup_XLTTab.XLTHeading
-		, CampusXLTReportGroup_XLTTab.XLTDetail
-		, CampusXLTReportGroup_XLTTab.XLTDetailSortOrder 
-		, CampusXLTReportGroup_XLTTab.Manager
-		, CampusXLTReportGroup_XLTTab.ManagerSortOrder 
+		  ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1)
+		, ISNULL(CampusXLTReportGroup_XLTTab.XLTHeading, '???')
+		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetail, '???')
+		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetailSortOrder, -1)
+		, ISNULL(CampusXLTReportGroup_XLTTab.Manager, 'XLT')
+		, ISNULL(CampusXLTReportGroup_XLTTab.ManagerSortOrder,6) 
 
 ), MinistryRevenues AS (
 	SELECT
@@ -607,21 +607,21 @@ ORDER BY
 		--no budgeted apo/FAO records
 		UNION 
 		SELECT
-		  CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
-		, CampusXLTReportGroup_XLTTab.XLTHeading
-		, CampusXLTReportGroup_XLTTab.XLTDetail
-		, CampusXLTReportGroup_XLTTab.XLTDetailSortOrder 
-		, CampusXLTReportGroup_XLTTab.Manager
-		, CampusXLTReportGroup_XLTTab.ManagerSortOrder 
+		  ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1) AS CampusXLTReportGroupID
+		, ISNULL(CampusXLTReportGroup_XLTTab.XLTHeading, '???') AS Heading
+		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetail, '???') AS Detail
+		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetailSortOrder, -1) AS XLTDetailSortOrder 
+		, ISNULL(CampusXLTReportGroup_XLTTab.Manager, 'XLT') AS Manager
+		, ISNULL(CampusXLTReportGroup_XLTTab.ManagerSortOrder,6) AS ManagerSortOrder
 		, 0 AS Amount 
 	FROM CampusXLTReportGroup_XLTTab
 	GROUP BY
-		  CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID
-		, CampusXLTReportGroup_XLTTab.XLTHeading
-		, CampusXLTReportGroup_XLTTab.XLTDetail
-		, CampusXLTReportGroup_XLTTab.XLTDetailSortOrder 
-		, CampusXLTReportGroup_XLTTab.Manager
-		, CampusXLTReportGroup_XLTTab.ManagerSortOrder 
+		  ISNULL(CampusXLTReportGroup_XLTTab.CampusXLTReportGroupID, -1)
+		, ISNULL(CampusXLTReportGroup_XLTTab.XLTHeading, '???')
+		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetail, '???')
+		, ISNULL(CampusXLTReportGroup_XLTTab.XLTDetailSortOrder, -1)
+		, ISNULL(CampusXLTReportGroup_XLTTab.Manager, 'XLT')
+		, ISNULL(CampusXLTReportGroup_XLTTab.ManagerSortOrder,6) 
 
 ), BudgetMinistryRevenues AS (
 	SELECT
@@ -678,7 +678,6 @@ ORDER BY
 		, BudgetExpense.Manager
 		, BudgetExpense.ManagerSortOrder
 )
-
 SELECT 
 	   ReportedActualExpense.CampusXLTReportGroupID
 	 , ReportedActualExpense.Heading
@@ -690,7 +689,7 @@ SELECT
 	 , SUM(ReportedBudgetExpense.Amount) AS BudgetedExpenseAmount
 	 , SUM(ReportedBudgetExpense.Amount - ReportedActualExpense.Amount) AS Amount
 FROM ReportedActualExpense
-INNER JOIN ReportedBudgetExpense
+LEFT JOIN ReportedBudgetExpense
 	ON ReportedActualExpense.CampusXLTReportGroupID = ReportedBudgetExpense.CampusXLTReportGroupID
 	AND ReportedActualExpense.Manager = ReportedBudgetExpense.Manager
 GROUP BY
@@ -701,8 +700,7 @@ GROUP BY
 	 , ReportedActualExpense.Manager
 	 , ReportedActualExpense.ManagerSortOrder
 
---SELECT * FROM ReportedActualExpense
---select * from ReportedBudgetExpense</CommandText>
+</CommandText>
       </Query>
       <Fields>
         <Field Name="CampusXLTReportGroupID">
