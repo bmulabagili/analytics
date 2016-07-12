@@ -1,6 +1,6 @@
-﻿CREATE TABLE [Transform].[FactEngagement]
+﻿CREATE TABLE [DW].[FactEngagement]
 (
-      EngagementID INT NOT NULL
+	  EngagementID INT NOT NULL
 	, TenantID INT NOT NULL
 	, CalendarYear INT NOT NULL
 	, CalendarMonth INT NOT NULL
@@ -40,18 +40,14 @@
 	, FirstVolunteerAttendanceActualDate DATE NULL
 	, LastVolunteerAttendanceDateID INT NULL
 	, LastVolunteerAttendanceActualDate DATE NULL
-    --ETL Specific Columns
-  , ExecutionID        VARCHAR(50) NOT NULL
-  , ETLActionID        INT NOT NULL
-  , InsertedDateTime   DATETIME DEFAULT(GETDATE())
-  , UpdatedDateTime    DATETIME DEFAULT(GETDATE())
-  , Hashvalue          NVARCHAR(64) NOT NULL
-    
-    --Keys should get enforced at this point.
-
-  , CONSTRAINT [PK_TransformFactEngagement__EngagementID_TenantID] 
-	   PRIMARY KEY CLUSTERED(EngagementID, TenantID)
-  , CONSTRAINT [FK_TransformFactEngagement_Tenant__TenantID] 
-	   FOREIGN KEY([TenantID]) 
-	   REFERENCES [dbo].[Tenant]( [TenantID])
-);
+	--ETL Specific Columns
+	, [ExecutionID]      VARCHAR(50) NOT NULL
+	, [InsertedDateTime] DATETIME DEFAULT(GETDATE()) NULL
+	, [UpdatedDateTime]  DATETIME DEFAULT(GETDATE()) NULL
+	, [Hashvalue]        NVARCHAR(64) NOT NULL
+	, CONSTRAINT [pk_DWFactEngagement__EngagementID_TenantID] 
+		PRIMARY KEY CLUSTERED(EngagementID, TenantID)
+	, CONSTRAINT [FK_DWFactEngagement_Tenant__TenantID] 
+		FOREIGN KEY([TenantID]) 
+		REFERENCES [dbo].[Tenant]( [TenantID])
+)
