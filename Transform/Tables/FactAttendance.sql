@@ -1,45 +1,19 @@
-﻿CREATE TABLE [Transform].[FactEngagement]
+﻿CREATE TABLE [Transform].[FactAttendance]
 (
-      EngagementID INT NOT NULL
-	, TenantID INT NOT NULL
-	, CalendarYear INT NOT NULL
-	, CalendarMonth INT NOT NULL
-	, HouseholdID INT NOT NULL
-	, HouseholdPosition NVARCHAR(255) NULL
-	, IndividualIdentifier INT NOT NULL
-	, FullName NVARCHAR(255) NULL
-	, WeekendAttendanceCount INT NOT NULL DEFAULT(0)
-	, FirstWeekendAttendeeInstanceDateID INT NULL 
-	, FirstWeekendAttendeeInstanceActualDate DATE NULL 
-	, LastWeekendAttendeeInstanceDateID INT NULL 
-	, LastWeekendAttendeeInstanceActualDate DATE NULL 
-	, GivingCount INT NULL
-	, GivingAmount DECIMAL(9,2)
-	, FirstGivingDateID INT NULL
-	, FirstGivingActualDate DATE NULL
-	, LastGivingDateID INT NULL
-	, LastGivingActualDate DATE NULL
-	, SmallGroupCount INT NULL
-	, FirstSmallGroupDateID INT NULL
-	, FirstSmallGroupActualDate DATE NULL
-	, LastSmallGroupDateID INT NULL
-	, LastSmallGroupActualDate DATE NULL
-	, AwanaAttendanceCount INT NULL
-	, FirstAwanaInstanceDateID INT NULL
-	, FirstAwanaInstanceActualDate DATE NULL
-	, LastAwanaInstanceDateID INT NULL
-	, LastAwanaInstanceActualDate DATE NULL
-	, HCAEnrollmentCount INT NULL
-	, VolunteerAssignmentCount INT NULL
-	, FirstVolunteerAssignmentDateID INT NULL
-	, FirstVolunteerAssignmentActualDate DATE NULL
-	, LastVolunteerAssignmentDateID INT NULL
-	, LastVolunteerAssignmentActualDate DATE NULL
-	, VolunteerAttendanceCount INT NULL
-	, FirstVolunteerAttendanceDateID INT NULL
-	, FirstVolunteerAttendanceActualDate DATE NULL
-	, LastVolunteerAttendanceDateID INT NULL
-	, LastVolunteerAttendanceActualDate DATE NULL
+    AttendanceID       INT NOT NULL
+  , TenantID           INT NOT NULL
+  , CampusID           INT NOT NULL
+  , MinistryID         INT NOT NULL
+  , ActivityID         INT NOT NULL
+  , RosterID           INT NOT NULL
+  , AttendanceTypeID   INT NOT NULL
+  , Age                INT NULL
+  , MaritalStatusID    INT NULL
+  , IndividualStatusID INT NULL
+  , AttendeeZipCode	   INT NULL
+  , InstanceDateID     INT NOT NULL
+  , InstanceTimeID     INT NOT NULL
+  , AttendanceCount    INT NOT NULL
     --ETL Specific Columns
   , ExecutionID        VARCHAR(50) NOT NULL
   , ETLActionID        INT NOT NULL
@@ -49,9 +23,9 @@
     
     --Keys should get enforced at this point.
 
-  , CONSTRAINT [PK_TransformFactEngagement__EngagementID_TenantID] 
-	   PRIMARY KEY CLUSTERED(EngagementID, TenantID)
-  , CONSTRAINT [FK_TransformFactEngagement_Tenant__TenantID] 
+  , CONSTRAINT [PK_TransformFactAttendance__AttendanceID_TenantID] 
+	   PRIMARY KEY CLUSTERED(AttendanceID, TenantID)
+  , CONSTRAINT [FK_TransformFactAttendance_Tenant__TenantID] 
 	   FOREIGN KEY([TenantID]) 
 	   REFERENCES [dbo].[Tenant]( [TenantID])
 );
