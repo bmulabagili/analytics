@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE Transform.usp_TransformFactEngagement
+﻿CREATE PROCEDURE [Transform].[usp_TransformFactEngagement]
 	@SourceDataID INT
 AS
 
@@ -126,6 +126,7 @@ AS
 			RowNumber <>''
 			AND HouseholdID <> ''
 			AND IndividualID <> ''
+			AND Instance <> ''
 		GROUP BY
 			 TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112))
@@ -143,7 +144,6 @@ AS
 			, ContributorType AS HouseholdPosition
 			, CONVERT(INT, ContributorID) AS IndividualID
 			, ContributorName AS FullName
-
 			, CONVERT(INT, NULL) AS WeekendAttendanceCount
 			, SUM(CONVERT(INT, Transactions)) AS GivingCount
 			, SUM(CONVERT(DECIMAL(9,2), REPLACE(Amount, '$',''))) AS GivingAmount
@@ -156,6 +156,10 @@ AS
 		WHERE 
 			RowNumber <> ''
 			AND TRY_CONVERT(INT, RowNumber) > 0 -- skip the header rows
+			AND receivedDate <> ''
+			AND Transactions <> ''
+			AND Amount <> ''
+			AND TRY_CONVERT(DECIMAL(9,2), REPLACE(Amount, '$','')) IS NOT NULL
 		GROUP BY
 			  TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, receivedDate), 112))
@@ -182,3 +186,6 @@ AS
 			, CONVERT(INT, NULL) AS HCAEnrollmentCount
 			, CONVERT(INT, NULL) AS VolunteerAssignmentCount
 			, CONVERT(INT, NULL) AS VolunteerAttendanceCount
+GO
+
+
