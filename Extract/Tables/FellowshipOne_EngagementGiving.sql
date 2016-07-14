@@ -5,6 +5,7 @@
   , [GivingUnitID]		NVARCHAR(255) NULL 
   , [ContributorID]		NVARCHAR(255) NULL 
   , [ContributorName]	NVARCHAR(255) NULL 
+  , SubStatus			NVARCHAR(255) NULL
   , [FundType]			NVARCHAR(255) NULL 
   , [ReceivedDate]		NVARCHAR(255) NULL 
   , [ReceivedTime]		NVARCHAR(255) NULL 

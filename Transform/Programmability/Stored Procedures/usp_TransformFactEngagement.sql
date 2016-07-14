@@ -11,6 +11,7 @@ AS
 			, HouseholdPosition
 			, CONVERT(INT, IndividualID) AS IndividualIdentifier
 			, Name AS FullName
+			, SubStatus
 
 			, CONVERT(INT, COUNT(*)) AS WeekendAttendanceCount
 			, CONVERT(DECIMAL(9,2), NULL) AS GivingCount
@@ -35,6 +36,7 @@ AS
 			, HouseholdPosition
 			, CONVERT(INT, IndividualID)
 			, Name
+			, SubStatus
 
 	IF @SourceDataID = 13
 		--13 Awana attendance
@@ -46,6 +48,7 @@ AS
 			, HouseholdPosition
 			, CONVERT(INT, IndividualID) AS IndividualIdentifier
 			, Name AS FullName
+			, SubStatus
 
 			, CONVERT(INT, NULL) AS WeekendAttendanceCount
 			, CONVERT(INT, NULL) AS GivingCount
@@ -69,6 +72,7 @@ AS
 			, HouseholdPosition
 			, CONVERT(INT, IndividualID)
 			, Name
+			, SubStatus
 
 	IF @SourceDataID = 14
 		--14 Volunteer Participation		
@@ -79,6 +83,7 @@ AS
 			, HouseholdPosition
 			, CONVERT(INT, IndividualID) AS IndividualIdentifier
 			, Name AS FullName
+			, SubStatus
 
 			, CONVERT(INT, NULL) AS WeekendAttendanceCount
 			, CONVERT(INT, NULL) AS GivingCount
@@ -102,6 +107,7 @@ AS
 			, HouseholdPosition
 			, CONVERT(INT, IndividualID) 
 			, Name 
+			, SubStatus
 
 	IF @SourceDataID = 15
 		--15 Small Group Activity	
@@ -112,7 +118,8 @@ AS
 			, HouseholdPosition
 			, CONVERT(INT, IndividualID) AS IndividualIdentifier
 			, Name AS FullName
-		
+			, SubStatus
+
 			, CONVERT(INT, NULL) AS WeekendAttendanceCount
 			, CONVERT(INT, NULL) AS GivingCount
 			, CONVERT(DECIMAL(9,2), NULL) AS GivingAmount 
@@ -134,6 +141,7 @@ AS
 			, HouseholdPosition
 			, CONVERT(INT, IndividualID) 
 			, Name 
+			, SubStatus
 
 	IF @SourceDataID = 16
 		--16 Giving
@@ -144,6 +152,8 @@ AS
 			, ContributorType AS HouseholdPosition
 			, CONVERT(INT, ContributorID) AS IndividualID
 			, ContributorName AS FullName
+			, SubStatus
+
 			, CONVERT(INT, NULL) AS WeekendAttendanceCount
 			, SUM(CONVERT(INT, Transactions)) AS GivingCount
 			, SUM(CONVERT(DECIMAL(9,2), REPLACE(Amount, '$',''))) AS GivingAmount
@@ -167,6 +177,7 @@ AS
 			, ContributorType 
 			, CONVERT(INT, ContributorID) 
 			, ContributorName
+			, SubStatus
 
 	--Catch all for bad parameters / not yet defined sources
 	IF @SourceDataID NOT IN (12, 13, 14, 15, 16)
@@ -177,7 +188,8 @@ AS
 			, CONVERT(VARCHAR(255), NULL) AS HouseholdPosition
 			, CONVERT(INT, NULL) AS IndividualID
 			, CONVERT(VARCHAR(255), NULL) AS FullName
-			  
+			, CONVERT(VARCHAR(255), NULL) AS SubStatus
+
 			, CONVERT(INT, NULL) AS WeekendAttendanceCount
 			, CONVERT(INT, NULL) AS GivingCount
 			, CONVERT(DECIMAL(9,2), NULL) AS GivingAmount

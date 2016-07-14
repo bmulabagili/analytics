@@ -6,6 +6,7 @@
 	, HouseholdIdentifier INT NOT NULL
 	, HouseholdPosition NVARCHAR(255) NULL
 	, IndividualIdentifier INT NOT NULL
+	, CampusID INT NULL
 	, WeekendAttendanceCount INT NULL
 	, GivingCount INT NULL
 	, GivingAmount DECIMAL(9,2) NULL
