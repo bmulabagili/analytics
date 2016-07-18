@@ -655,6 +655,8 @@ BEGIN
 	SELECT 7, '90252', 'Expense', @EntityCode UNION
 	SELECT 7, '90257', 'Expense', @EntityCode UNION
 	SELECT 7, '90270', 'Expense', @EntityCode UNION
+	SELECT 7, '90250', 'Expense', @EntityCode UNION
+	SELECT 7, '90250', 'Expense', @EntityCode UNION
 
 	--Revenues
 	SELECT 3, '30005', 'Revenue', @EntityCode UNION
