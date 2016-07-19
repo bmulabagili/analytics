@@ -41,7 +41,7 @@ AS
 	SELECT DISTINCT 30				, 'Compensation'	,'Workers Comp'													, 23					, 'Initiatives/BB'	, 1						, 0 UNION
 	SELECT DISTINCT 31				, 'Compensation'	,'Paycor Fees'													, 24					, 'Initiatives/BB'	, 1						, 0 UNION
 	SELECT DISTINCT 32				, 'Compensation'	,'Passthrough Billbacks'										, 25					, 'Initiatives/BB'	, 1						, 0 UNION
-	SELECT DISTINCT 33				, 'Compensation'	,'Passthrough Billbacks Offset' 										, 26					, 'Initiatives/BB'	, 1						, 0 UNION
+	SELECT DISTINCT 33				, 'Compensation'	,'Passthrough Billbacks Offset' 								, 26					, 'Initiatives/BB'	, 1						, 0 UNION
 	SELECT DISTINCT 34				, 'Compensation'	,'Other'														, 27					, 'Initiatives/BB'	, 1						, 0 UNION
 
 	--Administration
@@ -538,6 +538,7 @@ AS
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
+		AND DepartmentCode <> '4036'
 		AND Dest.CampusXLTReportGroupID IS NULL
 	UNION
 	SELECT DISTINCT
@@ -1551,7 +1552,7 @@ AS
 		AND CategoryCode = 'PER1'
 		AND CampusCode = 'CS'
 		AND AccountingCode9 = '9999'
-		AND DepartmentCode <> '4056'
+		AND DepartmentCode NOT IN ('4056', '4036')
 		AND dest.CampusXLTReportGroupID IS NULL
 	UNION
 	SELECT DISTINCT
