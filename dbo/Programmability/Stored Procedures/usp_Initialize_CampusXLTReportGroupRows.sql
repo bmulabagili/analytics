@@ -537,7 +537,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode IN( 'CS','AU','CC','DR')
 		AND DepartmentCode <> '4036'
 		AND Dest.CampusXLTReportGroupID IS NULL
 	UNION
@@ -551,7 +551,7 @@ AS
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
 		AND DepartmentCode IN ('4016', '4026', '4076', '4096', '4106')
-		AND CampusCode IN ('CL','NI','RM','EL','AC')
+		AND CampusCode IN ('CL','NI','RM','EL','AC','AU','CC','DR')
 		AND Dest.CampusXLTReportGroupID IS NULL
 
 	--Then load the map values
@@ -1550,7 +1550,7 @@ AS
 		EntityCode = 'HBC'
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
-		AND CampusCode = 'CS'
+		AND CampusCode IN('CS','AU','CC','DR')
 		AND AccountingCode9 = '9999'
 		AND DepartmentCode NOT IN ('4056', '4036')
 		AND dest.CampusXLTReportGroupID IS NULL
@@ -1565,7 +1565,7 @@ AS
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
 		AND DepartmentCode IN ('4016', '4026', '4076', '4096', '4106')
-		AND CampusCode IN ('CL','NI','RM','EL','AC')
+		AND CampusCode IN ('CL','NI','RM','EL','AC','AU','CC','DR')
 		AND Dest.CampusXLTReportGroupID IS NULL
 
 	INSERT INTO [dbo].[CampusXLTReportGroup_XLTTabMap]
