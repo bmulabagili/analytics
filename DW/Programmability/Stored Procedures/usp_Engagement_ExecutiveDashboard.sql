@@ -1,9 +1,16 @@
 ﻿CREATE PROCEDURE [DW].[usp_Engagement_ExecutiveDashboard]
 	  @CampusList NVARCHAR(255)
-	, @StartDate DATE
 	, @EndDate DATE
+	, @NumberOfMonthsBack INT
 AS
-	
+	--always get whole months
+	SET @EndDate = DATEADD(DAY, -1, CONVERT(DATE, CONVERT(VARCHAR(2), MONTH(DATEADD(MONTH, 1, @EndDate))) + '/1/' + CONVERT(VARCHAR(4), YEAR(@EndDate))));
+
+	IF YEAR(@EndDate) = YEAR(GETDATE()) AND MONTH(@EndDate) = MONTH(GETDATE())
+		SET @EndDate = DATEADD(DAY, -1, CONVERT(DATE, CONVERT(VARCHAR(2), MONTH(@EndDate)) + '/1/' + CONVERT(VARCHAR(4), YEAR(@EndDate))));
+
+	--SELECT CONVERT(VARCHAR(2), MONTH(DATEADD(MONTH, (-1 * @NumberOfMonthsBack), @EndDate ))) + '/1/' + CONVERT(VARCHAR(4), YEAR(DATEADD(MONTH, (-1 * @NumberOfMonthsBack), @EndDate ))) StartDate, @EndDate EndDate;
+
 	;WITH AdultStats AS (
 	SELECT
 		  CalendarYear
@@ -24,7 +31,7 @@ AS
 	WHERE
 		HouseholdPosition IN ('Head','Spouse')
 		AND DimCampus.Code IN (SELECT Item FROM dbo.fnSplit(@CampusList, ','))
-		AND ActualDate BETWEEN @StartDate AND @EndDate
+		AND ActualDate BETWEEN CONVERT(VARCHAR(2), MONTH(DATEADD(MONTH, (-1 * @NumberOfMonthsBack), @EndDate ))) + '/1/' + CONVERT(VARCHAR(4), YEAR(DATEADD(MONTH, (-1 * @NumberOfMonthsBack), @EndDate ))) AND @EndDate
 	GROUP BY
 		  CalendarYear
 		, CalendarMonth
@@ -52,7 +59,7 @@ AS
 		HouseholdPosition NOT IN ('Head','Spouse')
 		--this should leave child, other, visitor
 		AND DimCampus.Code IN (SELECT Item FROM dbo.fnSplit(@CampusList, ','))
-		AND ActualDate BETWEEN @StartDate AND @EndDate
+		AND ActualDate BETWEEN CONVERT(VARCHAR(2), MONTH(DATEADD(MONTH, (-1 * @NumberOfMonthsBack), @EndDate ))) + '/1/' + CONVERT(VARCHAR(4), YEAR(DATEADD(MONTH, (-1 * @NumberOfMonthsBack), @EndDate ))) AND @EndDate
 	GROUP BY
 		  CalendarYear
 		, CalendarMonth
@@ -116,19 +123,36 @@ AS
 				END
 		END AS Classification
 	FROM Scored
+), Results AS (
+	SELECT 
+		  DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
+		, CalendarYear
+		, CalendarMonth
+		, CampusCode
+		, Classification
+		, COUNT(*) AS ClassificationCount
+	FROM Details
+	GROUP BY
+		  CalendarYear
+		, CalendarMonth
+		, CampusCode
+		, Classification
 )
 SELECT 
-	  CalendarYear
-	, CalendarMonth
-	, CampusCode
-	, Classification
-	, COUNT(*) AS ClassificationCount
-FROM Details
-GROUP BY
-	  CalendarYear
-	, CalendarMonth
-	, CampusCode
-	, Classification
+	  r1.CalendarYear
+	, r1.CalendarMonth
+	, r1.CampusCode
+	, r1.Classification
+	, r1.ClassificationCount
+	, r1.ClassificationCount - r0.ClassificationCount AS [DiffOverPreviousMonth]
+	, (r1.ClassificationCount - r0.ClassificationCount) / (r0.ClassificationCount * 1.0) AS PercentDifference 
+FROM Results r1
+LEFT JOIN Results r0
+	ON r1.MonthNumber = r0.MonthNumber + 1
+	AND r1.CampusCode = r0.CampusCode
+	AND r1.Classification = r0.Classification
+WHERE
+	r1.MonthNumber IN (SELECT DISTINCT TOP (@NumberOfMonthsBack) MonthNumber FROM Results ORDER BY MonthNumber DESC)
 ORDER BY
 	CampusCode, CalendarYear, CalendarMonth
 
