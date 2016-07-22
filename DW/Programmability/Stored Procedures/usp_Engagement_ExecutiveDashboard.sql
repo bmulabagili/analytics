@@ -137,15 +137,40 @@ AS
 		, CalendarMonth
 		, CampusCode
 		, Classification
+	UNION 
+	SELECT DISTINCT
+		DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
+		, CalendarYear, CalendarMonth, CampusCode, 'Engaged Plus Member', 0 
+	FROM Details 
+	UNION 
+	SELECT DISTINCT 
+		DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
+		, CalendarYear, CalendarMonth, CampusCode, 'Engaged Member'	  ,	0 
+	FROM Details 
+	UNION 
+	SELECT DISTINCT 
+		DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
+		, CalendarYear, CalendarMonth, CampusCode, 'Somewhat Engaged'	  , 0 
+	FROM Details 
+	UNION 
+	SELECT DISTINCT
+		DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
+		, CalendarYear, CalendarMonth, CampusCode, 'Not Engaged'		  , 0 
+	FROM Details 
+	UNION 
+	SELECT DISTINCT
+		DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
+		, CalendarYear, CalendarMonth, CampusCode, 'Lost'				  , 0 
+	FROM Details 
 )
 SELECT 
 	  r1.CalendarYear
 	, r1.CalendarMonth
 	, r1.CampusCode
 	, r1.Classification
-	, r1.ClassificationCount
-	, r1.ClassificationCount - r0.ClassificationCount AS [DiffOverPreviousMonth]
-	, (r1.ClassificationCount - r0.ClassificationCount) / (r0.ClassificationCount * 1.0) AS PercentDifference 
+	, SUM(r1.ClassificationCount) AS ClassificationCount
+	, SUM(r1.ClassificationCount - r0.ClassificationCount) AS [DiffOverPreviousMonth]
+	, SUM((r1.ClassificationCount - r0.ClassificationCount) / (ISNULL(NULLIF(r0.ClassificationCount, 0), 1) * 1.0)) AS PercentDifference 
 FROM Results r1
 LEFT JOIN Results r0
 	ON r1.MonthNumber = r0.MonthNumber + 1
@@ -153,6 +178,11 @@ LEFT JOIN Results r0
 	AND r1.Classification = r0.Classification
 WHERE
 	r1.MonthNumber IN (SELECT DISTINCT TOP (@NumberOfMonthsBack) MonthNumber FROM Results ORDER BY MonthNumber DESC)
+GROUP BY
+	r1.CalendarYear
+	, r1.CalendarMonth
+	, r1.CampusCode
+	, r1.Classification
 ORDER BY
 	CampusCode, CalendarYear, CalendarMonth
 
