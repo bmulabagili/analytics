@@ -12,26 +12,12 @@ AS
 		, HouseholdPosition NVARCHAR(255)
 		, IndividualIdentifier INT
 		, IndividualName NVARCHAR(255)
-		, CampusCode CHAR(2)
 		, [WeekendAttendanceCount] INT
-		, [GivingCount] INT
-		, [GivingAmount] DECIMAL(9,2)
 		, [SmallGroupCount] INT
 		, [VolunteerAttendanceCount] INT
-		, [ChildCount] INT
 		, [AwanaAttendanceCount] INT
 		, [HCAEnrollmentCount] INT
-		, [ChildWeekendAttendance] INT
-		, [ChildVolunteerAttendanceCount] INT
-		, [WorshipAttendanceFactor] INT
-		, [WorshipGivingFactor] INT
-		, [WorshipKidsFactor] INT
-		, [WalkSmallGroupFactor] INT
-		, [WalkAwanaFactor] INT
-		, [WalkHCAFactor] INT
-		, [WorkFactor] INT
-		, [TotalScore] INT
-		, Classification NVARCHAR(255)
+		, EngagementTotal INT
 	)
 	--always get whole months
 	SET @EndDate = DATEADD(DAY, -1, CONVERT(DATE, CONVERT(VARCHAR(2), MONTH(DATEADD(MONTH, 1, @EndDate))) + '/1/' + CONVERT(VARCHAR(4), YEAR(@EndDate))));
@@ -82,6 +68,7 @@ AS
 			, SUM(AwanaAttendanceCount) AS AwanaAttendanceCount
 			, SUM(HCAEnrollmentCount) AS HCAEnrollmentCount
 			, SUM(VolunteerAttendanceCount) AS VolunteerAttendanceCount
+			, SUM(SmallGroupCount) AS SmallGroupCount
 		FROM dw.FactEngagement
 		INNER JOIN DW.DimDate
 			ON FactEngagement.DateID = DimDate.DateID
@@ -145,30 +132,19 @@ AS
 	)
 	INSERT INTO @Details
 	SELECT 
-		  [CalendarYear], [CalendarMonth]
-		  , [HouseholdIdentifier]
-		  , 'Household ' + CONVERT(VARCHAR(255), [HouseholdIdentifier]) AS HouseholdName
-		  , HouseholdPosition
-		  , [IndividualIdentifier]
-		  , 'Individual ' + CONVERT(VARCHAR(255), [IndividualIdentifier]) AS IndividualName
-		, [CampusCode], [WeekendAttendanceCount], [GivingCount], [GivingAmount]
-		, [SmallGroupCount], [VolunteerAttendanceCount], [ChildCount]
-		, [AwanaAttendanceCount], [HCAEnrollmentCount]
-		, [ChildWeekendAttendance], [ChildVolunteerAttendanceCount]
-		, [WorshipAttendanceFactor], [WorshipGivingFactor], [WorshipKidsFactor]
-		, [WalkSmallGroupFactor], [WalkAwanaFactor], [WalkHCAFactor], [WorkFactor], [TotalScore]
-		, CASE WHEN TotalScore >= 5 AND WorshipAttendanceFactor = 1 AND WalkSmallGroupFactor = 1 AND WorkFactor = 1 AND WorshipGivingFactor = 1 
-			THEN 'Engaged Plus Member' ELSE	
-				CASE WHEN TotalScore >= 3 AND WorshipAttendanceFactor = 1 AND WalkSmallGroupFactor = 1
-					THEN 'Engaged Member' ELSE
-						CASE WHEN TotalScore >= 2 AND WorshipAttendanceFactor = 1 
-							THEN 'Somewhat Engaged' ELSE
-								CASE WHEN WorshipAttendanceFactor = 1 
-									THEN 'Not Engaged' ELSE 'Lost' 
-								END
-						END
-				END
-		END AS Classification
+		  [CalendarYear]
+		, [CalendarMonth]
+		, [HouseholdIdentifier]
+		, 'Household ' + CONVERT(VARCHAR(255), [HouseholdIdentifier]) AS HouseholdName
+		, HouseholdPosition
+		, [IndividualIdentifier]
+		, 'Individual ' + CONVERT(VARCHAR(255), [IndividualIdentifier]) AS IndividualName
+		, SUM(ISNULL(WeekendAttendanceCount, 0))	AS WeekendAttendanceCount
+		, SUM(ISNULL(SmallGroupCount, 0))			AS SmallGroupCount
+		, SUM(ISNULL(VolunteerAttendanceCount, 0))	AS VolunteerAttendanceCount
+		, SUM(ISNULL(AwanaAttendanceCount, 0))		AS AwanaAttendanceCount
+		, SUM(ISNULL(HCAEnrollmentCount, 0))		AS HCAEnrollmentCount
+		, SUM(ISNULL(WeekendAttendanceCount, 0) + ISNULL(SmallGroupCount, 0) + ISNULL(VolunteerAttendanceCount, 0) + ISNULL(AwanaAttendanceCount, 0) + ISNULL(HCAEnrollmentCount, 0))		AS EngagementTotal
 	FROM Scored
 	WHERE 
 		MonthNumber IN (SELECT DISTINCT TOP (@NumberOfMonthsBack) MonthNumber FROM Scored ORDER BY MonthNumber DESC)
@@ -184,11 +160,59 @@ AS
 						END
 				END
 		END = @Classification
+	GROUP BY
+		[CalendarYear]
+		, [CalendarMonth]
+		, [HouseholdIdentifier]
+		, 'Household ' + CONVERT(VARCHAR(255), [HouseholdIdentifier])
+		, HouseholdPosition
+		, [IndividualIdentifier]
+		, 'Individual ' + CONVERT(VARCHAR(255), [IndividualIdentifier]) 
+		
+	--add the children
+	UNION
+	SELECT 	
+		  ChildStats.CalendarYear
+		, ChildStats.CalendarMonth
+		, ChildStats.HouseholdIdentifier
+		, 'Household ' + CONVERT(VARCHAR(255), childstats.[HouseholdIdentifier])
+		, ChildStats.HouseholdPosition
+		, ChildStats.IndividualIdentifier
+		, 'Individual ' + CONVERT(VARCHAR(255), ChildStats.[IndividualIdentifier]) AS IndividualName
+		, SUM(ISNULL(ChildStats.WeekendAttendanceCount, 0))	AS WeekendAttendanceCount
+		, SUM(ISNULL(ChildStats.SmallGroupCount, 0))			AS SmallGroupCount
+		, SUM(ISNULL(ChildStats.VolunteerAttendanceCount, 0))	AS VolunteerAttendanceCount
+		, SUM(ISNULL(ChildStats.AwanaAttendanceCount, 0))		AS AwanaAttendanceCount
+		, SUM(ISNULL(ChildStats.HCAEnrollmentCount, 0))		AS HCAEnrollmentCount
+		, SUM(ISNULL(ChildStats.WeekendAttendanceCount, 0) + ISNULL(ChildStats.SmallGroupCount, 0) + ISNULL(ChildStats.VolunteerAttendanceCount, 0) + ISNULL(ChildStats.AwanaAttendanceCount, 0) + ISNULL(ChildStats.HCAEnrollmentCount, 0))		AS EngagementTotal
+	FROM ChildStats
+	INNER JOIN Scored
+		ON ChildStats.CalendarYear = Scored.CalendarYear
+		AND ChildStats.CalendarMonth = scored.CalendarMonth
+		AND ChildStats.HouseholdIdentifier = scored.HouseholdIdentifier
+	GROUP BY
+		ChildStats.CalendarYear
+		, ChildStats.CalendarMonth
+		, ChildStats.HouseholdIdentifier
+		, 'Household ' + CONVERT(VARCHAR(255), childstats.[HouseholdIdentifier])
+		, ChildStats.HouseholdPosition
+		, ChildStats.IndividualIdentifier
+		, Childstats.IndividualName
 	ORDER BY
-		CalendarYear, CalendarMonth, HouseholdIdentifier, IndividualIdentifier;
+		CalendarYear, CalendarMonth, HouseholdIdentifier, IndividualIdentifier
+		;
 
 
-	SELECT * FROM @Details;
+	SELECT * 
+	FROM @Details
+	ORDER BY 
+		CalendarYear, CalendarMonth, HouseholdIdentifier
+		, CASE HouseholdPosition 
+			WHEN 'Head' THEN 1
+			WHEN 'Spouse' THEN 2
+			ELSE 3 END 
+
+	;
 
 	SELECT 
 		  CalendarYear
