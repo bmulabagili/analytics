@@ -32,7 +32,9 @@ AS
 			, CalendarMonth
 			, HouseholdIdentifier
 			, HouseholdPosition
+			, HouseholdName
 			, IndividualIdentifier
+			, IndividualName
 			, Dimcampus.Code
 			, SUM(WeekendAttendanceCount) AS WeekendAttendanceCount
 			, SUM(GivingCount) AS GivingCount
@@ -53,7 +55,9 @@ AS
 			, CalendarMonth
 			, HouseholdIdentifier
 			, HouseholdPosition
+			, HouseholdName
 			, IndividualIdentifier
+			, IndividualName
 			, DimCampus.Code
 	), ChildStats AS (
 		SELECT
@@ -61,6 +65,7 @@ AS
 			, CalendarMonth
 			, HouseholdIdentifier
 			, HouseholdPosition
+			, HouseholdName
 			, IndividualIdentifier
 			, IndividualName
 			, COUNT(DISTINCT IndividualIdentifier) AS ChildCount
@@ -84,7 +89,9 @@ AS
 			, CalendarMonth
 			, HouseholdIdentifier
 			, HouseholdPosition
+			, HouseholdName
 			, IndividualIdentifier
+
 			, IndividualName
 	), Scored AS (
 		SELECT 
@@ -93,7 +100,9 @@ AS
 			, AdultStats.CalendarMonth
 			, AdultStats.HouseholdIdentifier
 			, AdultStats.HouseholdPosition
+			, AdultStats.HouseholdName
 			, AdultStats.IndividualIdentifier
+			, AdultStats.IndividualName
 			, AdultStats.Code AS CampusCode
 			, AdultStats.WeekendAttendanceCount
 			, AdultStats.GivingCount
@@ -135,10 +144,10 @@ AS
 		  [CalendarYear]
 		, [CalendarMonth]
 		, [HouseholdIdentifier]
-		, 'Household ' + CONVERT(VARCHAR(255), [HouseholdIdentifier]) AS HouseholdName
+		, ISNULL(HouseholdName ,'Household ' + CONVERT(VARCHAR(255), [HouseholdIdentifier])) AS HouseholdName
 		, HouseholdPosition
 		, [IndividualIdentifier]
-		, 'Individual ' + CONVERT(VARCHAR(255), [IndividualIdentifier]) AS IndividualName
+		, ISNULL(IndividualName, 'Individual ' + CONVERT(VARCHAR(255), [IndividualIdentifier])) AS IndividualName
 		, SUM(ISNULL(WeekendAttendanceCount, 0))	AS WeekendAttendanceCount
 		, SUM(ISNULL(SmallGroupCount, 0))			AS SmallGroupCount
 		, SUM(ISNULL(VolunteerAttendanceCount, 0))	AS VolunteerAttendanceCount
@@ -164,10 +173,10 @@ AS
 		[CalendarYear]
 		, [CalendarMonth]
 		, [HouseholdIdentifier]
-		, 'Household ' + CONVERT(VARCHAR(255), [HouseholdIdentifier])
+		, ISNULL(HouseholdName ,'Household ' + CONVERT(VARCHAR(255), [HouseholdIdentifier]))
 		, HouseholdPosition
 		, [IndividualIdentifier]
-		, 'Individual ' + CONVERT(VARCHAR(255), [IndividualIdentifier]) 
+		, ISNULL(IndividualName, 'Individual ' + CONVERT(VARCHAR(255), [IndividualIdentifier]))
 		
 	--add the children
 	UNION
@@ -175,10 +184,10 @@ AS
 		  ChildStats.CalendarYear
 		, ChildStats.CalendarMonth
 		, ChildStats.HouseholdIdentifier
-		, 'Household ' + CONVERT(VARCHAR(255), childstats.[HouseholdIdentifier])
+		, ISNULL(ChildStats.HouseholdName, 'Household ' + CONVERT(VARCHAR(255), childstats.[HouseholdIdentifier]))
 		, ChildStats.HouseholdPosition
 		, ChildStats.IndividualIdentifier
-		, 'Individual ' + CONVERT(VARCHAR(255), ChildStats.[IndividualIdentifier]) AS IndividualName
+		, ISNULL(ChildStats.IndividualName, 'Individual ' + CONVERT(VARCHAR(255), ChildStats.[IndividualIdentifier])) AS IndividualName
 		, SUM(ISNULL(ChildStats.WeekendAttendanceCount, 0))	AS WeekendAttendanceCount
 		, SUM(ISNULL(ChildStats.SmallGroupCount, 0))			AS SmallGroupCount
 		, SUM(ISNULL(ChildStats.VolunteerAttendanceCount, 0))	AS VolunteerAttendanceCount
@@ -194,10 +203,10 @@ AS
 		ChildStats.CalendarYear
 		, ChildStats.CalendarMonth
 		, ChildStats.HouseholdIdentifier
-		, 'Household ' + CONVERT(VARCHAR(255), childstats.[HouseholdIdentifier])
+		, Isnull(ChildStats.HouseholdName, 'Household ' + CONVERT(VARCHAR(255), childstats.[HouseholdIdentifier]))
 		, ChildStats.HouseholdPosition
 		, ChildStats.IndividualIdentifier
-		, Childstats.IndividualName
+		, ISNULL(ChildStats.IndividualName, 'Individual ' + CONVERT(VARCHAR(255), ChildStats.[IndividualIdentifier]))
 	ORDER BY
 		CalendarYear, CalendarMonth, HouseholdIdentifier, IndividualIdentifier
 		;

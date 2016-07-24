@@ -30,8 +30,7 @@ AS
 			--Weekend Attendance ONLY
 			AND LEFT(RIGHT(RTRIM(SourceFileName),CHARINDEX('\',REVERSE(RTRIM(SourceFileName)))-1), CHARINDEX('_', RIGHT(RTRIM(SourceFileName),CHARINDEX('\',REVERSE(RTRIM(SourceFileName)))-1)) - 1) = 12 
 		GROUP BY
-			SourceFileName
-			, TenantID
+			  TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112))
 			, CONVERT(INT, HouseholdID)
 			, HouseholdPosition
@@ -69,7 +68,7 @@ AS
 			--AWANA Attendance ONLY
 			AND LEFT(RIGHT(RTRIM(SourceFileName),CHARINDEX('\',REVERSE(RTRIM(SourceFileName)))-1), CHARINDEX('_', RIGHT(RTRIM(SourceFileName),CHARINDEX('\',REVERSE(RTRIM(SourceFileName)))-1)) - 1) = 13
 		GROUP BY
-			TenantID
+			  TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112)) 
 			, CONVERT(INT, HouseholdID)
 			, HouseholdPosition
@@ -106,7 +105,7 @@ AS
 			--Volunteer Attendance ONLY
 			AND LEFT(RIGHT(RTRIM(SourceFileName),CHARINDEX('\',REVERSE(RTRIM(SourceFileName)))-1), CHARINDEX('_', RIGHT(RTRIM(SourceFileName),CHARINDEX('\',REVERSE(RTRIM(SourceFileName)))-1)) - 1) = 14
 		GROUP BY
-			TenantID
+			  TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112))
 			, CONVERT(INT, HouseholdID) 
 			, HouseholdPosition
