@@ -9,6 +9,7 @@ AS
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112)) AS DateID
 			, CONVERT(INT, HouseholdID) AS HouseholdIdentifier
 			, HouseholdPosition
+			, HouseholdFullName
 			, CONVERT(INT, IndividualID) AS IndividualIdentifier
 			, Name AS FullName
 			, SubStatus
@@ -34,6 +35,7 @@ AS
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112))
 			, CONVERT(INT, HouseholdID)
 			, HouseholdPosition
+			, HouseholdFullName
 			, CONVERT(INT, IndividualID)
 			, Name
 			, SubStatus
@@ -46,6 +48,7 @@ AS
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112)) AS DateID
 			, CONVERT(INT, HouseholdID) AS HouseholdIdentifier
 			, HouseholdPosition
+			, HouseholdFullName
 			, CONVERT(INT, IndividualID) AS IndividualIdentifier
 			, Name AS FullName
 			, SubStatus
@@ -70,6 +73,7 @@ AS
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112)) 
 			, CONVERT(INT, HouseholdID)
 			, HouseholdPosition
+			, HouseholdFullName
 			, CONVERT(INT, IndividualID)
 			, Name
 			, SubStatus
@@ -81,6 +85,7 @@ AS
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112)) AS DateID
 			, CONVERT(INT, HouseholdID) AS HouseholdIdentifier
 			, HouseholdPosition
+			, HouseholdFullName
 			, CONVERT(INT, IndividualID) AS IndividualIdentifier
 			, Name AS FullName
 			, SubStatus
@@ -105,6 +110,7 @@ AS
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112))
 			, CONVERT(INT, HouseholdID) 
 			, HouseholdPosition
+			, HouseholdFullName
 			, CONVERT(INT, IndividualID) 
 			, Name 
 			, SubStatus
@@ -116,6 +122,7 @@ AS
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112)) AS DateID
 			, CONVERT(INT, HouseholdID) AS HouseholdIdentifier
 			, HouseholdPosition
+			, HouseholdFullName
 			, CONVERT(INT, IndividualID) AS IndividualIdentifier
 			, Name AS FullName
 			, SubStatus
@@ -139,6 +146,7 @@ AS
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112))
 			, CONVERT(INT, HouseholdID) 
 			, HouseholdPosition
+			, HouseholdFullName
 			, CONVERT(INT, IndividualID) 
 			, Name 
 			, SubStatus
@@ -150,6 +158,7 @@ AS
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, receivedDate), 112)) AS DateID
 			, CONVERT(INT, GivingUnitID) AS HouseholdID
 			, ContributorType AS HouseholdPosition
+			, GivingUnitName AS HouseholdFullName
 			, CONVERT(INT, ContributorID) AS IndividualID
 			, ContributorName AS FullName
 			, SubStatus
@@ -175,6 +184,7 @@ AS
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, receivedDate), 112))
 			, CONVERT(INT, GivingUnitID) 
 			, ContributorType 
+			, GivingUnitName
 			, CONVERT(INT, ContributorID) 
 			, ContributorName
 			, SubStatus
@@ -186,6 +196,7 @@ AS
 			, CONVERT(INT, NULL) AS DateID
 			, CONVERT(INT, NULL) HouseholdID
 			, CONVERT(VARCHAR(255), NULL) AS HouseholdPosition
+			, CONVERT(VARCHAR(255), NULL) AS HouseholdFullName
 			, CONVERT(INT, NULL) AS IndividualID
 			, CONVERT(VARCHAR(255), NULL) AS FullName
 			, CONVERT(VARCHAR(255), NULL) AS SubStatus

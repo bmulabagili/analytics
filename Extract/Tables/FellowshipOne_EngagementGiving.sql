@@ -3,6 +3,7 @@
   , [TransactionID]		NVARCHAR(255) NULL 
   , [ContributorType]	NVARCHAR(255) NULL 
   , [GivingUnitID]		NVARCHAR(255) NULL 
+  , [GivingUnitName]	NVARCHAR(255) NULL
   , [ContributorID]		NVARCHAR(255) NULL 
   , [ContributorName]	NVARCHAR(255) NULL 
   , SubStatus			NVARCHAR(255) NULL

@@ -122,18 +122,5 @@ SELECT
 			END
 	END AS Classification
 FROM Scored
-WHERE 
-	CASE WHEN TotalScore >= 5 AND WorshipAttendanceFactor = 1 AND WalkSmallGroupFactor = 1 AND WorkFactor = 1 AND WorshipGivingFactor = 1 
-		THEN 'Engaged Plus Member' ELSE	
-			CASE WHEN TotalScore >= 3 AND WorshipAttendanceFactor = 1 AND WalkSmallGroupFactor = 1
-				THEN 'Engaged Member' ELSE
-					CASE WHEN TotalScore >= 2 AND WorshipAttendanceFactor = 1 
-						THEN 'Somewhat Engaged' ELSE
-							CASE WHEN WorshipAttendanceFactor = 1 
-								THEN 'Not Engaged' ELSE 'Lost' 
-							END
-					END
-			END
-	END = 'Somewhat Engaged'
 ORDER BY
 	HouseholdIdentifier, IndividualIdentifier, CalendarYear, CalendarMonth;

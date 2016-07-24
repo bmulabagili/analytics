@@ -4,8 +4,10 @@
 	, TenantID INT NOT NULL
 	, DateID INT NOT NULL
 	, HouseholdIdentifier INT NOT NULL
+	, HouseholdName NVARCHAR(255)
 	, HouseholdPosition NVARCHAR(255) NULL
 	, IndividualIdentifier INT NOT NULL
+	, IndividualName NVARCHAR(255)
 	, CampusID INT NULL
 	, WeekendAttendanceCount INT NULL
 	, GivingCount INT NULL
