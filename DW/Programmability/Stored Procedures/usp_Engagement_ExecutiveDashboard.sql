@@ -124,44 +124,59 @@ AS
 		END AS Classification
 	FROM Scored
 ), Results AS (
-	SELECT 
-		  DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
+	SELECT
+		  MonthNumber
 		, CalendarYear
 		, CalendarMonth
 		, CampusCode
 		, Classification
-		, COUNT(*) AS ClassificationCount
-	FROM Details
+		, SUM(ClassificationCount) AS ClassificationCount
+	FROM (
+		SELECT 
+			  DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
+			, CalendarYear
+			, CalendarMonth
+			, CampusCode
+			, Classification
+			, COUNT(*) AS ClassificationCount
+		FROM Details
+		GROUP BY
+			  CalendarYear
+			, CalendarMonth
+			, CampusCode
+			, Classification
+		UNION 
+		SELECT DISTINCT
+			DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
+			, CalendarYear, CalendarMonth, CampusCode, 'Engaged Plus Member', 0 
+		FROM Details 
+		UNION 
+		SELECT DISTINCT 
+			DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
+			, CalendarYear, CalendarMonth, CampusCode, 'Engaged Member'	  ,	0 
+		FROM Details 
+		UNION 
+		SELECT DISTINCT 
+			DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
+			, CalendarYear, CalendarMonth, CampusCode, 'Somewhat Engaged'	  , 0 
+		FROM Details 
+		UNION 
+		SELECT DISTINCT
+			DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
+			, CalendarYear, CalendarMonth, CampusCode, 'Not Engaged'		  , 0 
+		FROM Details 
+		UNION 
+		SELECT DISTINCT
+			DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
+			, CalendarYear, CalendarMonth, CampusCode, 'Lost'				  , 0 
+		FROM Details 
+	)subtotals
 	GROUP BY
-		  CalendarYear
+		MonthNumber
+		, CalendarYear
 		, CalendarMonth
 		, CampusCode
 		, Classification
-	UNION 
-	SELECT DISTINCT
-		DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
-		, CalendarYear, CalendarMonth, CampusCode, 'Engaged Plus Member', 0 
-	FROM Details 
-	UNION 
-	SELECT DISTINCT 
-		DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
-		, CalendarYear, CalendarMonth, CampusCode, 'Engaged Member'	  ,	0 
-	FROM Details 
-	UNION 
-	SELECT DISTINCT 
-		DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
-		, CalendarYear, CalendarMonth, CampusCode, 'Somewhat Engaged'	  , 0 
-	FROM Details 
-	UNION 
-	SELECT DISTINCT
-		DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
-		, CalendarYear, CalendarMonth, CampusCode, 'Not Engaged'		  , 0 
-	FROM Details 
-	UNION 
-	SELECT DISTINCT
-		DENSE_RANK() OVER (ORDER BY CalendarYear, CalendarMonth) AS MonthNumber
-		, CalendarYear, CalendarMonth, CampusCode, 'Lost'				  , 0 
-	FROM Details 
 )
 SELECT 
 	  r1.CalendarYear

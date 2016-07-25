@@ -199,6 +199,20 @@ AS
 		ON ChildStats.CalendarYear = Scored.CalendarYear
 		AND ChildStats.CalendarMonth = scored.CalendarMonth
 		AND ChildStats.HouseholdIdentifier = scored.HouseholdIdentifier
+	WHERE
+		scored.MonthNumber IN (SELECT DISTINCT TOP (@NumberOfMonthsBack) MonthNumber FROM Scored ORDER BY MonthNumber DESC)
+		AND CASE WHEN TotalScore >= 5 AND WorshipAttendanceFactor = 1 AND WalkSmallGroupFactor = 1 AND WorkFactor = 1 AND WorshipGivingFactor = 1 
+			THEN 'Engaged Plus Member' ELSE	
+				CASE WHEN TotalScore >= 3 AND WorshipAttendanceFactor = 1 AND WalkSmallGroupFactor = 1
+					THEN 'Engaged Member' ELSE
+						CASE WHEN TotalScore >= 2 AND WorshipAttendanceFactor = 1 
+							THEN 'Somewhat Engaged' ELSE
+								CASE WHEN WorshipAttendanceFactor = 1 
+									THEN 'Not Engaged' ELSE 'Lost' 
+								END
+						END
+				END
+		END = @Classification
 	GROUP BY
 		ChildStats.CalendarYear
 		, ChildStats.CalendarMonth

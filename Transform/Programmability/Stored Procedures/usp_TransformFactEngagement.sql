@@ -8,11 +8,11 @@ AS
 			  TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112)) AS DateID
 			, CONVERT(INT, HouseholdID) AS HouseholdIdentifier
-			, HouseholdPosition
-			, HouseholdFullName
+			, MAX(HouseholdPosition) AS HouseholdPosition
+			, MAX(HouseholdFullName) AS HouseholdFullName
 			, CONVERT(INT, IndividualID) AS IndividualIdentifier
-			, Name AS FullName
-			, SubStatus
+			, MAX(Name) AS FullName
+			, MAX(SubStatus) AS SubStatus
 
 			, CONVERT(INT, COUNT(*)) AS WeekendAttendanceCount
 			, CONVERT(DECIMAL(9,2), NULL) AS GivingCount
@@ -33,11 +33,8 @@ AS
 			  TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112))
 			, CONVERT(INT, HouseholdID)
-			, HouseholdPosition
-			, HouseholdFullName
 			, CONVERT(INT, IndividualID)
-			, Name
-			, SubStatus
+
 
 	IF @SourceDataID = 13
 		--13 Awana attendance
@@ -46,11 +43,11 @@ AS
 			  TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112)) AS DateID
 			, CONVERT(INT, HouseholdID) AS HouseholdIdentifier
-			, HouseholdPosition
-			, HouseholdFullName
+			, MAX(HouseholdPosition) AS HouseholdPosition
+			, MAX(HouseholdFullName) AS HouseholdFullName
 			, CONVERT(INT, IndividualID) AS IndividualIdentifier
-			, Name AS FullName
-			, SubStatus
+			, MAX(Name) AS FullName
+			, MAX(SubStatus) AS SubStatus
 
 			, CONVERT(INT, NULL) AS WeekendAttendanceCount
 			, CONVERT(INT, NULL) AS GivingCount
@@ -71,11 +68,8 @@ AS
 			  TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112)) 
 			, CONVERT(INT, HouseholdID)
-			, HouseholdPosition
-			, HouseholdFullName
 			, CONVERT(INT, IndividualID)
-			, Name
-			, SubStatus
+
 
 	IF @SourceDataID = 14
 		--14 Volunteer Participation		
@@ -83,11 +77,11 @@ AS
 			  TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112)) AS DateID
 			, CONVERT(INT, HouseholdID) AS HouseholdIdentifier
-			, HouseholdPosition
-			, HouseholdFullName
+			, MAX(HouseholdPosition) AS HouseholdPosition
+			, MAX(HouseholdFullName) AS HouseholdFullName
 			, CONVERT(INT, IndividualID) AS IndividualIdentifier
-			, Name AS FullName
-			, SubStatus
+			, MAX(Name) AS FullName
+			, MAX(SubStatus) AS SubStatus
 
 			, CONVERT(INT, NULL) AS WeekendAttendanceCount
 			, CONVERT(INT, NULL) AS GivingCount
@@ -108,11 +102,7 @@ AS
 			  TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112))
 			, CONVERT(INT, HouseholdID) 
-			, HouseholdPosition
-			, HouseholdFullName
 			, CONVERT(INT, IndividualID) 
-			, Name 
-			, SubStatus
 
 	IF @SourceDataID = 15
 		--15 Small Group Activity	
@@ -120,11 +110,11 @@ AS
 			  TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112)) AS DateID
 			, CONVERT(INT, HouseholdID) AS HouseholdIdentifier
-			, HouseholdPosition
-			, HouseholdFullName
+			, MAX(HouseholdPosition) AS HouseholdPosition
+			, MAX(HouseholdFullName) AS HouseholdFullName
 			, CONVERT(INT, IndividualID) AS IndividualIdentifier
-			, Name AS FullName
-			, SubStatus
+			, MAX(Name) AS FullName
+			, MAX(SubStatus) AS SubStatus
 
 			, CONVERT(INT, NULL) AS WeekendAttendanceCount
 			, CONVERT(INT, NULL) AS GivingCount
@@ -144,11 +134,7 @@ AS
 			 TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, SUBSTRING(Instance, 0, CHARINDEX(' - ', Instance))), 112))
 			, CONVERT(INT, HouseholdID) 
-			, HouseholdPosition
-			, HouseholdFullName
 			, CONVERT(INT, IndividualID) 
-			, Name 
-			, SubStatus
 
 	IF @SourceDataID = 16
 		--16 Giving
@@ -156,11 +142,11 @@ AS
 			  TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, receivedDate), 112)) AS DateID
 			, CONVERT(INT, GivingUnitID) AS HouseholdID
-			, ContributorType AS HouseholdPosition
-			, GivingUnitName AS HouseholdFullName
+			, MAX(ContributorType) AS HouseholdPosition
+			, MAX(GivingUnitName) AS HouseholdFullName
 			, CONVERT(INT, ContributorID) AS IndividualID
-			, ContributorName AS FullName
-			, SubStatus
+			, MAX(ContributorName) AS FullName
+			, MAX(SubStatus) AS SubStatus
 
 			, CONVERT(INT, NULL) AS WeekendAttendanceCount
 			, SUM(CONVERT(INT, Transactions)) AS GivingCount
@@ -182,11 +168,7 @@ AS
 			  TenantID
 			, CONVERT(INT, CONVERT(VARCHAR(20), CONVERT(DATE, receivedDate), 112))
 			, CONVERT(INT, GivingUnitID) 
-			, ContributorType 
-			, GivingUnitName
 			, CONVERT(INT, ContributorID) 
-			, ContributorName
-			, SubStatus
 
 	--Catch all for bad parameters / not yet defined sources
 	IF @SourceDataID NOT IN (12, 13, 14, 15, 16)
