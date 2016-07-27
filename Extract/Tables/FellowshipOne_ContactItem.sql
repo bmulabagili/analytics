@@ -27,8 +27,8 @@
 	, [Date]				NVARCHAR(255) NULL
 	, textbox10				NVARCHAR(255) NULL
 	, textbox14				NVARCHAR(255) NULL
-	, textbox16				NVARCHAR(255) NULL
-	, Additional_Note		NVARCHAR(255) NULL
+	, textbox16				NVARCHAR(4000) NULL
+	, Additional_Note		NVARCHAR(4000) NULL
 
 	, TenantID            INT NOT NULL
 	, [ExecutionID]       VARCHAR(50) NOT NULL
