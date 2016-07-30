@@ -14,6 +14,14 @@
   , InstanceDateID     INT NOT NULL
   , InstanceTimeID     INT NOT NULL
   , AttendanceCount    INT NOT NULL
+
+  , ActivityGroupFlag	CHAR(1) NOT NULL DEFAULT('a') -- default to a --"activity" attendance 'g' is for group
+  , SpanOfCareID		INT NULL
+  , SOCOwnersID			INT NULL
+  , GroupTypeID			INT	NULL
+  , GroupNameID			INT NULL
+  , GroupLeadersID		INT NULL
+  , GroupRoleID			INT	NULL
     --ETL Specific Columns
   , ExecutionID        VARCHAR(50) NOT NULL
   , ETLActionID        INT NOT NULL
