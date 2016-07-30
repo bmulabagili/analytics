@@ -17,10 +17,10 @@
 
   , ActivityGroupFlag	CHAR(1) NOT NULL DEFAULT('a') -- default to a --"activity" attendance 'g' is for group
   , SpanOfCareID		INT NULL
-  , SOCOwnersID			INT NULL
+  , SOCOwnerID			INT NULL
   , GroupTypeID			INT	NULL
   , GroupNameID			INT NULL
-  , GroupLeadersID		INT NULL
+  , GroupLeaderID		INT NULL
   , GroupRoleID			INT	NULL
     --ETL Specific Columns
   , ExecutionID        VARCHAR(50) NOT NULL
