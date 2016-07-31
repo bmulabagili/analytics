@@ -12,8 +12,8 @@
   DTS:ObjectName="Process_FellowshipOne_Attendance"
   DTS:PackageType="5"
   DTS:ProtectionLevel="2"
-  DTS:VersionBuild="61"
-  DTS:VersionGUID="{03BE39AE-4DB2-4147-A62B-F033935BAA3B}">
+  DTS:VersionBuild="81"
+  DTS:VersionGUID="{19009BED-0A39-41B0-920D-D16AA9EB714C}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:LogProviders>
@@ -32,10 +32,20 @@
   <DTS:Variables>
     <DTS:Variable
       DTS:CreationName=""
+      DTS:Description="SSISOps : DON'T CHANGE PREFIX. This variable (introduced in v3.2) controls execution of all event handlers for BIxPress Auditing Framework. Set this variable to True or -1 if you want to disable auditing framework related code inside all eventhandlers. You may also have to set Package.LoggingMode=2 along with this variable if you want to disable framework completely."
+      DTS:DTSID="{77ECC36F-9B7E-4485-B965-F2C2F186F073}"
+      DTS:IncludeInDebugDump="6789"
+      DTS:Namespace="User"
+      DTS:ObjectName="varSSISOps_DisableBIxAuditing">
+      <DTS:VariableValue
+        DTS:DataType="11">0</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
       DTS:DTSID="{FC4F8782-47BF-49BD-99C4-A5497155C132}"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
-      DTS:ObjectName="DestinationSchemaName"
+      DTS:ObjectName="_DestinationSchemaName"
       DTS:RaiseChangedEvent="True">
       <DTS:VariableValue
         DTS:DataType="8">Extract</DTS:VariableValue>
@@ -45,7 +55,7 @@
       DTS:DTSID="{67946EFA-73B5-468F-ACEE-B2D9F37508F6}"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
-      DTS:ObjectName="DestinationTableName"
+      DTS:ObjectName="_DestinationTableName"
       DTS:RaiseChangedEvent="True">
       <DTS:VariableValue
         DTS:DataType="8">FellowshipOne_Attendance</DTS:VariableValue>
@@ -55,20 +65,10 @@
       DTS:DTSID="{00A6C035-0D68-4877-97DC-B3EB8BA2E238}"
       DTS:IncludeInDebugDump="2345"
       DTS:Namespace="User"
-      DTS:ObjectName="InputFilePattern"
+      DTS:ObjectName="_InputFilePattern"
       DTS:RaiseChangedEvent="True">
       <DTS:VariableValue
         DTS:DataType="8">2_*.xls</DTS:VariableValue>
-    </DTS:Variable>
-    <DTS:Variable
-      DTS:CreationName=""
-      DTS:Description="SSISOps : DON'T CHANGE PREFIX. This variable (introduced in v3.2) controls execution of all event handlers for BIxPress Auditing Framework. Set this variable to True or -1 if you want to disable auditing framework related code inside all eventhandlers. You may also have to set Package.LoggingMode=2 along with this variable if you want to disable framework completely."
-      DTS:DTSID="{77ECC36F-9B7E-4485-B965-F2C2F186F073}"
-      DTS:IncludeInDebugDump="6789"
-      DTS:Namespace="User"
-      DTS:ObjectName="varSSISOps_DisableBIxAuditing">
-      <DTS:VariableValue
-        DTS:DataType="11">0</DTS:VariableValue>
     </DTS:Variable>
   </DTS:Variables>
   <DTS:LoggingOptions
@@ -195,6 +195,7 @@
       DTS:refId="Package\Extract"
       DTS:CreationName="STOCK:SEQUENCE"
       DTS:Description="Sequence Container"
+      DTS:Disabled="True"
       DTS:DTSID="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}"
       DTS:ExecutableType="STOCK:SEQUENCE"
       DTS:LocaleID="-1"
@@ -215,19 +216,89 @@
             <ExecutePackageTask>
               <UseProjectReference>True</UseProjectReference>
               <PackageName>Extract_FellowshipOne_Attendance.dtsx</PackageName>
-              <ParameterAssignment>
-                <ParameterName>DestinationSchemaName</ParameterName>
-                <BindedVariableOrParameterName>User::DestinationSchemaName</BindedVariableOrParameterName>
-              </ParameterAssignment>
-              <ParameterAssignment>
-                <ParameterName>DestinationTableName</ParameterName>
-                <BindedVariableOrParameterName>User::DestinationTableName</BindedVariableOrParameterName>
-              </ParameterAssignment>
-              <ParameterAssignment>
-                <ParameterName>InputFilePattern</ParameterName>
-                <BindedVariableOrParameterName>User::InputFilePattern</BindedVariableOrParameterName>
-              </ParameterAssignment>
             </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Extract\Extract_FellowshipOne_Attendance 1"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{e863e1e4-961a-4ce2-90fa-5413f71c5681}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Extract_FellowshipOne_Attendance 1"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Extract_FellowshipOne_Attendance.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Extract\Extract_FellowshipOne_SmallGroupAttendance"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{0870faa4-3cac-428a-9414-41cfa1efccf0}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Extract_FellowshipOne_SmallGroupAttendance"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Extract_FellowshipOne_SmallGroupAttendance.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Extract\Pick up Activity Attendance first"
+          DTS:CreationName="PW.TaskFactory.ExpressionTask.ExpressionTask, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39"
+          DTS:Description="TF Expression Task"
+          DTS:DTSID="{C7251D17-0202-4A84-A606-6554E44E5416}"
+          DTS:ExecutableType="PW.TaskFactory.ExpressionTask.ExpressionTask, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Pick up Activity Attendance first"
+          DTS:TaskContact="Expression Task;Pragmatic Works, Inc; Task Factory (c) 2009 - 2014 Pragmatic Works, Inc; http://www.pragmaticworks.com;support@pragmaticworks.com"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExpressionTask
+              VariableColumns="﻿&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&lt;ArrayOfExpressionColumn xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;&lt;ExpressionColumn&gt;&lt;Name&gt;User::_InputFilePattern&lt;/Name&gt;&lt;Precision&gt;18&lt;/Precision&gt;&lt;Scale&gt;4&lt;/Scale&gt;&lt;DataType&gt;DT_WSTR&lt;/DataType&gt;&lt;Length&gt;50&lt;/Length&gt;&lt;CodePage&gt;1252&lt;/CodePage&gt;&lt;Description /&gt;&lt;ErrorText /&gt;&lt;ColumnAction&gt;1&lt;/ColumnAction&gt;&lt;SortOrder&gt;0&lt;/SortOrder&gt;&lt;IsOutput&gt;false&lt;/IsOutput&gt;&lt;IsDefault&gt;false&lt;/IsDefault&gt;&lt;Expression&gt;2_*.xls&lt;/Expression&gt;&lt;ExpressionWithPlaceHolders /&gt;&lt;BufferIndex&gt;0&lt;/BufferIndex&gt;&lt;OutputId&gt;0&lt;/OutputId&gt;&lt;GroupBy&gt;false&lt;/GroupBy&gt;&lt;/ExpressionColumn&gt;&lt;ExpressionColumn&gt;&lt;Name&gt;User::_DestinationTableName&lt;/Name&gt;&lt;Precision&gt;18&lt;/Precision&gt;&lt;Scale&gt;4&lt;/Scale&gt;&lt;DataType&gt;DT_WSTR&lt;/DataType&gt;&lt;Length&gt;50&lt;/Length&gt;&lt;CodePage&gt;1252&lt;/CodePage&gt;&lt;Description /&gt;&lt;ErrorText /&gt;&lt;ColumnAction&gt;1&lt;/ColumnAction&gt;&lt;SortOrder&gt;1&lt;/SortOrder&gt;&lt;IsOutput&gt;false&lt;/IsOutput&gt;&lt;IsDefault&gt;false&lt;/IsDefault&gt;&lt;Expression&gt;FellowshipOne_Attendance&lt;/Expression&gt;&lt;ExpressionWithPlaceHolders /&gt;&lt;BufferIndex&gt;0&lt;/BufferIndex&gt;&lt;OutputId&gt;0&lt;/OutputId&gt;&lt;GroupBy&gt;false&lt;/GroupBy&gt;&lt;/ExpressionColumn&gt;&lt;/ArrayOfExpressionColumn&gt;" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Extract\Pick up Churchwide Volunteers"
+          DTS:CreationName="PW.TaskFactory.ExpressionTask.ExpressionTask, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39"
+          DTS:Description="TF Expression Task"
+          DTS:DTSID="{efbbb02c-e45e-4640-83bf-04891528776e}"
+          DTS:ExecutableType="PW.TaskFactory.ExpressionTask.ExpressionTask, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Pick up Churchwide Volunteers"
+          DTS:TaskContact="Expression Task;Pragmatic Works, Inc; Task Factory (c) 2009 - 2014 Pragmatic Works, Inc; http://www.pragmaticworks.com;support@pragmaticworks.com"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExpressionTask
+              VariableColumns="﻿&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&lt;ArrayOfExpressionColumn xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;&lt;ExpressionColumn&gt;&lt;Name&gt;User::_InputFilePattern&lt;/Name&gt;&lt;Precision&gt;18&lt;/Precision&gt;&lt;Scale&gt;4&lt;/Scale&gt;&lt;DataType&gt;DT_WSTR&lt;/DataType&gt;&lt;Length&gt;50&lt;/Length&gt;&lt;CodePage&gt;1252&lt;/CodePage&gt;&lt;Description /&gt;&lt;ErrorText /&gt;&lt;ColumnAction&gt;1&lt;/ColumnAction&gt;&lt;SortOrder&gt;0&lt;/SortOrder&gt;&lt;IsOutput&gt;false&lt;/IsOutput&gt;&lt;IsDefault&gt;false&lt;/IsDefault&gt;&lt;Expression&gt;18_*.xls&lt;/Expression&gt;&lt;ExpressionWithPlaceHolders /&gt;&lt;BufferIndex&gt;0&lt;/BufferIndex&gt;&lt;OutputId&gt;0&lt;/OutputId&gt;&lt;GroupBy&gt;false&lt;/GroupBy&gt;&lt;/ExpressionColumn&gt;&lt;ExpressionColumn&gt;&lt;Name&gt;User::_DestinationTableName&lt;/Name&gt;&lt;Precision&gt;18&lt;/Precision&gt;&lt;Scale&gt;4&lt;/Scale&gt;&lt;DataType&gt;DT_WSTR&lt;/DataType&gt;&lt;Length&gt;50&lt;/Length&gt;&lt;CodePage&gt;1252&lt;/CodePage&gt;&lt;Description /&gt;&lt;ErrorText /&gt;&lt;ColumnAction&gt;1&lt;/ColumnAction&gt;&lt;SortOrder&gt;1&lt;/SortOrder&gt;&lt;IsOutput&gt;false&lt;/IsOutput&gt;&lt;IsDefault&gt;false&lt;/IsDefault&gt;&lt;Expression&gt;FellowshipOne_Attendance&lt;/Expression&gt;&lt;ExpressionWithPlaceHolders /&gt;&lt;BufferIndex&gt;0&lt;/BufferIndex&gt;&lt;OutputId&gt;0&lt;/OutputId&gt;&lt;GroupBy&gt;false&lt;/GroupBy&gt;&lt;/ExpressionColumn&gt;&lt;/ArrayOfExpressionColumn&gt;" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Extract\Pick up Small Group Leader Attendance"
+          DTS:CreationName="PW.TaskFactory.ExpressionTask.ExpressionTask, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39"
+          DTS:Description="TF Expression Task"
+          DTS:DTSID="{696cccb2-f29c-4844-9984-bd70a4897bdc}"
+          DTS:ExecutableType="PW.TaskFactory.ExpressionTask.ExpressionTask, PW.TaskFactory120, Version=1.0.0.0, Culture=neutral, PublicKeyToken=47acf905d0337c39"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Pick up Small Group Leader Attendance"
+          DTS:TaskContact="Expression Task;Pragmatic Works, Inc; Task Factory (c) 2009 - 2014 Pragmatic Works, Inc; http://www.pragmaticworks.com;support@pragmaticworks.com"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExpressionTask
+              VariableColumns="﻿&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&lt;ArrayOfExpressionColumn xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;&lt;ExpressionColumn&gt;&lt;Name&gt;User::_InputFilePattern&lt;/Name&gt;&lt;Precision&gt;18&lt;/Precision&gt;&lt;Scale&gt;4&lt;/Scale&gt;&lt;DataType&gt;DT_WSTR&lt;/DataType&gt;&lt;Length&gt;50&lt;/Length&gt;&lt;CodePage&gt;1252&lt;/CodePage&gt;&lt;Description /&gt;&lt;ErrorText /&gt;&lt;ColumnAction&gt;1&lt;/ColumnAction&gt;&lt;SortOrder&gt;0&lt;/SortOrder&gt;&lt;IsOutput&gt;false&lt;/IsOutput&gt;&lt;IsDefault&gt;false&lt;/IsDefault&gt;&lt;Expression&gt;17_*.xls&lt;/Expression&gt;&lt;ExpressionWithPlaceHolders /&gt;&lt;BufferIndex&gt;0&lt;/BufferIndex&gt;&lt;OutputId&gt;0&lt;/OutputId&gt;&lt;GroupBy&gt;false&lt;/GroupBy&gt;&lt;/ExpressionColumn&gt;&lt;ExpressionColumn&gt;&lt;Name&gt;User::_DestinationTableName&lt;/Name&gt;&lt;Precision&gt;18&lt;/Precision&gt;&lt;Scale&gt;4&lt;/Scale&gt;&lt;DataType&gt;DT_WSTR&lt;/DataType&gt;&lt;Length&gt;50&lt;/Length&gt;&lt;CodePage&gt;1252&lt;/CodePage&gt;&lt;Description /&gt;&lt;ErrorText /&gt;&lt;ColumnAction&gt;1&lt;/ColumnAction&gt;&lt;SortOrder&gt;1&lt;/SortOrder&gt;&lt;IsOutput&gt;false&lt;/IsOutput&gt;&lt;IsDefault&gt;false&lt;/IsDefault&gt;&lt;Expression&gt;FellowshipOne_SmallGroupLeaderAttendance&lt;/Expression&gt;&lt;ExpressionWithPlaceHolders /&gt;&lt;BufferIndex&gt;0&lt;/BufferIndex&gt;&lt;OutputId&gt;0&lt;/OutputId&gt;&lt;GroupBy&gt;false&lt;/GroupBy&gt;&lt;/ExpressionColumn&gt;&lt;/ArrayOfExpressionColumn&gt;" />
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
@@ -252,17 +323,58 @@
         <DTS:PrecedenceConstraint
           DTS:refId="Package\Extract.PrecedenceConstraints[Constraint]"
           DTS:CreationName=""
-          DTS:DTSID="{2B2D1495-F758-4C6A-8F67-3F43EEC95EBB}"
+          DTS:DTSID="{AB8EFB72-AEE1-4BD6-9ADC-50E1E08A2531}"
           DTS:From="Package\Extract\TRUNCATE ExtractFellowshipOne_Attendance"
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint"
+          DTS:To="Package\Extract\Pick up Activity Attendance first" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Extract.PrecedenceConstraints[Constraint 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{8133B8B2-2B08-412E-97F9-55E60D3FA3BD}"
+          DTS:From="Package\Extract\Pick up Activity Attendance first"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 1"
           DTS:To="Package\Extract\Extract_FellowshipOne_Attendance" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Extract.PrecedenceConstraints[Constraint 2]"
+          DTS:CreationName=""
+          DTS:DTSID="{EC006BA8-973B-4F8C-9B25-E91E4F2CC8DE}"
+          DTS:From="Package\Extract\Extract_FellowshipOne_Attendance"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 2"
+          DTS:To="Package\Extract\Pick up Churchwide Volunteers" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Extract.PrecedenceConstraints[Constraint 3]"
+          DTS:CreationName=""
+          DTS:DTSID="{4EEEDFE9-5776-4A3A-AAA0-ED7819910A74}"
+          DTS:From="Package\Extract\Pick up Churchwide Volunteers"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 3"
+          DTS:To="Package\Extract\Extract_FellowshipOne_Attendance 1" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Extract.PrecedenceConstraints[Constraint 4]"
+          DTS:CreationName=""
+          DTS:DTSID="{A2AF780B-DC8C-4A59-9796-BD2FBD9D2CB1}"
+          DTS:From="Package\Extract\Extract_FellowshipOne_Attendance 1"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 4"
+          DTS:To="Package\Extract\Pick up Small Group Leader Attendance" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Extract.PrecedenceConstraints[Constraint 5]"
+          DTS:CreationName=""
+          DTS:DTSID="{1CB84BA9-280A-4EDD-9966-233B852543AC}"
+          DTS:From="Package\Extract\Pick up Small Group Leader Attendance"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 5"
+          DTS:To="Package\Extract\Extract_FellowshipOne_SmallGroupAttendance" />
       </DTS:PrecedenceConstraints>
     </DTS:Executable>
     <DTS:Executable
       DTS:refId="Package\Transform and Load Dimensions"
       DTS:CreationName="STOCK:SEQUENCE"
       DTS:Description="Sequence Container"
+      DTS:Disabled="True"
       DTS:DTSID="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}"
       DTS:ExecutableType="STOCK:SEQUENCE"
       DTS:LocaleID="-1"
@@ -300,6 +412,74 @@
             <ExecutePackageTask>
               <UseProjectReference>True</UseProjectReference>
               <PackageName>Load_DimAttendanceType.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Transform and Load Dimensions\Load_DimGroupLeader"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{1b4114aa-1b4a-4104-a5d2-9ba92bd27a89}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Load_DimGroupLeader"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Load_DimGroupLeader.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Transform and Load Dimensions\Load_DimGroupName"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{0566fafb-47dd-45a9-bbb4-509d7f652644}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Load_DimGroupName"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Load_DimGroupName.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Transform and Load Dimensions\Load_DimGroupRole"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{8d6897d7-7cda-42ad-bafc-62a6fe40d3dc}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Load_DimGroupRole"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Load_DimGroupRole.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Transform and Load Dimensions\Load_DimGroupType"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{a4925879-f175-49b5-b711-4c118603c50c}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Load_DimGroupType"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Load_DimGroupType.dtsx</PackageName>
             </ExecutePackageTask>
           </DTS:ObjectData>
         </DTS:Executable>
@@ -355,6 +535,40 @@
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
+          DTS:refId="Package\Transform and Load Dimensions\Load_DimSOCOwner"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{442029b2-a90d-4510-925e-6c83c2568717}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Load_DimSOCOwner"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Load_DimSOCOwner.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Transform and Load Dimensions\Load_DimSpanOfCare"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{e60b181d-5e3b-450f-901c-f6d3ee4315f1}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Load_DimSpanOfCare"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Load_DimSpanOfCare.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
           DTS:refId="Package\Transform and Load Dimensions\Transform_DimActivity_F1Attendance"
           DTS:CreationName="Microsoft.ExecutePackageTask"
           DTS:Description="Execute Package Task"
@@ -385,6 +599,74 @@
             <ExecutePackageTask>
               <UseProjectReference>True</UseProjectReference>
               <PackageName>Transform_DimAttendanceType_F1Attendance.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Transform and Load Dimensions\Transform_DimGroupLeader"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{a5b6ef77-d795-4766-91a7-855c5fb987a8}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Transform_DimGroupLeader"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Transform_DimGroupLeader.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Transform and Load Dimensions\Transform_DimGroupName"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{320c8191-832d-46ba-94fe-5bb17b4a2f99}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Transform_DimGroupName"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Transform_DimGroupName.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Transform and Load Dimensions\Transform_DimGroupRole"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{0613c667-53da-4127-b095-247fbed1c045}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Transform_DimGroupRole"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Transform_DimGroupRole.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Transform and Load Dimensions\Transform_DimGroupType"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{3ba04fbf-da4b-4f09-8cc6-09e59b253fad}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Transform_DimGroupType"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Transform_DimGroupType.dtsx</PackageName>
             </ExecutePackageTask>
           </DTS:ObjectData>
         </DTS:Executable>
@@ -439,6 +721,40 @@
             </ExecutePackageTask>
           </DTS:ObjectData>
         </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Transform and Load Dimensions\Transform_DimSOCOwner"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{9389c6da-963c-4283-a502-f6013484e230}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Transform_DimSOCOwner"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Transform_DimSOCOwner.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Transform and Load Dimensions\Transform_DimSpanOfCare"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{4c3a51c9-2834-4982-8c71-2c1d438bc5c1}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Transform_DimSpanOfCare"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Transform_DimSpanOfCare.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
       </DTS:Executables>
       <DTS:PrecedenceConstraints>
         <DTS:PrecedenceConstraint
@@ -457,6 +773,22 @@
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint 1"
           DTS:To="Package\Transform and Load Dimensions\Load_DimAttendanceType" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 10]"
+          DTS:CreationName=""
+          DTS:DTSID="{19CAD508-0048-4FD9-B8FA-189BC5AECE7A}"
+          DTS:From="Package\Transform and Load Dimensions\Transform_DimSOCOwner"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 10"
+          DTS:To="Package\Transform and Load Dimensions\Load_DimSOCOwner" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 11]"
+          DTS:CreationName=""
+          DTS:DTSID="{34DF5868-A2D9-4D19-8BFE-F4E43ED6EB8D}"
+          DTS:From="Package\Transform and Load Dimensions\Transform_DimSpanOfCare"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 11"
+          DTS:To="Package\Transform and Load Dimensions\Load_DimSpanOfCare" />
         <DTS:PrecedenceConstraint
           DTS:refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 2]"
           DTS:CreationName=""
@@ -489,6 +821,38 @@
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint 5"
           DTS:To="Package\Transform and Load Dimensions\Load_DimRoster" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 6]"
+          DTS:CreationName=""
+          DTS:DTSID="{E5E4374D-0528-4AE5-B7B4-70D95A72C98E}"
+          DTS:From="Package\Transform and Load Dimensions\Transform_DimGroupLeader"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 6"
+          DTS:To="Package\Transform and Load Dimensions\Load_DimGroupLeader" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 7]"
+          DTS:CreationName=""
+          DTS:DTSID="{64537BE5-31A2-4EF7-9229-231942135CDC}"
+          DTS:From="Package\Transform and Load Dimensions\Transform_DimGroupRole"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 7"
+          DTS:To="Package\Transform and Load Dimensions\Load_DimGroupRole" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 8]"
+          DTS:CreationName=""
+          DTS:DTSID="{56173557-3269-46E7-9816-9AD8DE13781D}"
+          DTS:From="Package\Transform and Load Dimensions\Transform_DimGroupName"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 8"
+          DTS:To="Package\Transform and Load Dimensions\Load_DimGroupName" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 9]"
+          DTS:CreationName=""
+          DTS:DTSID="{4233298C-C14A-4F8E-8367-12685463324F}"
+          DTS:From="Package\Transform and Load Dimensions\Transform_DimGroupType"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 9"
+          DTS:To="Package\Transform and Load Dimensions\Load_DimGroupType" />
       </DTS:PrecedenceConstraints>
     </DTS:Executable>
     <DTS:Executable
@@ -519,6 +883,23 @@
           </DTS:ObjectData>
         </DTS:Executable>
         <DTS:Executable
+          DTS:refId="Package\Transform and Load Fact\Load_FactAttendance 1"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{a9875278-7207-41af-843d-94fb4b7bf9be}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Load_FactAttendance 1"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Load_FactAttendance.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
           DTS:refId="Package\Transform and Load Fact\Transform FactAttendance_F1Attendance"
           DTS:CreationName="Microsoft.ExecutePackageTask"
           DTS:Description="Execute Package Task"
@@ -535,6 +916,23 @@
             </ExecutePackageTask>
           </DTS:ObjectData>
         </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Transform and Load Fact\Transform_FactAttendance_F1SmallGroupLeaderAttendance"
+          DTS:CreationName="Microsoft.ExecutePackageTask"
+          DTS:Description="Execute Package Task"
+          DTS:DTSID="{488e491a-467f-4cad-a101-0dbce5161280}"
+          DTS:ExecutableType="Microsoft.ExecutePackageTask"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="Transform_FactAttendance_F1SmallGroupLeaderAttendance"
+          DTS:TaskContact="Microsoft Corporation; Microsoft SQL Server; Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <ExecutePackageTask>
+              <UseProjectReference>True</UseProjectReference>
+              <PackageName>Transform_FactAttendance_F1SmallGroupLeaderAttendance.dtsx</PackageName>
+            </ExecutePackageTask>
+          </DTS:ObjectData>
+        </DTS:Executable>
       </DTS:Executables>
       <DTS:PrecedenceConstraints>
         <DTS:PrecedenceConstraint
@@ -545,6 +943,22 @@
           DTS:LogicalAnd="True"
           DTS:ObjectName="Constraint"
           DTS:To="Package\Transform and Load Fact\Load_FactAttendance" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Transform and Load Fact.PrecedenceConstraints[Constraint 1]"
+          DTS:CreationName=""
+          DTS:DTSID="{0CF85149-B380-40AE-B2E7-66962652FDB4}"
+          DTS:From="Package\Transform and Load Fact\Load_FactAttendance"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 1"
+          DTS:To="Package\Transform and Load Fact\Transform_FactAttendance_F1SmallGroupLeaderAttendance" />
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Transform and Load Fact.PrecedenceConstraints[Constraint 2]"
+          DTS:CreationName=""
+          DTS:DTSID="{1BC015B9-5540-4139-9901-2FA73C9DD753}"
+          DTS:From="Package\Transform and Load Fact\Transform_FactAttendance_F1SmallGroupLeaderAttendance"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint 2"
+          DTS:To="Package\Transform and Load Fact\Load_FactAttendance 1" />
       </DTS:PrecedenceConstraints>
     </DTS:Executable>
   </DTS:Executables>
@@ -607,6 +1021,36 @@
               VSTAMajorVersion="3"
               VSTAMinorVersion="0"
               Language="CSharp">
+              <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_a585f77d6cfc4f3ea35dcc25bddabd90")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_a585f77d6cfc4f3ea35dcc25bddabd90")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -726,35 +1170,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_a585f77d6cfc4f3ea35dcc25bddabd90.Properties.Settings.get_Default():st_a585f77d6cfc4f3ea35dcc25bddabd90.Properties.Sett" +
-    "ings")]
-
-namespace st_a585f77d6cfc4f3ea35dcc25bddabd90.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -999,35 +1414,34 @@ namespace st_a585f77d6cfc4f3ea35dcc25bddabd90
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_a585f77d6cfc4f3ea35dcc25bddabd90")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_a585f77d6cfc4f3ea35dcc25bddabd90")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_a585f77d6cfc4f3ea35dcc25bddabd90.Properties.Settings.get_Default():st_a585f77d6cfc4f3ea35dcc25bddabd90.Properties.Sett" +
+    "ings")]
 
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+namespace st_a585f77d6cfc4f3ea35dcc25bddabd90.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Settings.settings"
                 Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
@@ -1485,7 +1899,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_VariableValues">
           <DTS:VariableValue
-            DTS:DataType="8">User::DestinationSchemaName,User::DestinationTableName,User::InputFilePattern</DTS:VariableValue>
+            DTS:DataType="8">User::_DestinationSchemaName,User::_DestinationTableName,User::_InputFilePattern</DTS:VariableValue>
         </DTS:Variable>
       </DTS:Variables>
       <DTS:Executables>
@@ -1508,6 +1922,36 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMajorVersion="3"
               VSTAMinorVersion="0"
               Language="CSharp">
+              <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_e91eb45a908549feabe8aa242661054a")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_e91eb45a908549feabe8aa242661054a")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -1727,35 +2171,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     </VisualStudio>
   </ProjectExtensions>
 </Project>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_e91eb45a908549feabe8aa242661054a.Properties.Settings.get_Default():st_e91eb45a908549feabe8aa242661054a.Properties.Sett" +
-    "ings")]
-
-namespace st_e91eb45a908549feabe8aa242661054a.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -2082,35 +2497,34 @@ namespace st_e91eb45a908549feabe8aa242661054a
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_e91eb45a908549feabe8aa242661054a")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_e91eb45a908549feabe8aa242661054a")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_e91eb45a908549feabe8aa242661054a.Properties.Settings.get_Default():st_e91eb45a908549feabe8aa242661054a.Properties.Sett" +
+    "ings")]
 
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+namespace st_e91eb45a908549feabe8aa242661054a.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Settings.settings"
                 Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
@@ -2410,6 +2824,36 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_8de621f7b93a4190bc020681e7e70d36")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_8de621f7b93a4190bc020681e7e70d36")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -2528,35 +2972,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_8de621f7b93a4190bc020681e7e70d36.Properties.Settings.get_Default():st_8de621f7b93a4190bc020681e7e70d36.Properties.Sett" +
-    "ings")]
-
-namespace st_8de621f7b93a4190bc020681e7e70d36.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="st_8de621f7b93a4190bc020681e7e70d36.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -2801,35 +3216,34 @@ namespace st_8de621f7b93a4190bc020681e7e70d36
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_8de621f7b93a4190bc020681e7e70d36")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_8de621f7b93a4190bc020681e7e70d36")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_8de621f7b93a4190bc020681e7e70d36.Properties.Settings.get_Default():st_8de621f7b93a4190bc020681e7e70d36.Properties.Sett" +
+    "ings")]
 
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+namespace st_8de621f7b93a4190bc020681e7e70d36.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Settings.settings"
                 Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
@@ -3274,7 +3688,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_PkgLayout">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[H4sIAAAAAAAEAO1b23LbyBH9FYTPHHLuF0VS1QxmJnaV7HWtXXnJplwwCUlISFALQLa8Lv/7NqiLQRl0KFpMIpsPkoAB0N3Tl3O6gdLhL+/+lU+aOvl7XtXFojwa1L/PCB0cH/4FoZBNzpNyMc2Td/ls8SH5UMxmyWRRNllRJhfV4iKvmiKvk+Y8a5LpAm5tkuz0FOQl1WXZFPP2wfPsfbGoRggdH77KJv/OzvJkmtfFWYnaG1CZzfOjwc0VUHuSfVxcNs/L08Xx4d+q7OL8eiFJs4tsUjQfjwaMDpKr+aysjwaTWbUUUMO1/OBFMakW9eK0Gb3+ffY6r97n1eh52eRnVdbA1tqVYpLXI79UDxdfwNZmI1gvslnxx/Kmv2Z1nc/fzT4ebSptaeSNRQfzuj6b5ZsYtnxsdL25UJ4VZf5t1Stq7u4cnDfNxcF4XE/O83lWj+Z3T04W8/GHojy9GlOM5fgqm8/Auy9hxzcOfV38AYZSzoccHPp8eheE38JVU2WT5vbv25jPIPr1eXHxS5m/tU2Tl9OsnOSD5M3i4iQ/bUCMGlI2SMbHh+l1euTVjZpneTbNq2d5cXYO93G46Xkdri6ycpqDyjfVJYh5lZX57NoeremQUD5IOqdS9drXUU80H4khFWJpwlebJBJ/tck3VVbWp4tqnoApyckimyYe8rFsi6D+rT1/C+d20hTvIes6ujQZUir7FVFMh1xtpejOq28+XnQ9y5gcGrxOHdlyX8/LKexrepnNXjdZc1l3FEoiwOV8nSfZlhpfFGVRN9WKJ9nanREht9Tz66Ju8qrrQIEhN8kaDz5Yz93Vbnq8jaS3LBgGV64LntHfpXolYdYZQI0ZErPOAPU9BtxPoXUmCLk+zFSK7zHhNqfW7l7eolJP4On3aL7OsvVhB69LutQcpme3mjfWNXpV5ZN8moNUgFPYIQBqU//jy/E/u9gnCWCfFIOurlF6CaxxfHjNRwfLswTiVDUgpASCXlRHg0+3NHLw8nI2+zxIQjntXIayATxdPtSe4OX19oioUautKxtI9Aysb+q75ZuFdDGbgTzYVYfBO0+fAFXc3LoivnXdeJ2oL5fuK19Zh9OvPdJZOcmgralvl+C4Y+x49eHbWztrOwptQrrB5UwNJdlFaE1vaCnZaWiX4n/e0NJuaBVhULeE0R1Et22R+6LLdxtd/lNHl62gsjBtR4p3Ed1le9wDy3K3sCx/6ujy+5xLd1W8VPcXL95t8eKfOrxilXXJsnj5LqKr+ovX7LZ4zROJ7iO8PmBCdV8fcIwf0OZ/9VKBi3XjEzObTBCxfZOyHE7bo95xQbGhXjNvU7HRm4ulki/rq5rWTSmSD4l+4IzSSn7YdGLwSMF4gvc8+ORKCQhOky+lBIjYenyDDFktoqEh8htp9qB0klS0NUl30jT3IzPdLTLTp4LMW0ZvdZ6VVA41IOrjR0/0R4/vNnr8qURv3PmWAmfdryzjm1AeH/qmDu/BuGdQzbO86vlO84lKLLkTFjFBKeJOc2StFcgEHaKTEttIP2/0GUfvv+Js9xWnY+R8cxuXXtrEuJ4u5GX2cgg/19j/KVCOI3UYYWoM4hYH5CIxyAmGuRHWUiM+d2r+7um+BueeaAHPCm5QMB6DaKmQFsSjoJxPqcI6tXRL0YRDxmKDkQ7MIw6NFbKaGWRwMCbl0hts1om+B32fhFaegxuQo60sMBkZpT2igoTIrdWE+D5Zj416X13uAUC8Hv1Wnu6C2KMg1TI/D+7wKnGLy3JalGducbW0a7i08td8BoX4Pn+1qItm+f3Zlh8H2xDSJ0MiISy1KBppEffKIxtkQEITb4lWMeqwj8quo/ItornHLxsRTkqjUlC8ULIMfvGUIcMsgI9WaSSYeab4nnB+aMLhDnshMEYSMBxx7CAFqIpIS865p9gZsTUrOOksEQSp6AEzotbACjQgLwwn0nNsTdxSNCUUaIsKRJzjiDPvkVZaIMxjqiNm2iq8pejoguFMB0S0S4EmnUHaO4VkABKDJRkJ35TLMMPaWB6AFzl4wHqFLFAwCow4o3m0xPc6d4+au+QymRruUquRdyy0bXZEzuv2NMo0FTLItDcv91HZZVQ8Z8ELSZHyBrjIEQLto9QoUCE1ZTQGrPdReWodBg/cpACpiEJZIQ5tBXIw0CAcRSCpStNo3L7D+KE7DEqjgEYTo8gDEKp2AjnGoSuwXKYEBlLj5ZZc7RSJMnLoAEgr2kkPmGEditZ4xhWX2JMtRcMQKh2H5kWq0FK3cwjaGdDEtfYs2uCJ3bQNcCJI4RmBRkJRKAKvkeMwHnOuGHggVSLtbSn20LZLwnGQOc5Sg2hkEGEjMTI6MuSijYYFwCeW7qPy1AgHSsnLFKo1MvjFKYe6bSGBBWggJJY2kLAZ4fD/Q8L5j7CFIzbUOIssDbB9IhjSUVPkUm7hIMU0XQtbjx2KGI21LtUoVcEjLhwMaYxYRERgjASWqkiebij23L9JOnIpiXUaqhEGfx4cYGzAkAwRU8kx8Xzr19mSO+MwcL/m7RRHuEeOMIcEJWlgMgiFe+G7j6DbTyvCCY+Ew6p9nQBmKoUR5qkG4HAhDXsqeHJUYAxPXaAWOYUF4rL9PqG8Q4YpZbwxlAm1nz1+aPwB2CGCSIGEFTB+GuKQTR1BJnoBoymBzm9r/AHIIF44pC0G0SQ1MNlyioKRgD7eMhHdtq8gDZXGK4WoZxomJsGR9dCZYkotc1pQ2v8JrPcVpFZOe5siaimDIgDAhPMUYa2VISEYcMUe2v7bs0c0JCqiHZKSEuhSnQHCkW1/pFVgwug1ebmPyv+McMY3/8x7/CdcyGyD1jsAAA==]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;layout version="3" compressed="true"&gt;&lt;DTS:Executable xmlns:DTS = "www.microsoft.com/SqlServer/Dts" DTS:ExecutableType = "SSIS.Package.2"&gt;&lt;DTS:PackageVariable&gt;		&lt;DTS:Property DTS:Name = "PackageVariableValue" DTS:DataType = "8"&gt;&lt;![CDATA[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]]&gt;&lt;/DTS:Property&gt;	&lt;DTS:Property DTS:Name = "Namespace"&gt;dts-designer-1.0&lt;/DTS:Property&gt;&lt;/DTS:PackageVariable&gt;&lt;/DTS:Executable&gt;&lt;/layout&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -3294,7 +3708,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_TaskList">
           <DTS:VariableValue
-            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="False" LogConnectionMgrs="True"&gt;&lt;tsk id="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" typ="SequenceContainer" p="" name="Extract" on="1" /&gt;&lt;tsk id="{478CACE9-3CF6-4921-B1B6-018DBB43A7F5}" typ="ExecutePackageTask" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" name="Extract_FellowshipOne_Attendance" on="1" /&gt;&lt;tsk id="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" typ="SequenceContainer" p="" name="Transform and Load Dimensions" on="1" /&gt;&lt;pc id="{886EFE78-1295-4F8D-B5BD-D95D7BCF0F7B}" op="2" and="True" val="0" task1="{D7200B8B-9ADD-407D-9BE8-112A44D1FB1F}" task2="{f8cd05dd-c9e9-4ff8-96cb-28388bf82bb6}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{10A14B35-6C1F-46CD-BC82-0622194F02DB}" op="2" and="True" val="0" task1="{e5decdd5-20bf-47e2-ae8f-d250f97584d3}" task2="{fce831a0-1fa2-44af-b07b-3b7715e9977f}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 1]"/&gt;&lt;pc id="{C7D7C0E7-755B-4F9C-8D10-AF97B32B4C9C}" op="2" and="True" val="0" task1="{678862d7-dfd4-46bc-b18d-5e00836c4f73}" task2="{e2761893-9706-46af-b7ef-c6db3baf2672}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 2]"/&gt;&lt;pc id="{3B1B8669-2BEC-4FD7-844C-A9633C204B3D}" op="2" and="True" val="0" task1="{436EEB78-4ECF-4D8A-B024-35E0DCC2BE59}" task2="{efa0b664-2fa3-405a-aa94-182917dbbe5c}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 3]"/&gt;&lt;pc id="{8B43CEEA-3788-4C49-B522-16BF3552DA72}" op="2" and="True" val="0" task1="{f8cd05dd-c9e9-4ff8-96cb-28388bf82bb6}" task2="{436EEB78-4ECF-4D8A-B024-35E0DCC2BE59}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 4]"/&gt;&lt;pc id="{A564FAE3-E544-4117-AAF3-83CB3F77A86B}" op="2" and="True" val="0" task1="{b00f77b6-9049-42fb-9e45-762ed7fae91c}" task2="{9de1b8de-1497-44a3-a745-487c40e2be52}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 5]"/&gt;&lt;tsk id="{efa0b664-2fa3-405a-aa94-182917dbbe5c}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimActivity" on="1" /&gt;&lt;tsk id="{fce831a0-1fa2-44af-b07b-3b7715e9977f}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimAttendanceType" on="1" /&gt;&lt;tsk id="{e2761893-9706-46af-b7ef-c6db3baf2672}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimIndividualStatus" on="1" /&gt;&lt;tsk id="{f8cd05dd-c9e9-4ff8-96cb-28388bf82bb6}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimMinistry" on="1" /&gt;&lt;tsk id="{9de1b8de-1497-44a3-a745-487c40e2be52}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimRoster" on="1" /&gt;&lt;tsk id="{436EEB78-4ECF-4D8A-B024-35E0DCC2BE59}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimActivity_F1Attendance" on="1" /&gt;&lt;tsk id="{e5decdd5-20bf-47e2-ae8f-d250f97584d3}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimAttendanceType_F1Attendance" on="1" /&gt;&lt;tsk id="{678862d7-dfd4-46bc-b18d-5e00836c4f73}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimIndividualStatus_F1Attendance" on="1" /&gt;&lt;tsk id="{D7200B8B-9ADD-407D-9BE8-112A44D1FB1F}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimMinistry_F1Attendance" on="1" /&gt;&lt;tsk id="{b00f77b6-9049-42fb-9e45-762ed7fae91c}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimRoster_F1Attendance" on="1" /&gt;&lt;tsk id="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" typ="SequenceContainer" p="" name="Transform and Load Fact" on="1" /&gt;&lt;pc id="{68331D1F-C133-499E-9A78-25B6B02040FE}" op="2" and="True" val="0" task1="{3dc2f8bb-c49e-40d4-8ea0-5ea7362ae13b}" task2="{7F63A942-A2AB-4739-98DC-5BDF41C026AD}" p="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" refId="Package\Transform and Load Fact.PrecedenceConstraints[Constraint]"/&gt;&lt;tsk id="{7F63A942-A2AB-4739-98DC-5BDF41C026AD}" typ="ExecutePackageTask" p="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" name="Load_FactAttendance" on="1" /&gt;&lt;tsk id="{3dc2f8bb-c49e-40d4-8ea0-5ea7362ae13b}" typ="ExecutePackageTask" p="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" name="Transform FactAttendance_F1Attendance" on="1" /&gt;&lt;pc id="{9C13E8FB-E15D-46EB-BD5A-367CF6B0FB33}" op="2" and="True" val="0" task1="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" task2="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{951EFC69-D710-48C1-B57E-6C23C0C00D70}" op="2" and="True" val="0" task1="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" task2="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
+            DTS:DataType="8">&lt;xml AuditControlFlowVersion="6" EnableRowCountLogging="True" EnableRowCountLoggingForSource="True" EnableRowCountLoggingForDestination="True" EnableDataFlowMonitoring="True" MaxIterationCount="0" TrackAllVariables="True" TrackOnlyTagVariables="False" EnableVariableChangeTracking="True" EnableVariableChangeTrackingAdvFeatures="True" EnableVariableChangeTrackingAdvFeaturesADORec="True" LogConnectionMgrs="True"&gt;&lt;tsk id="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" typ="SequenceContainer" p="" name="Extract" on="0" /&gt;&lt;pc id="{AB8EFB72-AEE1-4BD6-9ADC-50E1E08A2531}" op="2" and="True" val="0" task1="{521429f4-f817-4724-8f63-853a987c0f23}" task2="{C7251D17-0202-4A84-A606-6554E44E5416}" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" refId="Package\Extract.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{8133B8B2-2B08-412E-97F9-55E60D3FA3BD}" op="2" and="True" val="0" task1="{C7251D17-0202-4A84-A606-6554E44E5416}" task2="{478CACE9-3CF6-4921-B1B6-018DBB43A7F5}" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" refId="Package\Extract.PrecedenceConstraints[Constraint 1]"/&gt;&lt;pc id="{EC006BA8-973B-4F8C-9B25-E91E4F2CC8DE}" op="2" and="True" val="0" task1="{478CACE9-3CF6-4921-B1B6-018DBB43A7F5}" task2="{efbbb02c-e45e-4640-83bf-04891528776e}" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" refId="Package\Extract.PrecedenceConstraints[Constraint 2]"/&gt;&lt;pc id="{4EEEDFE9-5776-4A3A-AAA0-ED7819910A74}" op="2" and="True" val="0" task1="{efbbb02c-e45e-4640-83bf-04891528776e}" task2="{e863e1e4-961a-4ce2-90fa-5413f71c5681}" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" refId="Package\Extract.PrecedenceConstraints[Constraint 3]"/&gt;&lt;pc id="{A2AF780B-DC8C-4A59-9796-BD2FBD9D2CB1}" op="2" and="True" val="0" task1="{e863e1e4-961a-4ce2-90fa-5413f71c5681}" task2="{696cccb2-f29c-4844-9984-bd70a4897bdc}" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" refId="Package\Extract.PrecedenceConstraints[Constraint 4]"/&gt;&lt;pc id="{1CB84BA9-280A-4EDD-9966-233B852543AC}" op="2" and="True" val="0" task1="{696cccb2-f29c-4844-9984-bd70a4897bdc}" task2="{0870faa4-3cac-428a-9414-41cfa1efccf0}" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" refId="Package\Extract.PrecedenceConstraints[Constraint 5]"/&gt;&lt;tsk id="{478CACE9-3CF6-4921-B1B6-018DBB43A7F5}" typ="ExecutePackageTask" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" name="Extract_FellowshipOne_Attendance" on="1" /&gt;&lt;tsk id="{e863e1e4-961a-4ce2-90fa-5413f71c5681}" typ="ExecutePackageTask" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" name="Extract_FellowshipOne_Attendance 1" on="1" /&gt;&lt;tsk id="{0870faa4-3cac-428a-9414-41cfa1efccf0}" typ="ExecutePackageTask" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" name="Extract_FellowshipOne_SmallGroupAttendance" on="1" /&gt;&lt;tsk id="{C7251D17-0202-4A84-A606-6554E44E5416}" typ="PW.TASKFACTORY.EXPRESSIONTASK.EXPRESSIONTASK" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" name="Pick up Activity Attendance first" on="1" /&gt;&lt;tsk id="{efbbb02c-e45e-4640-83bf-04891528776e}" typ="PW.TASKFACTORY.EXPRESSIONTASK.EXPRESSIONTASK" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" name="Pick up Churchwide Volunteers" on="1" /&gt;&lt;tsk id="{696cccb2-f29c-4844-9984-bd70a4897bdc}" typ="PW.TASKFACTORY.EXPRESSIONTASK.EXPRESSIONTASK" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" name="Pick up Small Group Leader Attendance" on="1" /&gt;&lt;tsk id="{521429f4-f817-4724-8f63-853a987c0f23}" typ="SQLTask" p="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" name="TRUNCATE ExtractFellowshipOne_Attendance" on="1" /&gt;&lt;tsk id="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" typ="SequenceContainer" p="" name="Transform and Load Dimensions" on="0" /&gt;&lt;pc id="{886EFE78-1295-4F8D-B5BD-D95D7BCF0F7B}" op="2" and="True" val="0" task1="{D7200B8B-9ADD-407D-9BE8-112A44D1FB1F}" task2="{f8cd05dd-c9e9-4ff8-96cb-28388bf82bb6}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{10A14B35-6C1F-46CD-BC82-0622194F02DB}" op="2" and="True" val="0" task1="{e5decdd5-20bf-47e2-ae8f-d250f97584d3}" task2="{fce831a0-1fa2-44af-b07b-3b7715e9977f}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 1]"/&gt;&lt;pc id="{C7D7C0E7-755B-4F9C-8D10-AF97B32B4C9C}" op="2" and="True" val="0" task1="{678862d7-dfd4-46bc-b18d-5e00836c4f73}" task2="{e2761893-9706-46af-b7ef-c6db3baf2672}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 2]"/&gt;&lt;pc id="{3B1B8669-2BEC-4FD7-844C-A9633C204B3D}" op="2" and="True" val="0" task1="{436EEB78-4ECF-4D8A-B024-35E0DCC2BE59}" task2="{efa0b664-2fa3-405a-aa94-182917dbbe5c}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 3]"/&gt;&lt;pc id="{8B43CEEA-3788-4C49-B522-16BF3552DA72}" op="2" and="True" val="0" task1="{f8cd05dd-c9e9-4ff8-96cb-28388bf82bb6}" task2="{436EEB78-4ECF-4D8A-B024-35E0DCC2BE59}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 4]"/&gt;&lt;pc id="{A564FAE3-E544-4117-AAF3-83CB3F77A86B}" op="2" and="True" val="0" task1="{b00f77b6-9049-42fb-9e45-762ed7fae91c}" task2="{9de1b8de-1497-44a3-a745-487c40e2be52}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 5]"/&gt;&lt;pc id="{E5E4374D-0528-4AE5-B7B4-70D95A72C98E}" op="2" and="True" val="0" task1="{a5b6ef77-d795-4766-91a7-855c5fb987a8}" task2="{1b4114aa-1b4a-4104-a5d2-9ba92bd27a89}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 6]"/&gt;&lt;pc id="{64537BE5-31A2-4EF7-9229-231942135CDC}" op="2" and="True" val="0" task1="{0613c667-53da-4127-b095-247fbed1c045}" task2="{8d6897d7-7cda-42ad-bafc-62a6fe40d3dc}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 7]"/&gt;&lt;pc id="{56173557-3269-46E7-9816-9AD8DE13781D}" op="2" and="True" val="0" task1="{320c8191-832d-46ba-94fe-5bb17b4a2f99}" task2="{0566fafb-47dd-45a9-bbb4-509d7f652644}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 8]"/&gt;&lt;pc id="{4233298C-C14A-4F8E-8367-12685463324F}" op="2" and="True" val="0" task1="{3ba04fbf-da4b-4f09-8cc6-09e59b253fad}" task2="{a4925879-f175-49b5-b711-4c118603c50c}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 9]"/&gt;&lt;pc id="{19CAD508-0048-4FD9-B8FA-189BC5AECE7A}" op="2" and="True" val="0" task1="{9389c6da-963c-4283-a502-f6013484e230}" task2="{442029b2-a90d-4510-925e-6c83c2568717}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 10]"/&gt;&lt;pc id="{34DF5868-A2D9-4D19-8BFE-F4E43ED6EB8D}" op="2" and="True" val="0" task1="{4c3a51c9-2834-4982-8c71-2c1d438bc5c1}" task2="{e60b181d-5e3b-450f-901c-f6d3ee4315f1}" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" refId="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 11]"/&gt;&lt;tsk id="{efa0b664-2fa3-405a-aa94-182917dbbe5c}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimActivity" on="1" /&gt;&lt;tsk id="{fce831a0-1fa2-44af-b07b-3b7715e9977f}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimAttendanceType" on="1" /&gt;&lt;tsk id="{1b4114aa-1b4a-4104-a5d2-9ba92bd27a89}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimGroupLeader" on="1" /&gt;&lt;tsk id="{0566fafb-47dd-45a9-bbb4-509d7f652644}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimGroupName" on="1" /&gt;&lt;tsk id="{8d6897d7-7cda-42ad-bafc-62a6fe40d3dc}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimGroupRole" on="1" /&gt;&lt;tsk id="{a4925879-f175-49b5-b711-4c118603c50c}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimGroupType" on="1" /&gt;&lt;tsk id="{e2761893-9706-46af-b7ef-c6db3baf2672}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimIndividualStatus" on="1" /&gt;&lt;tsk id="{f8cd05dd-c9e9-4ff8-96cb-28388bf82bb6}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimMinistry" on="1" /&gt;&lt;tsk id="{9de1b8de-1497-44a3-a745-487c40e2be52}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimRoster" on="1" /&gt;&lt;tsk id="{442029b2-a90d-4510-925e-6c83c2568717}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimSOCOwner" on="1" /&gt;&lt;tsk id="{e60b181d-5e3b-450f-901c-f6d3ee4315f1}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Load_DimSpanOfCare" on="1" /&gt;&lt;tsk id="{436EEB78-4ECF-4D8A-B024-35E0DCC2BE59}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimActivity_F1Attendance" on="1" /&gt;&lt;tsk id="{e5decdd5-20bf-47e2-ae8f-d250f97584d3}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimAttendanceType_F1Attendance" on="1" /&gt;&lt;tsk id="{a5b6ef77-d795-4766-91a7-855c5fb987a8}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimGroupLeader" on="1" /&gt;&lt;tsk id="{320c8191-832d-46ba-94fe-5bb17b4a2f99}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimGroupName" on="1" /&gt;&lt;tsk id="{0613c667-53da-4127-b095-247fbed1c045}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimGroupRole" on="1" /&gt;&lt;tsk id="{3ba04fbf-da4b-4f09-8cc6-09e59b253fad}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimGroupType" on="1" /&gt;&lt;tsk id="{678862d7-dfd4-46bc-b18d-5e00836c4f73}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimIndividualStatus_F1Attendance" on="1" /&gt;&lt;tsk id="{D7200B8B-9ADD-407D-9BE8-112A44D1FB1F}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimMinistry_F1Attendance" on="1" /&gt;&lt;tsk id="{b00f77b6-9049-42fb-9e45-762ed7fae91c}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimRoster_F1Attendance" on="1" /&gt;&lt;tsk id="{9389c6da-963c-4283-a502-f6013484e230}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimSOCOwner" on="1" /&gt;&lt;tsk id="{4c3a51c9-2834-4982-8c71-2c1d438bc5c1}" typ="ExecutePackageTask" p="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" name="Transform_DimSpanOfCare" on="1" /&gt;&lt;tsk id="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" typ="SequenceContainer" p="" name="Transform and Load Fact" on="1" /&gt;&lt;pc id="{68331D1F-C133-499E-9A78-25B6B02040FE}" op="2" and="True" val="0" task1="{3dc2f8bb-c49e-40d4-8ea0-5ea7362ae13b}" task2="{7F63A942-A2AB-4739-98DC-5BDF41C026AD}" p="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" refId="Package\Transform and Load Fact.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{0CF85149-B380-40AE-B2E7-66962652FDB4}" op="2" and="True" val="0" task1="{7F63A942-A2AB-4739-98DC-5BDF41C026AD}" task2="{488e491a-467f-4cad-a101-0dbce5161280}" p="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" refId="Package\Transform and Load Fact.PrecedenceConstraints[Constraint 1]"/&gt;&lt;pc id="{1BC015B9-5540-4139-9901-2FA73C9DD753}" op="2" and="True" val="0" task1="{488e491a-467f-4cad-a101-0dbce5161280}" task2="{a9875278-7207-41af-843d-94fb4b7bf9be}" p="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" refId="Package\Transform and Load Fact.PrecedenceConstraints[Constraint 2]"/&gt;&lt;tsk id="{7F63A942-A2AB-4739-98DC-5BDF41C026AD}" typ="ExecutePackageTask" p="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" name="Load_FactAttendance" on="1" /&gt;&lt;tsk id="{a9875278-7207-41af-843d-94fb4b7bf9be}" typ="ExecutePackageTask" p="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" name="Load_FactAttendance 1" on="1" /&gt;&lt;tsk id="{3dc2f8bb-c49e-40d4-8ea0-5ea7362ae13b}" typ="ExecutePackageTask" p="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" name="Transform FactAttendance_F1Attendance" on="1" /&gt;&lt;tsk id="{488e491a-467f-4cad-a101-0dbce5161280}" typ="ExecutePackageTask" p="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" name="Transform_FactAttendance_F1SmallGroupLeaderAttendance" on="1" /&gt;&lt;pc id="{9C13E8FB-E15D-46EB-BD5A-367CF6B0FB33}" op="2" and="True" val="0" task1="{8FC07B7A-81F3-4F02-BF15-5AD8BC58104A}" task2="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" p="" refId="Package.PrecedenceConstraints[Constraint]"/&gt;&lt;pc id="{951EFC69-D710-48C1-B57E-6C23C0C00D70}" op="2" and="True" val="0" task1="{C1F653BE-75D3-48E6-AB7B-CE7E61267270}" task2="{E2EF8F9D-48DA-4039-BC0D-C34E4C77E7AC}" p="" refId="Package.PrecedenceConstraints[Constraint 1]"/&gt;&lt;/xml&gt;</DTS:VariableValue>
         </DTS:Variable>
         <DTS:Variable
           DTS:CreationName=""
@@ -3304,7 +3718,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
           DTS:Namespace="User"
           DTS:ObjectName="varSSISOps_VariableValues">
           <DTS:VariableValue
-            DTS:DataType="8">User::DestinationSchemaName,User::DestinationTableName,User::InputFilePattern</DTS:VariableValue>
+            DTS:DataType="8">User::_DestinationSchemaName,User::_DestinationTableName,User::_InputFilePattern</DTS:VariableValue>
         </DTS:Variable>
       </DTS:Variables>
       <DTS:Executables>
@@ -3326,6 +3740,36 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
               VSTAMajorVersion="3"
               VSTAMinorVersion="0"
               Language="CSharp">
+              <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_2af1491caba0412a89b979b8ed127063")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_2af1491caba0412a89b979b8ed127063")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -3445,35 +3889,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_2af1491caba0412a89b979b8ed127063.Properties.Settings.get_Default():st_2af1491caba0412a89b979b8ed127063.Properties.Sett" +
-    "ings")]
-
-namespace st_2af1491caba0412a89b979b8ed127063.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -3943,35 +4358,34 @@ namespace st_2af1491caba0412a89b979b8ed127063
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_2af1491caba0412a89b979b8ed127063")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_2af1491caba0412a89b979b8ed127063")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_2af1491caba0412a89b979b8ed127063.Properties.Settings.get_Default():st_2af1491caba0412a89b979b8ed127063.Properties.Sett" +
+    "ings")]
 
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+namespace st_2af1491caba0412a89b979b8ed127063.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Settings.settings"
                 Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
@@ -4572,6 +4986,36 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_0b5eb8807c2d4674ad01fb3b3b1349de")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_0b5eb8807c2d4674ad01fb3b3b1349de")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -4690,35 +5134,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_0b5eb8807c2d4674ad01fb3b3b1349de.Properties.Settings.get_Default():st_0b5eb8807c2d4674ad01fb3b3b1349de.Properties.Sett" +
-    "ings")]
-
-namespace st_0b5eb8807c2d4674ad01fb3b3b1349de.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -4914,35 +5329,34 @@ namespace st_0b5eb8807c2d4674ad01fb3b3b1349de
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_0b5eb8807c2d4674ad01fb3b3b1349de")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_0b5eb8807c2d4674ad01fb3b3b1349de")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_0b5eb8807c2d4674ad01fb3b3b1349de.Properties.Settings.get_Default():st_0b5eb8807c2d4674ad01fb3b3b1349de.Properties.Sett" +
+    "ings")]
 
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+namespace st_0b5eb8807c2d4674ad01fb3b3b1349de.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="st_0b5eb8807c2d4674ad01fb3b3b1349de.csproj"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -5374,6 +5788,36 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
               VSTAMinorVersion="0"
               Language="CSharp">
               <ProjectItem
+                Name="Properties\AssemblyInfo.cs"
+                Encoding="UTF8"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("st_0b789d0d71a446c88d58bd02cdec1fd5")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("st_0b789d0d71a446c88d58bd02cdec1fd5")]
+[assembly: AssemblyCopyright("Copyright @  2016")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
+
+[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+              <ProjectItem
                 Name="Properties\Resources.resx"
                 Encoding="UTF8"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -5492,35 +5936,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==</BinaryItem>
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 </root>]]></ProjectItem>
-              <ProjectItem
-                Name="Properties\Settings.Designer.cs"
-                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
-// <auto-generated>
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// </auto-generated>
-//------------------------------------------------------------------------------
-
-[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_0b789d0d71a446c88d58bd02cdec1fd5.Properties.Settings.get_Default():st_0b789d0d71a446c88d58bd02cdec1fd5.Properties.Sett" +
-    "ings")]
-
-namespace st_0b789d0d71a446c88d58bd02cdec1fd5.Properties {
-    
-    
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
-        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-        private static Settings defaultInstance = new Settings();
-        
-        public static Settings Default {
-            get {
-                return defaultInstance;
-            }
-        }
-    }
-}]]></ProjectItem>
               <ProjectItem
                 Name="ScriptMain.cs"
                 Encoding="UTF8"><![CDATA[#region Namespaces
@@ -5765,35 +6180,34 @@ namespace st_0b789d0d71a446c88d58bd02cdec1fd5
 	</msb:ItemGroup>
 </c:Project>]]></ProjectItem>
               <ProjectItem
-                Name="Properties\AssemblyInfo.cs"
-                Encoding="UTF8"><![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
+                Name="Properties\Settings.Designer.cs"
+                Encoding="UTF8"><![CDATA[//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
 
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-[assembly: AssemblyTitle("st_0b789d0d71a446c88d58bd02cdec1fd5")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("st_0b789d0d71a446c88d58bd02cdec1fd5")]
-[assembly: AssemblyCopyright("Copyright @  2016")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
+[assembly: global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Scope="member", Target="st_0b789d0d71a446c88d58bd02cdec1fd5.Properties.Settings.get_Default():st_0b789d0d71a446c88d58bd02cdec1fd5.Properties.Sett" +
+    "ings")]
 
-[assembly: AssemblyVersion("1.0.*")]]]></ProjectItem>
+namespace st_0b789d0d71a446c88d58bd02cdec1fd5.Properties {
+    
+    
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
+        [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+        private static Settings defaultInstance = new Settings();
+        
+        public static Settings Default {
+            get {
+                return defaultInstance;
+            }
+        }
+    }
+}]]></ProjectItem>
               <ProjectItem
                 Name="Properties\Settings.settings"
                 Encoding="UTF8"><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
@@ -6130,29 +6544,195 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="64" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="244,42"
           Id="Package\Extract\Extract_FellowshipOne_Attendance"
-          TopLeft="553,30" />
+          TopLeft="51,117" />
+        <NodeLayout
+          Size="254,42"
+          Id="Package\Extract\Extract_FellowshipOne_Attendance 1"
+          TopLeft="49,208" />
+        <NodeLayout
+          Size="298,42"
+          Id="Package\Extract\Extract_FellowshipOne_SmallGroupAttendance"
+          TopLeft="53,280" />
+        <NodeLayout
+          Size="228,42"
+          Id="Package\Extract\Pick up Activity Attendance first"
+          TopLeft="506,35" />
+        <NodeLayout
+          Size="224,42"
+          Id="Package\Extract\Pick up Churchwide Volunteers"
+          TopLeft="508,114" />
+        <NodeLayout
+          Size="265,42"
+          Id="Package\Extract\Pick up Small Group Leader Attendance"
+          TopLeft="509,203" />
         <NodeLayout
           Size="384,42"
           Id="Package\Extract\TRUNCATE ExtractFellowshipOne_Attendance"
           TopLeft="22,31" />
         <EdgeLayout
           Id="Package\Extract.PrecedenceConstraints[Constraint]"
-          TopLeft="406,51.5">
+          TopLeft="406,54">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="147,0"
+              EndConnector="100,0"
               Start="0,0"
-              End="139.5,0">
+              End="92.5,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="139.5,0" />
+                    End="92.5,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Extract.PrecedenceConstraints[Constraint 1]"
+          TopLeft="620,77">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-447,40"
+              Start="0,0"
+              End="-447,32.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,16" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,16"
+                    Point2="0,20"
+                    Point3="-4,20" />
+                  <mssgle:LineSegment
+                    End="-443,20" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-443,20"
+                    Point2="-447,20"
+                    Point3="-447,24" />
+                  <mssgle:LineSegment
+                    End="-447,32.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Extract.PrecedenceConstraints[Constraint 2]"
+          TopLeft="295,136.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="213,0"
+              Start="0,0"
+              End="205.5,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="205.5,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Extract.PrecedenceConstraints[Constraint 3]"
+          TopLeft="620,156">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-444,52"
+              Start="0,0"
+              End="-444,44.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,22" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,22"
+                    Point2="0,26"
+                    Point3="-4,26" />
+                  <mssgle:LineSegment
+                    End="-440,26" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-440,26"
+                    Point2="-444,26"
+                    Point3="-444,30" />
+                  <mssgle:LineSegment
+                    End="-444,44.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Extract.PrecedenceConstraints[Constraint 4]"
+          TopLeft="303,226.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="206,0"
+              Start="0,0"
+              End="198.5,0">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="198.5,0" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Extract.PrecedenceConstraints[Constraint 5]"
+          TopLeft="641.5,245">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-439.5,35"
+              Start="0,0"
+              End="-439.5,27.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,13.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,13.5"
+                    Point2="0,17.5"
+                    Point3="-4,17.5" />
+                  <mssgle:LineSegment
+                    End="-435.5,17.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-435.5,17.5"
+                    Point2="-439.5,17.5"
+                    Point3="-439.5,21.5" />
+                  <mssgle:LineSegment
+                    End="-439.5,27.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -6164,10 +6744,10 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="882,99"
-          Size="882,142"
+          PanelSize="1021,377"
+          Size="1031,420"
           Id="Package\Extract"
-          TopLeft="184.5,255" />
+          TopLeft="184.5,105.5" />
         <NodeLayout
           Size="160,42"
           Id="Package\Transform and Load Dimensions\Load_DimActivity"
@@ -6179,7 +6759,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <NodeLayout
           Size="201,42"
           Id="Package\Transform and Load Dimensions\Load_DimIndividualStatus"
-          TopLeft="615,164" />
+          TopLeft="674,98" />
         <NodeLayout
           Size="163,42"
           Id="Package\Transform and Load Dimensions\Load_DimMinistry"
@@ -6199,7 +6779,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <NodeLayout
           Size="297,42"
           Id="Package\Transform and Load Dimensions\Transform_DimIndividualStatus_F1Attendance"
-          TopLeft="563,90" />
+          TopLeft="633,23" />
         <NodeLayout
           Size="265,42"
           Id="Package\Transform and Load Dimensions\Transform_DimMinistry_F1Attendance"
@@ -6254,18 +6834,18 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 2]"
-          TopLeft="713.5,132">
+          TopLeft="778,65">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,32"
+              EndConnector="0,33"
               Start="0,0"
-              End="0,24.5">
+              End="0,25.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,24.5" />
+                    End="0,25.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -6340,35 +6920,214 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <ContainerLayout
-          HeaderHeight="43"
-          IsExpanded="True"
-          PanelSize="882,357"
-          Size="882,400"
-          Id="Package\Transform and Load Dimensions"
-          TopLeft="184.5,459" />
         <NodeLayout
-          Size="239,42"
-          Id="Package\Transform and Load Fact\Load_FactAttendance"
-          TopLeft="73,84" />
+          Size="256,42"
+          Id="Package\Transform and Load Dimensions\Transform_DimGroupLeader"
+          TopLeft="26,333" />
         <NodeLayout
-          Size="250,42"
-          Id="Package\Transform and Load Fact\Transform FactAttendance_F1Attendance"
-          TopLeft="64,18" />
+          Size="256,42"
+          Id="Package\Transform and Load Dimensions\Transform_DimGroupName"
+          TopLeft="322,331" />
+        <NodeLayout
+          Size="256,42"
+          Id="Package\Transform and Load Dimensions\Transform_DimGroupRole"
+          TopLeft="663,159" />
+        <NodeLayout
+          Size="187,42"
+          Id="Package\Transform and Load Dimensions\Load_DimGroupLeader"
+          TopLeft="71,414" />
         <EdgeLayout
-          Id="Package\Transform and Load Fact.PrecedenceConstraints[Constraint]"
-          TopLeft="190.75,60">
+          Id="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 6]"
+          TopLeft="154.75,375">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,24"
+              EndConnector="0,39"
               Start="0,0"
-              End="0,16.5">
+              End="0,31.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,16.5" />
+                    End="0,31.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="182,42"
+          Id="Package\Transform and Load Dimensions\Load_DimGroupName"
+          TopLeft="352,416" />
+        <NodeLayout
+          Size="182,42"
+          Id="Package\Transform and Load Dimensions\Load_DimGroupRole"
+          TopLeft="706,236" />
+        <EdgeLayout
+          Id="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 7]"
+          TopLeft="794,201">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,35"
+              Start="0,0"
+              End="0,27.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,27.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="256,42"
+          Id="Package\Transform and Load Dimensions\Transform_DimGroupType"
+          TopLeft="668,335" />
+        <EdgeLayout
+          Id="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 8]"
+          TopLeft="450,373">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-9,43"
+              Start="0,0"
+              End="-9,35.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,17.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,17.5"
+                    Point2="0,21.5"
+                    Point3="-4,21.5" />
+                  <mssgle:LineSegment
+                    End="-5,21.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-5,21.5"
+                    Point2="-9,21.5"
+                    Point3="-9,25.5" />
+                  <mssgle:LineSegment
+                    End="-9,35.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="187,42"
+          Id="Package\Transform and Load Dimensions\Load_DimGroupType"
+          TopLeft="685,413" />
+        <EdgeLayout
+          Id="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 9]"
+          TopLeft="796,377">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-17.5,36"
+              Start="0,0"
+              End="-17.5,28.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,14" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,14"
+                    Point2="0,18"
+                    Point3="-4,18" />
+                  <mssgle:LineSegment
+                    End="-13.5,18" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-13.5,18"
+                    Point2="-17.5,18"
+                    Point3="-17.5,22" />
+                  <mssgle:LineSegment
+                    End="-17.5,28.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="256,42"
+          Id="Package\Transform and Load Dimensions\Transform_DimSOCOwner"
+          TopLeft="26,518" />
+        <NodeLayout
+          Size="187,42"
+          Id="Package\Transform and Load Dimensions\Load_DimSOCOwner"
+          TopLeft="54,603" />
+        <EdgeLayout
+          Id="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 10]"
+          TopLeft="150.75,560">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,43"
+              Start="0,0"
+              End="0,35.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,35.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="256,42"
+          Id="Package\Transform and Load Dimensions\Transform_DimSpanOfCare"
+          TopLeft="334,512" />
+        <NodeLayout
+          Size="182,42"
+          Id="Package\Transform and Load Dimensions\Load_DimSpanOfCare"
+          TopLeft="380,593" />
+        <EdgeLayout
+          Id="Package\Transform and Load Dimensions.PrecedenceConstraints[Constraint 11]"
+          TopLeft="462,554">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="11,39"
+              Start="0,0"
+              End="11,31.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,15.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,15.5"
+                    Point2="0,19.5"
+                    Point3="4,19.5" />
+                  <mssgle:LineSegment
+                    End="7,19.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="7,19.5"
+                    Point2="11,19.5"
+                    Point3="11,23.5" />
+                  <mssgle:LineSegment
+                    End="11,31.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -6380,24 +7139,137 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         <ContainerLayout
           HeaderHeight="43"
           IsExpanded="True"
-          PanelSize="885,181"
-          Size="885,224"
-          Id="Package\Transform and Load Fact"
-          TopLeft="184,916" />
+          PanelSize="1031,650"
+          Size="1031,693"
+          Id="Package\Transform and Load Dimensions"
+          TopLeft="184.5,588" />
+        <NodeLayout
+          Size="239,42"
+          Id="Package\Transform and Load Fact\Load_FactAttendance"
+          TopLeft="73,84" />
+        <NodeLayout
+          Size="325,42"
+          Id="Package\Transform and Load Fact\Transform FactAttendance_F1Attendance"
+          TopLeft="36,17" />
         <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint]"
-          TopLeft="625.5,397">
+          Id="Package\Transform and Load Fact.PrecedenceConstraints[Constraint]"
+          TopLeft="195.5,59">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,62"
+              EndConnector="0,25"
               Start="0,0"
-              End="0,54.5">
+              End="0,17.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,54.5" />
+                    End="0,17.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="400,42"
+          Id="Package\Transform and Load Fact\Transform_FactAttendance_F1SmallGroupLeaderAttendance"
+          TopLeft="473,20" />
+        <EdgeLayout
+          Id="Package\Transform and Load Fact.PrecedenceConstraints[Constraint 1]"
+          TopLeft="312,105">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="161,-64"
+              Start="0,0"
+              End="153.5,-64">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="76.5,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="76.5,0"
+                    Point2="80.5,0"
+                    Point3="80.5,-4" />
+                  <mssgle:LineSegment
+                    End="80.5,-60" />
+                  <mssgle:CubicBezierSegment
+                    Point1="80.5,-60"
+                    Point2="80.5,-64"
+                    Point3="84.5,-64" />
+                  <mssgle:LineSegment
+                    End="153.5,-64" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="189,42"
+          Id="Package\Transform and Load Fact\Load_FactAttendance 1"
+          TopLeft="540,98" />
+        <EdgeLayout
+          Id="Package\Transform and Load Fact.PrecedenceConstraints[Constraint 2]"
+          TopLeft="673,62">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-38.5,36"
+              Start="0,0"
+              End="-38.5,28.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,14" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,14"
+                    Point2="0,18"
+                    Point3="-4,18" />
+                  <mssgle:LineSegment
+                    End="-34.5,18" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-34.5,18"
+                    Point2="-38.5,18"
+                    Point3="-38.5,22" />
+                  <mssgle:LineSegment
+                    End="-38.5,28.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="1032,283"
+          Size="1032,326"
+          Id="Package\Transform and Load Fact"
+          TopLeft="184,1347" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="700,525.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,62.5"
+              Start="0,0"
+              End="0,55">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,55" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -6408,18 +7280,18 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</BinaryItem>
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 1]"
-          TopLeft="626,859">
+          TopLeft="700,1281">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,57"
+              EndConnector="0,66"
               Start="0,0"
-              End="0,49.5">
+              End="0,58.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,49.5" />
+                    End="0,58.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
