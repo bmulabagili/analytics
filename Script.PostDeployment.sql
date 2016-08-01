@@ -69,7 +69,7 @@ BEGIN
 	MERGE INTO dbo.ConnectionString AS Target
 	USING (VALUES
 		 (0, N'FlatFileSource', N'FlatFileSource', -1, GETDATE(), GETDATE(), '')
-	  ,	(1, N'Data Source=devharvestbible.database.windows.net;User ID=HB1User;Password=u53r4hb1!;Initial Catalog=HarvestBible;Provider=SQLNCLI11.1;Auto Translate=False;', 'Harvest bible connection string.', -1, GETDATE(), GETDATE(), '')
+	  ,	(1, N'Data Source=prodharvestbible.database.windows.net;User ID=HB1User;Password=u53r4hb1!;Initial Catalog=HarvestBible;Provider=SQLNCLI11.1;Auto Translate=False;', 'Harvest bible connection string.', -1, GETDATE(), GETDATE(), '')
 	  , (2, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=CHC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-CHC', -1, GETDATE(), GETDATE(), '')
 	  , (3, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=HBC;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBC', -1, GETDATE(), GETDATE(), '')
 	  , (4, N'Data Source=192.168.240.219;User ID=52projects01;Password=Proj3ct$;Initial Catalog=HBF;Provider=SQLNCLI11.1;Auto Translate=False;', 'MIP-HBF', -1, GETDATE(), GETDATE(), '')
@@ -813,3 +813,19 @@ SELECT 3, 29527341 AS AccountID, 'UA-29527341-2' AS WebProperty, 92087633 AS Pro
 EXEC [dbo].[usp_Initialize_CampusXLTReportGroupRows];
 
 GRANT EXEC ON Schema::DW TO HBCReportReader
+GO
+GRANT READ
+	ON SCHEMA::[dbo] TO [HBCReportReader]
+	AS [dbo]
+GO
+GRANT READ
+	ON SCHEMA::[DW] TO [HBCReportReader]
+	AS [dbo]
+GO
+GRANT EXECUTE
+	ON SCHEMA::[dbo] TO [HBCReportReader]
+	AS [dbo]
+GO
+GRANT EXECUTE
+	ON SCHEMA::[DW] TO [HBCReportReader]
+	AS [dbo]

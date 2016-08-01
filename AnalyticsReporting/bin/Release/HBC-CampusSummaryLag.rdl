@@ -5947,6 +5947,7 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
@@ -9122,9 +9123,7 @@ ORDER BY MinistryMonth</CommandText>
 				'Weekend Worship - Childrens Other' END
 			END
 		  ELSE
-			CASE WHEN DimMinistry.Name like '%chu%chwide services' AND DimAttendanceType.Category = 'Attendee' THEN 
-				'Weekend Worship - Adult Headcount' ELSE
-				'WFC - All Volunteers' END
+			'Weekend Worship - Adult Headcount' 
 		  END AS SectionName
 		, DimCampus.Code AS CampusCode
 		, SUM(AttendanceCount) AS AttendanceSum
@@ -9147,14 +9146,9 @@ ORDER BY MinistryMonth</CommandText>
 		AND (
 			DimMinistry.Name LIKE '%Harvest Kids' --Children (attendeee, volunteer, combined)
 			OR (
-					(DimMinistry.Name LIKE '%Churchwide services' 
-					 OR DimMinistry.Name LIKE '%chuchwide Services') 
+					DimMinistry.Name LIKE '%Chu%chwide services' 
 					AND DimAttendanceType.AttendanceTypeID IN (13, 90, 116, 2, 72) -- blank or attendee
 			) --Adult headcount
-			OR (
-					DimRoster.RosterFolder LIKE '%vol%'
-					OR DimRoster.Roster LIKE '%vol%'
-			) -- WFC 
 		)
 	GROUP BY
 		  ReportPeriod.MinistryYear
@@ -9170,14 +9164,47 @@ ORDER BY MinistryMonth</CommandText>
 				'Weekend Worship - Childrens Other' END
 			END
 		  ELSE
-			CASE WHEN DimMinistry.Name like '%chu%chwide services' AND DimAttendanceType.Category = 'Attendee' THEN 
-				'Weekend Worship - Adult Headcount' ELSE
-				'WFC - All Volunteers' END
+			'Weekend Worship - Adult Headcount' 
 		  END
 		, DimCampus.Code
 		UNION
-		--Fill in Campus and other "as campuses"
+		--wfc volunteers
 		SELECT DISTINCT	
+		  ReportPeriod.MinistryYear
+		, ReportPeriod.MinistryMonth
+		, ReportPeriod.MonthLabel
+		, 'WFC - All Volunteers' AS SectionName	
+		, DimCampus.Code AS CampusCode
+		, SUM(AttendanceCount) AS AttendanceSum
+		, COUNT( DISTINCT WeekCount ) AS WeekCount		
+	FROM DW.FactAttendance
+	INNER JOIN ReportPeriod
+		ON FactAttendance.InstanceDateID = ReportPeriod.DateID
+	LEFT JOIN DW.DimMinistry
+		ON FactAttendance.MinistryID = DimMinistry.MinistryID
+	LEFT JOIN DW.DimCampus
+		ON FactAttendance.CampusID = DimCampus.CampusID
+	LEFT JOIN DW.DimActivity
+		ON FactAttendance.ActivityID = DimActivity.ActivityID
+	LEFT JOIN DW.DimAttendanceType
+		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+	LEFT JOIN DW.DimRoster
+		ON FactAttendance.RosterID = DimRoster.RosterID
+	LEFT JOIN DW.DimGroupRole
+		ON FactAttendance.GroupRoleID = DimGroupRole.GroupRoleID
+	WHERE
+		DimCampus.Code IN ('RM','EL','NI','CL','CC','AU','DR')
+		AND (
+			DimAttendanceType.Category LIKE '%Volunteer%'
+			OR DimGroupRole.Name = 'Leader' )
+	GROUP BY
+		  ReportPeriod.MinistryYear
+		, ReportPeriod.MinistryMonth
+		, ReportPeriod.MonthLabel
+		, DimCampus.Code
+	UNION
+	--Fill in Campus and other "as campuses"
+	SELECT DISTINCT	
 		  ReportPeriod.MinistryYear
 		, ReportPeriod.MinistryMonth
 		, ReportPeriod.MonthLabel
@@ -9292,8 +9319,7 @@ ORDER BY
 	  MinistryYear
 	, MinistryMonth
 	, SectionName
-	, CampusOrder	
-</CommandText>
+	, CampusOrder	</CommandText>
       </Query>
       <Fields>
         <Field Name="MinistryYear">

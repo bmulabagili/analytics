@@ -7075,9 +7075,6 @@ ORDER BY MinistryMonth</CommandText>
 		  ReportPeriod.MinistryYear
 		, ReportPeriod.MinistryMonth
 		, ReportPeriod.MonthLabel
-		--, DimMinistry.Name, Dimministry.CampusID, dimministry.CampusID
-		--, DimActivity.Name, DimActivity.MinistryID, DimActivity.CampusID, FactAttendance.CampusID
-		--, DimAttendanceType.Category
 		, CASE WHEN DimMinistry.Name Like '%Harvest Kids' THEN
 			CASE WHEN DimAttendanceType.Category = 'Attendee' THEN 'Weekend Worship - Childrens' ELSE
 				CASE WHEN DimAttendanceType.Category LIKE '%staff%' OR DimAttendanceType.Category LIKE '%volunteer%' THEN 
@@ -7085,9 +7082,7 @@ ORDER BY MinistryMonth</CommandText>
 				'Weekend Worship - Childrens Other' END
 			END
 		  ELSE
-			CASE WHEN DimMinistry.Name like '%chu%chwide services' AND DimAttendanceType.Category = 'Attendee' THEN 
-				'Weekend Worship - Adult Headcount' ELSE
-				'WFC - All Volunteers' END
+			'Weekend Worship - Adult Headcount' 
 		  END AS SectionName
 		, DimCampus.Code AS CampusCode
 		, SUM(AttendanceCount) AS AttendanceSum
@@ -7108,24 +7103,13 @@ ORDER BY MinistryMonth</CommandText>
 	WHERE
 		DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
 		AND (
-			DimMinistry.Name LIKE '%Harvest Kids' --Children (attendeee, volunteer, combined)
-			OR (
-					(DimMinistry.Name LIKE '%Churchwide services' 
-					 OR DimMinistry.Name LIKE '%chuchwide Services') 
-					AND DimAttendanceType.AttendanceTypeID IN (13, 90, 116, 2, 72) -- blank or attendee
-			) --Adult headcount
-			OR (
-					DimRoster.RosterFolder LIKE '%vol%'
-					OR DimRoster.Roster LIKE '%vol%'
-			) -- WFC 
-		)
+				(DimMinistry.Name LIKE '%Harvest Kids%' AND DimActivity.Name LIKE '%Harvest Kids Weekend') --Children (attendeee, volunteer, combined)
+				OR (DimMinistry.Name LIKE '%Chu%chwide services' AND DimAttendanceType.AttendanceTypeID IN (13, 90, 116, 2, 72)) -- blank or attendee --Adult headcount
+			) 
 	GROUP BY
 		  ReportPeriod.MinistryYear
 		, ReportPeriod.MinistryMonth
 		, ReportPeriod.MonthLabel
-		--, DimMinistry.Name, Dimministry.CampusID, dimministry.CampusID
-		--, DimActivity.Name, DimActivity.MinistryID, DimActivity.CampusID, FactAttendance.CampusID
-		--, DimAttendanceType.Category
 		, CASE WHEN DimMinistry.Name Like '%Harvest Kids' THEN
 			CASE WHEN DimAttendanceType.Category = 'Attendee' THEN 'Weekend Worship - Childrens' ELSE
 				CASE WHEN DimAttendanceType.Category LIKE '%staff%' OR DimAttendanceType.Category LIKE '%volunteer%' THEN 
@@ -7133,10 +7117,43 @@ ORDER BY MinistryMonth</CommandText>
 				'Weekend Worship - Childrens Other' END
 			END
 		  ELSE
-			CASE WHEN DimMinistry.Name like '%chu%chwide services' AND DimAttendanceType.Category = 'Attendee' THEN 
-				'Weekend Worship - Adult Headcount' ELSE
-				'WFC - All Volunteers' END
+			'Weekend Worship - Adult Headcount' 
 		  END
+		, DimCampus.Code
+		UNION
+		--wfc volunteers
+		SELECT DISTINCT	
+		  ReportPeriod.MinistryYear
+		, ReportPeriod.MinistryMonth
+		, ReportPeriod.MonthLabel
+		, 'WFC - All Volunteers' AS SectionName	
+		, DimCampus.Code AS CampusCode
+		, SUM(AttendanceCount) AS AttendanceSum
+		, COUNT( DISTINCT WeekCount ) AS WeekCount		
+	FROM DW.FactAttendance
+	INNER JOIN ReportPeriod
+		ON FactAttendance.InstanceDateID = ReportPeriod.DateID
+	LEFT JOIN DW.DimMinistry
+		ON FactAttendance.MinistryID = DimMinistry.MinistryID
+	LEFT JOIN DW.DimCampus
+		ON FactAttendance.CampusID = DimCampus.CampusID
+	LEFT JOIN DW.DimActivity
+		ON FactAttendance.ActivityID = DimActivity.ActivityID
+	LEFT JOIN DW.DimAttendanceType
+		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
+	LEFT JOIN DW.DimRoster
+		ON FactAttendance.RosterID = DimRoster.RosterID
+	LEFT JOIN DW.DimGroupRole
+		ON FactAttendance.GroupRoleID = DimGroupRole.GroupRoleID
+	WHERE
+		DimCampus.Code IN (SELECT Item from dbo.fnSplit(@Campus, ','))
+		AND (
+			DimAttendanceType.Category LIKE '%Volunteer%'
+			OR DimGroupRole.Name = 'Leader' )
+	GROUP BY
+		  ReportPeriod.MinistryYear
+		, ReportPeriod.MinistryMonth
+		, ReportPeriod.MonthLabel
 		, DimCampus.Code
 		UNION
 		--fill in the 0 rows here
