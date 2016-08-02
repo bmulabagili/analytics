@@ -3080,7 +3080,8 @@ ORDER BY ActualDate DESC</CommandText>
             <Value>=Parameters!CalendarDate.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>WITH LastTwoSundays AS (
+        <CommandText>
+WITH LastTwoSundays AS (
 	SELECT TOP 2 ActualDate, DateID
 	FROM DW.DimDate
 	WHERE
@@ -3130,12 +3131,14 @@ ORDER BY ActualDate DESC</CommandText>
 		ON FactAttendance.InstanceDateID IN ( LastTwoWeekends.SaturdayDateID, LastTwoWeekends.SundayDateID) 
 	INNER JOIN DW.DimMinistry
 		ON FactAttendance.MinistryID = DimMinistry.MinistryID
+	INNER JOIN DW.DimAttendanceType
+		ON FactAttendance.AttendanceTypeID = DimAttendanceType.AttendanceTypeID
 	LEFT JOIN DW.DimCampus
 		ON FactAttendance.CampusID = DimCampus.CampusID
 	LEFT JOIN DW.DimCampus campus2
 		ON DimMinistry.CampusID = campus2.CampusID
 	WHERE
-		DimMinistry.Name IN (
+		(DimMinistry.Name IN (
 			  'AU - Churchwide Services'
 			, 'CC - Churchwide Services'
 			, 'CL - Churchwide Services'
@@ -3145,6 +3148,7 @@ ORDER BY ActualDate DESC</CommandText>
 			, 'RM - Churchwide Services'
 			, 'Camp'
 			, 'Other')
+		AND DimAttendanceType.Category = 'Attendee' )
 		OR DimMinistry.Name LIKE '%Harvest Kids'
 	GROUP BY
 		LastTwoWeekends.SectionName
@@ -3218,8 +3222,7 @@ GROUP BY
 	, Campus
 	, MinistryName
 	, AttendanceCategory
-ORDER BY 1,2,3,4, 5, 6
-</CommandText>
+ORDER BY 1,2,3,4, 5, 6</CommandText>
       </Query>
       <Fields>
         <Field Name="SectionName">
