@@ -1551,7 +1551,7 @@ AS
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
 		AND CampusCode IN('CS','AU','CC','DR')
-		AND AccountingCode9 = '9999'
+		AND AccountingCode9 = '9999' --grantcode
 		AND DepartmentCode NOT IN ('4056', '4036')
 		AND dest.CampusXLTReportGroupID IS NULL
 	UNION

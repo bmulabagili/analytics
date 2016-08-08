@@ -48,7 +48,7 @@
   , CategoryName				NVARCHAR(100) NULL
   , CategoryType				NVARCHAR(3) NULL
   , CategoryDesignationCode 	NVARCHAR(3) NULL
-  --sCodeIDf_9 -- currently unknown
+  --sCodeIDf_9 -- Grant Code
   , AccountingCode9             NVARCHAR(20) NULL
   , AccountingName9				NVARCHAR(100) NULL
   , AccountingType9				NVARCHAR(3) NULL
