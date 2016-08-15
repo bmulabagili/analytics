@@ -14284,6 +14284,7 @@ ORDER BY MinistryMonth</CommandText>
 				AND (DimMinistry.Name LIKE '%Chuchwide Services' OR DimMinistry.Name LIKE '%Churchwide Services')
 				AND DimActivity.Name LIKE '%Worship Service%'
 				AND DimRoster.Roster LIKE '%Register Attendance%'
+				AND FactLifeEvent.Age &gt; 17
 			THEN 
 				'FTV Adults'
 			ELSE 
@@ -14294,7 +14295,7 @@ ORDER BY MinistryMonth</CommandText>
 				THEN 
 					'FTV Children'
 				ELSE
-					DimLifeEventType.Name END
+					CASE WHEN DimLifeEventType.Name IN ('Step 3 - Commit','Membership Confirmation Sent') THEN 'Membership Confirmation Sent' ELSE DimLifeEventType.Name END END
 			END AS SectionName
         , DimCampus.Code AS CampusCode
 		, SUM(FactLifeEvent.LifeEventCount) AS LifeEventCount
@@ -14324,6 +14325,7 @@ ORDER BY MinistryMonth</CommandText>
 				AND (DimMinistry.Name LIKE '%Chuchwide Services' OR DimMinistry.Name LIKE '%Churchwide Services')
 				AND DimActivity.Name LIKE '%Worship Service%'
 				AND DimRoster.Roster LIKE '%Register Attendance%'
+				AND FactLifeEvent.Age &gt; 17
 			THEN 
 				'FTV Adults'
 			ELSE 
@@ -14334,7 +14336,7 @@ ORDER BY MinistryMonth</CommandText>
 				THEN 
 					'FTV Children'
 				ELSE
-					DimLifeEventType.Name END
+					CASE WHEN DimLifeEventType.Name IN ('Step 3 - Commit','Membership Confirmation Sent') THEN 'Membership Confirmation Sent' ELSE DimLifeEventType.Name END END
 			END &lt;&gt; 'FTV' -- if the FTV is not from Churchwide or Harvest kids, exclude it per the report definition
 	GROUP BY
 		  ReportPeriod.MinistryYear
@@ -14345,6 +14347,7 @@ ORDER BY MinistryMonth</CommandText>
 				AND (DimMinistry.Name LIKE '%Chuchwide Services' OR DimMinistry.Name LIKE '%Churchwide Services')
 				AND DimActivity.Name LIKE '%Worship Service%'
 				AND DimRoster.Roster LIKE '%Register Attendance%'
+				AND FactLifeEvent.Age &gt; 17
 			THEN 
 				'FTV Adults'
 			ELSE 
@@ -14355,7 +14358,7 @@ ORDER BY MinistryMonth</CommandText>
 				THEN 
 					'FTV Children'
 				ELSE
-					DimLifeEventType.Name END
+					CASE WHEN DimLifeEventType.Name IN ('Step 3 - Commit','Membership Confirmation Sent') THEN 'Membership Confirmation Sent' ELSE DimLifeEventType.Name END END
 			END
 		, DimCampus.Code
 	UNION
