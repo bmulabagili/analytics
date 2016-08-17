@@ -9245,7 +9245,6 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
@@ -14296,7 +14295,7 @@ ORDER BY MinistryMonth</CommandText>
 				THEN 
 					'FTV Children'
 				ELSE
-					CASE WHEN DimLifeEventType.Name IN ('Step 3 - Commit','Membership Confirmation Sent') THEN 'Membership Confirmation Sent' ELSE DimLifeEventType.Name END END
+					DimLifeEventType.Name END
 			END AS SectionName
         , DimCampus.Code AS CampusCode
 		, SUM(FactLifeEvent.LifeEventCount) AS LifeEventCount
@@ -14337,7 +14336,7 @@ ORDER BY MinistryMonth</CommandText>
 				THEN 
 					'FTV Children'
 				ELSE
-					CASE WHEN DimLifeEventType.Name IN ('Step 3 - Commit','Membership Confirmation Sent') THEN 'Membership Confirmation Sent' ELSE DimLifeEventType.Name END END
+					DimLifeEventType.Name END
 			END &lt;&gt; 'FTV' -- if the FTV is not from Churchwide or Harvest kids, exclude it per the report definition
 	GROUP BY
 		  ReportPeriod.MinistryYear
@@ -14359,7 +14358,7 @@ ORDER BY MinistryMonth</CommandText>
 				THEN 
 					'FTV Children'
 				ELSE
-					CASE WHEN DimLifeEventType.Name IN ('Step 3 - Commit','Membership Confirmation Sent') THEN 'Membership Confirmation Sent' ELSE DimLifeEventType.Name END END
+					DimLifeEventType.Name END
 			END
 		, DimCampus.Code
 	UNION
@@ -14403,7 +14402,7 @@ SELECT
 	, CampusCode
 	, SUM(LifeEventCount) AS LifeEventCount
 FROM ZeroFilledLifeEvents
---WHERE MinistryMonth = 'AU' and sectionname = 'ftv adults'
+--WHERE sectionname like '%step 3%'
 GROUP BY
 	  MinistryYear
 	, MinistryMonth
