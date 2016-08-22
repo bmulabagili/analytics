@@ -24,8 +24,7 @@
             <Value>=Parameters!FiscalMonth.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>
-SELECT 
+        <CommandText>SELECT 
 	  SectionName
 	, MetricName
 	, FiscalYear
@@ -62,6 +61,35 @@ FROM (
 		, DimDate.FiscalMonth
 		, DimDate.CalendarMonthAbbreviation
 	UNION
+	--Google Data
+	
+SELECT 
+	   'inProv' AS SectionName
+	 , 'Total Web Traffic (GA)' AS MetricName
+	 , FiscalYear
+	 , FiscalMonth
+	 , CalendarMonthAbbreviation
+	 , SUM(UniqueUserCount) AS WITWMetricAmount
+FROM dw.FactWebActivity
+INNER JOIN (
+			SELECT DISTINCT 
+				  CalendarMonth, CalendarYear, CalendarMonthAbbreviation
+				, FiscalMonth , FiscalYear
+			FROM DW.DimDate
+			WHERE
+				CalendarDayOfMonth = 1
+				AND (
+						(DimDate.FiscalYear = @FiscalYear AND DimDate.FiscalMonth &lt;= @FiscalMonth)
+						OR 
+						(DimDate.Fiscalyear = @FiscalYear - 1)
+					) ) DimDate
+			ON FactWebActivity.CalendarMonth = DimDate.CalendarMonth
+			AND FactWebActivity.CalendarYear = DimDate.CalendarYear
+GROUP BY
+	  FiscalYear
+	 , FiscalMonth
+	 , CalendarMonthAbbreviation
+	UNION
 		SELECT SectionName, MetricName, FiscalYear, FiscalMonth, y.CalendarMonthAbbreviation, 0 AS WITWMetricAmount
 		FROM (
 		SELECT 'Social' AS SectionName,'Twitter'As MetricName		Union
@@ -77,7 +105,8 @@ FROM (
 		SELECT 'MPX'   ,'Average Donation - All Givers - US Only'	Union
 		SELECT 'MPX'   ,'Revenue - US Only'							Union
 		SELECT 'MPX'   ,'Expense - US Only'							Union
-		SELECT 'MPX'   ,'Net Surplus - US Only')x, (
+		SELECT 'MPX'   ,'Net Surplus - US Only'						Union
+		SELECT 'inProv', 'Total Web Traffic (GA)')x, (
 		SELECT DISTINCT 
 				  CalendarMonth, CalendarYear, CalendarMonthAbbreviation
 				, FiscalMonth , FiscalYear
