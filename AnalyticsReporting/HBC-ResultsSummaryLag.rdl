@@ -7417,24 +7417,20 @@ ORDER BY
           </QueryParameter>
         </QueryParameters>
         <CommandText>WITH ReportPeriod AS (
-	SELECT 
-		  DimDate.MinistryMonth
-		, DimDate.MinistryYear
-		, DimDate.MinistryMonthAbbreviation + '-' + RIGHT(CONVERT(VARCHAR(4), DimDate.MinistryYear), 2) AS MonthLabel
-		, COUNT(DISTINCT MinistryWeek) AS WeekCount
-		--take the "first calendar month" to match to the ministryMonth
-		, MIN(CalendarMonth) AS CalendarMonth
-		, MIN(CalendarYear) AS CalendarYear
+				SELECT DISTINCT
+		  CalendarMonth
+		, CalendarYear
+		, CASE WHEN CalendarMonth &lt; 8 THEN CalendarMonth + 5 ELSE CalendarMonth - 7 END AS MinistryMonth
+		, CASE WHEN CalendarMonth &lt; 8 THEN CalendarYear ELSE CalendarYear + 1 END AS MinistryYear
+		, DimDate.CalendarMonthAbbreviation + '-' + 
+			RIGHT(CONVERT(VARCHAR(4), CASE WHEN CalendarMonth &lt; 8 THEN CalendarYear ELSE CalendarYear + 1 END), 2) AS MonthLabel
 	FROM DW.DimDate
 	WHERE
-		MinistryYear IN (@MinistryYear - 1) --previous year
+		CASE WHEN CalendarMonth &lt; 8 THEN CalendarYear ELSE CalendarYear + 1 END = (@MinistryYear - 1) --previous year
 		OR (
-			MinistryYear = @MinistryYear
-			AND MinistryMonth &lt;= @MinistryMonth)
-	GROUP BY
-		  DimDate.MinistryMonth
-		, DimDate.MinistryYear
-		, DimDate.MinistryMonthAbbreviation + '-' + RIGHT(CONVERT(VARCHAR(4), DimDate.MinistryYear), 2)
+			CASE WHEN CalendarMonth &lt; 8 THEN CalendarYear ELSE CalendarYear + 1 END = @MinistryYear
+			AND CASE WHEN CalendarMonth &lt; 8 THEN CalendarMonth + 5 ELSE CalendarMonth - 7 END &lt;= @MinistryMonth)
+
 ), ZeroFilledStewardshipGiving AS ( 
 	SELECT 
 		  ReportPeriod.MinistryYear
@@ -7495,18 +7491,16 @@ GROUP BY
 		WHEN 'DR' THEN 7 END
 	, CampusCode
 ORDER BY
-	1,2,4
-
-</CommandText>
+	1,2,4</CommandText>
       </Query>
       <Fields>
         <Field Name="MinistryYear">
           <DataField>MinistryYear</DataField>
-          <rd:TypeName>System.Int16</rd:TypeName>
+          <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
         <Field Name="MinistryMonth">
           <DataField>MinistryMonth</DataField>
-          <rd:TypeName>System.Byte</rd:TypeName>
+          <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
         <Field Name="MonthLabel">
           <DataField>MonthLabel</DataField>
