@@ -814,11 +814,11 @@ EXEC [dbo].[usp_Initialize_CampusXLTReportGroupRows];
 
 GRANT EXEC ON Schema::DW TO HBCReportReader
 GO
-GRANT READ
+GRANT SELECT
 	ON SCHEMA::[dbo] TO [HBCReportReader]
 	AS [dbo]
 GO
-GRANT READ
+GRANT SELECT
 	ON SCHEMA::[DW] TO [HBCReportReader]
 	AS [dbo]
 GO

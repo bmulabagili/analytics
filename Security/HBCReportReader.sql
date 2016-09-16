@@ -1,7 +1,7 @@
 ﻿USE [master]
 CREATE LOGIN [HBCReportReader] WITH PASSWORD = 'R3p0rts*'
 GO
-USE AnalytyicsDB
+USE Analytics
 GO
 CREATE USER [HBCReportReader]
 GO
