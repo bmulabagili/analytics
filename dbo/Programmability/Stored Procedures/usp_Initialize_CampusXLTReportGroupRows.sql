@@ -1,4 +1,16 @@
-ï»¿CREATE PROCEDURE [dbo].[usp_Initialize_CampusXLTReportGroupRows]
+USE [Analytics]
+GO
+
+/****** Object:  StoredProcedure [dbo].[usp_Initialize_CampusXLTReportGroupRows]    Script Date: 10/4/2016 1:56:45 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+exec [usp_Initialize_CampusXLTReportGroupRows]
+
+CREATE PROCEDURE [dbo].[usp_Initialize_CampusXLTReportGroupRows]
 AS
 
 	--truncate the groups first
@@ -571,7 +583,7 @@ AS
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
 			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
-	--2. Office Equipment â€“Expenses with the department code 5058
+	--2. Office Equipment –Expenses with the department code 5058
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT FinancialCategoryID, 36
@@ -599,7 +611,7 @@ AS
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
 			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
-	--4. Printing â€“ Expenses with the department code 5078
+	--4. Printing – Expenses with the department code 5078
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT FinancialCategoryID, 38
@@ -715,7 +727,7 @@ AS
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
 			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
-	--12.Operating Expense (under camp operations, also called camp  operating expense on xlt management report tab) â€“ all expenses under fund 058
+	--12.Operating Expense (under camp operations, also called camp  operating expense on xlt management report tab) – all expenses under fund 058
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT FinancialCategoryID, 46
@@ -754,7 +766,7 @@ AS
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
 			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
-	--15.Online Services â€“ All expenses with department 5164
+	--15.Online Services – All expenses with department 5164
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT FinancialCategoryID, 49
@@ -828,7 +840,7 @@ AS
 		AND CategoryCode <> 'PER1'
 		AND CampusCode NOT IN ('LH','CH')
 
-	--22.Stewardship â€“ all expenses with department code 7280
+	--22.Stewardship – all expenses with department code 7280
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT FinancialCategoryID, 56
@@ -888,7 +900,7 @@ AS
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
 			,'90222','90227','90232','90235','90237','90247','90252','90260')
 
-	--26.Creative Services, Video Prod, Media â€“ all expenses in department codes 5158, 5159, or 6137
+	--26.Creative Services, Video Prod, Media – all expenses in department codes 5158, 5159, or 6137
 	INSERT INTO [dbo].[CampusXLTReportGroup_CampusTabMap]
 	( FinancialCategoryID, CampusXLTReportGroupID )
 	SELECT DISTINCT FinancialCategoryID, 60
@@ -1551,8 +1563,9 @@ AS
 		AND FundCode = '025'
 		AND CategoryCode = 'PER1'
 		AND CampusCode IN('CS','AU','CC','DR')
-		AND AccountingCode9 = '9999' --grantcode
-		AND DepartmentCode NOT IN ('4056', '4036')
+		AND DepartmentCode <> '4036'
+		--AND AccountingCode9 = '9999'
+		--AND DepartmentCode NOT IN ('4056', '4036')
 		AND dest.CampusXLTReportGroupID IS NULL
 	UNION
 	SELECT DISTINCT
@@ -1952,7 +1965,7 @@ AS
 		AND GLCode NOT IN (
 			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
 			,'90222','90227','90232','90235','90237','90247','90252','90260'
-			, '15027','15127','15132','15142','15147','15152','15157','15172','20011')
+			, '15027','15125','15127','15132','15142','15147','15152','15157','15172','20011')
 		AND dest.CampusXLTReportGroupID IS NULL
 	--and pick up some special cases of 'CH'
 	UNION
@@ -1970,10 +1983,15 @@ AS
 		AND DepartmentCode = '7250'
 		AND CategoryCode = 'MIN1'
 		AND GLCode NOT IN (
-			'21010','21015','22025','22045','23017','30010','30058','90139','90145'
+			'15125','21010','21015','22025','22045','23017','30010','30058','90139','90145'
 			,'90222','90227','90232','90235','90237','90247','90252','90260','20011')
 		AND dest.CampusXLTReportGroupID IS NULL
 
 
 RETURN 0
+
+
+
+GO
+
 
